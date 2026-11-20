@@ -1068,6 +1068,23 @@ function retarget(){
 }
 const loadBuf=url=>fetch(url).then(r=>r.ok?r.text():Promise.reject(new Error(url))).then(b64=>{ // models ship as base64 text
   const bin=atob(b64.trim()),buf=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)buf[i]=bin.charCodeAt(i);return buf.buffer;});
+// bat.txt: a modelled bat that replaces the code-built one. Re-oriented so the knob sits at the hands and the barrel runs up +Y.
+if(T.FBXLoader)loadBuf('bat.txt').then(buf=>{
+  const o=new T.FBXLoader().parse(buf,'');let src=null;o.updateMatrixWorld(true);o.traverse(n=>{if(n.isMesh&&!src)src=n;});if(!src)return;
+  const g=src.geometry.clone().applyMatrix4(src.matrixWorld);g.computeBoundingBox();
+  const sz=g.boundingBox.getSize(new V3()),c=g.boundingBox.getCenter(new V3()),ks=['x','y','z'],ax=ks.reduce((a,k)=>sz[k]>sz[a]?k:a,'x'),[o1,o2]=ks.filter(k=>k!==ax);
+  const P=g.attributes.position,v=new V3();let rLo=0,nLo=0,rHi=0,nHi=0;
+  for(let i=0;i<P.count;i++){v.fromBufferAttribute(P,i);const t=(v[ax]-g.boundingBox.min[ax])/sz[ax],r=Math.hypot(v[o1]-c[o1],v[o2]-c[o2]);if(t<.35){rLo+=r;nLo++;}else if(t>.65){rHi+=r;nHi++;}}
+  const sign=rHi/nHi>rLo/nLo?1:-1,I={x:0,y:1,z:2},row=(k,sg)=>{const a=[0,0,0,0];a[I[k]]=sg;return a;};   // barrel = the fatter end
+  let M=new T.Matrix4().set(...row(o1,1),...row(ax,sign),...row(o2,1),0,0,0,1);
+  if(M.determinant()<0)M=new T.Matrix4().set(...row(o2,1),...row(ax,sign),...row(o1,1),0,0,0,1);
+  g.translate(-c.x,-c.y,-c.z).applyMatrix4(M);const k=.9/sz[ax];g.scale(k*1.1,k,k*1.1).translate(0,.43,0);
+  const Q=g.attributes.position,col=new Float32Array(Q.count*3),ash=new T.Color(0xdcb37a),dark=new T.Color(0x2e1c10),band=new T.Color(0x14204a);
+  for(let i=0;i<Q.count;i++){const y=Q.getY(i),cc=y<.3?dark:(y>.5&&y<.525)?band:ash;col[i*3]=cc.r;col[i*3+1]=cc.g;col[i*3+2]=cc.b;}
+  g.setAttribute('color',new T.BufferAttribute(col,3));
+  const mat=new T.MeshPhongMaterial({vertexColors:true,shininess:45,specular:0x443322}),mesh=new T.Mesh(g,mat);mesh.castShadow=true;
+  bat.children.filter(ch=>ch.isMesh).forEach(ch=>bat.remove(ch));bat.add(mesh);bat.userData.wood=mat;
+}).catch(e=>console.warn('bat model unavailable, using built-in bat',e));
 if(T.FBXLoader){ // body.txt is the character mesh; clips.json holds the motion-capture clips (swing, stance idle, pitch)
   const mkClip=(c,name)=>new T.AnimationClip(name,c.duration,c.tracks.map(t=>/position$/.test(t.n)?new T.VectorKeyframeTrack('mixamorig'+t.n,t.t,t.v):new T.QuaternionKeyframeTrack('mixamorig'+t.n,t.t,t.v)));
   Promise.all([loadBuf('body.txt'),fetch('clips.json').then(r=>r.ok?r.json():Promise.reject(new Error('clips')))]).then(([bb,cj])=>{

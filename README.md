@@ -8,6 +8,7 @@ An original over-the-top arcade batting game for the browser, built with three.j
 | --- | --- |
 | `index.html` | The whole game: page markup, styles and game code. It is written as an artifact fragment (no `<html>`/`<body>` wrapper). |
 | `body.txt` | The player character mesh and skeleton (a Mixamo library character, FBX, textures removed), base64-encoded. Used for both batter and pitcher; the uniform, face and helmet are painted on in code. |
+| `bat.txt` | The bat model (FBX, base64-encoded). Re-oriented, scaled and coloured in code; a code-built bat is used if it is missing. |
 | `clips.json` | Motion-capture clips as plain keyframe data: `hit` (swing), `idle` (batting stance), `strike` (swing and miss with reaction), `pitch`. |
 | `tools/` | Scripts used to prepare the assets (see below). |
 
