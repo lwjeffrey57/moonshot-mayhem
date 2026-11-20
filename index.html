@@ -831,7 +831,7 @@ addEventListener('blur',()=>{for(const k in keys)keys[k]=false;});
 const tap=(id,fn)=>$(id).addEventListener('pointerdown',e=>{e.preventDefault();audioInit();fn();});
 tap('tc',()=>doSwing('contact'));tap('tp',()=>doSwing('power'));tap('tj',()=>{juiceArmed=!juiceArmed;hud();});
 $('start').addEventListener('click',()=>{audioInit();if(AC&&AC.state==='suspended')AC.resume();newGame();});
-$('mdl').addEventListener('click',()=>setModel(!MX.on));
+$('mdl').addEventListener('click',()=>loadPlayers(ORDER[(ORDER.indexOf(MX.kind)+1)%ORDER.length]));
 $('again').addEventListener('click',()=>{audioInit();newGame();});
 // pause / restart / main menu
 let paused=false;
@@ -855,7 +855,10 @@ $('quit').addEventListener('click',toMenu);$('overmenu').addEventListener('click
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&inPlay())setPaused(true);});
 
 // ───────────────────────── rigged batter mesh (Mixamo skeleton), dressed in code and driven by the rig above
-const MX={ready:false,map:[],on:true};try{MX.on=localStorage.getItem('mm_model')!=='0';}catch(e){}
+const MX={ready:false,map:[],on:true,token:0,kind:'ely'};
+// player looks you can switch between on the title screen
+const MODELS={ely:{label:'armoured',body:'ely.txt',tex:{d:'ely_d.jpg',n:'ely_n.jpg',s:'ely_s.jpg',g:'ely_g.jpg'}},mann:{label:'mannequin',body:'body.txt'},chunky:{label:'chunky'}},ORDER=['ely','mann','chunky'];
+try{const k=localStorage.getItem('mm_kind');if(MODELS[k])MX.kind=k;}catch(e){}
 const atlasC=document.createElement('canvas');atlasC.width=atlasC.height=1024;const atlasT=new T.CanvasTexture(atlasC);
 const SW={skin:[800,544],sleeve:[864,544],trim:[928,544],glove:[992,544],shoe:[800,608],sole:[864,608],band:[928,608],hair:[992,608],belt:[800,672]};
 function paintAtlas(b,o=HOME,cv=atlasC,tx=atlasT,pants='#b9bcc8'){
@@ -995,7 +998,7 @@ function updateClip(dt){
     C.spine.parent.getWorldQuaternion(_qp);C.spine.getWorldQuaternion(_qd);_q2.setFromAxisAngle(ZAX,th);_qd.premultiply(_q2);C.spine.quaternion.copy(_qp.invert()).multiply(_qd);}
   MX.obj.updateMatrixWorld(true);clipBat();
 }
-function prepModel(obj,tx){ // dress + bulk a Mixamo mannequin; returns its skeleton helpers and measurements
+function prepModel(obj,tx,custom){ // dress + bulk a Mixamo mannequin; returns its skeleton helpers and measurements
   const s=.87/88.9;
   const meshes=[];obj.traverse(n=>{if(n.isSkinnedMesh)meshes.push(n);});if(!meshes.length)throw new Error('no skinned mesh');
   const sk=meshes[0].skeleton,pre=(/^mixamorig\d*/.exec(sk.bones[0].name)||['mixamorig'])[0],B=n=>sk.bones.find(b=>b.name===pre+n)||obj.getObjectByName(pre+n);
@@ -1004,8 +1007,10 @@ function prepModel(obj,tx){ // dress + bulk a Mixamo mannequin; returns its skel
   const W=n=>B(n).getWorldPosition(new V3()),la=W('LeftArm'),ul=W('LeftUpLeg'),kn=W('LeftLeg'),ft=W('LeftFoot'),fa=W('LeftForeArm'),hd=W('LeftHand');
   const D={armX:la.x,armY:la.y,armZ:la.z,hipsY:W('Hips').y,neckY:W('Neck').y,headY:W('Head').y,topY:B('HeadTop_End')?W('HeadTop_End').y:W('Head').y+24,chestZ:W('Spine1').z+1,
     legX:ul.x,legY:ul.y,footX:ft.x,thigh:ul.distanceTo(kn),shin:kn.distanceTo(ft),footY:ft.y,uarm:la.distanceTo(fa),farm:fa.distanceTo(hd)};
-  const mat=new T.MeshPhongMaterial({map:tx,skinning:true,shininess:18,specular:0x303038});
-  meshes.forEach(m=>{const g=m.geometry.index?m.geometry.toNonIndexed():m.geometry;dress(g,D);if(MX.bulk)bulk(g,D);m.geometry=g;m.material=mat;m.castShadow=true;m.frustumCulled=false;});
+  const mat=custom?custom.mat:new T.MeshPhongMaterial({map:tx,skinning:true,shininess:18,specular:0x303038});
+  meshes.forEach(m=>{let g=m.geometry.index?m.geometry.toNonIndexed():m.geometry;
+    if(custom)g=custom.trim?custom.trim(g,D):g;else{dress(g,D);if(MX.bulk)bulk(g,D);}   // a textured character keeps its own UVs and look
+    m.geometry=g;m.material=mat;m.castShadow=true;m.frustumCulled=false;});
   obj.scale.setScalar(s);
   const K=MX.spineK;if(K!==1){B('Spine').scale.setScalar(K);B('Head').scale.setScalar(1.03/K);}
   return {s,sk,B,D,K};
@@ -1018,8 +1023,8 @@ function addHat(B,D,hm,flap){
   const hh=D.topY-D.headY;hg.scale.setScalar(MX.helmK||96*hh/21.3);hg.position.set(0,hh*(MX.helmY||.5),MX.helmZ??1);B('Head').add(hg);return hg;
 }
 const pitC=document.createElement('canvas');pitC.width=pitC.height=1024;const pitT=new T.CanvasTexture(pitC);
-function setupPitcher(obj){
-  const {sk,B,D}=prepModel(obj,pitT),clip=obj.animations&&obj.animations.find(c=>c.duration>.5);if(!clip)return;
+function setupPitcher(obj,custom){
+  const {sk,B,D}=prepModel(obj,pitT,custom),clip=obj.animations&&obj.animations.find(c=>c.duration>.5);if(!clip)return;
   clip.tracks=clip.tracks.filter(t=>/quaternion$/.test(t.name)||/Hips\.position$/.test(t.name));
   paintAtlas({name:'STORM',num:99,skin:0xc98f62},Object.assign({},AWAY,{glove:'#c98f62',stripe:'#0e7c86'}),pitC,pitT,'#f0f0ec');
   scene.add(obj);obj.position.set(0,.25,-18.4);
@@ -1034,10 +1039,10 @@ function setupPitcher(obj){
   {const gl=new T.Mesh(GEO.glove,pitcher.mats.glove);gl.scale.set(75,100,50);gl.position.set(0,9,0);(th===hand?lh:hand).add(gl);gl.castShadow=true;}
   mixer.setTime(0);
   MX.pit={obj,mixer,hand:th,tRel,dur:clip.duration};
-  pitcher.root.traverse(m=>{if(m.isMesh)m.visible=!MX.on;});obj.visible=MX.on;
+  showChunky(pitcher,false);
 }
-function setupModel(obj){
-  const d=batter,{s,sk,B,D,K}=prepModel(obj,atlasT);MX.D=D;
+function setupModel(obj,custom){
+  const d=batter,{s,sk,B,D,K}=prepModel(obj,atlasT,custom);MX.D=D;
   const clip=obj.animations&&obj.animations.find(c=>c.duration>.5);
   if(clip)setupClip(obj,clip,B,sk);else{
   d.root.add(obj);
@@ -1061,12 +1066,15 @@ function setupModel(obj){
   MX.obj=obj;
   MX.helmet=addHat(B,D,d.mats.cap,true);
   paintAtlas(S.bi>=0?curBatter():LINEUP[0]);MX.ready=true;
-  let on=true;try{on=localStorage.getItem('mm_model')!=='0';}catch(e){}$('mdl').hidden=false;setModel(on);
+  showChunky(batter,false);
 }
 const _qd=new T.Quaternion(),_qp=new T.Quaternion();
-function setModel(on){MX.on=on;if(MX.pit){MX.pit.obj.visible=on;pitcher.root.traverse(m=>{if(m.isMesh)m.visible=!on;});}if(!MX.ready)return;MX.obj.visible=on;if(MX.clip)(on?scene:batter.root).add(bat);
-  batter.root.children.forEach(ch=>{if(ch!==bat&&ch!==MX.obj)ch.traverse(m=>{if(m.isMesh&&m!==batter.blob)m.visible=!on;});});
-  $('mdl').textContent='Batter model: '+(on?'realistic':'chunky')+' (tap to switch)';try{localStorage.setItem('mm_model',on?'1':'0');}catch(e){}}
+function showChunky(fig,on){fig.root.children.forEach(ch=>{if(ch!==bat&&ch!==MX.obj)ch.traverse(m=>{if(m.isMesh&&m!==fig.blob)m.visible=on;});});}
+function unloadPlayers(){
+  if(MX.obj){if(MX.obj.parent)MX.obj.parent.remove(MX.obj);MX.obj=null;}
+  if(MX.pit){scene.remove(MX.pit.obj);MX.pit=null;}
+  MX.ready=false;MX.clip=null;batter.root.add(bat);showChunky(batter,true);showChunky(pitcher,true);
+}
 function retarget(){
   const d=batter;d.root.updateMatrixWorld(true);
   d.upper.getWorldPosition(_a);MX.hips.parent.worldToLocal(_a);MX.hips.position.copy(_a);
@@ -1091,14 +1099,44 @@ if(T.FBXLoader)loadBuf('bat.txt').then(buf=>{
   const mat=new T.MeshPhongMaterial({vertexColors:true,shininess:45,specular:0x443322}),mesh=new T.Mesh(g,mat);mesh.castShadow=true;
   bat.children.filter(ch=>ch.isMesh).forEach(ch=>bat.remove(ch));bat.add(mesh);bat.userData.wood=mat;
 }).catch(e=>console.warn('bat model unavailable, using built-in bat',e));
-if(T.FBXLoader){ // body.txt is the character mesh; clips.json holds the motion-capture clips (swing, stance idle, pitch)
-  const mkClip=(c,name)=>new T.AnimationClip(name,c.duration,c.tracks.map(t=>/position$/.test(t.n)?new T.VectorKeyframeTrack('mixamorig'+t.n,t.t,t.v):new T.QuaternionKeyframeTrack('mixamorig'+t.n,t.t,t.v)));
-  Promise.all([loadBuf('body.txt'),fetch('clips.json').then(r=>r.ok?r.json():Promise.reject(new Error('clips')))]).then(([bb,cj])=>{
-    const make=names=>{const o=new T.FBXLoader().parse(bb,'');o.animations=names.map(n=>mkClip(cj[n],n));return o;};
-    try{setupModel(make(['hit','idle','strike']));}catch(e){console.warn('batter model failed, using built-in figure',e);}
-    try{setupPitcher(make(['pitch']));}catch(e){console.warn('pitcher model failed, using built-in figure',e);}
-  }).catch(e=>console.warn('player models unavailable, using built-in figures',e));
+const loadImg=url=>new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=()=>rej(new Error(url));i.src=url;});
+let clipsP=null;
+function makeSkins(im){ // a textured character: its own colour, normal, specular and glow maps; the away team gets its red armour recoloured teal
+  const [d,n,sp,g]=im,w=d.naturalWidth,h=d.naturalHeight,cv=document.createElement('canvas');cv.width=w;cv.height=h;
+  const cx=cv.getContext('2d');cx.drawImage(d,0,0);const src=cx.getImageData(0,0,w,h),px=src.data;
+  const mk=img=>{const t=new T.Texture(img);t.needsUpdate=true;t.anisotropy=ANISO;return t;};
+  const out=cx.createImageData(w,h),o=out.data;
+  for(let i=0;i<px.length;i+=4){const r=px[i],gg=px[i+1],b=px[i+2];
+    if(r>45&&r>gg*1.75&&r>b*1.75){o[i]=gg*.8;o[i+1]=Math.min(255,r*1.25);o[i+2]=Math.min(255,r*1.4);}else{o[i]=r;o[i+1]=gg;o[i+2]=b;}o[i+3]=255;}
+  const cv2=document.createElement('canvas');cv2.width=w;cv2.height=h;cv2.getContext('2d').putImageData(out,0,0);const away=new T.CanvasTexture(cv2);away.anisotropy=ANISO;
+  const common={normalMap:mk(n),specularMap:mk(sp),emissiveMap:mk(g),emissive:new T.Color(0xffffff),specular:0x777777,shininess:32,skinning:true};
+  // drop the forearm energy blades: their texture island is a thin diagonal strip in the top-left of the sheet
+  const trim=(geo,D)=>{const P=geo.attributes.position,U=geo.attributes.uv,keep=[],ax=80,ay=5,dx=170,dy=190,L2=dx*dx+dy*dy,L=Math.sqrt(L2);
+    for(let i=0;i<P.count;i+=3){const u=(U.getX(i)+U.getX(i+1)+U.getX(i+2))/3*1024,v=(1-(U.getY(i)+U.getY(i+1)+U.getY(i+2))/3)*1024;
+      const t=((u-ax)*dx+(v-ay)*dy)/L2,dist=Math.abs((u-ax)*dy-(v-ay)*dx)/L;
+      if(!(t>-.06&&t<1.06&&dist<30))keep.push(i,i+1,i+2);}
+    if(keep.length===P.count)return geo;
+    const ng=new T.BufferGeometry();
+    for(const name in geo.attributes){const a=geo.attributes[name],arr=new a.array.constructor(keep.length*a.itemSize);
+      keep.forEach((src,j)=>{for(let c=0;c<a.itemSize;c++)arr[j*a.itemSize+c]=a.array[src*a.itemSize+c];});ng.setAttribute(name,new T.BufferAttribute(arr,a.itemSize));}
+    return ng;};
+  return {home:{mat:new T.MeshPhongMaterial(Object.assign({map:mk(d)},common)),trim},away:{mat:new T.MeshPhongMaterial(Object.assign({map:away},common)),trim}};
 }
+function loadPlayers(kind){ // body file = character mesh; clips.json = motion-capture clips (swing, stance idle, miss, pitch)
+  const cfg=MODELS[kind],my=++MX.token;MX.kind=kind;try{localStorage.setItem('mm_kind',kind);}catch(e){}
+  unloadPlayers();$('mdl').hidden=false;$('mdl').textContent='Players: '+cfg.label+' (tap to switch)';
+  if(!cfg.body||!T.FBXLoader)return;
+  const mkClip=(c,name)=>new T.AnimationClip(name,c.duration,c.tracks.map(t=>/position$/.test(t.n)?new T.VectorKeyframeTrack('mixamorig'+t.n,t.t,t.v):new T.QuaternionKeyframeTrack('mixamorig'+t.n,t.t,t.v)));
+  clipsP=clipsP||fetch('clips.json').then(r=>r.ok?r.json():Promise.reject(new Error('clips')));
+  const imgs=cfg.tex?Promise.all(['d','n','s','g'].map(k=>loadImg(cfg.tex[k]))):Promise.resolve(null);
+  Promise.all([loadBuf(cfg.body),clipsP,imgs]).then(([bb,cj,im])=>{
+    if(my!==MX.token)return;                                   // switched again while loading
+    const skins=im?makeSkins(im):null,make=names=>{const o=new T.FBXLoader().parse(bb,'');o.animations=names.map(n=>mkClip(cj[n],n));return o;};
+    try{setupModel(make(['hit','idle','strike']),skins&&skins.home);}catch(e){console.warn('batter model failed, using built-in figure',e);}
+    try{setupPitcher(make(['pitch']),skins&&skins.away);}catch(e){console.warn('pitcher model failed, using built-in figure',e);}
+  }).catch(e=>{console.warn('player models unavailable, using built-in figures',e);});
+}
+loadPlayers(MX.kind);
 // ───────────────────────── per-frame updates
 let camMode='bat';const camPos=CAM_HOME.clone(),camLook=CAM_LOOK.clone();
 const BK={ // bat keys in batter space: X toward pitcher, Z toward plate

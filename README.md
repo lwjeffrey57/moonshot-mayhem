@@ -7,7 +7,8 @@ An original over-the-top arcade batting game for the browser, built with three.j
 | File | What it is |
 | --- | --- |
 | `index.html` | The whole game: page markup, styles and game code. It is written as an artifact fragment (no `<html>`/`<body>` wrapper). |
-| `body.txt` | The player character mesh and skeleton (a Mixamo library character, FBX, textures removed), base64-encoded. Used for both batter and pitcher; the uniform, face and helmet are painted on in code. |
+| `body.txt` | The alternative "mannequin" player (a bare Mixamo body, FBX, textures removed, base64). Its uniform and helmet are painted on in code. Selectable on the title screen. |
+| `ely.txt`, `ely_d/n/s/g.jpg` | The default player: Mixamo's "Ely" armoured character (FBX mesh, base64) with its own colour, normal, specular and glow textures. The pitcher's armour is recoloured in code. |
 | `bat.txt` | The bat model (FBX, base64-encoded). Re-oriented, scaled and coloured in code; a code-built bat is used if it is missing. |
 | `clips.json` | Motion-capture clips as plain keyframe data: `hit` (swing), `idle` (batting stance), `strike` (swing and miss with reaction), `pitch`. |
 | `tools/` | Scripts used to prepare the assets (see below). |
