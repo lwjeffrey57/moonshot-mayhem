@@ -406,10 +406,12 @@ function pantsTex(base,stripe){return tex(128,128,(g,w,h)=>{g.fillStyle=base;g.f
   for(let i=0;i<14;i++){const x=rand(0,w),y=rand(0,h);g.strokeStyle=`rgba(0,0,15,${rand(.06,.14)})`;g.lineWidth=rand(2,5);g.beginPath();g.moveTo(x,y);g.quadraticCurveTo(x+14,y+rand(-8,8),x+30,y+rand(-5,5));g.stroke();}
   g.fillStyle=stripe;g.fillRect(30,0,5,h);g.fillRect(94,0,5,h);});}
 const hex=c=>'#'+c.toString(16).padStart(6,'0');
+const FACES=false; // players are plain mannequins for now; set true to paint eyes, brows, mouth and hair
 function faceTex(skin){
   return tex(256,128,(g,w,h)=>{const c=new T.Color(skin),dk=k=>'#'+c.clone().multiplyScalar(k).getHexString();
     g.fillStyle=hex(skin);g.fillRect(0,0,w,h);
     const vg=g.createLinearGradient(0,30,0,h);vg.addColorStop(0,'rgba(255,220,200,.1)');vg.addColorStop(1,'rgba(40,10,0,.28)');g.fillStyle=vg;g.fillRect(0,0,w,h);
+    if(!FACES)return;
     // short hair round the back and sides
     g.fillStyle='rgba(22,16,14,.92)';g.fillRect(112,0,w-112,84);g.fillRect(0,0,16,84);g.fillRect(100,0,14,70);g.fillRect(14,0,12,70);
     // cheeks / jaw shadow / stubble
@@ -879,14 +881,13 @@ function paintAtlas(b,o=HOME,cv=atlasC,tx=atlasT,pants='#b9bcc8'){
   // face (0,512)-(256,768)
   g.save();g.translate(0,512);g.fillStyle=skin;g.fillRect(0,0,256,256);
   const fg=g.createLinearGradient(0,0,256,0);fg.addColorStop(0,'rgba(40,10,0,.4)');fg.addColorStop(.3,'rgba(40,10,0,0)');fg.addColorStop(.7,'rgba(40,10,0,0)');fg.addColorStop(1,'rgba(40,10,0,.4)');g.fillStyle=fg;g.fillRect(0,0,256,256);
-  g.fillStyle='rgba(50,22,10,.2)';g.fillRect(40,150,176,106);
-  const X=128,E=124;
+  if(FACES){  g.fillStyle='rgba(50,22,10,.2)';g.fillRect(40,150,176,106);const X=128,E=124;
   g.fillStyle='rgba(50,20,10,.25)';g.beginPath();g.ellipse(X-36,E,24,13,0,0,7);g.ellipse(X+36,E,24,13,0,0,7);g.fill();
   g.fillStyle='#f4f1ea';g.beginPath();g.ellipse(X-36,E+2,15,8,0,0,7);g.ellipse(X+36,E+2,15,8,0,0,7);g.fill();
   g.fillStyle='#2a1a10';g.beginPath();g.arc(X-34,E+2,7,0,7);g.arc(X+38,E+2,7,0,7);g.fill();
   g.strokeStyle='#1c120c';g.lineWidth=8;g.beginPath();g.moveTo(X-60,E-18);g.lineTo(X-16,E-13);g.moveTo(X+16,E-13);g.lineTo(X+60,E-18);g.stroke();
   g.strokeStyle=dk(.6);g.lineWidth=6;g.beginPath();g.moveTo(X+6,E+6);g.lineTo(X+12,E+44);g.lineTo(X-10,E+50);g.stroke();
-  g.strokeStyle=dk(.45);g.lineWidth=7;g.beginPath();g.moveTo(X-26,E+80);g.quadraticCurveTo(X,E+88,X+26,E+80);g.stroke();g.restore();
+  g.strokeStyle=dk(.45);g.lineWidth=7;g.beginPath();g.moveTo(X-26,E+80);g.quadraticCurveTo(X,E+88,X+26,E+80);g.stroke();}g.restore();
   // pants: plain (256,512) and outer-side with piping (512,512)
   [256,512].forEach((x0,i)=>{g.fillStyle=pants;g.fillRect(x0,512,256,512);
     const pg=g.createLinearGradient(x0,0,x0+256,0);pg.addColorStop(0,'rgba(0,0,15,.3)');pg.addColorStop(.5,'rgba(0,0,15,0)');pg.addColorStop(1,'rgba(0,0,15,.3)');g.fillStyle=pg;g.fillRect(x0,512,256,512);
@@ -894,7 +895,7 @@ function paintAtlas(b,o=HOME,cv=atlasC,tx=atlasT,pants='#b9bcc8'){
     if(i){g.fillStyle=o.stripe||o.base;g.fillRect(x0+116,512,24,512);}});
   // flat swatches
   const sw=(k,col)=>{g.fillStyle=col;g.fillRect(SW[k][0]-32,SW[k][1]-32,64,64);};
-  sw('skin',skin);sw('sleeve',o.base);sw('trim',o.trim);sw('glove',o.glove||o.trim);sw('shoe','#16161c');sw('sole','#e8e8e8');sw('band','#f4f4f4');sw('hair','#1a1310');sw('belt','#101016');
+  sw('skin',skin);sw('sleeve',o.base);sw('trim',o.trim);sw('glove',o.glove||o.trim);sw('shoe','#16161c');sw('sole','#e8e8e8');sw('band','#f4f4f4');sw('hair',FACES?'#1a1310':skin);sw('belt','#101016');
   tx.needsUpdate=true;
 }
 const GRIP={"RightHandThumb1":[0.307,0.033,-0.268,0.913],"RightHandThumb2":[-0.061,0.027,0.235,0.97],"RightHandThumb3":[-0.129,0.095,0.514,0.843],"RightHandIndex1":[0.538,0.01,0.061,0.841],"RightHandIndex2":[0.7,0,0.057,0.712],"RightHandIndex3":[0.4,0,0.033,0.916],"RightHandMiddle1":[0.605,0.016,0.059,0.794],"RightHandMiddle2":[0.779,0,0.063,0.624],"RightHandMiddle3":[0.395,0,0.032,0.918],"RightHandRing1":[0.572,0.011,0.063,0.818],"RightHandRing2":[0.752,0,0.061,0.657],"RightHandRing3":[0.467,0,0.038,0.883],"RightHandPinky1":[0.447,0,0.095,0.889],"RightHandPinky2":[0.668,0,0.054,0.742],"RightHandPinky3":[0.442,0,0.036,0.896],"LeftHandThumb1":[0.292,-0.037,0.253,0.922],"LeftHandThumb2":[-0.017,-0.076,-0.32,0.944],"LeftHandThumb3":[-0.169,-0.086,-0.558,0.808],"LeftHandIndex1":[0.487,-0.01,-0.068,0.871],"LeftHandIndex2":[0.735,0,-0.075,0.674],"LeftHandIndex3":[0.489,0,-0.05,0.871],"LeftHandMiddle1":[0.487,-0.01,-0.068,0.871],"LeftHandMiddle2":[0.737,0,-0.075,0.672],"LeftHandMiddle3":[0.33,0,-0.034,0.943],"LeftHandRing1":[0.502,-0.01,-0.07,0.862],"LeftHandRing2":[0.666,0,-0.068,0.742],"LeftHandRing3":[0.489,0,-0.05,0.871],"LeftHandPinky1":[0.487,-0.01,-0.068,0.871],"LeftHandPinky2":[0.513,0,-0.053,0.857],"LeftHandPinky3":[0.489,0,-0.05,0.871]}; // curled-finger pose for holding a bat
