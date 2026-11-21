@@ -870,6 +870,12 @@ function toReady(d){$('hitinfo').hidden=true;S.state='ready';S.t=now;if(d)readyD
   fielders.forEach(f=>{if(!f.isP){f.fig.root.position.copy(f.home);f.fig.root.rotation.y=Math.atan2(-f.home.x,-f.home.z);}f.run=null;});
   camMode='bat';hud();
   if(WALK.on&&S.fresh&&S.bi>=0&&!S.seen[S.bi%LINEUP.length]&&MX.clip&&MX.clip.intros[WALK.by[curBatter().name]])startWalkup();}
+// Starting before the player models have arrived left an empty batter's box and skipped the first walk-up, so Play Ball waits for them.
+function startGame(){
+  if(MX.loading){if(!MX.pendingStart){MX.pendingStart=true;$('start').textContent='LOADING PLAYERS…';setTimeout(()=>{if(MX.pendingStart)playersDone();},15000);}return;}
+  newGame();
+}
+function playersDone(){MX.loading=false;if(MX.pendingStart){MX.pendingStart=false;$('start').textContent='PLAY BALL';newGame();}}
 function newGame(){Object.assign(S,{inning:1,outs:0,balls:0,strikes:0,runs:0,bases:[0,0,0],hits:0,hrs:0,longest:0,streak:0,bestStreak:0,juice:.34,heat:.2,over:false,bi:-1,pitches:0,seen:{}});
   $('title').hidden=true;$('over').hidden=true;$('pausebtn').hidden=false;setBatter();renderRep();scoreboard('PLAY BALL','INNING 1');toReady(2);pop('PLAY BALL!','INNING 1','plain');SND.organ();cheer(.14,1.5);}
 
@@ -1101,7 +1107,7 @@ canvas.addEventListener('contextmenu',e=>e.preventDefault());
 addEventListener('keydown',e=>{keys[e.code]=true;if(e.repeat)return;
   if(e.code==='Space'||e.code==='KeyZ'||e.code==='KeyJ'){doSwing('contact');e.preventDefault();}
   else if(e.code==='KeyX'||e.code==='KeyK'){doSwing('power');}
-  else if(e.code==='Enter'){if(!paused&&(S.state==='title'||S.state==='over')){audioInit();newGame();}}
+  else if(e.code==='Enter'){if(!paused&&(S.state==='title'||S.state==='over')){audioInit();startGame();}}
   else if(e.code==='Escape'||e.code==='KeyP'){setPaused(!paused);}
   else if(e.code==='KeyC'){nextCam();}
   if(e.code.startsWith('Shift'))hud();
@@ -1110,10 +1116,10 @@ addEventListener('keyup',e=>{keys[e.code]=false;if(e.code.startsWith('Shift'))hu
 addEventListener('blur',()=>{for(const k in keys)keys[k]=false;});
 const tap=(id,fn)=>$(id).addEventListener('pointerdown',e=>{e.preventDefault();audioInit();fn();});
 tap('tc',()=>doSwing('contact'));tap('tp',()=>doSwing('power'));tap('tj',()=>{juiceArmed=!juiceArmed;hud();});
-$('start').addEventListener('click',()=>{audioInit();if(AC&&AC.state==='suspended')AC.resume();newGame();});
+$('start').addEventListener('click',()=>{audioInit();if(AC&&AC.state==='suspended')AC.resume();startGame();});
 walkLabel();$('wk').addEventListener('click',()=>{WALK.on=!WALK.on;try{localStorage.setItem('mm_walk',WALK.on?'1':'0');}catch(e){}walkLabel();});
 $('mdl').addEventListener('click',()=>loadPlayers(ORDER[(ORDER.indexOf(MX.kind)+1)%ORDER.length]));
-$('again').addEventListener('click',()=>{audioInit();newGame();});
+$('again').addEventListener('click',()=>{audioInit();startGame();});
 // pause / restart / main menu
 let paused=false;
 const inPlay=()=>S.state!=='title'&&S.state!=='over';
@@ -1503,6 +1509,7 @@ function loadPlayers(kind){ // body file = character mesh; clips.json = motion-c
   const cfg=MODELS[kind],my=++MX.token;MX.kind=kind;try{localStorage.setItem('mm_kind',kind);}catch(e){}
   unloadPlayers();$('mdl').hidden=ORDER.length<2;$('mdl').textContent='Players: '+cfg.label+' (tap to switch)';
   if(!cfg.body||!T.FBXLoader)return;
+  MX.loading=true;
   // the simple built-in figures are only a fallback: keep them out of sight while the models load
   const figs=[batter,pitcher,...fielders.filter(f=>!f.isP).map(f=>f.fig)],fallback=fig=>{showChunky(fig,true);if(fig===batter)bat.visible=true;};
   figs.forEach(f=>showChunky(f,false));bat.visible=false;
@@ -1514,12 +1521,13 @@ function loadPlayers(kind){ // body file = character mesh; clips.json = motion-c
     if(my!==MX.token)return;                                   // switched again while loading
     const skins=im?makeSkins(im):null,make=names=>{const o=new T.FBXLoader().parse(bb,'');o.animations=names.map(n=>mkClip(cj[n],n));return o;};
     try{setupModel(make(['hit','idle','strike',...Object.keys(cj).filter(k=>/^w_/.test(k))]),skins&&skins.home);}catch(e){console.warn('batter model failed, using built-in figure',e);fallback(batter);}
+    playersDone();
     try{setupPitcher(make(['pitch']),skins&&skins.away);}catch(e){console.warn('pitcher model failed, using built-in figure',e);fallback(pitcher);}
     // fielders are built one at a time so the page doesn't freeze while seven more models are prepared
     fielders.filter(f=>!f.isP).forEach((f,i)=>setTimeout(()=>{if(my!==MX.token)return;
       try{setupFielder(f,make(['catch','run'].filter(k=>cj[k])),skins&&skins.away);}catch(e){console.warn('fielder model failed, using built-in figure',e);fallback(f.fig);}},400+i*220));
     if(skins&&cj.catch)setTimeout(()=>{if(my!==MX.token)return;try{setupPlateCrew(make,skins);}catch(e){console.warn('catcher/umpire failed',e);}},250);
-  }).catch(e=>{console.warn('player models unavailable, using built-in figures',e);if(my===MX.token)figs.forEach(fallback);});
+  }).catch(e=>{console.warn('player models unavailable, using built-in figures',e);if(my===MX.token){figs.forEach(fallback);playersDone();}});
 }
 loadPlayers(MX.kind);
 // ───────────────────────── per-frame updates
