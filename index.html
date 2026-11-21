@@ -1421,6 +1421,7 @@ document.addEventListener('pointerdown',e=>{if(e.pointerType!=='mouse'||MOB){if(
 document.addEventListener('touchstart',e=>{let hit=false;for(const t of e.changedTouches)if(cornerTap(t.clientX,t.clientY))hit=true;if(hit){e.preventDefault();e.stopPropagation();}},{capture:true,passive:false});
 ['tc','tp','tj'].forEach(id=>$(id).addEventListener('click',e=>{if(e.detail===0){if(id==='tj'){juiceArmed=!juiceArmed;hud();}else doSwing(id==='tp'?'power':'contact');}})); // keyboard activation
 $('start').addEventListener('click',()=>{audioInit();if(AC&&AC.state==='suspended')AC.resume();startGame();});
+$('title').addEventListener('click',e=>{if(e.target.closest('button'))return;$('start').click();}); // a tap anywhere on the title screen starts the game; the option buttons keep their own jobs
 muteLabel();$('mutebtn').addEventListener('click',e=>{e.stopPropagation();toggleMute();});$('mute1').addEventListener('click',toggleMute);
 walkLabel();$('wk').addEventListener('click',()=>{WALK.on=!WALK.on;try{localStorage.setItem('mm_walk',WALK.on?'1':'0');}catch(e){}walkLabel();});
 $('mdl').addEventListener('click',()=>loadPlayers(ORDER[(ORDER.indexOf(MX.kind)+1)%ORDER.length]));
