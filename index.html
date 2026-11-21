@@ -1122,7 +1122,7 @@ function flash(a){const e=$('flash');e.style.transition='none';e.style.opacity=a
 // ends (a walk aside) the meter is emptied and has to be filled again.
 function overCheck(){if(S.over||S.juice<.95||S.state==='title'||S.state==='over')return;S.juice=1;S.over=true;S.overOn=false;hudLater=true; // a bar that looks full IS full: anything from 95% up snaps to full and becomes Overdrive on the spot
  SND.zap();buzz([30,40,30,40,80]);
-  setTimeout(()=>{if(S.over&&!S.overOn)pop('OVERDRIVE READY!',MOB?'JUICE METER FULL · TAP THE BLUE OVERDRIVE BUTTON':'JUICE METER FULL · HOLD SHIFT AND SWING','cool',true);},900);}
+  setTimeout(()=>{if(S.over&&!S.overOn)pop('OVERDRIVE READY!','','cool',true);},900);}
 let hudLater=false;
 function hud(){overCheck();hudLater=false;
   $('runs').textContent=S.runs;$('inn').textContent=['1ST','2ND','3RD'][Math.min(S.inning,3)-1];$('count').textContent=S.balls+'-'+S.strikes;
@@ -1134,7 +1134,7 @@ function hud(){overCheck();hudLater=false;
   $('jtxt').textContent=S.over?(S.overOn?'OVERDRIVE ON':'OVERDRIVE READY'):(S.juice>=.333?'JUICE READY':'JUICE');
   {const bars=S.juice>=.333?1+Math.floor((S.juice-.333)/.3334+.001):0,tj=$('tj'); // counted exactly the way a Juice swing is paid for, so the badge never promises a bar that isn't there
    tj.classList.toggle('has',bars>0);tj.classList.toggle('none',bars===0);$('tjn').textContent=S.over?'':bars?'×'+bars:'';tj.firstChild.nodeValue=S.over?'OVER DRIVE':'JUICE';tj.classList.toggle('od',!!S.over);tj.classList.toggle('odon',!!(S.over&&S.overOn));if(S.over){tj.classList.remove('none','has');}$('tp').classList.toggle('blue',!!(S.over&&S.overOn));$('kj').classList.toggle('has',bars>0);
-    {const jt=$('jtoast'),o=!!(S.over&&!S.overOn);if(o&&!hudOver){jt.innerHTML='OVERDRIVE READY!<small>tap it for free juice swings</small>';jt.classList.add('odt');jt.classList.remove('go');void jt.offsetWidth;jt.classList.add('go');}hudOver=o;}
+    {const jt=$('jtoast'),o=!!(S.over&&!S.overOn);if(o&&!hudOver){jt.innerHTML='OVERDRIVE READY!';jt.classList.add('odt');jt.classList.remove('go');void jt.offsetWidth;jt.classList.add('go');}hudOver=o;}
     if(bars>hudBars&&!S.over&&!S.jSaid&&S.state!=='title'&&S.state!=='over'){S.jSaid=true; // the heads-up is given once a game; after that the gold button and its bar count say it quietly
       $('jtoast').classList.remove('odt');$('jtoast').innerHTML='JUICE READY!<small>tap it, then swing</small>'; // a new bar just filled: say so, loudly
       tj.classList.remove('gain');void tj.offsetWidth;tj.classList.add('gain');const jt=$('jtoast');jt.classList.remove('go');void jt.offsetWidth;jt.classList.add('go');
