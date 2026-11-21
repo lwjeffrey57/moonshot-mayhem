@@ -855,13 +855,18 @@ function newGame(){Object.assign(S,{inning:1,outs:0,balls:0,strikes:0,runs:0,bas
   $('title').hidden=true;$('over').hidden=true;$('pausebtn').hidden=false;setBatter();renderRep();scoreboard('PLAY BALL','INNING 1');toReady(2);pop('PLAY BALL!','INNING 1','plain');SND.organ();cheer(.14,1.5);}
 
 // ───────────────────────── pitching
+// brk = how far the pitch moves off a straight line (sideways, vertical) by the time it reaches the plate; k = how late that
+// movement comes (higher = sharper, later break); arc = hump in the flight. The pitch always finishes at its target spot, so
+// none of this changes where you have to swing, only what the ball does on the way in.
 const PITCHES=[
-  {n:'FASTBALL',dur:.64,brk:[0,.06],arc:.12,w:4},{n:'CURVEBALL',dur:.86,brk:[.12,-.5],arc:.5,w:2},
-  {n:'SLIDER',dur:.74,brk:[.4,-.12],arc:.2,w:2},{n:'CHANGEUP',dur:.95,brk:[-.06,-.24],arc:.3,w:2},
-  {n:'SCREWBALL',dur:.8,brk:[-.38,-.2],arc:.25,w:1},
-  {n:'METEOR',dur:.5,brk:[0,.04],arc:.05,w:0,sp:1,col:[1,.3,.1]},
-  {n:'ZIG-ZAG',dur:.92,brk:[0,-.1],arc:.25,w:0,sp:1,wob:.3,wobF:22,col:[.3,1,.5]},
-  {n:'CORKSCREW',dur:.9,brk:[0,-.1],arc:.25,w:0,sp:1,wob:.26,wobF:20,cork:1,col:[.8,.4,1]},
+  {n:'FASTBALL',dur:.64,brk:[-.05,.14],arc:.1,k:1.6,w:4},        // rides in almost flat with a little late hop
+  {n:'CURVEBALL',dur:.86,brk:[.2,-.85],arc:.62,k:2.2,w:2},       // big looping 12-to-6 hump that drops off the table
+  {n:'SLIDER',dur:.74,brk:[.78,-.2],arc:.16,k:3.4,w:2},          // looks like a fastball, then darts sideways late
+  {n:'CHANGEUP',dur:.95,brk:[-.14,-.5],arc:.34,k:2.8,w:2},       // floats, then dies and fades at the end
+  {n:'SCREWBALL',dur:.8,brk:[-.72,-.36],arc:.24,k:2.6,w:1},      // breaks the opposite way to the slider and sinks
+  {n:'METEOR',dur:.5,brk:[0,.06],arc:.04,k:2,w:0,sp:1,col:[1,.3,.1]},
+  {n:'ZIG-ZAG',dur:.92,brk:[0,-.1],arc:.25,k:2.5,w:0,sp:1,wob:.42,wobF:22,col:[.3,1,.5]},
+  {n:'CORKSCREW',dur:.9,brk:[0,-.1],arc:.25,k:2.5,w:0,sp:1,wob:.36,wobF:20,cork:1,col:[.8,.4,1]},
 ];
 const pitchMph=dur=>Math.round(18.4/dur*2.237*1.52),inningSp=()=>[1,.93,.86][S.inning-1]||.86;
 function renderRep(last){ // the pitcher's repertoire: movement, name, typical speed this inning; the pitch just thrown is highlighted
@@ -884,7 +889,7 @@ function choosePitch(){
     inZone:tx>=ZONE.x0&&tx<=ZONE.x1&&ty>=ZONE.y0&&ty<=ZONE.y1};
 }
 function pitchPos(pt,u,out){
-  const e=Math.pow(Math.min(u,1),2.5)+Math.max(0,u-1)*2.5;
+  const k=pt.P.k||2.5,e=Math.pow(Math.min(u,1),k)+Math.max(0,u-1)*k;
   out.x=lerp(pt.rel.x,pt.tx-pt.brk.x,u)+pt.brk.x*e;
   out.y=lerp(pt.rel.y,pt.ty-pt.brk.y,u)+pt.brk.y*e+pt.arc*4*u*(1-u);
   out.z=lerp(pt.rel.z,0,u);
@@ -1715,7 +1720,7 @@ function frame(t){
 try{const b=+localStorage.getItem('mm_best')||0;if(b)$('best').textContent='Best game: '+b+' runs';}catch(e){}
 initPost();resize();hud();
 const DBG={cam:false,admire:''}; // test hook: pin the camera to CAM_HOME/CAM_LOOK
-window.__mm={S,aim,MX,DBG,SFX,fielders,toReady,CAM_HOME,CAM_LOOK,now:()=>now,simulate,judge,get pitch(){return pitch;},get flight(){return flight;},doSwing,newGame,V3,
+window.__mm={S,aim,MX,DBG,SFX,ballPos:()=>ball.position,fielders,toReady,CAM_HOME,CAM_LOOK,now:()=>now,simulate,judge,get pitch(){return pitch;},get flight(){return flight;},doSwing,newGame,V3,
   sim:(dt)=>{hitstop=0;now+=dt;step(dt);},
   step:(n,dt=1/60)=>{for(let i=0;i<n;i++){if(hitstop>0)hitstop=0;now+=dt;step(dt);}updateCamera(dt);draw();}};
 if(!window.__mmManual)requestAnimationFrame(frame);
