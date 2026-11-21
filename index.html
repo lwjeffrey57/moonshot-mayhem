@@ -1449,6 +1449,12 @@ function setupFielder(f,obj,custom,noGlove){
   if(rc){rc.tracks=rc.tracks.filter(t=>/quaternion$/.test(t.name)||/Hips\.position$/.test(t.name));
     const ht=rc.tracks.find(t=>/Hips\.position$/.test(t.name));if(ht){const v=ht.values;for(let i=3;i<v.length;i+=3){v[i]=v[0];v[i+2]=v[2];}}
     f.mixer=f.mixer||new T.AnimationMixer(obj);f.runAct=f.mixer.clipAction(rc);f.runDur=rc.duration;f.runT=Math.random();}
+  // sideways shuffle (a left strafe, mirrored for moving right), also played on the spot
+  const sc=obj.animations.find(c=>c.name==='strafe');
+  if(sc){sc.tracks=sc.tracks.filter(t=>/quaternion$/.test(t.name)||/Hips\.position$/.test(t.name));
+    const ht=sc.tracks.find(t=>/Hips\.position$/.test(t.name));if(ht){const v=ht.values;for(let i=3;i<v.length;i+=3){v[i]=v[0];v[i+2]=v[2];}}
+    f.mixer=f.mixer||new T.AnimationMixer(obj);f.strAct=f.mixer.clipAction(sc);f.strDur=sc.duration;}
+  f.sx=Math.abs(obj.scale.x);
   f.mode='pose';
   showChunky(d,false,obj);
 }
@@ -1472,7 +1478,7 @@ function unloadPlayers(){
   if(MX.pit){scene.remove(MX.pit.obj);MX.pit=null;}
   if(MX.crew){scene.remove(MX.crew.cat);scene.remove(MX.crew.uf.fig.root);MX.crew=null;}
   batterOpacity(1);MX.ready=false;MX.clip=null;MX.lefty=false;CAM_HOME.x=-.15;CAM_LOOK.x=.3;batter.root.add(bat);showChunky(batter,true);showChunky(pitcher,true);unfitDriver(batter);
-  fielders.forEach(f=>{if(f.obj){f.fig.root.remove(f.obj);f.obj=f.rt=f.mixer=f.act=f.runAct=null;f.mode='pose';unfitDriver(f.fig);showChunky(f.fig,true);}});
+  fielders.forEach(f=>{if(f.obj){f.fig.root.remove(f.obj);f.obj=f.rt=f.mixer=f.act=f.runAct=f.strAct=null;f.mode='pose';unfitDriver(f.fig);showChunky(f.fig,true);}});
 }
 function retarget(){retargetFig(batter,MX);}
 const loadBuf=url=>fetch(url).then(r=>r.ok?r.text():Promise.reject(new Error(url))).then(b64=>{ // models ship as base64 text
@@ -1542,7 +1548,7 @@ function loadPlayers(kind){ // body file = character mesh; clips.json = motion-c
     try{setupPitcher(make(['pitch',...Object.keys(cj).filter(k=>/^p_/.test(k))]),skins&&skins.away);}catch(e){console.warn('pitcher model failed, using built-in figure',e);fallback(pitcher);}
     // fielders are built one at a time so the page doesn't freeze while seven more models are prepared
     fielders.filter(f=>!f.isP).forEach((f,i)=>setTimeout(()=>{if(my!==MX.token)return;
-      try{setupFielder(f,make(['catch','run'].filter(k=>cj[k])),skins&&skins.away);}catch(e){console.warn('fielder model failed, using built-in figure',e);fallback(f.fig);}},400+i*220));
+      try{setupFielder(f,make(['catch','run','strafe'].filter(k=>cj[k])),skins&&skins.away);}catch(e){console.warn('fielder model failed, using built-in figure',e);fallback(f.fig);}},400+i*220));
     if(skins&&cj.catch)setTimeout(()=>{if(my!==MX.token)return;try{setupPlateCrew(make,skins);}catch(e){console.warn('catcher/umpire failed',e);}},250);
   }).catch(e=>{console.warn('player models unavailable, using built-in figures',e);if(my===MX.token){figs.forEach(fallback);playersDone();}});
 }
@@ -1621,7 +1627,7 @@ function updatePitcher(){
 }
 function updateFielders(dt){
   const tf=flight?now-flight.t0:0;
-  for(const f of fielders){if(f.isP)continue;const r=f.fig.root;let clipT=-1,running=false;
+  for(const f of fielders){if(f.isP)continue;const r=f.fig.root;let clipT=-1,running=false,strafe=0;
     if(flight&&flight.play.f===f){const pl=flight.play,mocap=pl.air&&f.act;
       if(!pl.tgt){pl.tgt={x:pl.p.x,z:pl.p.z,face:Math.atan2(-pl.p.x,-pl.p.z),lead:0};
         if(mocap){ // stop where the clip starts him, so its own drift carries the glove to the ball
@@ -1630,7 +1636,11 @@ function updateFielders(dt){
       const g=pl.tgt,u=clamp(tf/Math.max(.2,(pl.tField||pl.endT)-g.lead),0,1);
       const px=lerp(pl.from.x,g.x,ease(u)),pz=lerp(pl.from.z,g.z,ease(u));
       const moving=Math.hypot(g.x-pl.from.x,g.z-pl.from.z)>1.2&&u<.97;
-      if(moving){r.rotation.y=Math.atan2(g.x-pl.from.x,g.z-pl.from.z);f.ph+=dt*13;applyPose(f.fig,runPose(f.ph));running=true;}
+      if(moving){const mx=g.x-pl.from.x,mz=g.z-pl.from.z,ml=Math.hypot(mx,mz),face=Math.atan2(-r.position.x,-r.position.z);
+        // moving mostly across the field (not in or back) over a shortish distance: shuffle sideways, still facing the plate
+        const lat=(mx*Math.cos(face)-mz*Math.sin(face))/ml;
+        if(f.strAct&&Math.abs(lat)>.86&&ml<22){strafe=lat>0?1:-1;r.rotation.y=face;}else r.rotation.y=Math.atan2(mx,mz);
+        f.ph+=dt*13;applyPose(f.fig,runPose(f.ph));running=true;}
       else{applyPose(f.fig,pl.air||u>.9?POSE.fCatch:POSE.fReady);}
       r.position.x=px;r.position.z=pz;
       if(mocap&&!moving){const ct=CATCH.t-(pl.endT-tf);if(ct>=CATCH.t-g.lead-.001){clipT=clamp(ct,CATCH.start,CATCH.end);r.rotation.y=g.face;}}
@@ -1638,11 +1648,13 @@ function updateFielders(dt){
       applyPose(f.fig,POSE.pSet);r.rotation.y=Math.atan2(ball.position.x-r.position.x,ball.position.z-r.position.z);
     }else{const P=lerpPose(POSE.fReady,POSE.fReady,0,tmpPose);P.y+=Math.sin(now*2+f.ph)*.012;applyPose(f.fig,P);}
     if(f.rt){
-      const mode=clipT>=0?'catch':running&&f.runAct?'run':'pose';
+      const mode=clipT>=0?'catch':running&&strafe?'strafe':running&&f.runAct?'run':'pose';
       if(mode!==f.mode){f.mode=mode;if(f.mixer)f.mixer.stopAllAction();f.obj.position.set(0,0,0);
-        if(mode==='catch')f.act.reset().play();else if(mode==='run')f.runAct.reset().play();}
+        if(mode==='catch')f.act.reset().play();else if(mode==='run')f.runAct.reset().play();else if(mode==='strafe')f.strAct.reset().play();}
+      f.obj.scale.x=f.sx*(mode==='strafe'&&strafe<0?-1:1);
       if(mode==='catch'){f.act.time=clipT;f.mixer.update(0);f.obj.position.set(-f.startOff.x,0,-f.startOff.z);}
-      else if(mode==='run'){f.runT=(f.runT+dt*f.speed/4.4)%f.runDur;f.runAct.time=f.runT;f.mixer.update(0);} // stride rate follows how fast he is covering ground
+      else if(mode==='strafe'){f.runT=(f.runT+dt*f.speed/4.2)%f.strDur;f.strAct.time=f.runT;f.mixer.update(0);}
+      else if(mode==='run'){f.runT%=f.runDur;f.runT=(f.runT+dt*f.speed/4.4)%f.runDur;f.runAct.time=f.runT;f.mixer.update(0);} // stride rate follows how fast he is covering ground
       else retargetFig(f.fig,f.rt);
     }
   }
