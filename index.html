@@ -236,6 +236,12 @@ body.mob #tip{display:block}body.mob .how{display:none}
 @keyframes tutdrag{0%,100%{transform:translate(-22px,14px)}35%{transform:translate(20px,-18px)}70%{transform:translate(18px,16px)}}
 #tut .swz{right:8px;bottom:calc(var(--tbb) + min(128px,32vw) + 108px);width:62%}#tut .swz::after{content:'▼';display:block;color:var(--heat);font-size:22px;margin-top:4px;animation:tutbob 1s ease-in-out infinite}@keyframes tutbob{50%{transform:translateY(6px)}}
 #tut .jcz{left:6%;right:6%;top:150px}#tut .go{left:50%;top:34%;transform:translateX(-50%);white-space:nowrap;padding:12px 26px;font-size:20px;color:var(--ink);text-shadow:none;background:var(--volt);border:3px solid #000;border-radius:28px;box-shadow:0 4px 0 #000}
+#tut .off{left:max(12px,env(safe-area-inset-left,0px));top:100px;white-space:nowrap;padding:9px 18px;font-family:var(--hud);font-style:normal;font-weight:700;font-size:14px;letter-spacing:.1em;text-transform:uppercase;color:var(--chrome);text-shadow:none;border:1px solid rgba(242,245,255,.5);border-radius:20px;background:rgba(8,9,26,.6)}
+#tut .jz,#tut .jring{display:none}#tut.j{background:none;overflow:hidden}#tut.j .aimz,#tut.j .swz,#tut.j .jcz{display:none}
+#tut.j .tz{z-index:2}#tut.j .jring{z-index:1}
+#tut.j .jz{display:block;right:10px;left:10px;text-align:right;bottom:calc(var(--tbb) + min(128px,32vw) + min(76px,19vw) + 44px)}
+#tut.j .jring{display:block;position:absolute;right:calc(max(14px,env(safe-area-inset-right,0px)) - 10px);bottom:calc(var(--tbb) + min(128px,32vw) + 4px);width:calc(min(76px,19vw) + 20px);aspect-ratio:1;border:4px solid var(--volt);border-radius:50%;box-shadow:0 0 0 200vmax rgba(6,7,20,.76),0 0 24px 4px var(--volt);animation:jring 1s ease-in-out infinite}
+@keyframes jring{50%{transform:scale(1.1)}}
 #ldtxt{font-family:var(--hud);font-weight:800;font-size:11px;letter-spacing:.14em;color:var(--dim);min-height:14px;text-align:center}
 .cta{pointer-events:auto;font-family:var(--display);font-size:clamp(20px,3vw,30px);color:var(--ink);background:var(--volt);border:3px solid #000;
   padding:10px 34px;transform:skewX(-10deg);cursor:pointer;box-shadow:0 6px 0 #000}
@@ -305,6 +311,9 @@ body.mob #tip{display:block}body.mob .how{display:none}
     <div id="tut" hidden>
       <div class="tz jcz"><b>JUICE = MONSTER SWING</b>Tap JUICE, then swing. Costs one bar.<small>The ball comes off about 20% harder and the sweet spot grows. Hits and taking balls refill it — save it for a pitch you can drive.</small></div>
       <div class="tz go">GOT IT — PLAY ▶</div>
+      <div class="tz off" id="tutoff">Skip all tutorials</div>
+      <div class="tz jz"><b>YOUR JUICE IS FULL</b>Tap JUICE, then swing for a monster hit<small>Each swing with Juice burns one of your three bars. Use one now, or bank them for a pitch you can drive.</small></div>
+      <div class="jring"></div>
       <div class="tz aimz"><b>LEFT THUMB</b>Drag anywhere to aim the ring<div class="pad"><i></i></div></div>
       <div class="tz swz"><b>RIGHT THUMB</b>Tap as the yellow ring closes on the ball<small>CONTACT: easier, line drives. POWER: harder, moonshots.</small></div>
     </div>
@@ -928,8 +937,14 @@ let tipI=(Math.random()*3)|0;function nextTip(){const t=TIPS[tipI++%TIPS.length]
 // thumb guide before the very first pitch on a phone
 const TUT_EVERY_LAUNCH=true; // testing: show the guide on every launch; set false to go back to once per device
 let tutFirst=false,tutHold=false,tutSeen=!MOB;try{if(!TUT_EVERY_LAUNCH&&localStorage.getItem('mm_tut')==='1')tutSeen=true;}catch(e){}
-function tutNeed(){if(tutSeen||window.__mmManual&&!window.__mmTut)return false;tutSeen=true;tutHold=true;tutFirst=true;$('tut').hidden=false;try{localStorage.setItem('mm_tut','1');}catch(e){}return true;}
-$('tut').addEventListener('pointerdown',e=>{e.preventDefault();$('tut').hidden=true;tutHold=false;if(tutFirst){tutFirst=false;S.t=now-readyDur+.7;}});
+let tutOff=false,jtutSeen=!MOB;try{tutOff=localStorage.getItem('mm_tutoff')==='1';if(!TUT_EVERY_LAUNCH&&localStorage.getItem('mm_jtut')==='1')jtutSeen=true;}catch(e){}
+// the first time the Juice meter is full: point at the JUICE button
+function jtutNeed(){if(tutOff||jtutSeen||window.__mmManual&&!window.__mmTut)return false;jtutSeen=true;tutHold=true;tutFirst=true;$('tut').className='j';$('tut').hidden=false;try{localStorage.setItem('mm_jtut','1');}catch(e){}return true;}
+function tutNeed(){if(tutOff||tutSeen||window.__mmManual&&!window.__mmTut)return false;tutSeen=true;tutHold=true;tutFirst=true;$('tut').className='';$('tut').hidden=false;try{localStorage.setItem('mm_tut','1');}catch(e){}return true;}
+$('tut').addEventListener('pointerdown',e=>{e.preventDefault();
+  if(e.target.id==='tutoff'){tutOff=true;try{localStorage.setItem('mm_tutoff','1');}catch(x){}} // no more guides on this device (HOW TO PLAY in the pause menu still works)
+  if(e.target.classList.contains('jring')&&S.juice>=.333){juiceArmed=true;hud();}
+  $('tut').hidden=true;tutHold=false;if(tutFirst){tutFirst=false;S.t=now-readyDur+.7;}});
 function timing(t,c,l){const e=$('tim');e.className='';e.textContent=t;e.style.color=c;e.dataset.l=l||2;void e.offsetWidth;e.className='go';}
 function flash(a){const e=$('flash');e.style.transition='none';e.style.opacity=a*FX;void e.offsetWidth;e.style.transition='opacity .35s';e.style.opacity=0;}
 function hud(){
@@ -1358,7 +1373,7 @@ function toMenu(){
 }
 $('pausebtn').addEventListener('click',()=>setPaused(true));
 $('resume').addEventListener('click',()=>setPaused(false));
-$('howbtn').addEventListener('click',()=>{setPaused(false);tutHold=true;$('tut').hidden=false;}); // the thumb guide again, on demand
+$('howbtn').addEventListener('click',()=>{setPaused(false);tutHold=true;$('tut').className='';$('tut').hidden=false;}); // the thumb guide again, on demand
 $('cambtn').addEventListener('click',()=>{nextCam();draw();});
 $('restart').addEventListener('click',()=>{setPaused(false);fireworks.length=0;newGame();});
 $('quit').addEventListener('click',toMenu);$('overmenu').addEventListener('click',toMenu);
@@ -1928,7 +1943,8 @@ function step(dt){
   const kx=(keys.ArrowRight||keys.KeyD?1:0)-(keys.ArrowLeft||keys.KeyA?1:0),ky=(keys.ArrowUp||keys.KeyW?1:0)-(keys.ArrowDown||keys.KeyS?1:0);
   if(kx||ky)setAim(aim.x+kx*1.5*dt,aim.y+ky*1.5*dt);
   const st=S.state,el=now-S.t;
-  if(st==='ready'&&el>=readyDur&&S.pitches===0&&tutNeed())return;
+  if(st==='ready'&&el>=.25&&S.pitches===0&&tutNeed())return;   // guides come up as soon as he is set in the box
+  if(st==='ready'&&el>=.25&&S.juice>=.999&&jtutNeed())return;
   if(st==='ready'&&el>=readyDur){S.state='windup';windupT0=now;released=false;S.fresh=false;pitch=choosePitch();S.pitches++;readyDur=1.15;$('pitchinfo').classList.remove('on'),$('plast').classList.remove('on');}
   else if(st==='windup'&&now-windupT0>=1.0){
     if(MX.pit&&MX.on){MX.pit.obj.updateMatrixWorld(true);MX.pit.hand.getWorldPosition(pitch.rel);}else{pitcher.root.updateMatrixWorld(true);pitcher.handR.getWorldPosition(pitch.rel);}pitch.t0=now;S.state='pitch';SND.pitch();ball.visible=true;ballShadow.visible=true;
