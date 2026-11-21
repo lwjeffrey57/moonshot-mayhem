@@ -118,6 +118,17 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 @media (max-height:520px){#keys{display:none}}
 @media (max-width:900px){#heat,#zmini{display:none}.meter,#juice{width:min(240px,38vw)}#bug .badge{display:none}#bug .rows{width:98px}#diamond{width:92px;height:76px}#pausebtn{top:92px}.mcap,#cnum,#cname{font-size:14px}}
 @media (max-width:560px){.stats{display:none}}
+/* walk-up card */
+#walk{left:50%;bottom:16px;transform:translateX(-50%);display:flex;align-items:stretch;min-width:min(460px,92vw);background:linear-gradient(#1b1f4a,#0b0c22);border:2px solid var(--pilllo);border-radius:8px;box-shadow:0 4px 0 #000;font-family:var(--display);font-style:italic;overflow:hidden;animation:walkin .35s cubic-bezier(.2,1.3,.4,1) both}
+@keyframes walkin{from{transform:translate(-50%,120%)}to{transform:translate(-50%,0)}}
+#walk .wn{display:flex;align-items:center;justify-content:center;min-width:74px;font-size:40px;color:#fff;background:linear-gradient(135deg,#e23a22,#7a1208);text-shadow:0 3px 0 #000}
+#walk .wb{flex:1;min-width:0}
+#walk .wname{padding:7px 16px 5px;font-size:30px;line-height:1;color:var(--volt);background:linear-gradient(90deg,#3a4190,transparent);white-space:nowrap}
+#walk .wrow{display:flex;gap:18px;padding:6px 16px;font-size:16px;color:var(--chrome);white-space:nowrap;font-variant-numeric:tabular-nums}
+#walk .wrow b{color:var(--volt);font-weight:400}
+#walk .wrow.sub{background:#000;font-size:13px;color:var(--dim);justify-content:space-between}
+#hud.wk #rep,#hud.wk #keys,#hud.wk #pitchinfo,#hud.wk #touch{visibility:hidden}
+.wkopt{pointer-events:auto;background:none;border:1px solid var(--dim);padding:6px 12px;cursor:pointer;font-family:var(--hud)}
 /* centre calls */
 #pop{left:0;right:0;top:26%;text-align:center;opacity:0}
 #pop .t{font-family:var(--display);font-size:clamp(40px,10vw,120px);line-height:.95;font-style:italic;letter-spacing:.01em;
@@ -188,6 +199,7 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
       <div id="heat" class="meter"><div class="mbar"><div id="hfill" class="mfill"></div><span class="mtxt">HEAT</span></div>
         <div class="mcap"><span>99</span><span>STORM</span></div></div>
     </div>
+    <div id="walk" hidden><div class="wn" id="wnum"></div><div class="wb"><div class="wname" id="wname"></div><div class="wrow" id="wrat"></div><div class="wrow sub"><span id="wspot"></span><span id="wskip"></span></div></div></div>
     <svg id="diamond" viewBox="0 0 104 86" aria-hidden="true">
       <path d="M52 82 L4 34 A68 68 0 0 1 100 34 Z" fill="#2f8a3c" stroke="#f2f5ff" stroke-width="2.5" stroke-linejoin="round"/>
       <path d="M52 82 L24 54 A40 40 0 0 1 80 54 Z" fill="#a8683e"/>
@@ -219,6 +231,7 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
       <div><b>Overdrive</b>Three hits in a row electrifies the bat until an out.</div>
     </div>
     <button class="cta" id="start" type="button">PLAY BALL</button>
+    <button class="tag wkopt" id="wk" type="button"></button>
     <button class="tag" id="mdl" type="button" hidden style="pointer-events:auto;background:none;border:1px solid var(--dim);padding:6px 12px;cursor:pointer;font-family:var(--hud)"></button>
     <div class="tag" id="best"></div>
   </div>
@@ -736,7 +749,7 @@ const SND={
 };
 
 // ───────────────────────── game state
-const S={state:'title',t:0,inning:1,outs:0,balls:0,strikes:0,runs:0,bases:[0,0,0],hits:0,hrs:0,longest:0,streak:0,bestStreak:0,juice:.34,heat:.2,over:false,bi:-1,pitches:0};
+const S={state:'title',t:0,inning:1,outs:0,balls:0,strikes:0,runs:0,bases:[0,0,0],hits:0,hrs:0,longest:0,streak:0,bestStreak:0,juice:.34,heat:.2,over:false,bi:-1,pitches:0,seen:{}};
 let now=0,hitstop=0,timeScale=1,slowT=0,shake=0,fovKick=0;
 const aim={x:0,y:.82};
 const keys={};
@@ -765,10 +778,24 @@ function setBatter(){
   $('cnum').textContent=b.num;$('cname').textContent=b.name+(b.lh?' (L)':' (R)');$('spw').style.width=((b.pwr-.85)/.35*100)+'%';$('sco').style.width=((b.con-.85)/.3*100)+'%';$('ssp').style.width=((b.spd-.85)/.3*100)+'%';
   readyDur=1.7;S.fresh=true;
 }
+// Walk-ups: the first time each hitter comes up, a short intro animation with his card. Any swing button skips it.
+const WALK={on:true,dur:3.4,by:{VASQUEZ:'w_walkin',OKAFOR:'w_flair',DELACROIX:'w_ondeck',BRICKHOUSE:'w_boxing',TANAKA:'w_walkin',MONTOYA:'w_boxing',ABERNATHY:'w_flair','JACKSON-BELL':'w_ondeck',KOWALSKI:'w_walkin'}};
+try{WALK.on=localStorage.getItem('mm_walk')!=='0';}catch(e){}
+function walkLabel(){$('wk').textContent='Walk-ups: '+(WALK.on?'on':'off (faster pace)')+' — tap to change';}
+function startWalkup(){
+  const b=curBatter(),i=S.bi%LINEUP.length,r=v=>clamp(Math.round((v-.85)/.3*9+1),1,10);
+  S.seen[i]=1;S.state='walkup';S.t=now;
+  $('wnum').textContent=b.num;$('wname').textContent=b.name;
+  $('wrat').innerHTML=`<span>POWER <b>${r(b.pwr)}</b></span><span>CONTACT <b>${r(b.con)}</b></span><span>SPEED <b>${r(b.spd)}</b></span><span>BATS <b>${b.lh?'L':'R'}</b></span>`;
+  $('wspot').textContent='BATTING '+['1ST','2ND','3RD','4TH','5TH','6TH','7TH','8TH','9TH'][i];$('wskip').textContent='SWING TO SKIP';
+  $('walk').hidden=false;$('hud').classList.add('wk');cheer(.16,2);
+}
+function endWalkup(){$('walk').hidden=true;$('hud').classList.remove('wk');S.state='ready';S.t=now;readyDur=1.5;if(MX.clip)MX.clip.swap=.2;}
 function toReady(d){S.state='ready';S.t=now;if(d)readyDur=d;swing=null;pitch=null;flight=null;ball.visible=false;ballShadow.visible=false;pring.visible=false;ballGlow.material.opacity=0;
   fielders.forEach(f=>{if(!f.isP){f.fig.root.position.copy(f.home);f.fig.root.rotation.y=Math.atan2(-f.home.x,-f.home.z);}f.run=null;});
-  camMode='bat';hud();}
-function newGame(){Object.assign(S,{inning:1,outs:0,balls:0,strikes:0,runs:0,bases:[0,0,0],hits:0,hrs:0,longest:0,streak:0,bestStreak:0,juice:.34,heat:.2,over:false,bi:-1,pitches:0});
+  camMode='bat';hud();
+  if(WALK.on&&S.fresh&&S.bi>=0&&!S.seen[S.bi%LINEUP.length]&&MX.clip&&MX.clip.intros[WALK.by[curBatter().name]])startWalkup();}
+function newGame(){Object.assign(S,{inning:1,outs:0,balls:0,strikes:0,runs:0,bases:[0,0,0],hits:0,hrs:0,longest:0,streak:0,bestStreak:0,juice:.34,heat:.2,over:false,bi:-1,pitches:0,seen:{}});
   $('title').hidden=true;$('over').hidden=true;$('pausebtn').hidden=false;setBatter();renderRep();scoreboard('PLAY BALL','INNING 1');toReady(2);pop('PLAY BALL!','INNING 1','plain');SND.organ();cheer(.14,1.5);}
 
 // ───────────────────────── pitching
@@ -948,6 +975,7 @@ function endGame(){
 // ───────────────────────── input
 function doSwing(type){
   if(paused||S.state==='title'||S.state==='over')return;
+  if(S.state==='walkup'){S.t=Math.min(S.t,now-WALK.dur+.22);return;} // skip the intro
   if(swing)return;
   if(!(S.state==='pitch'||(S.state==='windup'&&now-windupT0>.55)))return;
   const turbo=juiceOn()&&S.juice>=.333;
@@ -983,6 +1011,7 @@ addEventListener('blur',()=>{for(const k in keys)keys[k]=false;});
 const tap=(id,fn)=>$(id).addEventListener('pointerdown',e=>{e.preventDefault();audioInit();fn();});
 tap('tc',()=>doSwing('contact'));tap('tp',()=>doSwing('power'));tap('tj',()=>{juiceArmed=!juiceArmed;hud();});
 $('start').addEventListener('click',()=>{audioInit();if(AC&&AC.state==='suspended')AC.resume();newGame();});
+walkLabel();$('wk').addEventListener('click',()=>{WALK.on=!WALK.on;try{localStorage.setItem('mm_walk',WALK.on?'1':'0');}catch(e){}walkLabel();});
 $('mdl').addEventListener('click',()=>loadPlayers(ORDER[(ORDER.indexOf(MX.kind)+1)%ORDER.length]));
 $('again').addEventListener('click',()=>{audioInit();newGame();});
 // pause / restart / main menu
@@ -996,7 +1025,7 @@ function setPaused(on){
 }
 function toMenu(){
   setPaused(false);fireworks.length=0;toReady();S.state='title';
-  $('over').hidden=true;$('title').hidden=false;$('pausebtn').hidden=true;$('rep').hidden=true;$('pop').className='';$('tim').className='';$('pitchinfo').classList.remove('on');
+  $('over').hidden=true;$('title').hidden=false;$('pausebtn').hidden=true;$('rep').hidden=true;$('walk').hidden=true;$('hud').classList.remove('wk');$('pop').className='';$('tim').className='';$('pitchinfo').classList.remove('on');
   scoreboard('MOONSHOT','MAYHEM');
   try{const b=+localStorage.getItem('mm_best')||0;if(b)$('best').textContent='Best game: '+b+' runs';}catch(e){}
 }
@@ -1126,6 +1155,7 @@ function setupClip(obj,clip,B,sk){
   C.hit=mixer.clipAction(clip);C.hit.play();
   if(ic){C.idle=mixer.clipAction(ic);C.idle.play();C.idleDur=ic.duration;}
   if(sc){C.strike=mixer.clipAction(sc);C.strike.play();C.strike.setEffectiveWeight(0);}
+  C.intros={};obj.animations.filter(c=>/^w_/.test(c.name)).forEach(c=>{keep(c);const a=mixer.clipAction(c);a.play();a.setEffectiveWeight(0);C.intros[c.name]={a,dur:c.duration};});
 }
 const WHIFF_HOLD=1.15; // seconds of the swing-and-miss clip shown after the miss before he resets
 function batterOpacity(k){const set=m=>{if(m){m.transparent=k<1;m.opacity=k;}};
@@ -1137,7 +1167,7 @@ function updateClip(dt){
   // Keep showing him (and his side of the plate) until he is back in his stance, then fade to the new batter.
   if(S.bi>=0&&C.bi!==S.bi){
     if(C.bi===undefined){C.bi=S.bi;MX.lefty=!!curBatter().lh;}
-    else if(C.swap==null&&((C.mode==='idle'&&C.h<=.001)||(S.state==='ready'&&now-S.t>.6)))C.swap=0;}
+    else if(C.swap==null&&((C.mode==='idle'&&C.h<=.001)||(S.state==='ready'&&now-S.t>.6)||S.state==='walkup'))C.swap=0;}
   if(C.swap!=null){C.swap+=dt;
     if(C.swap>=.2&&C.bi!==S.bi){C.bi=S.bi;MX.lefty=!!curBatter().lh;C.mode='idle';C.h=0;C.sk=0;C.t=0;}
     batterOpacity(C.swap<.2?1-C.swap/.2:Math.min(1,(C.swap-.2)/.25));
@@ -1159,9 +1189,15 @@ function updateClip(dt){
   C.h=clamp(C.h+clamp(want-C.h,-dt/rate,dt/.22),0,1);
   C.sk=clamp(C.sk+clamp(skT-C.sk,-dt/.25,dt/.12),0,1);
   const hw=C.idle?ease(C.h):1;
-  C.hit.time=C.t;C.hit.setEffectiveWeight(hw*(1-C.sk));
-  if(C.strike){C.strike.time=C.st;C.strike.setEffectiveWeight(hw*C.sk);}
-  if(C.idle){C.idle.time=(now*.9)%C.idleDur;C.idle.setEffectiveWeight(1-hw);}
+  // walk-up: his intro clip takes over, and he turns to face the camera behind the plate
+  const intro=S.state==='walkup'&&C.bi===S.bi?C.intros[WALK.by[curBatter().name]]:null,base=intro?0:1;
+  for(const k in C.intros)C.intros[k].a.setEffectiveWeight(0);
+  if(intro){const e=now-S.t;intro.a.time=intro.dur<2.5?e%intro.dur:Math.min(intro.dur-.01,e);intro.a.setEffectiveWeight(1);
+    const rem=WALK.dur-e;if(rem<.2&&C.swap==null)batterOpacity(Math.max(0,rem/.2));}
+  o.rotation.y=intro?0:PI;
+  C.hit.time=C.t;C.hit.setEffectiveWeight(base*hw*(1-C.sk));
+  if(C.strike){C.strike.time=C.st;C.strike.setEffectiveWeight(base*hw*C.sk);}
+  if(C.idle){C.idle.time=(now*.9)%C.idleDur;C.idle.setEffectiveWeight(base*(1-hw));}
   C.mixer.update(0);
   if(w>0){ // lean the upper body so the barrel meets the height you aimed at
     const th=clamp((aim.y-C.y0)/.9,-.45,.45)*w*(MX.leanSign||1);
@@ -1329,7 +1365,7 @@ function loadPlayers(kind){ // body file = character mesh; clips.json = motion-c
   Promise.all([loadBuf(cfg.body),clipsP,imgs,own]).then(([bb,cj0,im,oc])=>{const cj=Object.assign({},cj0,oc||{});
     if(my!==MX.token)return;                                   // switched again while loading
     const skins=im?makeSkins(im):null,make=names=>{const o=new T.FBXLoader().parse(bb,'');o.animations=names.map(n=>mkClip(cj[n],n));return o;};
-    try{setupModel(make(['hit','idle','strike']),skins&&skins.home);}catch(e){console.warn('batter model failed, using built-in figure',e);fallback(batter);}
+    try{setupModel(make(['hit','idle','strike',...Object.keys(cj).filter(k=>/^w_/.test(k))]),skins&&skins.home);}catch(e){console.warn('batter model failed, using built-in figure',e);fallback(batter);}
     try{setupPitcher(make(['pitch']),skins&&skins.away);}catch(e){console.warn('pitcher model failed, using built-in figure',e);fallback(pitcher);}
     // fielders are built one at a time so the page doesn't freeze while seven more models are prepared
     fielders.filter(f=>!f.isP).forEach((f,i)=>setTimeout(()=>{if(my!==MX.token)return;
@@ -1455,6 +1491,7 @@ function step(dt){
     if(pitch.P.sp){SND.zap();timing(pitch.P.n+'!','#ff4d2e');}
   }
   else if(st==='result'&&el>=readyDur){if(S.next){const n=S.next;S.next=null;n();}else toReady(S.fresh?PACE.newBatter:PACE.samePitch);}
+  else if(st==='walkup'&&el>=WALK.dur)endWalkup();
   else if(st==='celebrate'&&el>=readyDur){
     if(S.inning>3)endGame();else toReady(PACE.newBatter);}
   else if(st==='end'&&el>=readyDur){endGame();}
@@ -1513,6 +1550,9 @@ function step(dt){
 function updateCamera(rdt){
   if(S.state==='flight'&&flight&&!flight.done&&now-flight.t0>.02)camMode='chase';
   if(DBG.cam){camPos.copy(CAM_HOME);camLook.copy(CAM_LOOK);}
+  else if(S.state==='walkup'&&MX.clip){ // low, in front of the hitter with the park behind him, slowly pushing in
+    const e=clamp((now-S.t)/WALK.dur,0,1);MX.clip.hips.getWorldPosition(_a);
+    camLook.set(_a.x,1.12,_a.z);camPos.set(_a.x*.55,1.0+.15*e,_a.z+lerp(4.3,3.1,ease(e)));}
   else if(camMode==='bat'){camPos.copy(CAM_HOME);camLook.copy(CAM_LOOK);
     if(S.state==='title'||S.state==='over'){const a=performance.now()*.00012;camPos.set(Math.sin(a)*9,3.2+Math.sin(a*2)*.6,7);camLook.set(0,3,-40);}
   }else if(S.state==='celebrate'){
@@ -1545,7 +1585,7 @@ function frame(t){
 try{const b=+localStorage.getItem('mm_best')||0;if(b)$('best').textContent='Best game: '+b+' runs';}catch(e){}
 initPost();resize();hud();
 const DBG={cam:false}; // test hook: pin the camera to CAM_HOME/CAM_LOOK
-window.__mm={S,aim,MX,DBG,fielders,CAM_HOME,CAM_LOOK,now:()=>now,simulate,judge,get pitch(){return pitch;},get flight(){return flight;},doSwing,newGame,V3,
+window.__mm={S,aim,MX,DBG,fielders,toReady,CAM_HOME,CAM_LOOK,now:()=>now,simulate,judge,get pitch(){return pitch;},get flight(){return flight;},doSwing,newGame,V3,
   sim:(dt)=>{hitstop=0;now+=dt;step(dt);},
   step:(n,dt=1/60)=>{for(let i=0;i<n;i++){if(hitstop>0)hitstop=0;now+=dt;step(dt);}updateCamera(dt);draw();}};
 if(!window.__mmManual)requestAnimationFrame(frame);

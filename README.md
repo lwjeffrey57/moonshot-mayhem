@@ -8,7 +8,7 @@ An original over-the-top arcade batting game for the browser, built with three.j
 | --- | --- |
 | `index.html` | The whole game: page markup, styles and game code. It is written as an artifact fragment (no `<html>`/`<body>` wrapper). |
 | `ely.txt`, `ely_d/n/s/g.jpg` | The default player: Mixamo's "Ely" armoured character (FBX mesh, base64) with its own colour, normal, specular and glow textures. The pitcher's armour is recoloured in code. |
-| `ely_clips.json` | Swing, stance, swing-and-miss and fly-ball catch clips made for Ely. They override the generic ones in `clips.json` when Ely is selected. |
+| `ely_clips.json` | Swing, stance, swing-and-miss, fly-ball catch, running and walk-up (`w_*`) clips made for Ely. They override the generic ones in `clips.json` when Ely is selected. |
 | `bat.txt` | The bat model (FBX, base64-encoded). Re-oriented, scaled and coloured in code; a code-built bat is used if it is missing. |
 | `clips.json` | Motion-capture clips as plain keyframe data: `hit` (swing), `idle` (batting stance), `strike` (swing and miss with reaction), `pitch`. |
 | `tools/` | Scripts used to prepare the assets (see below). |
