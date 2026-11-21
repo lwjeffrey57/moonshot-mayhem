@@ -119,7 +119,7 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 /* phones and small windows: one meter, no extras */
 @media (max-height:520px){#keys{display:none}}
 @media (max-width:900px){#heat,#zmini{display:none}.meter,#juice{width:min(240px,38vw)}#bug .badge{display:none}#bug .rows{width:98px}#diamond{width:92px;height:76px}#pausebtn{top:92px}.mcap,#cnum,#cname{font-size:14px}}
-@media (max-width:560px){.stats{display:none}}
+
 /* batter card, bottom-left, with the control pills stacked above it */
 #hud>#card{left:max(16px,env(safe-area-inset-left,0px));bottom:12px;margin:0;display:flex;gap:10px;align-items:center;justify-content:flex-start;font-style:normal;text-shadow:none}
 #hud>#card #cnum{font-family:var(--display);font-size:34px;line-height:1;color:var(--volt)}
@@ -136,7 +136,11 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 #plast.on{opacity:1}
 #hud.wk #plast{visibility:hidden}
 #hud.wk #card{visibility:hidden}
-@media (max-width:560px){#hud>#card .stats{display:none}}
+/* stat grades, S to F, colour-coded */
+.gS,#walk .wrow b.gS{color:#ffd23b}.gA,#walk .wrow b.gA{color:#3ddc6a}.gB,#walk .wrow b.gB{color:#3ad6ff}.gC,#walk .wrow b.gC{color:#f2f5ff}.gD,#walk .wrow b.gD{color:#ff9a3b}.gF,#walk .wrow b.gF{color:#ff4d2e}
+#hud>#card .stat em{font-style:normal;font-family:var(--display);font-size:14px;width:1em;text-align:center;text-shadow:0 1px 0 #000}
+#walk .wrow b.gr{display:inline-block;min-width:1.5em;padding:0 .25em;margin-left:.2em;text-align:center;border-radius:5px;background:currentColor;font-size:1.15em;line-height:1.25}#walk .wrow b.gr u{text-decoration:none;color:#0b0a1a}
+#hud.mob>#card{flex-wrap:nowrap}#hud.mob>#card .stats{display:flex;gap:7px;margin-top:1px}#hud.mob>#card .stat b{display:none}#hud.mob>#card .stat{font-size:10px;gap:2px}#hud.mob>#card .stat em{font-size:13px}
 /* contact readout: exit velocity, launch angle and quality while the ball is in flight */
 #hitinfo{top:192px;left:max(16px,env(safe-area-inset-left,0px));width:172px;white-space:nowrap;background:linear-gradient(#1b1f4a,#0b0c22);border:2px solid var(--pilllo);border-radius:6px;box-shadow:0 3px 0 #000;overflow:hidden;font-family:var(--display);font-style:italic;line-height:1;font-variant-numeric:tabular-nums}
 #hitinfo .q{padding:5px 8px;font-size:16px;text-align:center;color:var(--navy);background:var(--chrome)}
@@ -167,7 +171,7 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 #walk .wrow{display:flex;gap:18px;padding:6px 16px;font-size:16px;color:var(--chrome);white-space:nowrap;font-variant-numeric:tabular-nums}
 #walk .wrow b{color:var(--volt);font-weight:400}
 #walk .wrow.sub{background:#000;font-size:13px;color:var(--dim);justify-content:space-between}
-@media (max-width:560px){#walk{min-width:0;width:94vw}#walk .wn{min-width:56px;font-size:30px}#walk .wname{font-size:24px;padding:7px 12px 5px}#walk .wrow{gap:10px;padding:6px 12px;font-size:12.5px}#walk .wrow.sub{font-size:11px}}
+@media (max-width:560px){#walk{min-width:0;width:94vw}#walk .wn{min-width:56px;font-size:30px}#walk .wname{font-size:24px;padding:7px 12px 5px}#walk .wrow{gap:7px;padding:6px 10px;font-size:12px}#walk .wrow.sub{font-size:11px}}
 @media (min-width:900px) and (min-height:560px){#walk{min-width:640px;bottom:9vh}#walk .wn{min-width:112px;font-size:62px}#walk .wname{font-size:46px;padding:10px 22px 7px}#walk .wrow{gap:26px;padding:9px 22px;font-size:23px}#walk .wrow.sub{font-size:16px}}
 #hud.wk #rep,#hud.wk #keys,#hud.wk #pitchinfo,#hud.wk #touch{visibility:hidden}
 .wkopt{pointer-events:auto;background:none;border:1px solid var(--dim);padding:6px 12px;cursor:pointer;font-family:var(--hud)}
@@ -338,7 +342,7 @@ body.mob #tip{display:block}body.mob .how{display:none}
       <circle cx="52" cy="78" r="5" fill="#e23a22" stroke="#fff" stroke-width="1.5"/>
     </svg>
     <div id="card" class="slab"><span id="cnum">27</span><div><div id="cname">VASQUEZ</div>
-      <div class="stats"><div class="stat">PWR <b><i id="spw"></i></b></div><div class="stat">CON <b><i id="sco"></i></b></div><div class="stat">SPD <b><i id="ssp"></i></b></div></div></div></div>
+      <div class="stats"><div class="stat">PWR <b><i id="spw"></i></b><em id="gpw"></em></div><div class="stat">CON <b><i id="sco"></i></b><em id="gco"></em></div><div class="stat">SPD <b><i id="ssp"></i></b><em id="gsp"></em></div></div></div></div>
     <div id="hitinfo" hidden><div class="q" id="hq"></div><div class="r"><span>EXIT VELO</span><b id="hev"></b></div><div class="r"><span>LAUNCH</span><b id="hla"></b></div>
       <div class="r" id="hdr" hidden><span>DISTANCE</span><b id="hds"></b></div>
       <div class="r sm"><span>TIMING</span><b id="htm"></b></div><div class="r sm"><span>CONTACT</span><b id="hct"></b></div>
@@ -888,6 +892,7 @@ const zone=new T.Group(); // drawn as thin bars: WebGL lines are always one pixe
 zone.renderOrder=8;scene.add(zone);
 const reticle=new T.Group();reticle.renderOrder=9;scene.add(reticle);
 const retC=new T.Mesh(new T.RingGeometry(.93,1,28),overlayMat(0x3ddc6a,.95));retC.renderOrder=9;reticle.add(retC);
+{const band=new T.Mesh(new T.RingGeometry(.64,.93,32),overlayMat(0x3ddc6a,.26));band.renderOrder=8;retC.add(band);} // CONTACT zone filled green from the power core out to the ring
 const retP=new T.Mesh(new T.RingGeometry(.9,1,24),overlayMat(0xff4d2e,.95));retP.renderOrder=9;reticle.add(retP);
 {const fill=new T.Mesh(new T.CircleGeometry(.9,28),overlayMat(0xff4d2e,.4));fill.renderOrder=8;retP.add(fill);} // POWER sweet spot reads as a hot core inside the bat ring, not a second ring
 const retDot=new T.Mesh(new T.CircleGeometry(.014,8),overlayMat(0xffffff,.9));retDot.renderOrder=9;reticle.add(retDot);retDot.visible=false;
@@ -1041,12 +1046,20 @@ function hud(){
   $('tj').classList.toggle('on',juiceArmed);$('tp').classList.toggle('fire',!!S.over||(juiceArmed&&S.juice>=.333));
 }
 let hudBars=0,ringEcho=null;
+// Flavour first: the first home run and the first strikeout of every game always get the full, ridiculous treatment
+// (the first two of each for a player's first three games), so nobody plays a whole game without seeing what this game is.
+const celClip=own=>{if(own!=='w_milling')return own;const C=MX.clip,w=C?WILD_CEL.filter(k=>C.intros[k]):[];return w.length?w[(Math.random()*w.length)|0]:own;}; // the milling routine is a walk-up only
+const earlyShow=n=>n<(gamesPlayed<=3?2:1);let wildTrot=false;
+const WILD_CEL=['w_backflip','w_bboy','w_macarena','w_salsa','w_bdance','w_flair','w_lift','w_pushup','p_loser'],WILD_TAUNT=['p_twerk','p_chicken','p_backflip','p_bboy','p_macarena','p_runman'];
 const juiceOn=()=>juiceArmed||keys.ShiftLeft||keys.ShiftRight;
+// ratings shown as grades: S is elite, F is a liability. The same scale for power, contact and speed.
+const GRADE_COL={S:'#ffd23b',A:'#3ddc6a',B:'#3ad6ff',C:'#f2f5ff',D:'#ff9a3b',F:'#ff4d2e'};
+function statGrade(v){const t=(v-.85)/.32;return t>=.9?'S':t>=.72?'A':t>=.52?'B':t>=.36?'C':t>=.2?'D':'F';}
 function setBatter(){
   S.bi++;const b=curBatter();S.balls=0;S.strikes=0;aim.x=0;aim.y=.825; // every hitter starts with the ring in the middle of the zone
  
   paintJersey(batter,Object.assign({name:b.name,num:b.num},HOME));paintSkin(batter,b.skin);if(MX.ready)paintAtlas(b);
-  $('cnum').textContent=b.num;$('cname').textContent=b.name+(b.lh?' · L':' · R');$('spw').style.width=((b.pwr-.85)/.35*100)+'%';$('sco').style.width=((b.con-.85)/.3*100)+'%';$('ssp').style.width=((b.spd-.85)/.3*100)+'%';
+  $('cnum').textContent=b.num;$('cname').textContent=b.name+(b.lh?' · L':' · R');[['pw',b.pwr],['co',b.con],['sp',b.spd]].forEach(([k,v])=>{const g=statGrade(v);$('s'+k).style.width=clamp((v-.85)/.32*100,6,100)+'%';$('s'+k).style.background=GRADE_COL[g];const e=$('g'+k);e.textContent=g;e.className='g'+g;});
   readyDur=1.7;S.fresh=true;
 }
 // Walk-ups: the first time each hitter comes up, a short intro animation with his card. Any swing button skips it.
@@ -1060,9 +1073,9 @@ function startWalkup(){
   // gives the pitcher a friendly wave, drops and does push-ups, or squares up like he wants a fight. Each has the same small chance.
   {const rare=['w_trip','w_golf','w_wave','w_pushup','w_fight','w_threat','w_bboy','w_backflip','w_lift'].filter(k=>MX.clip.intros[k]),r=Math.random()/.031|0,forced=DBG.trip===true?'w_trip':DBG.trip;
     const first=Object.keys(S.seen).length===1&&MX.clip.intros.w_walkin; // the game always opens with a plain walk to the plate; the silliness starts with the second hitter
-    S.walkClip=forced&&MX.clip.intros[forced]?forced:first?'w_walkin':r<rare.length?rare[r]:WALK.by[b.name];}
+    S.walkClip=forced&&MX.clip.intros[forced]?forced:first?'w_walkin':(gamesPlayed<=3&&S.bi===1&&rare.length)?rare[(Math.random()*rare.length)|0]:r<rare.length?rare[r]:WALK.by[b.name];} // new players: the second hitter always brings one of the surprise walk-ups
   $('wnum').textContent=b.num;$('wname').textContent=b.name;
-  $('wrat').innerHTML=`<span>POWER <b>${r(b.pwr)}</b></span><span>CONTACT <b>${r(b.con)}</b></span><span>SPEED <b>${r(b.spd)}</b></span><span>BATS <b>${b.lh?'L':'R'}</b></span>`;
+  {const gb=v=>{const g=statGrade(v);return `<b class="gr g${g}"><u>${g}</u></b>`;};$('wrat').innerHTML=`<span>POWER ${gb(b.pwr)}</span><span>CONTACT ${gb(b.con)}</span><span>SPEED ${gb(b.spd)}</span><span>BATS <b>${b.lh?'L':'R'}</b></span>`;}
   $('wspot').textContent='BATTING '+['1ST','2ND','3RD','4TH','5TH','6TH','7TH','8TH','9TH'][i];$('wskip').textContent='SWING TO SKIP';
   $('walk').hidden=false;$('hud').classList.add('wk');cheer(.16,2);
 }
@@ -1088,7 +1101,8 @@ function setupRunners(make,skins){
 const TROT={dur:6.7,celT:3.9,cele:false,clip:'',R:null,cam:new V3(),segs:[[0,3.9,1.7,3.999]]}; // one continuous run: round second, round third, home // rounding second, then the last steps home; the fist pump fills the rest
 function startTrot(){const R=RUN.list.find(R=>!R.active)||null;if(!R||!R.jogAct)return false;
   R.active=true;R.trot=true;R.delay=0;R.s=0;R.target=4;TROT.R=R;TROT.cele=false;R.fig.root.scale.setScalar(FSCALE.inf);
-  {const C=MX.clip,own=WALK.by[curBatter().name];TROT.clip=C&&C.intros.p_loser&&(DBG.loser||Math.random()<.3)?'p_loser':C&&C.intros[own]?own:'';} // sometimes he turns and gives the pitcher the 'loser' sign instead // his own routine once he has touched home
+  {const C=MX.clip,own=celClip(WALK.by[curBatter().name]);const wild=wildTrot&&C?WILD_CEL.filter(k=>C.intros[k]):[];wildTrot=false;
+    TROT.clip=wild.length&&!DBG.loser?wild[(Math.random()*wild.length)|0]:C&&C.intros.p_loser&&(DBG.loser||Math.random()<.3)?'p_loser':C&&C.intros[own]?own:'';} // sometimes he turns and gives the pitcher the 'loser' sign instead // his own routine once he has touched home
   // men already on base stay ahead of him: when the highlight cuts in, each is at least three-quarters of a base in front of the man behind, and they keep that lead home
   RUN.list.filter(o=>o!==R&&o.active&&o.target>=4).sort((a,b)=>a.s-b.s).forEach((o,k)=>{o.s=Math.max(o.s,Math.min(3.7,1.7+.75*(k+1)));o.lead=true;o.delay=0;});
  S.state='trot';S.t=now;return true;}
@@ -1173,7 +1187,7 @@ function gameRating(){const G=S.goal,pts=S.runs*10+S.hits*4+S.hrs*8+(S.longest>=
   const T=[[0,'D','BENCH WARMER'],[20,'C','ROOKIE'],[45,'B','EVERYDAY STARTER'],[75,'A','ALL-STAR'],[110,'S','MOONSHOT LEGEND']];let i=0;T.forEach((t,j)=>{if(pts>=t[0])i=j;});
   return {pts,stars:i+1,grade:T[i][1],title:T[i][2],next:T[i+1]?T[i+1][0]-pts:0,nextTitle:T[i+1]?T[i+1][2]:''};}
 function newGame(){gamesPlayed++;try{localStorage.setItem('mm_games',gamesPlayed);}catch(e){}
-  Object.assign(S,{inning:1,outs:0,balls:0,strikes:0,runs:0,bases:[0,0,0],hits:0,hrs:0,longest:0,streak:0,bestStreak:0,juice:.34,heat:.2,over:false,bi:-1,pitches:0,seen:{},kOut:null});S.goal=pickGoal();
+  Object.assign(S,{inning:1,outs:0,balls:0,strikes:0,runs:0,bases:[0,0,0],hits:0,hrs:0,longest:0,streak:0,bestStreak:0,juice:.34,heat:.2,over:false,bi:-1,pitches:0,seen:{},kOut:null});S.goal=pickGoal();S.ks=0;
   $('title').hidden=true;$('over').hidden=true;$('pausebtn').hidden=false;$('mutebtn').hidden=false;setBatter();renderRep();scoreboard('PLAY BALL','INNING 1');toReady(2);pop('PLAY BALL!','GOAL: '+S.goal.label,'plain',true);SND.playball();cheer(.14,1.5);}
 
 // ───────────────────────── pitching
@@ -1354,7 +1368,7 @@ function tryContact(){flight_pop=false;
   timing(lab+' · '+(chase>.3?'CHASED':where),chase>.3?'#ff4d2e':Math.abs(n)<.22&&cr<.3?'#ffe53b':flight.lvl===1?'#9aa3c7':'#f2f5ff',flight.lvl); // timing, then where the barrel met it
   // No-doubters: sometimes stay on the hitter instead of the ball. 'admire' = he holds his finish, watches it and drops the bat;
   // 'show' = the same, then his own walk-up routine as a celebration. Decided here because we already know where the ball lands.
-  if(play.type==='hr'&&MX.clip){const ft=play.dist*3.281,big=tb||ft>=500,r=Math.random(),kind=DBG.admire||(big?(r<.6?'show':r<.85?'admire':''):ft>=440?(r<.5?'admire':''):'');
+  if(play.type==='hr'&&MX.clip){const ft=play.dist*3.281,big=tb||ft>=500,r=Math.random(),early=earlyShow(S.hrs),kind=DBG.admire||(early?'show':big?(r<.6?'show':r<.85?'admire':''):ft>=440?(r<.5?'admire':''):'');wildTrot=early;
     if(kind){flight.admire=kind;flight.trot=WALK.on&&RUN.list.length>0;flight.A=Math.max(1.2,Math.min(kind==='show'&&!flight.trot?3.9:2.5,play.endT-1.3));pop(['NO DOUBT!','SEE YA!','FORGET IT!'][(Math.random()*3)|0],'',tb?'hot':'');}}
   if(!flight.admire&&q>.82&&pw&&play.type!=='foul')pop(['CRUSHED!','SMOKED!','TATTOOED!','OBLITERATED!'][(Math.random()*4)|0],'',tb?'hot':'');
   cheer(play.type==='hr'?.42:.12+.2*q,play.type==='hr'?5:1.6);
@@ -1387,7 +1401,7 @@ function strike(kind){S.heat=Math.min(1,S.heat+.09);S.strikes++;SND.call(false,S
   if(S.strikes>=3){recordOut();pop('STRUCK OUT',kind==='look'?'CAUGHT LOOKING':'SWINGING','cool');cheer(.03,1);
     // the strikeout sulk: one of the defeat routines, with the camera on him (skipped when walk-ups are off, for pace)
     const ds=MX.clip&&WALK.on?Object.keys(MX.clip.intros).filter(k=>/^d_/.test(k)):[];
-    if(ds.length){const ts=MX.pit?Object.keys(MX.pit.taunts):[];S.kOut={t:now+(kind==='look'?.15:.45),bi:S.bi,clip:ds[(Math.random()*ds.length)|0],taunt:ts[(Math.random()*ts.length)|0]};afterPA(DEFEAT+.75);}else afterPA(1.5);}
+    if(ds.length){let ts=MX.pit?Object.keys(MX.pit.taunts):[];{const w=ts.filter(k=>WILD_TAUNT.includes(k));if(earlyShow(S.ks||0)&&w.length)ts=w;}S.ks=(S.ks||0)+1;S.kOut={t:now+(kind==='look'?.15:.45),bi:S.bi,clip:ds[(Math.random()*ds.length)|0],taunt:ts[(Math.random()*ts.length)|0]};afterPA(DEFEAT+.75);}else afterPA(1.5);}
   else{pop(kind==='look'?'STRIKE':'WHIFF!','','plain');samePA(kind==='look'?1.05:1.3);}}
 function finishPlay(){
   const f=flight,pl=f.play;f.done=true;
@@ -1697,7 +1711,7 @@ function updateClip(dt){
     if(k>0){ci.a.time=Math.min(ci.dur-.01,e);ci.a.setEffectiveWeight(k);base=1-k;o.position.x+=ci.off.x*k;o.position.z+=ci.off.z*k;}}
   if(S.state==='trot'&&TROT.cele&&C.intros[TROT.clip]){const ci=C.intros[TROT.clip],e=now-S.t-TROT.celT; // he has touched home: his celebration, on the plate
     ci.a.time=ci.loop?e%ci.dur:Math.min(ci.dur-.01,Math.max(0,e));ci.a.setEffectiveWeight(1);base=0;}
-  if(flight&&flight.admire&&!flight.done&&C.bi===S.bi){if(flight.cel===undefined){flight.cel=C.intros.c_fist&&(DBG.fist||Math.random()<.4)?'c_fist':flight.admire==='show'&&!flight.trot?WALK.by[curBatter().name]:''; // a single fist pump straight out of the swing, or his routine
+  if(flight&&flight.admire&&!flight.done&&C.bi===S.bi){if(flight.cel===undefined){flight.cel=C.intros.c_fist&&(DBG.fist||Math.random()<.4)?'c_fist':flight.admire==='show'&&!flight.trot?celClip(WALK.by[curBatter().name]):''; // a single fist pump straight out of the swing, or his routine
       if(flight.cel==='c_fist')flight.A=Math.max(flight.A,1.25+C.intros.c_fist.dur+.1);}
     const ci=C.intros[flight.cel],tf=now-flight.t0,k=ci?ease(clamp((tf-1.25)/.3,0,1))*ease(clamp((flight.A+.35-tf)/.3,0,1)):0;
     if(k>0){const e=tf-1.25;ci.a.time=ci.loop&&flight.cel!=='c_fist'?e%ci.dur:Math.min(ci.dur-.01,e);ci.a.setEffectiveWeight(k);base=1-k;if(flight.cel==='c_fist'){o.position.x+=ci.off.x*k;o.position.z+=ci.off.z*k;}}}
@@ -2241,7 +2255,7 @@ const LITE=matchMedia('(pointer:coarse)').matches;
 if(LITE){QS=.85;rim.shadow.mapSize.set(512,512);renderer.shadowMap.type=T.PCFShadowMap;}else initPost();
 resize();hud();
 const DBG={cam:false,admire:'',trip:false,fist:false,pop:false,loser:false}; // test hook: pin the camera to CAM_HOME/CAM_LOOK
-window.__mm={S,aim,MX,DBG,hud,endGame,SFX,RUN,ballPos:()=>ball.position,fielders,toReady,CAM_HOME,CAM_LOOK,now:()=>now,simulate,judge,get pitch(){return pitch;},get flight(){return flight;},lastSwing:()=>{const t=swing&&swing.type;swing=null;return t;},doSwing,newGame,V3,
+window.__mm={S,aim,MX,DBG,hud,endGame,TROT,SFX,RUN,ballPos:()=>ball.position,fielders,toReady,CAM_HOME,CAM_LOOK,now:()=>now,simulate,judge,get pitch(){return pitch;},get flight(){return flight;},lastSwing:()=>{const t=swing&&swing.type;swing=null;return t;},doSwing,newGame,V3,
   sim:(dt)=>{hitstop=0;now+=dt;step(dt);},
   step:(n,dt=1/60)=>{for(let i=0;i<n;i++){if(hitstop>0)hitstop=0;now+=dt;step(dt);}updateCamera(dt);draw();}};
 if(!window.__mmManual)requestAnimationFrame(frame);
