@@ -973,7 +973,7 @@ function judge(tr,bt){const spd=bt&&bt.spd||1; // batter's speed: 0.85 (plodder)
   if(wallBall)bases=Math.max(2,bases); // off the wall is at least a double
   // show the ball come down (and carom off the wall) before the call; long flies used to be cut off in mid-air
   const shown=Math.max(4.4,tr.land?tr.land.t+.7:0,tr.wall?tr.wallT+.6:0);
-  return {type:'hit',bases,endT:Math.min(p.t,shown),tField:p.t,f,p};
+  return {type:'hit',bases,endT:Math.min(p.t,shown),tField:p.t,f,p,wall:wallBall}; // wall: it reached the fence before anyone got to it
 }
 
 function tryContact(){
@@ -1056,7 +1056,7 @@ function finishPlay(){
     cheer(.5,3.5);
   }else{
     const r=advance(pl.bases);
-    pop(['SINGLE!','DOUBLE!','TRIPLE!'][pl.bases-1],r?`+${r} RUN${r>1?'S':''}`:(pl.grd?'GROUND-RULE DOUBLE':pl.infield?'BEAT THE THROW':flight.tr.wall?'OFF THE WALL':''),'');cheer(.25,2);
+    pop(['SINGLE!','DOUBLE!','TRIPLE!'][pl.bases-1],r?`+${r} RUN${r>1?'S':''}`:(pl.grd?'GROUND-RULE DOUBLE':pl.infield?'BEAT THE THROW':pl.wall?'OFF THE WALL':''),'');cheer(.25,2);
     S.state='result';S.t=now;readyDur=1.5;
   }
   if(S.streak>=3&&!S.over){S.over=true;SND.zap();setTimeout(()=>{if(S.over)timing('⚡ OVERDRIVE — BAT IS LIVE ⚡','#3ad6ff');},900);}
