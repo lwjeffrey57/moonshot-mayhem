@@ -187,14 +187,15 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 @keyframes tim{0%{opacity:0;transform:translateY(8px)}15%,70%{opacity:1;transform:none}100%{opacity:0}}
 #flash{inset:0;background:radial-gradient(circle at 50% 55%,#fff,rgba(255,240,180,.7) 40%,transparent 75%);opacity:0}
 /* touch */
+#touch::before{content:'';position:absolute;z-index:-1;inset:-30px -14px -36px -30px} /* near misses around the buttons still count */
 #hud{--tbb:max(calc(env(safe-area-inset-bottom,0px) + 70px),13vh)} /* how far the swing buttons sit above the bottom edge: thumb height, not the screen edge */
 @media (max-height:520px){#hud{--tbb:20px}}
-#touch{right:max(14px,env(safe-area-inset-right,0px));bottom:var(--tbb);display:none;gap:12px;isolation:isolate;align-items:flex-end;pointer-events:auto}
+#touch{right:max(14px,env(safe-area-inset-right,0px));bottom:var(--tbb);display:none;gap:12px;isolation:isolate;touch-action:none;align-items:flex-end;pointer-events:auto}
 .tb{font-family:var(--display);font-weight:900;font-size:clamp(15px,4.6vw,19px);letter-spacing:.02em;padding:0;color:#04140a;border:4px solid #000;border-radius:50%;width:min(112px,28vw);height:min(112px,28vw);background:var(--turf);box-shadow:0 4px 0 #000;touch-action:none;position:relative;isolation:isolate}
 .tb::before{content:'';position:absolute;inset:-24px -6px -32px -6px;border-radius:36px} /* the touch target is bigger than the button you see */
 .tb.pw{background:var(--heat);width:min(128px,32vw);height:min(128px,32vw);color:#fff;font-size:clamp(17px,5.4vw,22px);text-shadow:0 2px 0 #000,0 0 3px #000,1px 1px 0 #000,-1px -1px 0 #000}
 .tb.jc{background:var(--chrome);width:min(76px,19vw);height:min(76px,19vw);font-size:clamp(12px,3.6vw,15px)}
-.tb.jc{position:absolute;right:0;bottom:calc(100% + 14px);z-index:2}.tb.jc::before{inset:-14px} /* JUICE sits above POWER, leaving the bottom-left for the aim thumb */
+.tb.jc{position:absolute;right:0;bottom:calc(100% + 14px);z-index:2}.tb.jc::before{inset:0} /* JUICE sits above POWER, leaving the bottom-left for the aim thumb */
 .tb.jc.on{background:var(--volt);box-shadow:0 4px 0 #000,0 0 18px var(--volt)}
 /* POWER on fire: Juice armed, or Overdrive */
 .tb.pw.fire{background:radial-gradient(circle at 50% 115%,#fff6b0 0%,#ffc21e 26%,#ff5a1e 56%,#b3140a 84%);border-color:#2a0500;animation:fireglow .45s ease-in-out infinite alternate}
@@ -1351,7 +1352,14 @@ addEventListener('keydown',e=>{keys[e.code]=true;if(e.repeat)return;
 addEventListener('keyup',e=>{keys[e.code]=false;if(e.code.startsWith('Shift'))hud();});
 addEventListener('blur',()=>{for(const k in keys)keys[k]=false;});
 const tap=(id,fn)=>$(id).addEventListener('pointerdown',e=>{e.preventDefault();audioInit();fn();});
-tap('tc',()=>doSwing('contact'));tap('tp',()=>doSwing('power'));tap('tj',()=>{juiceArmed=!juiceArmed;hud();});
+// Swing buttons: one handler for the whole corner, decided by where the finger lands rather than which element caught it.
+// Inside the JUICE circle = Juice; anywhere else in the corner = whichever of CONTACT / POWER is nearer. A tap can't fall between buttons.
+$('touch').addEventListener('pointerdown',e=>{e.preventDefault();audioInit();
+  const c=id=>{const r=$(id).getBoundingClientRect();return {x:r.left+r.width/2,y:r.top+r.height/2,r:r.width/2};},d=o=>Math.hypot(e.clientX-o.x,e.clientY-o.y);
+  const J=c('tj'),C=c('tc'),P=c('tp');
+  if(d(J)<=J.r+4&&d(P)>P.r){juiceArmed=!juiceArmed;hud();return;}
+  doSwing(d(P)-P.r<=d(C)-C.r?'power':'contact');});
+['tc','tp','tj'].forEach(id=>$(id).addEventListener('click',e=>{if(e.detail===0){if(id==='tj'){juiceArmed=!juiceArmed;hud();}else doSwing(id==='tp'?'power':'contact');}})); // keyboard activation
 $('start').addEventListener('click',()=>{audioInit();if(AC&&AC.state==='suspended')AC.resume();startGame();});
 walkLabel();$('wk').addEventListener('click',()=>{WALK.on=!WALK.on;try{localStorage.setItem('mm_walk',WALK.on?'1':'0');}catch(e){}walkLabel();});
 $('mdl').addEventListener('click',()=>loadPlayers(ORDER[(ORDER.indexOf(MX.kind)+1)%ORDER.length]));
@@ -2081,7 +2089,7 @@ function frame(t){
 try{const b=+localStorage.getItem('mm_best')||0;if(b)$('best').textContent='Best game: '+b+' runs';}catch(e){}
 initPost();resize();hud();
 const DBG={cam:false,admire:'',trip:false,fist:false,pop:false,loser:false}; // test hook: pin the camera to CAM_HOME/CAM_LOOK
-window.__mm={S,aim,MX,DBG,SFX,RUN,ballPos:()=>ball.position,fielders,toReady,CAM_HOME,CAM_LOOK,now:()=>now,simulate,judge,get pitch(){return pitch;},get flight(){return flight;},doSwing,newGame,V3,
+window.__mm={S,aim,MX,DBG,SFX,RUN,ballPos:()=>ball.position,fielders,toReady,CAM_HOME,CAM_LOOK,now:()=>now,simulate,judge,get pitch(){return pitch;},get flight(){return flight;},lastSwing:()=>{const t=swing&&swing.type;swing=null;return t;},doSwing,newGame,V3,
   sim:(dt)=>{hitstop=0;now+=dt;step(dt);},
   step:(n,dt=1/60)=>{for(let i=0;i<n;i++){if(hitstop>0)hitstop=0;now+=dt;step(dt);}updateCamera(dt);draw();}};
 if(!window.__mmManual)requestAnimationFrame(frame);
