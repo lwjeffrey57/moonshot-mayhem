@@ -269,8 +269,9 @@ body.mob #tip{display:block}body.mob .how{display:none}
 #tut.s2 .spot,#tut.s3 .spot{border-radius:16px;animation:none}
 #tut.s2 .pcz,#tut.s3 .tmz{display:block;left:12px;right:12px}
 #tut .pcz i,#tut .tmz i{font-style:normal;display:inline-block;width:.8em;height:.8em;border-radius:50%;border:3px solid;vertical-align:-.08em;margin-right:.15em}
+#tut.s3 .spot::before{content:'';position:absolute;left:50%;top:50%;width:24px;height:24px;margin:-15px;border:3px solid #fff;border-radius:50%}
 #tut.s3 .spot::after{content:'';position:absolute;left:50%;top:50%;width:54px;height:54px;margin:-27px;border:4px solid var(--volt);border-radius:50%;animation:tutring 1.6s linear infinite}
-@keyframes tutring{0%{transform:scale(2.3);opacity:0}12%{opacity:1}78%{transform:scale(.42);border-color:var(--volt)}80%,100%{transform:scale(.36);border-color:#fff;opacity:1}}
+@keyframes tutring{0%{transform:scale(2.3);opacity:0}12%{opacity:1}78%{transform:scale(.5);border-color:var(--volt)}80%,100%{transform:scale(.48);border-color:#fff;opacity:1}}
 #tut.s5 .jcz,#tut.j .jz{display:block;left:12px;right:12px;text-align:right;bottom:calc(var(--tbb) + min(128px,32vw) + min(76px,19vw) + 44px)}
 #tut .go{display:block;left:50%;top:186px;transform:translateX(-50%);white-space:nowrap;padding:12px 28px;font-size:20px;color:var(--ink);text-shadow:none;background:var(--volt);border:3px solid #000;border-radius:28px;box-shadow:0 4px 0 #000}
 #tut .stp{display:none;left:0;right:0;top:calc(30% - 30px);font-family:var(--hud);font-style:normal;font-weight:800;font-size:13px;letter-spacing:.2em;color:var(--chrome)}
@@ -365,7 +366,7 @@ body.mob #tip{display:block}body.mob .how{display:none}
       <div class="tz off" id="tutoff">Don't show tutorials again</div>
       <div class="tz aimz"><b>LEFT THUMB: AIM</b>Drag here (or anywhere) to move the ring onto the pitch</div>
       <div class="tz pcz"><b>GET THE BALL INSIDE YOUR BAT</b><small><i style="color:#3ddc6a"></i>CONTACT: anywhere inside the green ring. <i style="color:#ff4d2e;background:rgba(255,77,46,.55)"></i>POWER: inside the red core. Ball in the right spot, on time = a hit.</small></div>
-      <div class="tz tmz"><b>YELLOW RING = TIMING</b>It closes on where the pitch will cross<small>Move your bat onto it. Swing the moment it finishes closing and flashes white.</small></div>
+      <div class="tz tmz"><b>YELLOW RING = TIMING</b>It shrinks onto a white circle the size of the ball<small>Ring still bigger than the ball: too early. Ring meets the circle: swing. Move your bat onto it first.</small></div>
       <div class="tz swz"><b>RIGHT THUMB: SWING</b>Tap as the yellow ring closes on the ball<small>CONTACT is easier and hits line drives. POWER is harder and hits moonshots.</small></div>
       <div class="tz jcz"><b>JUICE: MONSTER SWING</b>Tap JUICE, then swing. Costs one bar<small>Hits and taking balls refill it. Save it for a pitch you can drive.</small></div>
       <div class="tz jz"><b>YOUR JUICE IS FULL</b>Tap JUICE, then swing for a monster hit<small>Each Juice swing burns one of your three bars.</small></div>
@@ -924,7 +925,10 @@ const retDot=new T.Mesh(new T.CircleGeometry(.014,8),overlayMat(0xffffff,.9));re
 const landRing=new T.Mesh(new T.RingGeometry(.8,1,36),new T.MeshBasicMaterial({color:0xffe53b,transparent:true,opacity:.9,depthWrite:false,side:T.DoubleSide,fog:false}));
 landRing.rotation.x=-PI/2;landRing.renderOrder=3;landRing.visible=false;scene.add(landRing);
 const echoBall=new T.Mesh(new T.RingGeometry(.026,.04,20),overlayMat(0xffffff,1));echoBall.renderOrder=11;echoBall.visible=false;scene.add(echoBall); // marks where the pitch was after a miss
+const PT_R=.068;
 const pring=new T.Mesh(new T.RingGeometry(.86,1,28),overlayMat(0xffe53b,.95));pring.renderOrder=10;pring.visible=false;scene.add(pring);
+// the target the yellow ring closes onto: a fixed white circle the size of the ball. Ring bigger than it = too early; ring meets it = swing; ring smaller = late.
+const ptarget=new T.Mesh(new T.RingGeometry(.84,1,28),overlayMat(0xffffff,.95));ptarget.renderOrder=10;ptarget.visible=false;ptarget.scale.setScalar(PT_R);scene.add(ptarget);
 const shock=new T.Mesh(new T.RingGeometry(.8,1,28),new T.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:0,depthTest:false,blending:T.AdditiveBlending,side:T.DoubleSide}));shock.renderOrder=11;scene.add(shock);
 
 function makeFx(n,size){
@@ -1020,7 +1024,7 @@ const curBatter=()=>LINEUP[S.bi%LINEUP.length];
 function pop(t,s='',cls='',long=false){const e=$('pop');e.className='';e.querySelector('.t').textContent=t;e.querySelector('.s').textContent=s;void e.offsetWidth;e.className='go '+cls+(long?' long':'');}
 let MOB=false;function setMob(){MOB=matchMedia('(pointer:coarse)').matches||innerWidth<=560;$('hud').classList.toggle('mob',MOB);document.body.classList.toggle('mob',MOB);}setMob();addEventListener('resize',setMob); // narrow a desktop window to preview the phone layout
 const buzz=p=>{try{if(navigator.vibrate)navigator.vibrate(p);}catch(e){}};
-const TIPS=[['AIM','Drag your left thumb anywhere on the screen to move the bat ring onto the pitch.'],['SWING','Tap CONTACT or POWER with your right thumb as the yellow ring closes on the ball.'],
+const TIPS=[['AIM','Drag your left thumb anywhere on the screen to move the bat ring onto the pitch.'],['SWING','Tap CONTACT or POWER the moment the shrinking yellow ring meets the white circle: the size of the ball. Bigger is too early, smaller is late.'],
   ['CONTACT OR POWER','Contact has a big sweet spot and sprays line drives. Power has a small one and hits moonshots.'],
   ['INSIDE THE RING','To hit it, the ball has to be inside your ring when you swing: anywhere in the green ring for CONTACT, inside the red core for POWER.'],
   ['JUICE','Tap JUICE before you swing to burn one bar: the ball comes off about 20% harder and the sweet spot grows.'],
@@ -2154,7 +2158,8 @@ function step(dt){
     ball.scale.setScalar(1);ballShadow.position.set(ball.position.x,.03,ball.position.z);ballShadow.scale.setScalar(.16);
     const show=u>(pitch.P.sp?.42:.22)&&u<1;pring.visible=show;
     if(show){pring.position.set(pitch.tx,pitch.ty,0);const uT=u+SW_T/pitch.dur, // the ring runs ahead by the swing time, so 'tap when it finishes closing' is exactly on time
-      r=lerp(.42,.055,ease(clamp((uT-.22)/.78,0,1)));pring.scale.setScalar(r);pring.material.color.setHex(uT>.9?0xffffff:0xffe53b);} // flashes white at 'now': red is reserved for the power core
+      t=(uT-.22)/.78,r=t<=1?lerp(.42,PT_R,clamp(t,0,1)):Math.max(.02,PT_R-(t-1)*.5),hit=Math.abs(r-PT_R)<.012; // closes at a steady speed onto the target, then keeps shrinking: smaller than the ball = late
+      pring.scale.setScalar(r);pring.material.color.setHex(hit?0xffffff:0xffe53b);ptarget.scale.setScalar(PT_R*(hit?1.25:1));} // flashes white at 'now': red is reserved for the power core
     if(pitch.P.col&&u<1)trail(pitch,pitch.P.col,u<.75,true);
     if(u>=1&&!pitch.called){pitch.called=true;
       payHeat();$('mph').textContent=pitchMph(pitch.dur);$('plast').textContent=pitch.P.n+' · '+pitchMph(pitch.dur)+' MPH';
@@ -2196,6 +2201,7 @@ function step(dt){
   if(MX.ready&&MX.clip&&MX.obj){const v=S.state!=='trot';MX.obj.visible=v||TROT.cele;bat.visible=v;} // the man at the plate is the one trotting
   fxS.update(dt);fxL.update(dt);fxT.update(dt);
 
+  ptarget.visible=pring.visible;if(pring.visible)ptarget.position.copy(pring.position);
   // reticle
   const b=S.bi>=0?curBatter():LINEUP[0],tb=juiceOn()&&S.juice>=.333;
   reticle.position.set(aim.x,aim.y,0);
