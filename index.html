@@ -978,7 +978,7 @@ function tryContact(){
   const tr=simulate(p0,v0,spin),play=judge(tr,b);
   flight={tr,play,t0:now,q,pw,tb,v,done:false,called:false,trailC:tb?[1,.45,.1]:S.over?[.25,.8,1]:pw&&q>.75?[1,.85,.25]:[.5,.5,.55]};
   pitch.hit=true;pring.visible=false;S.state='flight';payHeat();$('mph').textContent=pitchMph(pitch.dur);$('plast').textContent=pitch.P.n+' · '+pitchMph(pitch.dur)+' MPH';$('pitchinfo').classList.add('on'),$('plast').classList.add('on');renderRep(pitch.P);
-  if(tb){S.juice=Math.max(0,S.juice-.3334);juiceArmed=false;}
+  if(tb)juiceArmed=false;
   // ── the payoff
   hitstop=(.045+.14*q*(pw?1:.6)+(tb?.06:0))*(REDUCE?.5:1);
   shake=(.05+.3*q*(pw?1:.5)+(tb?.2:0))*FX;fovKick=(4+10*q)*FX;
@@ -1021,9 +1021,9 @@ function strike(kind){S.heat=Math.min(1,S.heat+.09);S.strikes++;SND.call(false);
   else{pop(kind==='look'?'STRIKE':'WHIFF!','','plain');samePA(kind==='look'?1.05:1.3);}}
 function finishPlay(){
   const f=flight,pl=f.play;f.done=true;
-  if(pl.type==='foul'){if(S.strikes<2)S.strikes++;S.juice=Math.min(1,S.juice+.03);pop('FOUL','','plain');samePA(1);return;}
+  if(pl.type==='foul'){if(S.strikes<2)S.strikes++;if(!f.tb)S.juice=Math.min(1,S.juice+.03);pop('FOUL','','plain');samePA(1);return;}
   if(pl.type==='out'){recordOut();pop(pl.air&&f.q>.7?'ROBBED!':'OUT!',pl.label,'cool');SND.mitt();cheer(.04,1);afterPA(1.5);return;}
-  S.heat=Math.max(0,S.heat-.12);S.hits++;S.streak++;S.bestStreak=Math.max(S.bestStreak,S.streak);S.juice=Math.min(1,S.juice+.14+.16*f.q);
+  S.heat=Math.max(0,S.heat-.12);S.hits++;S.streak++;S.bestStreak=Math.max(S.bestStreak,S.streak);if(!f.tb)S.juice=Math.min(1,S.juice+.14+.16*f.q); // a Juice hit doesn't refill the bar it just spent
   if(pl.type==='hr'){
     const ft=Math.round(pl.dist*3.281);S.hrs++;S.longest=Math.max(S.longest,ft);const r=advance(4);
     pop(r===4?'GRAND SLAM!':'GONE!',`${ft} FT · +${r} RUN${r>1?'S':''}`,'hot',true);scoreboard('HOME RUN',ft+' FT');
@@ -1054,6 +1054,7 @@ function doSwing(type){
   if(!(S.state==='pitch'||(S.state==='windup'&&now-windupT0>.55)))return;
   const turbo=juiceOn()&&S.juice>=.333;
   swing={t0:now,type,turbo,done:false,miss:false};SND.whoosh();
+  if(turbo){S.juice=Math.max(0,S.juice-.3334);juiceArmed=false;hud();} // every Juice swing costs a full bar, hit or miss
 }
 const ray=new T.Raycaster(),aimCam=new T.PerspectiveCamera();
 function pointerAim(e){
