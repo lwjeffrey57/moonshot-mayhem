@@ -229,12 +229,13 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 .tb.jc{background:var(--chrome);width:min(76px,19vw);height:min(76px,19vw);font-size:clamp(12px,3.6vw,15px)}
 .tb.jc{position:absolute;right:0;bottom:calc(100% + 14px);z-index:2}.tb.jc::before{inset:0} /* JUICE sits above POWER, leaving the bottom-left for the aim thumb */
 /* Juice you can't miss: dim and grey when empty; gold, pulsing and counted when there is a bar to spend */
-.tb.jc.none{background:#8a8fa8;color:#e6e8f2;opacity:.55;box-shadow:0 4px 0 #000}
-.tb.jc.has{background:#ffd23b;animation:jpulse .7s ease-in-out infinite alternate}
-@keyframes jpulse{from{box-shadow:0 4px 0 #000,0 0 8px 2px rgba(255,210,59,.6);transform:scale(1)}to{box-shadow:0 4px 0 #000,0 0 26px 10px rgba(255,210,59,.95);transform:scale(1.07)}}
+.tb.jc{background:radial-gradient(circle at 50% 115%,#e6fbff 0%,#58d6ff 26%,#1e7bff 58%,#0a2a9a 86%);border-color:#020a2a}
+.tb.jc.none{background:linear-gradient(#5a6a94,#2c3658);color:#e6e8f2;opacity:.55;box-shadow:0 4px 0 #000}
+.tb.jc.has{animation:jpulse .7s ease-in-out infinite alternate}
+@keyframes jpulse{from{box-shadow:0 4px 0 #000,0 0 8px 2px rgba(88,190,255,.6);transform:scale(1)}to{box-shadow:0 4px 0 #000,0 0 26px 10px rgba(88,190,255,.95);transform:scale(1.07)}}
 .tb.jc b{position:absolute;right:-7px;top:-7px;min-width:28px;height:28px;padding:0 5px;border-radius:14px;background:var(--heat);color:#fff;font-size:15px;line-height:24px;border:2px solid #000;font-weight:400;text-shadow:none}.tb.jc.none b{display:none}
 .tb.jc.gain{animation:jgain .5s cubic-bezier(.2,1.6,.4,1)}@keyframes jgain{0%{transform:scale(1)}40%{transform:scale(1.45)}100%{transform:scale(1)}}
-#jtoast{display:none;right:max(10px,env(safe-area-inset-right,0px));bottom:calc(var(--tbb) + min(128px,32vw) + min(76px,19vw) + 34px);padding:7px 14px;text-align:center;font-family:var(--display);font-style:italic;font-size:19px;color:var(--ink);background:#ffd23b;border:3px solid #000;border-radius:14px;box-shadow:0 4px 0 #000;opacity:0}
+#jtoast{display:none;right:max(10px,env(safe-area-inset-right,0px));bottom:calc(var(--tbb) + min(128px,32vw) + min(76px,19vw) + 34px);padding:7px 14px;text-align:center;font-family:var(--display);font-style:italic;font-size:19px;color:var(--ink);background:#58d6ff;border:3px solid #000;border-radius:14px;box-shadow:0 4px 0 #000;opacity:0}
 #jtoast small{display:block;font-family:var(--hud);font-style:normal;font-weight:800;font-size:12px;letter-spacing:.08em;text-transform:uppercase}
 #jtoast::after{content:'';position:absolute;right:34px;bottom:-13px;border:7px solid transparent;border-top-color:#000}
 #hud #tut.o .ovz2{bottom:calc(var(--tbb) + min(128px,32vw) + min(100px,25vw) + 56px)}
@@ -250,7 +251,7 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 @keyframes odglow{from{box-shadow:0 4px 0 #000,0 0 14px 3px rgba(58,170,255,.8),0 0 30px 8px rgba(30,100,255,.45)}to{box-shadow:0 4px 0 #000,0 0 22px 7px rgba(120,220,255,.95),0 0 46px 14px rgba(30,100,255,.6)}}
 .tb.jc.odon{transform:scale(1.06)}.tb.jc.od b{display:none}
 .tb.pw.fire.blue{background:radial-gradient(circle at 50% 115%,#e6fbff 0%,#58d6ff 26%,#1e7bff 58%,#0a2a9a 86%);border-color:#020a2a;animation-name:odglow}.tb.pw.fire.blue::after{filter:blur(1.5px) hue-rotate(185deg) saturate(1.4)}
-.tb.jc.on{animation:none;background:var(--volt);box-shadow:0 4px 0 #000,0 0 18px var(--volt)}
+.tb.jc.on{animation:none;background:radial-gradient(circle at 50% 60%,#ffffff 0%,#bff4ff 30%,#3aa8ff 70%,#1e5fe0 100%);border-color:#fff;box-shadow:0 4px 0 #000,0 0 0 4px rgba(255,255,255,.9),0 0 26px 10px rgba(88,214,255,.95);transform:scale(1.08)} /* armed: white-hot with a white ring */
 /* POWER on fire: Juice armed, or Overdrive */
 .tb.pw.fire{background:radial-gradient(circle at 50% 115%,#fff6b0 0%,#ffc21e 26%,#ff5a1e 56%,#b3140a 84%);border-color:#2a0500;animation:fireglow .45s ease-in-out infinite alternate}
 .tb.pw.fire::after{content:'';position:absolute;z-index:-1;left:-8%;right:-8%;top:-46%;bottom:38%;pointer-events:none;filter:blur(1.5px);transform-origin:50% 100%;
