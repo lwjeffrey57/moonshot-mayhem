@@ -862,6 +862,7 @@ function walkLabel(){$('wk').textContent='Walk-ups: '+(WALK.on?'on':'off (faster
 function startWalkup(){
   const b=curBatter(),i=S.bi%LINEUP.length,r=v=>clamp(Math.round((v-.85)/.3*9+1),1,10);
   S.seen[i]=1;S.state='walkup';S.t=now;
+  S.walkClip=MX.clip.intros.w_trip&&(DBG.trip||Math.random()<.12)?'w_trip':WALK.by[b.name]; // now and then, somebody eats dirt on the way in
   $('wnum').textContent=b.num;$('wname').textContent=b.name;
   $('wrat').innerHTML=`<span>POWER <b>${r(b.pwr)}</b></span><span>CONTACT <b>${r(b.con)}</b></span><span>SPEED <b>${r(b.spd)}</b></span><span>BATS <b>${b.lh?'L':'R'}</b></span>`;
   $('wspot').textContent='BATTING '+['1ST','2ND','3RD','4TH','5TH','6TH','7TH','8TH','9TH'][i];$('wskip').textContent='SWING TO SKIP';
@@ -1309,7 +1310,7 @@ function updateClip(dt){
   C.sk=clamp(C.sk+clamp(skT-C.sk,-dt/.25,dt/.12),0,1);
   const hw=C.idle?ease(C.h):1;
   // walk-up: his intro clip takes over; he stays facing the pitcher, so it plays as a taunt
-  const intro=S.state==='walkup'&&C.bi===S.bi?C.intros[WALK.by[curBatter().name]]:null;let base=intro?0:1;
+  const intro=S.state==='walkup'&&C.bi===S.bi?C.intros[S.walkClip||WALK.by[curBatter().name]]:null;let base=intro?0:1;
   for(const k in C.intros)C.intros[k].a.setEffectiveWeight(0);
   if(S.kOut&&C.bi===S.kOut.bi){const e=now-S.kOut.t,ci=C.intros[S.kOut.clip],k=ci&&e<DEFEAT?ease(clamp(e/.3,0,1))*ease(clamp((DEFEAT-e)/.3,0,1)):0;
     if(k>0){ci.a.time=Math.min(ci.dur-.01,e);ci.a.setEffectiveWeight(k);base=1-k;o.position.x+=ci.off.x*k;o.position.z+=ci.off.z*k;}}
@@ -1784,7 +1785,7 @@ function frame(t){
 }
 try{const b=+localStorage.getItem('mm_best')||0;if(b)$('best').textContent='Best game: '+b+' runs';}catch(e){}
 initPost();resize();hud();
-const DBG={cam:false,admire:''}; // test hook: pin the camera to CAM_HOME/CAM_LOOK
+const DBG={cam:false,admire:'',trip:false}; // test hook: pin the camera to CAM_HOME/CAM_LOOK
 window.__mm={S,aim,MX,DBG,SFX,ballPos:()=>ball.position,fielders,toReady,CAM_HOME,CAM_LOOK,now:()=>now,simulate,judge,get pitch(){return pitch;},get flight(){return flight;},doSwing,newGame,V3,
   sim:(dt)=>{hitstop=0;now+=dt;step(dt);},
   step:(n,dt=1/60)=>{for(let i=0;i<n;i++){if(hitstop>0)hitstop=0;now+=dt;step(dt);}updateCamera(dt);draw();}};
