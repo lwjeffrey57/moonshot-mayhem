@@ -1203,12 +1203,11 @@ function updateClip(dt){
   C.h=clamp(C.h+clamp(want-C.h,-dt/rate,dt/.22),0,1);
   C.sk=clamp(C.sk+clamp(skT-C.sk,-dt/.25,dt/.12),0,1);
   const hw=C.idle?ease(C.h):1;
-  // walk-up: his intro clip takes over, and he turns to face the camera behind the plate
+  // walk-up: his intro clip takes over; he stays facing the pitcher, so it plays as a taunt
   const intro=S.state==='walkup'&&C.bi===S.bi?C.intros[WALK.by[curBatter().name]]:null,base=intro?0:1;
   for(const k in C.intros)C.intros[k].a.setEffectiveWeight(0);
   if(intro){const e=now-S.t;intro.a.time=intro.dur<2.5?e%intro.dur:Math.min(intro.dur-.01,e);intro.a.setEffectiveWeight(1);
     const rem=WALK.dur-e;if(rem<.2&&C.swap==null)batterOpacity(Math.max(0,rem/.2));}
-  o.rotation.y=intro?0:PI;
   C.hit.time=C.t;C.hit.setEffectiveWeight(base*hw*(1-C.sk));
   if(C.strike){C.strike.time=C.st;C.strike.setEffectiveWeight(base*hw*C.sk);}
   if(C.idle){C.idle.time=(now*.9)%C.idleDur;C.idle.setEffectiveWeight(base*(1-hw));}
@@ -1563,9 +1562,9 @@ function step(dt){
 function updateCamera(rdt){
   if(S.state==='flight'&&flight&&!flight.done&&now-flight.t0>.02)camMode='chase';
   if(DBG.cam){camPos.copy(CAM_HOME);camLook.copy(CAM_LOOK);}
-  else if(S.state==='walkup'&&MX.clip){ // low, in front of the hitter with the park behind him, slowly pushing in
-    const e=clamp((now-S.t)/WALK.dur,0,1);MX.clip.hips.getWorldPosition(_a);
-    camLook.set(_a.x,1.12,_a.z);camPos.set(_a.x*.55,1.0+.15*e,_a.z+lerp(4.3,3.1,ease(e)));}
+  else if(S.state==='walkup'&&MX.clip){ // from the pitcher's side, across the plate: his front three-quarter, with the stands behind him
+    const e=clamp((now-S.t)/WALK.dur,0,1);MX.clip.hips.getWorldPosition(_a);const sd=_a.x<0?1:-1;
+    camLook.set(_a.x,1.1,_a.z);camPos.set(sd*lerp(2.3,1.7,ease(e)),1.0+.2*e,_a.z-lerp(3.6,2.6,ease(e)));}
   else if(camMode==='bat'){camPos.copy(CAM_HOME);camLook.copy(CAM_LOOK);
     if(S.state==='title'||S.state==='over'){const a=performance.now()*.00012;camPos.set(Math.sin(a)*9,3.2+Math.sin(a*2)*.6,7);camLook.set(0,3,-40);}
   }else if(S.state==='celebrate'){
