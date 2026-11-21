@@ -1120,7 +1120,7 @@ function flash(a){const e=$('flash');e.style.transition='none';e.style.opacity=a
 // OVERDRIVE: fill the Juice meter all the way and it is charged. The meter burns and reads OVERDRIVE READY and the JUICE button becomes the
 // OVERDRIVE button, but nothing is spent until the player taps it. Tapped, every swing of that at-bat is a free Juice swing; when the at-bat
 // ends (a walk aside) the meter is emptied and has to be filled again.
-function overCheck(){if(S.over||S.juice<.95||S.state==='title'||S.state==='over')return;S.juice=1;S.over=true;S.overOn=false;hudLater=true; // a bar that looks full IS full: anything from 95% up snaps to full and becomes Overdrive on the spot
+function overCheck(){if(S.over||S.juice<.95||S.state==='title'||S.state==='over')return;S.juice=1;S.over=true;S.overOn=false;juiceArmed=false;hudLater=true; // a bar that looks full IS full: anything from 95% up snaps to full and becomes Overdrive on the spot
  SND.zap();buzz([30,40,30,40,80]);
   setTimeout(()=>{if(S.over&&!S.overOn)pop('OVERDRIVE READY!','','cool',true);},900);}
 let hudLater=false;
@@ -1142,7 +1142,7 @@ function hud(){overCheck();hudLater=false;
       if(!MOB)setTimeout(()=>timing('JUICE READY — HOLD SHIFT AND SWING','#ffd23b',3),300);}
     hudBars=bars;}
   goalHud();
-  $('tj').classList.toggle('on',juiceArmed);$('tp').classList.toggle('fire',!!(S.over&&S.overOn)||(juiceArmed&&S.juice>=.333));
+  $('tj').classList.toggle('on',juiceArmed);$('tp').classList.toggle('fire',!!(S.over&&S.overOn)||(!S.over&&juiceArmed&&S.juice>=.333)); // POWER only burns once Juice is armed or Overdrive has actually been switched on
 }
 let hudOver=false,hudBars=0,ringEcho=null,lastWalk='';
 // Flavour first: the first home run and the first strikeout of every game always get the full, ridiculous treatment
@@ -1579,7 +1579,7 @@ function doSwing(type){
   if(S.state==='ready'||(S.state==='windup'&&now-windupT0<=.55)){swing={t0:now,type,turbo:false,done:false,miss:false,practice:true};SND.whoosh();return;}
   if(!(S.state==='pitch'||(S.state==='windup'&&now-windupT0>.55)))return;
   if(S.over&&!S.overOn&&(keys.ShiftLeft||keys.ShiftRight))juiceTap(); // desktop: Shift switches Overdrive on
-  const od=S.over&&S.overOn,turbo=od||(juiceOn()&&S.juice>=.333);
+  const od=S.over&&S.overOn,turbo=od||(!S.over&&juiceOn()&&S.juice>=.333);
   swing={t0:now,type,turbo,done:false,miss:false};SND.whoosh();
   if(turbo&&!od){S.juice=Math.max(0,S.juice-.3334);juiceArmed=false;hud();} // every Juice swing costs a full bar, hit or miss
 }
@@ -2313,7 +2313,7 @@ function step(dt){
 
   ptarget.visible=pring.visible;if(pring.visible)ptarget.position.copy(pring.position);
   // reticle
-  const b=S.bi>=0?curBatter():LINEUP[0],tb=(S.over&&S.overOn)||(juiceOn()&&S.juice>=.333);
+  const b=S.bi>=0?curBatter():LINEUP[0],tb=(S.over&&S.overOn)||(!S.over&&juiceOn()&&S.juice>=.333);
   reticle.position.set(aim.x,aim.y,0);
   {const ez=easyAB()?1.3:1;retC.scale.setScalar(.17*b.con*1.25*(tb?1.2:1)*ez);retP.scale.setScalar(.17*b.con*(tb?.8:.72)*(tb?1.2:1)*ez);}
   let showRet=(S.state==='ready'||S.state==='windup'||S.state==='pitch')&&!(swing&&swing.done);
