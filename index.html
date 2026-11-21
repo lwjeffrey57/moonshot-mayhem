@@ -143,6 +143,18 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 #hitinfo .r.sm{font-size:13px;color:var(--chrome)}#hitinfo .r.sm b.gd{color:var(--volt)}#hitinfo .r.sm b.bd{color:#ff8a70}#hpt{display:block;width:100%;height:46px;border-top:1px solid rgba(255,255,255,.14);background:rgba(0,0,0,.35)}
 #hitinfo .r span{font-family:var(--hud);font-style:normal;font-weight:800;font-size:11px;letter-spacing:.1em;color:var(--dim)}
 #hud.wk #hitinfo{visibility:hidden}
+#hitinfo .r[hidden]{display:none}
+#tim[data-l="4"]{font-size:clamp(20px,3.4vw,32px);text-shadow:0 2px 0 #000,0 0 18px rgba(255,229,59,.8)}#tim[data-l="1"]{font-size:clamp(12px,1.9vw,17px);opacity:.8}
+/* phones: one line under the zone, one chip, nothing else */
+#hud.mob #pitchinfo{display:none}
+#hud.mob #hitinfo{top:126px;bottom:auto;left:max(12px,env(safe-area-inset-left,0px));transform:none;width:auto;display:flex;align-items:stretch;border-radius:16px}
+#hud.mob #hitinfo[hidden]{display:none}
+#hud.mob #hitinfo .r,#hud.mob #hpt{display:none}
+#hud.mob #hitinfo .q{font-size:14px;padding:6px 11px}
+#hud.mob #hitinfo #hdr:not([hidden]){display:flex;align-items:center;border-top:0;padding:0 11px;font-size:15px}#hud.mob #hdr span{display:none}
+#hud.mob #plast{top:130px;bottom:auto;left:max(14px,env(safe-area-inset-left,0px));transform:none;font-size:14px}
+#hud.mob #hitinfo:not([hidden])~#plast{visibility:hidden}
+#hud.mob #tim{top:71%;font-size:18px}#hud.mob #tim[data-l="4"]{font-size:25px}#hud.mob #tim[data-l="1"]{font-size:14px}#hud.mob #tim.go{animation-duration:1.15s}
 @media (max-height:520px){#hitinfo{top:auto;bottom:12px;left:50%;transform:translateX(-50%)}}
 /* walk-up card */
 #walk{left:50%;bottom:clamp(56px,15vh,150px);transform:translateX(-50%);display:flex;align-items:stretch;min-width:min(460px,92vw);background:linear-gradient(#1b1f4a,#0b0c22);border:2px solid var(--pilllo);border-radius:8px;box-shadow:0 4px 0 #000;font-family:var(--display);font-style:italic;overflow:hidden;animation:walkin .35s cubic-bezier(.2,1.3,.4,1) both}
@@ -243,6 +255,7 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
     <div id="card" class="slab"><span id="cnum">27</span><div><div id="cname">VASQUEZ</div>
       <div class="stats"><div class="stat">PWR <b><i id="spw"></i></b></div><div class="stat">CON <b><i id="sco"></i></b></div><div class="stat">SPD <b><i id="ssp"></i></b></div></div></div></div>
     <div id="hitinfo" hidden><div class="q" id="hq"></div><div class="r"><span>EXIT VELO</span><b id="hev"></b></div><div class="r"><span>LAUNCH</span><b id="hla"></b></div>
+      <div class="r" id="hdr" hidden><span>DISTANCE</span><b id="hds"></b></div>
       <div class="r sm"><span>TIMING</span><b id="htm"></b></div><div class="r sm"><span>CONTACT</span><b id="hct"></b></div>
       <svg id="hpt" viewBox="0 0 172 46" aria-hidden="true"><rect id="hbat" x="20" y="18" width="132" height="10" rx="5" fill="#d8a25a" stroke="#000" stroke-width="1.5"/><circle id="hball" cx="86" cy="23" r="13" fill="#fff" stroke="#000" stroke-width="1.5" fill-opacity=".92"/><circle id="hdot" cx="86" cy="23" r="3" fill="#e23a22"/></svg></div>
     <div id="plast"></div>
@@ -856,7 +869,8 @@ const SW_T=.13;
 const curBatter=()=>LINEUP[S.bi%LINEUP.length];
 
 function pop(t,s='',cls='',long=false){const e=$('pop');e.className='';e.querySelector('.t').textContent=t;e.querySelector('.s').textContent=s;void e.offsetWidth;e.className='go '+cls+(long?' long':'');}
-function timing(t,c){const e=$('tim');e.className='';e.textContent=t;e.style.color=c;void e.offsetWidth;e.className='go';}
+const MOB=matchMedia('(pointer:coarse)').matches||innerWidth<=560;$('hud').classList.toggle('mob',MOB);const buzz=p=>{try{if(navigator.vibrate)navigator.vibrate(p);}catch(e){}};
+function timing(t,c,l){const e=$('tim');e.className='';e.textContent=t;e.style.color=c;e.dataset.l=l||2;void e.offsetWidth;e.className='go';}
 function flash(a){const e=$('flash');e.style.transition='none';e.style.opacity=a*FX;void e.offsetWidth;e.style.transition='opacity .35s';e.style.opacity=0;}
 function hud(){
   $('runs').textContent=S.runs;$('inn').textContent=['1ST','2ND','3RD'][Math.min(S.inning,3)-1];$('count').textContent=S.balls+'-'+S.strikes;
@@ -1141,13 +1155,15 @@ function tryContact(){flight_pop=false;
   const mph=Math.round(v*2.237*1.02);
   const lab=Math.abs(n)<.22?'PERFECT':n<0?(n<-.7?'EARLY':'A HAIR EARLY'):(n>.7?'LATE':'A HAIR LATE');
   {const lvl=tipped||chase>.3||q<.35?1:q<.6?2:q<.85?3:4;
-    $('hq').textContent=flight_pop?'POPPED UP':chase>.3?'CHASED · WEAK':tipped?'TIPPED':['','WEAK','OKAY','SOLID','BARRELED'][lvl];$('hq').className='q q'+lvl;
+    $('hq').textContent=flight_pop?'POPPED UP':chase>.3?'CHASED · WEAK':tipped?'TIPPED':['','WEAK','OKAY','SOLID','BARRELED'][lvl];if(MOB)$('hq').textContent+=' · '+mph+' MPH';$('hq').className='q q'+lvl;flight.lvl=lvl;if(lvl===4)buzz(35);
+    {const L=tr.land,far=L?Math.hypot(L.x,L.z):0,lastP=tr.pts[tr.pts.length-1]; // distance ticks up on anything driven in the air
+      flight.dShow=tr.hr||(far*3.281>=250&&la>10);flight.dFt=tr.hr?play.dist*3.281:far*3.281;flight.dEnd=tr.hr?Math.hypot(lastP.x,lastP.z):far;$('hdr').hidden=!flight.dShow;$('hds').textContent='0 FT';}
     $('hev').textContent=mph+' MPH';$('hla').textContent=Math.round(la)+'°';
     {const g=Math.abs(n)<.22,t=$('htm');t.textContent=lab;t.className=g?'gd':Math.abs(n)>.7?'bd':'';const c=$('hct');c.textContent=chase>.3?'CHASED':where;c.className=cr<.3&&chase<=.3?'gd':cr>.7||chase>.3?'bd':'';
       // picture of it: the ball against the barrel, red dot = the sweet spot
       const bx=clamp((aim.x-pitch.tx)/R,-1.4,1.4)*13,by=clamp((aim.y-pitch.ty)/R,-1.4,1.4)*13,cy=23-by;$('hbat').setAttribute('y',cy-5);$('hdot').setAttribute('cy',cy);$('hdot').setAttribute('cx',86+bx);$('hbat').setAttribute('x',20+bx);}
     $('hitinfo').hidden=false;}
-  timing(lab+' · '+(chase>.3?'CHASED':where),chase>.3?'#ff4d2e':Math.abs(n)<.22&&cr<.3?'#ffe53b':'#f2f5ff'); // timing, then where the barrel met it
+  timing(lab+' · '+(chase>.3?'CHASED':where),chase>.3?'#ff4d2e':Math.abs(n)<.22&&cr<.3?'#ffe53b':flight.lvl===1?'#9aa3c7':'#f2f5ff',flight.lvl); // timing, then where the barrel met it
   // No-doubters: sometimes stay on the hitter instead of the ball. 'admire' = he holds his finish, watches it and drops the bat;
   // 'show' = the same, then his own walk-up routine as a celebration. Decided here because we already know where the ball lands.
   if(play.type==='hr'&&MX.clip){const ft=play.dist*3.281,big=tb||ft>=500,r=Math.random(),kind=DBG.admire||(big?(r<.6?'show':r<.85?'admire':''):ft>=440?(r<.5?'admire':''):'');
@@ -1196,7 +1212,7 @@ function finishPlay(){
   S.heat=Math.max(0,S.heat-.12);S.hits++;S.streak++;S.bestStreak=Math.max(S.bestStreak,S.streak);if(!f.tb)S.juice=Math.min(1,S.juice+.14+.16*f.q); // a Juice hit doesn't refill the bar it just spent
   if(pl.type==='hr'){
     const ft=Math.round(pl.dist*3.281);S.hrs++;S.longest=Math.max(S.longest,ft);const r=advance(4);
-    pop(r===4?'GRAND SLAM!':'GONE!',`${ft} FT · +${r} RUN${r>1?'S':''}`,'hot',true);scoreboard('HOME RUN',ft+' FT');
+    buzz([40,50,90]);pop(r===4?'GRAND SLAM!':'GONE!',`${ft} FT · +${r} RUN${r>1?'S':''}`,'hot',true);scoreboard('HOME RUN',ft+' FT');
     S.state='celebrate';S.t=now;readyDur=3.1;
     if(f.admire&&WALK.on)startTrot(); // the biggest ones get the trot (skipped in fast mode)
     for(let i=0;i<9;i++)fireworks.push({t:now+.1+i*.3,p:new V3(rand(-65,65),rand(50,88),rand(-165,-115))});
@@ -1884,6 +1900,7 @@ function step(dt){
   if(flight&&!flight.done&&(S.state==='flight')){
     const tf=now-flight.t0,tr=flight.tr,i=Math.min(tr.pts.length-1,Math.floor(tf*120)),p=tr.pts[i];
     ball.visible=true;ball.position.set(p.x,p.y,p.z);
+    if(flight.dShow){const ft=Math.round(flight.dFt*Math.min(1,Math.hypot(p.x,p.z)/(flight.dEnd||1)));if(ft!==flight.dLast){flight.dLast=ft;$('hds').textContent=ft+' FT';}}
     if(!tr.hr&&tr.land&&tr.land.t>1.1&&tf<tr.land.t){ // fly balls and liners (not home runs): a ring on the grass that tightens as the ball comes down
       const k=1-tf/tr.land.t;landRing.visible=true;landRing.position.set(tr.land.x,.07,tr.land.z);landRing.scale.setScalar(lerp(1.4,5,k));landRing.material.opacity=.55+.4*(1-k);}
     if(tr.eyeT&&!flight.eyeHit&&tf>=tr.eyeT){flight.eyeHit=true;burst(fxL,ball.position,14,6,.5,[.6,.9,.6],5,1);SND.mitt();tone('sine',120,50,.25,.5);} // thud off the batter's eye
