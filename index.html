@@ -862,8 +862,10 @@ function walkLabel(){$('wk').textContent='Walk-ups: '+(WALK.on?'on':'off (faster
 function startWalkup(){
   const b=curBatter(),i=S.bi%LINEUP.length,r=v=>clamp(Math.round((v-.85)/.3*9+1),1,10);
   S.seen[i]=1;S.state='walkup';S.t=now;
-  // now and then a surprise replaces his usual routine: he eats dirt on the way in, chips a golf shot with the bat, or gives the pitcher a friendly wave
-  {const r=Math.random(),has=k=>!!MX.clip.intros[k];S.walkClip=DBG.trip&&has(DBG.trip===true?'w_trip':DBG.trip)?(DBG.trip===true?'w_trip':DBG.trip):r<.08&&has('w_trip')?'w_trip':r<.16&&has('w_golf')?'w_golf':r<.24&&has('w_wave')?'w_wave':WALK.by[b.name];}
+  // now and then a surprise replaces his usual routine: he eats dirt on the way in, chips a golf shot with the bat,
+  // gives the pitcher a friendly wave, drops and does push-ups, or squares up like he wants a fight. Each has the same small chance.
+  {const rare=['w_trip','w_golf','w_wave','w_pushup','w_fight'].filter(k=>MX.clip.intros[k]),r=Math.random()/.05|0,forced=DBG.trip===true?'w_trip':DBG.trip;
+    S.walkClip=forced&&MX.clip.intros[forced]?forced:r<rare.length?rare[r]:WALK.by[b.name];}
   $('wnum').textContent=b.num;$('wname').textContent=b.name;
   $('wrat').innerHTML=`<span>POWER <b>${r(b.pwr)}</b></span><span>CONTACT <b>${r(b.con)}</b></span><span>SPEED <b>${r(b.spd)}</b></span><span>BATS <b>${b.lh?'L':'R'}</b></span>`;
   $('wspot').textContent='BATTING '+['1ST','2ND','3RD','4TH','5TH','6TH','7TH','8TH','9TH'][i];$('wskip').textContent='SWING TO SKIP';
@@ -1751,7 +1753,8 @@ function updateCamera(rdt){
     camLook.set(_a.x,1.2,_a.z);camPos.set(_a.x+sd*lerp(1.5,1.0,ease(e)),1.25,_a.z-lerp(3.2,2.5,ease(e)));}
   else if(S.state==='walkup'&&MX.clip){ // from the pitcher's side, across the plate: his front three-quarter, with the stands behind him
     const e=clamp((now-S.t)/WALK.dur,0,1);MX.clip.hips.getWorldPosition(_a);const sd=_a.x<0?1:-1;
-    camLook.set(_a.x,1.1,_a.z);camPos.set(sd*lerp(2.3,1.7,ease(e)),1.0+.2*e,_a.z-lerp(3.6,2.6,ease(e)));}
+    const ly=camLook.y=lerp(camLook.y>0&&camLook.y<1.2?camLook.y:1.1,clamp(_a.y*.75+.1,.2,1.1),.08); // follow him down when he is on the ground, so the name card doesn't cover him
+    camLook.set(_a.x,ly,_a.z);camPos.set(sd*lerp(2.3,1.7,ease(e)),1.0+.2*e,_a.z-lerp(3.6,2.6,ease(e)));}
   else if(flight&&flight.admire&&!flight.done&&now-flight.t0<flight.A&&MX.clip){ // stay on the hitter: low, from the pitcher's side, creeping in
     const e=clamp((now-flight.t0)/flight.A,0,1);MX.clip.hips.getWorldPosition(_a);const sd=_a.x<0?1:-1;
     camLook.set(_a.x,1.18,_a.z);camPos.set(sd*lerp(2.5,1.8,ease(e)),.7,_a.z-lerp(3.3,2.5,ease(e)));flight.cut=true;}
