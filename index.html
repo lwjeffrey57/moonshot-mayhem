@@ -126,6 +126,7 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 #hud>#card .stat{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:800;letter-spacing:.1em;color:var(--dim)}
 #hud>#card .stat b{width:64px;height:5px;border:0;background:rgba(242,245,255,.15)}
 #keys{bottom:124px}
+@media (max-height:640px){#keys .pill{height:25px;font-size:14px}#keys{gap:5px}}
 #plast{bottom:14px;left:50%;transform:translateX(-50%);font-family:var(--display);font-style:italic;font-size:17px;letter-spacing:.06em;color:var(--volt);text-shadow:0 2px 0 #000,0 0 6px #000;opacity:0;transition:opacity .2s;white-space:nowrap}
 #plast.on{opacity:1}
 #hud.wk #plast{visibility:hidden}
@@ -233,7 +234,7 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
     <div id="hitinfo" hidden><div class="q" id="hq"></div><div class="r"><span>EXIT VELO</span><b id="hev"></b></div><div class="r"><span>LAUNCH</span><b id="hla"></b></div></div>
     <div id="plast"></div>
     <div id="rep" hidden><div class="cap">PITCHES</div><div id="replist" class="pills"></div></div>
-    <div id="keys" class="pills"><div class="pill">CONTACT<span class="k">CLICK</span></div><div class="pill">POWER<span class="k">R-CLICK</span></div><div class="pill dk">JUICE<span class="k">SHIFT</span></div><div class="pill dk">PAUSE<span class="k">ESC</span></div></div>
+    <div id="keys" class="pills"><div class="pill">CONTACT<span class="k">CLICK</span></div><div class="pill">POWER<span class="k">R-CLICK</span></div><div class="pill dk">JUICE<span class="k">SHIFT</span></div><div class="pill dk">CAMERA<span class="k">C</span></div><div class="pill dk">PAUSE<span class="k">ESC</span></div></div>
     <button id="pausebtn" type="button" aria-label="Pause game" hidden>❚❚</button>
     <div id="touch">
       <button class="tb jc" id="tj" type="button">JUICE</button>
@@ -268,6 +269,7 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
   <div class="overlay" id="pause" hidden>
     <div class="logo"><span class="b">PAUSED</span></div>
     <button class="cta" id="resume" type="button">RESUME</button>
+    <button class="cta alt" id="cambtn" type="button">CAMERA</button>
     <button class="cta alt" id="restart" type="button">RESTART GAME</button>
     <button class="cta alt" id="quit" type="button">QUIT TO MAIN MENU</button>
     <div class="tag">Esc or P to resume</div>
@@ -1084,6 +1086,7 @@ addEventListener('keydown',e=>{keys[e.code]=true;if(e.repeat)return;
   else if(e.code==='KeyX'||e.code==='KeyK'){doSwing('power');}
   else if(e.code==='Enter'){if(!paused&&(S.state==='title'||S.state==='over')){audioInit();newGame();}}
   else if(e.code==='Escape'||e.code==='KeyP'){setPaused(!paused);}
+  else if(e.code==='KeyC'){nextCam();}
   if(e.code.startsWith('Shift'))hud();
   if(e.code.startsWith('Arrow'))e.preventDefault();});
 addEventListener('keyup',e=>{keys[e.code]=false;if(e.code.startsWith('Shift'))hud();});
@@ -1111,6 +1114,7 @@ function toMenu(){
 }
 $('pausebtn').addEventListener('click',()=>setPaused(true));
 $('resume').addEventListener('click',()=>setPaused(false));
+$('cambtn').addEventListener('click',()=>{nextCam();draw();});
 $('restart').addEventListener('click',()=>{setPaused(false);fireworks.length=0;newGame();});
 $('quit').addEventListener('click',toMenu);$('overmenu').addEventListener('click',toMenu);
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&inPlay())setPaused(true);});
@@ -1678,7 +1682,21 @@ function step(dt){
   const showRet=(S.state==='ready'||S.state==='windup'||S.state==='pitch')&&!(swing&&swing.done);
   reticle.visible=showRet;zone.visible=S.state==='ready'||S.state==='windup'||S.state==='pitch';
 }
+// Batting cameras. Each is a position and a look-at point; 'side' ones sit on the open side of the plate, away from the hitter.
+const CAMS=[
+  {n:'CLASSIC',p:[-.15,1.85,4.5],l:[.3,1,-18]},
+  {n:'STRIKE ZONE',p:[0,1.3,2.9],l:[0,.95,-18]},
+  {n:'OFF-CENTRE',p:[1.15,1.75,4.3],l:[-.35,1,-18],side:true},
+  {n:'HIGH',p:[0,3.4,6.2],l:[0,.7,-18]},
+  {n:'FAR',p:[0,2.6,8.2],l:[0,1,-18]},
+];
+let camI=0;try{camI=clamp(+localStorage.getItem('mm_cam')||0,0,CAMS.length-1)|0;}catch(e){}
+function applyCam(){const c=CAMS[camI],sg=c.side&&MX.lefty?-1:1;CAM_HOME.set(c.p[0]*sg,c.p[1],c.p[2]);CAM_LOOK.set(c.l[0]*sg,c.l[1],c.l[2]);}
+function camLabel(){$('cambtn').textContent='CAMERA: '+CAMS[camI].n;}
+camLabel();
+function nextCam(){camI=(camI+1)%CAMS.length;try{localStorage.setItem('mm_cam',camI);}catch(e){}applyCam();camLabel();if(S.state!=='title'&&S.state!=='over'&&!paused)timing('CAMERA: '+CAMS[camI].n,'#3ad6ff');}
 function updateCamera(rdt){
+  if(!DBG.cam)applyCam();
   if(S.state==='flight'&&flight&&!flight.done&&now-flight.t0>.02)camMode='chase';
   if(DBG.cam){camPos.copy(CAM_HOME);camLook.copy(CAM_LOOK);}
   else if(S.state==='walkup'&&MX.clip){ // from the pitcher's side, across the plate: his front three-quarter, with the stands behind him
