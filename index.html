@@ -447,7 +447,7 @@ let composer=null,fxaa=null;
 const ANISO=renderer.capabilities.getMaxAnisotropy();
 function draw(){if(composer)composer.render();else renderer.render(scene,camera);}
 const scene=new T.Scene();
-scene.fog=new T.Fog(0x4a2c66,160,620);
+scene.fog=new T.Fog(0x06060c,320,1500); // no atmosphere: distance only fades far-off stands a little
 const camera=new T.PerspectiveCamera(42,16/9,0.1,1600);
 const CAM_HOME=new V3(-0.15,1.85,4.5), CAM_LOOK=new V3(0.3,1.0,-18);
 let viewH=600,QS=1; // QS: render scale, lowered automatically on slow devices
@@ -472,25 +472,36 @@ function initPost(){ // stadium-light bloom + edge smoothing; skipped cleanly if
 function tex(w,h,draw,rep){const c=document.createElement('canvas');c.width=w;c.height=h;draw(c.getContext('2d'),w,h);
   const t=new T.CanvasTexture(c);if(rep){t.wrapS=t.wrapT=T.RepeatWrapping;t.repeat.set(rep[0],rep[1]);}return t;}
 
-scene.add(new T.HemisphereLight(0xcfd4ff,0x3b4a2a,0.85));
+scene.add(new T.HemisphereLight(0xdde4ff,0x4a4a55,0.85));
 const sun=new T.DirectionalLight(0xfff1dc,0.8);sun.position.set(-30,80,60);scene.add(sun);
 const rim=new T.DirectionalLight(0xffc890,0.45);rim.position.set(-9,13,-11);rim.castShadow=true;scene.add(rim);
 rim.shadow.mapSize.set(1024,1024);Object.assign(rim.shadow.camera,{left:-4,right:4,top:4,bottom:-4,near:1,far:40});rim.shadow.bias=-.002;
 renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;
 {const sp=new T.Mesh(new T.PlaneGeometry(12,12),new T.ShadowMaterial({opacity:.45}));sp.rotation.x=-PI/2;sp.position.set(0,.03,0);sp.receiveShadow=true;sp.renderOrder=1;scene.add(sp);}
 
-// sky
+// sky: the park sits on the Moon. Black space, hard stars, a band of the Milky Way; no air, so no sunset and no haze.
 {
-  const t=tex(512,256,(g,w,h)=>{
-    const gr=g.createLinearGradient(0,0,0,h);
-    gr.addColorStop(0,'#0c0a2e');gr.addColorStop(.28,'#2a1560');gr.addColorStop(.42,'#8a2a7a');gr.addColorStop(.5,'#ff7a3a');gr.addColorStop(.54,'#ffc45a');gr.addColorStop(1,'#ffc45a');
-    g.fillStyle=gr;g.fillRect(0,0,w,h);
-    for(let i=0;i<220;i++){g.fillStyle=`rgba(255,255,255,${rand(.3,1)})`;g.fillRect(rand(0,w),rand(0,h*.3),1,1);}
-    for(let i=0;i<26;i++){const x=rand(0,w),y=rand(h*.3,h*.47);const r=g.createRadialGradient(x,y,0,x,y,rand(20,50));
-      r.addColorStop(0,'rgba(255,120,150,.35)');r.addColorStop(1,'rgba(255,120,150,0)');g.fillStyle=r;g.save();g.translate(0,y);g.scale(1,.3);g.translate(0,-y);g.fillRect(x-60,y-60,120,120);g.restore();}
+  const t=tex(1024,512,(g,w,h)=>{
+    g.fillStyle='#020207';g.fillRect(0,0,w,h);
+    g.save();g.translate(w*.5,h*.2);g.rotate(-.32);const mw=g.createLinearGradient(0,-60,0,60);mw.addColorStop(0,'rgba(120,130,190,0)');mw.addColorStop(.5,'rgba(150,150,210,.16)');mw.addColorStop(1,'rgba(120,130,190,0)');g.fillStyle=mw;g.fillRect(-w,-60,w*2,120);
+    for(let i=0;i<900;i++){g.fillStyle=`rgba(255,255,255,${rand(.15,.7)})`;g.fillRect(rand(-w,w),rand(-34,34)*rand(.2,1),1,1);}g.restore();
+    for(let i=0;i<1500;i++){const y=rand(0,h*.56),big=Math.random()<.05;g.fillStyle=['rgba(255,255,255,','rgba(190,210,255,','rgba(255,225,190,'][(Math.random()*3)|0]+rand(.35,1)+')';g.fillRect(rand(0,w),y,big?2:1,big?2:1);}
+    g.fillStyle='#07070b';g.fillRect(0,h*.56,w,h*.44);
   });
-  const m=new T.Mesh(new T.SphereGeometry(1200,16,12),new T.MeshBasicMaterial({map:t,side:T.BackSide,fog:false}));
+  const m=new T.Mesh(new T.SphereGeometry(1200,24,16),new T.MeshBasicMaterial({map:t,side:T.BackSide,fog:false}));
   scene.add(m);
+  // Earth, hanging over centre field
+  const et=tex(256,256,(g,w,h)=>{const c=w/2,R=w*.44;g.clearRect(0,0,w,h);
+    const halo=g.createRadialGradient(c,c,R*.92,c,c,R*1.13);halo.addColorStop(0,'rgba(120,190,255,.75)');halo.addColorStop(1,'rgba(120,190,255,0)');g.fillStyle=halo;g.fillRect(0,0,w,h);
+    g.save();g.beginPath();g.arc(c,c,R,0,PI*2);g.clip();
+    const oc=g.createRadialGradient(c-R*.3,c-R*.3,R*.1,c,c,R);oc.addColorStop(0,'#3d8fe6');oc.addColorStop(1,'#123a8c');g.fillStyle=oc;g.fillRect(0,0,w,h);
+    const blob=(x,y,r,col)=>{g.fillStyle=col;g.beginPath();for(let k=0;k<=14;k++){const an=k/14*PI*2,rr=r*(.6+.5*Math.sin(an*3+x)+.25*Math.sin(an*5+y));g.lineTo(x+Math.cos(an)*Math.abs(rr),y+Math.sin(an)*Math.abs(rr)*.8);}g.fill();};
+    [[c-R*.35,c-R*.2,R*.36,'#3f9a4a'],[c-R*.28,c+R*.4,R*.24,'#4aa24e'],[c+R*.3,c-R*.05,R*.4,'#5a9a46'],[c+R*.45,c+R*.45,R*.2,'#a88a52'],[c+R*.1,c-R*.6,R*.2,'#8a8f5a']].forEach(q=>blob(...q));
+    g.globalAlpha=.8;for(let i=0;i<26;i++){g.fillStyle='#fff';g.beginPath();g.ellipse(rand(c-R,c+R),rand(c-R,c+R),rand(R*.08,R*.3),rand(R*.02,R*.06),rand(-.5,.5),0,PI*2);g.fill();}g.globalAlpha=1;
+    g.fillStyle='#fff';g.beginPath();g.ellipse(c,c-R*.95,R*.5,R*.12,0,0,PI*2);g.fill();g.beginPath();g.ellipse(c,c+R*.97,R*.45,R*.1,0,0,PI*2);g.fill();
+    const sh=g.createRadialGradient(c-R*.55,c-R*.35,R*.5,c-R*.2,c-R*.1,R*1.5);sh.addColorStop(0,'rgba(0,0,10,0)');sh.addColorStop(.62,'rgba(0,0,10,.25)');sh.addColorStop(1,'rgba(0,0,10,.96)');g.fillStyle=sh;g.fillRect(0,0,w,h); // night side
+    g.restore();});
+  const earth=new T.Sprite(new T.SpriteMaterial({map:et,fog:false,transparent:true,depthWrite:false}));earth.position.set(-60,500,-930);earth.scale.set(250,250,1);earth.renderOrder=-5;scene.add(earth);
 }
 
 const glowTex=tex(64,64,(g)=>{const r=g.createRadialGradient(32,32,0,32,32,32);r.addColorStop(0,'rgba(255,255,255,1)');r.addColorStop(.25,'rgba(255,255,255,.55)');r.addColorStop(1,'rgba(255,255,255,0)');g.fillStyle=r;g.fillRect(0,0,64,64);});
@@ -641,10 +652,26 @@ gl_FragColor=vec4(col*mix(dg,dd,m)*vL,1.0);
   scene.add(new T.Mesh(ribbon(bw,ra),basic({color:0x1a1838})));scene.add(new T.Mesh(ribbon(ra,rb),basic({color:0x2a2848})));scene.add(new T.Mesh(ribbon(rc,rb),basic({color:0xe8e8f0})));
   // batter's eye in dead centre
   {const a=[],b=[];for(let i=0;i<=8;i++){const phi=lerp(-8,8,i/8)*DEG,r=fenceR(phi);a.push(pol(r+1.3,phi,WALL_H));b.push(pol(r+9,phi,19));}scene.add(new T.Mesh(ribbon(a,b),basic({color:0x0e3322})));}
-  // skyline beyond the park
-  {const win=tex(64,128,(g)=>{g.fillStyle='#1c1a36';g.fillRect(0,0,64,128);for(let y=3;y<128;y+=6)for(let x=3;x<64;x+=7)if(Math.random()<.42){g.fillStyle=Math.random()<.8?'#ffd98a':'#9ad6ff';g.fillRect(x,y,4,3);}});
-    for(let i=0;i<16;i++){const phi=lerp(-70,70,(i+rand(-.3,.3))/15)*DEG,h=rand(95,210),w=rand(26,52),m=new T.Mesh(new T.BoxGeometry(w,h,w),new T.MeshBasicMaterial({map:win}));
-      m.position.copy(pol(rand(330,440),phi,h/2));m.rotation.y=rand(0,1);scene.add(m);}}
+  // beyond the park: the lunar surface, crater-rim ridges on the horizon, and a small moon base with a rocket on the pad
+  {const fb=x=>Math.sin(x*1.7)*.5+Math.sin(x*4.3+1.3)*.27+Math.sin(x*9.1+.4)*.14+Math.sin(x*19.7+2.2)*.09;
+    const rock=tex(256,128,(g,w,h)=>{const gr=g.createLinearGradient(0,0,0,h);gr.addColorStop(0,'#d9d9de');gr.addColorStop(.35,'#9a9aa2');gr.addColorStop(1,'#3c3c44');g.fillStyle=gr;g.fillRect(0,0,w,h);
+      for(let i=0;i<500;i++){g.fillStyle=`rgba(${Math.random()<.5?'0,0,0':'255,255,255'},${rand(.03,.12)})`;g.fillRect(rand(0,w),rand(0,h),rand(2,14),rand(1,4));}},[1,1]);
+    [[640,120,235,1,0x7c7c86],[420,70,190,2.3,0xffffff]].forEach(([R0,h0,h1,ph,tint])=>{const A=[],B=[];
+      for(let i=0;i<=180;i++){const an=i/180*PI*2,n=fb(an*3+ph),r=R0+n*40;A.push(new V3(r*Math.sin(an),-3,-r*Math.cos(an)));B.push(new V3(r*Math.sin(an),h0+(h1-h0)*clamp(.5+n*.9+.25*Math.sin(an*23+ph),0,1),-r*Math.cos(an)));}
+      scene.add(new T.Mesh(ribbon(B,A,.004),new T.MeshBasicMaterial({map:rock,color:tint,side:T.DoubleSide,fog:false})));});
+    const reg=tex(512,512,(g,w,h)=>{g.fillStyle='#77777e';g.fillRect(0,0,w,h);for(let i=0;i<5000;i++){g.fillStyle=`rgba(${Math.random()<.5?'0,0,0':'255,255,255'},${rand(.02,.09)})`;g.fillRect(rand(0,w),rand(0,h),rand(1,5),rand(1,5));}
+      for(let i=0;i<34;i++){const x=rand(20,w-20),y=rand(20,h-20),r=rand(5,26);g.fillStyle='rgba(20,20,26,.35)';g.beginPath();g.ellipse(x,y,r,r*.6,0,0,PI*2);g.fill();g.strokeStyle='rgba(235,235,240,.5)';g.lineWidth=1.6;g.beginPath();g.ellipse(x,y+1,r,r*.6,0,.1,PI-.1);g.stroke();}},[9,9]);
+    const gnd=new T.Mesh(new T.CircleGeometry(1150,48),new T.MeshBasicMaterial({map:reg,fog:false}));gnd.rotation.x=-PI/2;gnd.position.y=-.9;scene.add(gnd);
+    // moon base: habitat domes with lit windows
+    const dome=tex(128,64,(g,w,h)=>{const gr=g.createLinearGradient(0,0,0,h);gr.addColorStop(0,'#f1f3fa');gr.addColorStop(1,'#8f94a6');g.fillStyle=gr;g.fillRect(0,0,w,h);for(let x=4;x<w;x+=11){g.fillStyle=Math.random()<.75?'#ffd98a':'#9ad6ff';g.fillRect(x,h*.62,6,5);}g.fillStyle='rgba(0,0,0,.25)';for(let x=0;x<w;x+=32)g.fillRect(x,0,1.5,h);});
+    [[-62,330,26],[-50,372,17],[47,345,22],[60,380,30],[72,335,15]].forEach(([d,r,R])=>{const m=new T.Mesh(new T.SphereGeometry(R,16,8,0,PI*2,0,PI/2),new T.MeshBasicMaterial({map:dome,fog:false}));m.position.copy(pol(r,d*DEG,-1));scene.add(m);});
+    // the rocket
+    {const G=new T.Group(),W=new T.MeshBasicMaterial({color:0xf2f3f8,fog:false}),Rd=new T.MeshBasicMaterial({color:0xe2402a,fog:false}),Dk=new T.MeshBasicMaterial({color:0x3a3c4c,fog:false});
+      const body=new T.Mesh(new T.CylinderGeometry(7,8,74,14),W);body.position.y=47;G.add(body);const band=new T.Mesh(new T.CylinderGeometry(7.4,7.6,7,14),Rd);band.position.y=62;G.add(band);
+      const nose=new T.Mesh(new T.ConeGeometry(7,22,14),Rd);nose.position.y=95;G.add(nose);const eng=new T.Mesh(new T.CylinderGeometry(5,7.5,8,12),Dk);eng.position.y=6;G.add(eng);
+      for(let k=0;k<3;k++){const f=new T.Mesh(new T.BoxGeometry(1.4,24,13),Rd);const an=k/3*PI*2;f.position.set(Math.sin(an)*11,18,Math.cos(an)*11);f.rotation.y=an;G.add(f);}
+      const tower=new T.Mesh(new T.BoxGeometry(5,84,5),Dk);tower.position.set(17,42,0);G.add(tower);const arm=new T.Mesh(new T.BoxGeometry(12,2.5,3),Dk);arm.position.set(11,70,0);G.add(arm);
+      G.position.copy(pol(330,-31*DEG,-1));G.scale.setScalar(2.3);scene.add(G);}}
   // foul-side walls and stands
   [-1,1].forEach(s=>{
     const line=[[70,-70],[30,-4],[13,13]].map(p=>new V3(p[0]*s,0,p[1]));
@@ -1036,7 +1063,8 @@ function hud(){
   $('jfill').style.width=(S.juice*100)+'%';$('hfill').style.width=(S.heat*100)+'%';$('heat').classList.toggle('ready',S.heat>=.333);
   const j=$('juice');j.classList.toggle('ready',S.juice>=.333);j.classList.toggle('armed',juiceOn()&&S.juice>=.333);j.classList.toggle('over',S.over);
   $('jtxt').textContent=S.over?'OVERDRIVE':(S.juice>=.333?'JUICE READY':'JUICE');
-  {const bars=Math.floor(S.juice/.3333+.02),tj=$('tj');tj.classList.toggle('has',bars>0);tj.classList.toggle('none',bars===0);$('tjn').textContent=bars?'×'+bars:'';$('kj').classList.toggle('has',bars>0);
+  {const bars=S.juice>=.333?1+Math.floor((S.juice-.333)/.3334+.001):0,tj=$('tj'); // counted exactly the way a Juice swing is paid for, so the badge never promises a bar that isn't there
+   tj.classList.toggle('has',bars>0);tj.classList.toggle('none',bars===0);$('tjn').textContent=bars?'×'+bars:'';$('kj').classList.toggle('has',bars>0);
     if(bars>hudBars&&S.state!=='title'&&S.state!=='over'){ // a new bar just filled: say so, loudly
       tj.classList.remove('gain');void tj.offsetWidth;tj.classList.add('gain');const jt=$('jtoast');jt.classList.remove('go');void jt.offsetWidth;jt.classList.add('go');
       buzz(25);try{tone('triangle',660,990,.12,.25);tone('triangle',990,1320,.14,.22,.1);}catch(e){}
@@ -1098,7 +1126,7 @@ function setupRunners(make,skins){
   syncRunners();
 }
 // ── Home-run trot, shown as a highlight cut on no-doubters: rounding second, then touching home and a fist pump on the plate.
-const TROT={dur:6.7,celT:3.9,cele:false,clip:'',R:null,cam:new V3(),segs:[[0,3.9,1.7,3.999]]}; // one continuous run: round second, round third, home // rounding second, then the last steps home; the fist pump fills the rest
+const TROT={dur:5.85,celT:3.05,cele:false,clip:'',R:null,cam:new V3(),segs:[[0,3.05,1.7,3.5]]}; // rounds second and third, then halfway down the line it cuts to him at the plate, already celebrating // one continuous run: round second, round third, home // rounding second, then the last steps home; the fist pump fills the rest
 function startTrot(){const R=RUN.list.find(R=>!R.active)||null;if(!R||!R.jogAct)return false;
   R.active=true;R.trot=true;R.delay=0;R.s=0;R.target=4;TROT.R=R;TROT.cele=false;TROT.cut=false;R.fig.root.scale.setScalar(FSCALE.inf);
   {const C=MX.clip,own=celClip(WALK.by[curBatter().name]);const wild=wildTrot&&C?WILD_CEL.filter(k=>C.intros[k]):[];wildTrot=false;
@@ -1117,7 +1145,7 @@ function updateTrot(dt){
     basePos(Math.min(3.999,sv+.3),_a);_b.set(_a.x,0,_a.z+19.4).normalize();TROT.cam.set(_a.x+_b.x*3.5,1.5,_a.z+_b.z*3.5);}
   else{root.position.set(0,0,0);root.rotation.y=PI/4;
     // cut on the action: the frame his foot hits the plate, the camera jumps to a new, low angle and the celebration starts on the cut
-    if(!TROT.cut){TROT.cut=true;flash(.4);_p.set(0,.05,0);burst(fxL,_p,12,3,.5,[.8,.66,.48],4,2);cheer(.3,2.5);}
+    if(!TROT.cut){TROT.cut=true;flash(.4);cheer(.3,2.5);}
     if(TROT.clip==='p_loser')TROT.cam.set(1.1,1.35,-3.6);else TROT.cam.set(1.5,.6,2.7); // camera ahead of him, looking back up the third-base line
     TROT.cele=!!(TROT.clip&&MX.clip&&MX.clip.intros[TROT.clip]);root.visible=!TROT.cele;if(!R.fistAct)mode='jog';} // the batter's own model takes over for the celebration
   if(mode!==R.mode){R.mode=mode;R.mixer.stopAllAction();(mode==='turn'?R.turnAct:mode==='fist'?R.fistAct:R.jogAct).reset().play();}
