@@ -402,7 +402,7 @@ body.mob #tip{display:block}body.mob .how{display:none}
       <div class="tz swz"><b>RIGHT THUMB: SWING</b>Tap as the yellow ring closes on the ball<small>CONTACT is easier and hits line drives. POWER is harder and hits moonshots.</small></div>
       <div class="tz jcz"><b>JUICE: MONSTER SWING</b>Tap JUICE, then swing. Costs one bar<small>Hits and taking balls refill it. Save it for a pitch you can drive.</small></div>
       <div class="tz ovz"><b>FULL METER = OVERDRIVE</b>Fill this bar all the way and it catches fire<small>JUICE turns into a blue OVERDRIVE button. Tap it and every swing that at-bat is a free Juice swing. Then the bar starts over.</small></div>
-      <div class="tz ovz2"><b>OVERDRIVE READY!</b>Tap the blue OVERDRIVE button<small>Every swing this at-bat becomes a free Juice swing: bigger sweet spot, easier timing, harder contact.</small></div>
+      <div class="tz ovz2"><b>OVERDRIVE READY!</b>Tap the blue OVERDRIVE button when you want it<small>Every swing this at-bat becomes a free Juice swing: bigger sweet spot, easier timing, harder contact.</small></div>
       <div class="tz jz"><b>YOUR JUICE IS FULL</b>Tap JUICE, then swing for a monster hit<small>Each Juice swing burns one of your three bars.</small></div>
     </div>
     <div id="pop"><div class="t"></div><div class="s"></div></div>
@@ -1108,8 +1108,6 @@ $('tut').addEventListener('pointerdown',e=>{e.preventDefault();const id=e.target
   if(id==='tutoff'){tutOff=true;try{localStorage.setItem('mm_tutoff','1');}catch(x){}tutClose();return;} // no more guides on this device (HOW TO PLAY in the pause menu still works)
   if(id==='tutskip'){tutClose();return;}
   if(tutStep&&tutStep<TUT_N){tutShow('s'+(tutStep+1));return;}                                            // a tap anywhere moves to the next step
-  if($('tut').className==='j'&&e.target.classList.contains('spot')&&S.juice>=.333){juiceArmed=true;hud();}
-  if($('tut').className==='o'&&e.target.classList.contains('spot'))juiceTap();
   tutClose();});
 // Timing meter. x is real time and everything is to scale. A coloured band is the whole window in which that swing can touch the ball
 // (green = CONTACT, the narrower red = POWER), brightest in the middle where timing is best and fading toward the edges; a Juice swing adds
@@ -1159,6 +1157,7 @@ function statGrade(v){const t=(v-.85)/.32;return t>=.9?'S':t>=.72?'A':t>=.52?'B'
 function setBatter(){
   if(S.over&&S.overOn&&S.walked){} // a walk doesn't use it up: it stays on for the next hitter
   else if(S.over&&S.overOn){S.over=false;S.overOn=false;S.juice=0;setTimeout(()=>timing('OVERDRIVE SPENT · FILL THE JUICE METER TO RECHARGE','#3ad6ff',2),700);}
+  juiceArmed=false; // Juice armed for one hitter never carries over to the next
   S.walked=false;S.bi++;const b=curBatter();S.balls=0;S.strikes=0;
   // The pitcher has Overdrive too: when his Heat meter is full, every pitch of the next at-bat is a Juice pitch. Then his meter starts over.
   if(S.pOver){S.pOver=false;S.heat=0;}
@@ -1339,7 +1338,10 @@ function choosePitch(){
   // The pitcher has Juice too. Nobody sees it in the first three at-bats of a game; the fourth hitter on is guaranteed the game's first
   // special pitch within his first two pitches, so the player learns early that it exists. After that it follows the Heat meter.
   const due=S.bi>=3&&!S.spSeen&&(S.balls+S.strikes>=1||Math.random()<.5);if(due)S.heat=Math.max(S.heat,.34);
-  const special=S.pOver||(S.bi>=3&&S.heat>=.333&&(due||Math.random()<.5)); // new players don't see special pitches in their first inning // the Heat is only deducted once the pitch has been seen (payHeat), so the meter doesn't give it away
+  // The more runs on the board, the angrier he gets: his Heat builds a little on every pitch and he reaches for a Juice pitch more often.
+  // It stays a dice roll each pitch, so there is never a pattern to sit on.
+  const mad=Math.min(S.runs,10);if(S.bi>=3)S.heat=Math.min(1,S.heat+.012*mad);
+  const special=S.pOver||(S.bi>=3&&S.heat>=.333&&(due||Math.random()<.38+.04*mad)); // new players don't see special pitches in their first inning // the Heat is only deducted once the pitch has been seen (payHeat), so the meter doesn't give it away
   const pool=PITCHES.filter(p=>special?p.sp:!p.sp);let tw=0;pool.forEach(p=>tw+=p.w||1);let r=Math.random()*tw,P=pool[0];
   for(const p of pool){r-=p.w||1;if(r<=0){P=p;break;}}
   const inZone=S.bi===0||Math.random()<.64;let tx,ty; // the first hitter of every game only sees strikes: nobody's first at-bat is a walk
@@ -1570,7 +1572,9 @@ function endGame(){
 
 // ───────────────────────── input
 // The JUICE button. With Overdrive charged it is the OVERDRIVE button: one tap switches Overdrive on for this at-bat.
-function juiceTap(){if(S.over){if(!S.overOn){S.overOn=true;SND.zap();buzz([20,30,60]);timing('⚡ OVERDRIVE ON: FREE JUICE SWINGS THIS AT-BAT ⚡','#3ad6ff',4);}}else juiceArmed=!juiceArmed;hud();}
+let jTapT=0;
+function juiceTap(){const t=performance.now();if(t-jTapT<250)return;jTapT=t; // one press, one toggle, even if the browser reports the touch twice
+  if(S.over){if(!S.overOn){S.overOn=true;SND.zap();buzz([20,30,60]);timing('⚡ OVERDRIVE ON: FREE JUICE SWINGS THIS AT-BAT ⚡','#3ad6ff',4);}}else juiceArmed=!juiceArmed;hud();}
 function doSwing(type){
   if(paused||S.state==='title'||S.state==='over')return;
   if(S.state==='trot'){S.t=now-TROT.dur;return;} // skip the trot
@@ -1635,7 +1639,7 @@ function cornerTap(x,y){
   const t=performance.now();if(t-lastTapT<90&&Math.hypot(x-lastTapX,y-lastTapY)<3)return true;lastTapT=t;lastTapX=x;lastTapY=y; // the same tap arriving as both touchstart and pointerdown
   audioInit();
   {const r=document.createElement('i');r.className='rip';r.style.left=x+'px';r.style.top=y+'px';$('hud').appendChild(r);setTimeout(()=>r.remove(),420);}
-  if(d(J)<=J.r+6&&d(P)>P.r){juiceTap();return true;}
+  if(d(J)<=J.r&&d(P)>P.r){juiceTap();return true;} // only a tap squarely on the button arms Juice or Overdrive; a near miss is treated as a swing tap
   doSwing(d(P)-P.r<=d(C)-C.r?'power':'contact');return true;}
 document.addEventListener('pointerdown',e=>{if(e.pointerType!=='mouse'||MOB){if(cornerTap(e.clientX,e.clientY)){e.preventDefault();e.stopPropagation();}}},{capture:true});
 document.addEventListener('touchstart',e=>{let hit=false;for(const t of e.changedTouches)if(cornerTap(t.clientX,t.clientY))hit=true;if(hit){e.preventDefault();e.stopPropagation();}},{capture:true,passive:false});
