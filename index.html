@@ -826,7 +826,7 @@ const SND={
 };
 
 // ───────────────────────── game state
-const S={state:'title',t:0,inning:1,outs:0,balls:0,strikes:0,runs:0,bases:[0,0,0],hits:0,hrs:0,longest:0,streak:0,bestStreak:0,juice:.34,heat:.2,over:false,bi:-1,pitches:0,seen:{}};
+const S={state:'title',t:0,inning:1,outs:0,balls:0,strikes:0,runs:0,bases:[0,0,0],hits:0,hrs:0,longest:0,streak:0,bestStreak:0,juice:.34,heat:.2,over:false,bi:-1,pitches:0,seen:{},kOut:null};
 let now=0,hitstop=0,timeScale=1,slowT=0,shake=0,fovKick=0;
 const aim={x:0,y:.82};
 const keys={};
@@ -878,7 +878,7 @@ function startGame(){
   newGame();
 }
 function playersDone(){MX.loading=false;if(MX.pendingStart){MX.pendingStart=false;$('start').textContent='PLAY BALL';newGame();}}
-function newGame(){Object.assign(S,{inning:1,outs:0,balls:0,strikes:0,runs:0,bases:[0,0,0],hits:0,hrs:0,longest:0,streak:0,bestStreak:0,juice:.34,heat:.2,over:false,bi:-1,pitches:0,seen:{}});
+function newGame(){Object.assign(S,{inning:1,outs:0,balls:0,strikes:0,runs:0,bases:[0,0,0],hits:0,hrs:0,longest:0,streak:0,bestStreak:0,juice:.34,heat:.2,over:false,bi:-1,pitches:0,seen:{},kOut:null});
   $('title').hidden=true;$('over').hidden=true;$('pausebtn').hidden=false;setBatter();renderRep();scoreboard('PLAY BALL','INNING 1');toReady(2);pop('PLAY BALL!','INNING 1','plain');SND.organ();cheer(.14,1.5);}
 
 // ───────────────────────── pitching
@@ -1048,8 +1048,12 @@ function afterPA(delay){ // plate appearance over
   setBatter();S.state='result';S.t=now;S.next=null;readyDur=delay;hud();
 }
 function samePA(delay){S.state='result';S.t=now;S.next=null;readyDur=delay;hud();}
+const DEFEAT=2.9; // seconds of strikeout reaction
 function strike(kind){S.heat=Math.min(1,S.heat+.09);S.strikes++;SND.call(false);
-  if(S.strikes>=3){recordOut();pop('STRUCK OUT',kind==='look'?'CAUGHT LOOKING':'SWINGING','cool');cheer(.03,1);afterPA(1.5);}
+  if(S.strikes>=3){recordOut();pop('STRUCK OUT',kind==='look'?'CAUGHT LOOKING':'SWINGING','cool');cheer(.03,1);
+    // the strikeout sulk: one of the defeat routines, with the camera on him (skipped when walk-ups are off, for pace)
+    const ds=MX.clip&&WALK.on?Object.keys(MX.clip.intros).filter(k=>/^d_/.test(k)):[];
+    if(ds.length){S.kOut={t:now+(kind==='look'?.15:.45),bi:S.bi,clip:ds[(Math.random()*ds.length)|0]};afterPA(DEFEAT+.75);}else afterPA(1.5);}
   else{pop(kind==='look'?'STRIKE':'WHIFF!','','plain');samePA(kind==='look'?1.05:1.3);}}
 function finishPlay(){
   const f=flight,pl=f.play;f.done=true;
@@ -1266,7 +1270,7 @@ function setupClip(obj,clip,B,sk){
   if(sc){C.strike=mixer.clipAction(sc);C.strike.play();C.strike.setEffectiveWeight(0);}
   // intros stay in the batter's box: work out how far each clip sits (or finishes) from where he stands in his stance
   const hipsAt=(c,ts)=>{const v=new V3(),sum=new V3();probe(c,at=>ts.forEach(t=>{at(t);C.hips.getWorldPosition(v);sum.add(v);}));return sum.multiplyScalar(1/ts.length);},home=hipsAt(ic||clip,[0]);
-  C.intros={};obj.animations.filter(c=>/^w_/.test(c.name)).forEach(c=>{keep(c);const loop=c.duration<2.5,ref=hipsAt(c,loop?[0,1,2,3,4,5,6,7].map(k=>k/8*c.duration):[c.duration-.02]);
+  C.intros={};obj.animations.filter(c=>/^[wd]_/.test(c.name)).forEach(c=>{keep(c);const loop=c.duration<2.5,ref=hipsAt(c,loop?[0,1,2,3,4,5,6,7].map(k=>k/8*c.duration):[c.duration-.02]);
     const a=mixer.clipAction(c);a.play();a.setEffectiveWeight(0);C.intros[c.name]={a,dur:c.duration,loop,off:{x:home.x-ref.x,z:home.z-ref.z}};});
 }
 const WHIFF_HOLD=1.15; // seconds of the swing-and-miss clip shown after the miss before he resets
@@ -1279,7 +1283,7 @@ function updateClip(dt){
   // Keep showing him (and his side of the plate) until he is back in his stance, then fade to the new batter.
   if(S.bi>=0&&C.bi!==S.bi){
     if(C.bi===undefined){C.bi=S.bi;MX.lefty=!!curBatter().lh;}
-    else if(C.swap==null&&((C.mode==='idle'&&C.h<=.001)||(S.state==='ready'&&now-S.t>.6)||S.state==='walkup'))C.swap=0;}
+    else if(C.swap==null&&!(S.kOut&&now<S.kOut.t+DEFEAT)&&((C.mode==='idle'&&C.h<=.001)||(S.state==='ready'&&now-S.t>.6)||S.state==='walkup'))C.swap=0;}
   // if the next hitter has a walk-up coming, the box stays empty after the last man fades out; he first appears in his intro
   const waitWalk=S.bi>=0&&C.bi!==S.bi&&S.state!=='walkup'&&WALK.on&&S.fresh&&!S.seen[S.bi%LINEUP.length]&&!!C.intros[WALK.by[curBatter().name]];
   if(C.swap!=null){C.swap+=dt;if(waitWalk)C.swap=Math.min(C.swap,.2);
@@ -1306,6 +1310,8 @@ function updateClip(dt){
   // walk-up: his intro clip takes over; he stays facing the pitcher, so it plays as a taunt
   const intro=S.state==='walkup'&&C.bi===S.bi?C.intros[WALK.by[curBatter().name]]:null;let base=intro?0:1;
   for(const k in C.intros)C.intros[k].a.setEffectiveWeight(0);
+  if(S.kOut&&C.bi===S.kOut.bi){const e=now-S.kOut.t,ci=C.intros[S.kOut.clip],k=ci&&e<DEFEAT?ease(clamp(e/.3,0,1))*ease(clamp((DEFEAT-e)/.3,0,1)):0;
+    if(k>0){ci.a.time=Math.min(ci.dur-.01,e);ci.a.setEffectiveWeight(k);base=1-k;o.position.x+=ci.off.x*k;o.position.z+=ci.off.z*k;}}
   if(flight&&flight.admire==='show'&&!flight.done&&C.bi===S.bi){const ci=C.intros[WALK.by[curBatter().name]],tf=now-flight.t0,k=ci?ease(clamp((tf-1.25)/.3,0,1))*ease(clamp((flight.A+.35-tf)/.3,0,1)):0;
     if(k>0){const e=tf-1.25;ci.a.time=ci.loop?e%ci.dur:Math.min(ci.dur-.01,e);ci.a.setEffectiveWeight(k);base=1-k;}}
   if(intro){const e=now-S.t;intro.a.time=intro.loop?e%intro.dur:clamp(intro.dur-(WALK.dur-.25-e),0,intro.dur-.01);intro.a.setEffectiveWeight(1); // a walk-in is timed to arrive in the box as the intro ends
@@ -1522,7 +1528,7 @@ function loadPlayers(kind){ // body file = character mesh; clips.json = motion-c
   Promise.all([loadBuf(cfg.body),clipsP,imgs,own]).then(([bb,cj0,im,oc])=>{const cj=Object.assign({},cj0,oc||{});
     if(my!==MX.token)return;                                   // switched again while loading
     const skins=im?makeSkins(im):null,make=names=>{const o=new T.FBXLoader().parse(bb,'');o.animations=names.map(n=>mkClip(cj[n],n));return o;};
-    try{setupModel(make(['hit','idle','strike',...Object.keys(cj).filter(k=>/^w_/.test(k))]),skins&&skins.home);}catch(e){console.warn('batter model failed, using built-in figure',e);fallback(batter);}
+    try{setupModel(make(['hit','idle','strike',...Object.keys(cj).filter(k=>/^[wd]_/.test(k))]),skins&&skins.home);}catch(e){console.warn('batter model failed, using built-in figure',e);fallback(batter);}
     playersDone();
     try{setupPitcher(make(['pitch']),skins&&skins.away);}catch(e){console.warn('pitcher model failed, using built-in figure',e);fallback(pitcher);}
     // fielders are built one at a time so the page doesn't freeze while seven more models are prepared
@@ -1727,6 +1733,9 @@ function updateCamera(rdt){
   if(!DBG.cam)applyCam();
   if(S.state==='flight'&&flight&&!flight.done&&now-flight.t0>.02)camMode='chase';
   if(DBG.cam){camPos.copy(CAM_HOME);camLook.copy(CAM_LOOK);}
+  else if(S.kOut&&MX.clip&&MX.clip.bi===S.kOut.bi&&now>S.kOut.t&&now<S.kOut.t+DEFEAT&&S.state==='result'){ // strikeout: close on the hitter from the pitcher's side
+    const e=clamp((now-S.kOut.t)/DEFEAT,0,1);MX.clip.hips.getWorldPosition(_a);const sd=_a.x<0?1:-1;
+    camLook.set(_a.x,1.2,_a.z);camPos.set(_a.x+sd*lerp(1.5,1.0,ease(e)),1.25,_a.z-lerp(3.2,2.5,ease(e)));}
   else if(S.state==='walkup'&&MX.clip){ // from the pitcher's side, across the plate: his front three-quarter, with the stands behind him
     const e=clamp((now-S.t)/WALK.dur,0,1);MX.clip.hips.getWorldPosition(_a);const sd=_a.x<0?1:-1;
     camLook.set(_a.x,1.1,_a.z);camPos.set(sd*lerp(2.3,1.7,ease(e)),1.0+.2*e,_a.z-lerp(3.6,2.6,ease(e)));}
