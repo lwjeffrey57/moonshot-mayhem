@@ -970,7 +970,8 @@ function hud(){
 }
 const juiceOn=()=>juiceArmed||keys.ShiftLeft||keys.ShiftRight;
 function setBatter(){
-  S.bi++;const b=curBatter();S.balls=0;S.strikes=0;
+  S.bi++;const b=curBatter();S.balls=0;S.strikes=0;aim.x=0;aim.y=.825; // every hitter starts with the ring in the middle of the zone
+ 
   paintJersey(batter,Object.assign({name:b.name,num:b.num},HOME));paintSkin(batter,b.skin);if(MX.ready)paintAtlas(b);
   $('cnum').textContent=b.num;$('cname').textContent=b.name+(b.lh?' · L':' · R');$('spw').style.width=((b.pwr-.85)/.35*100)+'%';$('sco').style.width=((b.con-.85)/.3*100)+'%';$('ssp').style.width=((b.spd-.85)/.3*100)+'%';
   readyDur=1.7;S.fresh=true;
