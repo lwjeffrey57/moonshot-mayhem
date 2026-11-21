@@ -279,6 +279,14 @@ body.mob #tip{display:block}body.mob .how{display:none}
 #tut.s3 .spot::before{border:3px solid #fff;background:rgba(255,255,255,.4)}
 #tut.s3 .spot::after{border:3px solid var(--volt);animation:tutring 1.8s linear infinite}
 @keyframes tutring{0%{transform:scale(6);opacity:0;border-width:.6px}10%{opacity:1}72%{transform:scale(1);border-color:var(--volt);border-width:3px}74%,100%{transform:scale(1);border-color:#fff;border-width:3px;opacity:1}}
+/* step 2 demo: a ball lands in the green zone and CONTACT lights up, then in the red core and POWER lights up */
+#tut.s2 .spot::before{content:'';position:absolute;left:var(--tx,50%);top:var(--ty,50%);box-sizing:border-box;width:calc(var(--tr,14px)*2);height:calc(var(--tr,14px)*2);margin:calc(var(--tr,14px)*-1);border-radius:50%;border:3px solid #fff;background:rgba(255,255,255,.6);animation:tutball 3.4s ease-in-out infinite}
+@keyframes tutball{0%{transform:translate(var(--gx,30px),calc(var(--gx,30px)*-.4));opacity:0}8%,42%{transform:translate(var(--gx,30px),calc(var(--gx,30px)*-.4));opacity:1}54%,90%{transform:none;opacity:1}100%{transform:none;opacity:0}}
+#hud.tut2 #tc{animation:tutbA 3.4s ease-in-out infinite}#hud.tut2 #tp{animation:tutbB 3.4s ease-in-out infinite}
+@keyframes tutbA{0%,6%{opacity:.4;transform:none}12%,40%{opacity:1;transform:scale(1.1);box-shadow:0 4px 0 #000,0 0 26px 8px rgba(61,220,106,.95)}48%,100%{opacity:.4;transform:none}}
+@keyframes tutbB{0%,50%{opacity:.4;transform:none}58%,88%{opacity:1;transform:scale(1.1);box-shadow:0 4px 0 #000,0 0 26px 8px rgba(255,90,50,.95)}96%,100%{opacity:.4;transform:none}}
+#tut.s2 .lc{animation:tutlA 3.4s ease-in-out infinite}#tut.s2 .lp{animation:tutlB 3.4s ease-in-out infinite}
+@keyframes tutlA{0%,6%{opacity:.35}12%,40%{opacity:1}48%,100%{opacity:.35}}@keyframes tutlB{0%,50%{opacity:.35}58%,88%{opacity:1}96%,100%{opacity:.35}}
 /* step 2: the two swing buttons stay lit under the dimming, each labelled with its part of the bat */
 #hud.tut2 #touch{z-index:31;pointer-events:none}#hud.tut2 #touch .jc{opacity:.15;animation:none}
 #tut .lbl{font-size:15px;white-space:nowrap;transform:translateX(-50%)}#tut .lbl span{display:block;font-size:20px;line-height:.9;animation:tutbob 1s ease-in-out infinite}
@@ -379,7 +387,7 @@ body.mob #tip{display:block}body.mob .how{display:none}
       <div class="tz off" id="tutoff">Don't show tutorials again</div>
       <div class="tz aimz"><b>LEFT THUMB: AIM</b>Drag here (or anywhere) to move the ring onto the pitch</div>
       <div class="tz pcz"><b><span style="color:#3ddc6a">GREEN = CONTACT</span> · <span style="color:#ff6a4a">RED = POWER</span></b>Each swing has its own zone on your bat<small>Get the ball inside the green ring for a CONTACT swing, or inside the red core for a POWER swing. Closer to the middle = better contact.</small></div>
-      <div class="tz lbl lc" id="tlc">GREEN RING<span>▼</span></div><div class="tz lbl lp" id="tlp">RED CORE<span>▼</span></div>
+      <div class="tz lbl lc" id="tlc">IN THE GREEN<span>▼</span></div><div class="tz lbl lp" id="tlp">IN THE RED<span>▼</span></div>
       <div class="tz tmz"><b>YELLOW RING = TIMING</b>It shrinks onto a white circle the size of the ball<small>Ring still bigger than the ball: too early. Ring meets the circle: swing. Move your bat onto it first.</small></div>
       <div class="tz swz"><b>RIGHT THUMB: SWING</b>Tap as the yellow ring closes on the ball<small>CONTACT is easier and hits line drives. POWER is harder and hits moonshots.</small></div>
       <div class="tz jcz"><b>JUICE: MONSTER SWING</b>Tap JUICE, then swing. Costs one bar<small>Hits and taking balls refill it. Save it for a pitch you can drive.</small></div>
@@ -1068,7 +1076,7 @@ function tutShow(mode){const T=$('tut');T.className=mode;T.hidden=false;tutHold=
     const H=canvas.clientHeight,W=canvas.clientWidth,a=new V3(ZONE.x0,ZONE.y1,0).project(camera),b=new V3(ZONE.x1,ZONE.y0,0).project(camera),pad=16;
     const l=(a.x+1)/2*W-pad,t=(1-a.y)/2*H-pad,r=(b.x+1)/2*W+pad,bt=(1-b.y)/2*H+pad;
     aim.x=0;aim.y=.825;reticle.position.set(0,.825,0);const c0=new V3(0,.825,0).project(camera); // bat dead centre for the demo; the ball marker is placed on that exact point (4 = the spotlight's border)
-    sp.style.cssText='left:'+l+'px;top:'+t+'px;width:'+(r-l)+'px;height:'+(bt-t)+'px;--tr:'+(PT_R*(r-l-2*pad)/(ZONE.x1-ZONE.x0)).toFixed(1)+'px;--tx:'+((c0.x+1)/2*W-l-4).toFixed(1)+'px;--ty:'+((1-c0.y)/2*H-t-4).toFixed(1)+'px';T.querySelector(n===2?'.pcz':'.tmz').style.bottom=(H-t+16)+'px';}}
+    sp.style.cssText='left:'+l+'px;top:'+t+'px;width:'+(r-l)+'px;height:'+(bt-t)+'px;--tr:'+(PT_R*(r-l-2*pad)/(ZONE.x1-ZONE.x0)).toFixed(1)+'px;--tx:'+((c0.x+1)/2*W-l-4).toFixed(1)+'px;--ty:'+((1-c0.y)/2*H-t-4).toFixed(1)+'px;--gx:'+((retC.scale.x+retP.scale.x)/2*(r-l-2*pad)/(ZONE.x1-ZONE.x0)).toFixed(1)+'px';T.querySelector(n===2?'.pcz':'.tmz').style.bottom=(H-t+16)+'px';}}
 function tutClose(){$('hud').classList.remove('tut2');$('tut').hidden=true;tutHold=false;if(tutFirst){tutFirst=false;S.t=now-readyDur+.7;}}
 function jtutNeed(){if(tutOff||jtutSeen||window.__mmManual&&!window.__mmTut)return false;jtutSeen=true;tutFirst=true;tutShow('j');try{localStorage.setItem('mm_jtut','1');}catch(e){}return true;}
 let otutSeen=!MOB;try{if(!TUT_EVERY_LAUNCH&&localStorage.getItem('mm_otut')==='1')otutSeen=true;}catch(e){}
