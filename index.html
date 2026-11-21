@@ -614,7 +614,7 @@ function makeFx(n,size){
       q.vy-=q.gr*dt;pos[j]+=q.vx*dt;pos[j+1]+=q.vy*dt;pos[j+2]+=q.vz*dt;const a=q.l/q.m;col[j]=q.r*a;col[j+1]=q.g*a;col[j+2]=q.b*a;}
       g.attributes.position.needsUpdate=true;g.attributes.color.needsUpdate=true;}};
 }
-const fxS=makeFx(500,.13),fxL=makeFx(900,2.2);
+const fxS=makeFx(900,.13),fxL=makeFx(900,2.2),fxT=makeFx(2600,.55);
 const _v=new V3(),_p=new V3();
 function burst(fx,p,n,sp,life,col,gr=0,up=0){for(let i=0;i<n;i++){_v.set(rand(-1,1),rand(-1,1),rand(-1,1)).normalize().multiplyScalar(sp*rand(.3,1));_v.y+=up;fx.emit(p,_v,life*rand(.5,1),col[0],col[1],col[2],gr);}}
 const fireworks=[];
@@ -1040,7 +1040,6 @@ function updateClip(dt){
     if(C.swap>=.2&&C.bi!==S.bi){C.bi=S.bi;MX.lefty=!!curBatter().lh;C.mode='idle';C.h=0;C.sk=0;C.t=0;}
     batterOpacity(C.swap<.2?1-C.swap/.2:Math.min(1,(C.swap-.2)/.25));
     if(C.swap>=.45){C.swap=null;batterOpacity(1);}}
-  if(!DBG.cam){CAM_HOME.x=MX.lefty?.15:-.15;CAM_LOOK.x=MX.lefty?-.3:.3;} // lefties stand in the other box, so the camera moves to their side
   const incoming=S.state==='pitch'||(S.state==='windup'&&now-windupT0>C.loadAt);
   if(swing&&C.sw!==swing){C.sw=swing;C.c0=C.t;C.mode='swing';}
   if(C.mode==='swing'){const ts=now-C.sw.t0;
@@ -1326,7 +1325,19 @@ function updateFielders(dt){
     }
   }
 }
-function trail(p,c,big){_v.set(rand(-.3,.3),rand(-.3,.3),rand(-.3,.3));(big?fxL:fxS).emit(p,_v,big?.45:.22,c[0],c[1],c[2]);}
+// A thin flame ribbon behind the ball: small particles laid end to end along its path, a hot core that
+// dies quickly and a cooler tail that lingers, so the trail tapers instead of ballooning.
+const _tp=new V3();
+function trail(o,c,far,hot){
+  const p=ball.position,lp=o.lp||(o.lp=p.clone()),d=lp.distanceTo(p);
+  if(d>12){lp.copy(p);return;}
+  const fx=far?fxT:fxS,step=far?.16:.05,n=Math.min(40,Math.max(1,Math.round(d/step))),j=far?.05:.012;
+  for(let i=1;i<=n;i++){_tp.lerpVectors(lp,p,i/n);_tp.x+=rand(-j,j);_tp.y+=rand(-j,j);_tp.z+=rand(-j,j);_v.set(rand(-.15,.15),rand(-.05,.3),rand(-.15,.15));
+    if(hot){fx.emit(_tp,_v,rand(.45,.8),c[0],c[1]*.55,c[2]*.4);                               // cooler, longer tail
+      if(i%2===0)fx.emit(_tp,_v,rand(.1,.2),Math.min(1,c[0]+.5),Math.min(1,c[1]+.5),Math.min(1,c[2]+.45));}  // bright core
+    else fx.emit(_tp,_v,rand(.12,.22),c[0]*.6,c[1]*.6,c[2]*.6);}
+  lp.copy(p);
+}
 
 function step(dt){
   // aim by keyboard
@@ -1351,7 +1362,7 @@ function step(dt){
     ball.scale.setScalar(1);ballShadow.position.set(ball.position.x,.03,ball.position.z);ballShadow.scale.setScalar(.16);
     const show=u>(pitch.P.sp?.42:.22)&&u<1;pring.visible=show;
     if(show){pring.position.set(pitch.tx,pitch.ty,0);const r=lerp(.42,.055,ease(clamp((u-.22)/.78,0,1)));pring.scale.setScalar(r);pring.material.color.setHex(u>.86?0xff4d2e:0xffe53b);}
-    if(pitch.P.col&&u<1)trail(ball.position,pitch.P.col,false);
+    if(pitch.P.col&&u<1)trail(pitch,pitch.P.col,u<.75,true);
     if(u>=1&&!pitch.called){pitch.called=true;
       $('pitchinfo').textContent=`${pitch.P.n} · ${Math.round(18.4/pitch.dur*2.237*1.52)} MPH`;$('pitchinfo').classList.add('on');}
     if(u>=1.07){ball.visible=false;ballShadow.visible=false;SND.mitt();
@@ -1369,8 +1380,8 @@ function step(dt){
     if(tr.land&&!flight.landed&&tf>=tr.land.t){flight.landed=true;_p.set(tr.land.x,.05,tr.land.z);burst(fxL,_p,10,3,.5,[.75,.6,.42],4,2);} // dust where it comes down, so fair or foul is clear
     const dc=camera.position.distanceTo(ball.position);ball.scale.setScalar(Math.max(1,dc*.05));
     ballShadow.visible=true;ballShadow.position.set(p.x,.03,p.z);ballShadow.scale.setScalar(.2+Math.min(1.2,p.y*.03));
-    trail(ball.position,flight.trailC,dc>9);if(flight.tb)trail(ball.position,[1,.8,.2],dc>9);
-    ballGlow.position.copy(ball.position);ballGlow.material.opacity=flight.tb||S.over?.8:flight.q>.75?.4:0;ballGlow.scale.setScalar(Math.max(.5,dc*.09));
+    trail(flight,flight.trailC,dc>9,flight.tb||S.over||(flight.pw&&flight.q>.75));
+    ballGlow.position.copy(ball.position);ballGlow.material.opacity=flight.tb||S.over?.8:flight.q>.75?.4:0;ballGlow.scale.setScalar(Math.max(.3,dc*.04));
     ballGlow.material.color.setHex(flight.tb?0xff6a1a:S.over?0x3ad6ff:0xffe53b);
     if(flight.play.type==='hr'&&!flight.called&&tf>=tr.hrT-.9){flight.called=true;pop("OUTTA HERE!",'','hot');SND.boom();}
     if(tf>=flight.play.endT){
@@ -1384,7 +1395,7 @@ function step(dt){
   if(shock.userData.t!==undefined&&shock.userData.t<.3){shock.userData.t+=dt;const k=shock.userData.t/.3;shock.scale.setScalar(.06+k*shock.userData.s*.9);shock.material.opacity=(1-k)*.9;}else shock.material.opacity=0;
 
   updateBatter(dt);updatePitcher();updateFielders(dt);
-  fxS.update(dt);fxL.update(dt);
+  fxS.update(dt);fxL.update(dt);fxT.update(dt);
 
   // reticle
   const b=S.bi>=0?curBatter():LINEUP[0],tb=juiceOn()&&S.juice>=.333;
