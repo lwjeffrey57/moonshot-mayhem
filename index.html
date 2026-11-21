@@ -125,7 +125,10 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 #hud>#card .stats{display:block}
 #hud>#card .stat{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:800;letter-spacing:.1em;color:var(--dim)}
 #hud>#card .stat b{width:64px;height:5px;border:0;background:rgba(242,245,255,.15)}
-#keys{bottom:98px}
+#keys{bottom:124px}
+#plast{bottom:14px;left:50%;transform:translateX(-50%);font-family:var(--display);font-style:italic;font-size:17px;letter-spacing:.06em;color:var(--volt);text-shadow:0 2px 0 #000,0 0 6px #000;opacity:0;transition:opacity .2s;white-space:nowrap}
+#plast.on{opacity:1}
+#hud.wk #plast{visibility:hidden}
 #hud.wk #card{visibility:hidden}
 @media (max-width:560px){#hud>#card .stats{display:none}}
 /* walk-up card */
@@ -219,6 +222,7 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
     </svg>
     <div id="card" class="slab"><span id="cnum">27</span><div><div id="cname">VASQUEZ</div>
       <div class="stats"><div class="stat">PWR <b><i id="spw"></i></b></div><div class="stat">CON <b><i id="sco"></i></b></div><div class="stat">SPD <b><i id="ssp"></i></b></div></div></div></div>
+    <div id="plast"></div>
     <div id="rep" hidden><div class="cap">PITCHES</div><div id="replist" class="pills"></div></div>
     <div id="keys" class="pills"><div class="pill">CONTACT<span class="k">CLICK</span></div><div class="pill">POWER<span class="k">R-CLICK</span></div><div class="pill dk">JUICE<span class="k">SHIFT</span></div><div class="pill dk">PAUSE<span class="k">ESC</span></div></div>
     <button id="pausebtn" type="button" aria-label="Pause game" hidden>❚❚</button>
@@ -501,6 +505,26 @@ gl_FragColor=vec4(col*mix(dg,dd,m)*vL,1.0);
     // foul pole
     const pole=new T.Mesh(new T.CylinderGeometry(.25,.25,26,6),new T.MeshBasicMaterial({color:0xffe53b}));pole.position.copy(pol(99.3,s*PI/4,13));scene.add(pole);
   });
+  // backstop behind home plate: padded wall, netting on posts, and the seats behind it (closes the gap between the two foul-side stands)
+  {const P=(x,y,z)=>new V3(x,y,z),quad=(a,b,c,d,mat)=>scene.add(new T.Mesh(ribbon([a,b],[c,d],1),mat));
+    const pad=tex(256,64,(g,w,h)=>{const bg=g.createLinearGradient(0,0,0,h);bg.addColorStop(0,'#1c4a36');bg.addColorStop(1,'#0f2c20');g.fillStyle=bg;g.fillRect(0,0,w,h);
+      for(let x=0;x<w;x+=32){g.fillStyle='rgba(0,0,0,.35)';g.fillRect(x,0,2,h);g.fillStyle='rgba(255,255,255,.06)';g.fillRect(x+2,0,2,h);}g.fillStyle='#e8c92a';g.fillRect(0,0,w,6);});
+    pad.wrapS=T.RepeatWrapping;pad.repeat.set(1/6,1);pad.anisotropy=ANISO;
+    quad(P(-13,0,13),P(13,0,13),P(-13,1.9,13),P(13,1.9,13),basic({map:pad}));
+    const net=tex(128,128,(g)=>{g.clearRect(0,0,128,128);g.strokeStyle='rgba(225,230,245,.5)';g.lineWidth=1.3;for(let i=0;i<=128;i+=16){g.beginPath();g.moveTo(i,0);g.lineTo(i,128);g.moveTo(0,i);g.lineTo(128,i);g.stroke();}});
+    net.wrapS=net.wrapT=T.RepeatWrapping;net.repeat.set(1/1.2,9);net.anisotropy=ANISO;
+    quad(P(-13,1.9,13),P(13,1.9,13),P(-13,12,13),P(13,12,13),new T.MeshBasicMaterial({map:net,transparent:true,depthWrite:false,side:T.DoubleSide}));
+    const post=new T.MeshBasicMaterial({color:0x2c2a4a});[-13,-4.4,4.4,13].forEach(x=>{const m=new T.Mesh(new T.BoxGeometry(.22,12,.22),post);m.position.set(x,6,13.05);scene.add(m);});
+    {const m=new T.Mesh(new T.BoxGeometry(26.2,.22,.22),post);m.position.set(0,12,13.05);scene.add(m);}
+    quad(P(-13,1.9,14),P(13,1.9,14),P(-34,23,47),P(34,23,47),cm);                                   // lower deck
+    quad(P(-34,23,43),P(34,23,43),P(-34,30,43),P(34,30,43),basic({color:0x1a1838}));                // fascia
+    quad(P(-34,27.6,42.95),P(34,27.6,42.95),P(-34,29.2,42.95),P(34,29.2,42.95),basic({color:0xff4d2e}));
+    quad(P(-34,30,43),P(34,30,43),P(-50,52,71),P(50,52,71),cm);                                     // upper deck
+    [-1,1].forEach(sg=>{ // corner sections joining these seats to the foul-side stands
+      quad(P(sg*13,1.9,13.6),P(sg*13,1.9,13.6),P(sg*42.4,23,30),P(sg*34,23,47),cm);
+      quad(P(sg*39,23,28),P(sg*34,23,43),P(sg*39,30,28),P(sg*34,30,43),basic({color:0x1a1838}));
+      quad(P(sg*39,30,28),P(sg*34,30,43),P(sg*63.2,52,42),P(sg*50,52,71),cm);});
+  }
 }
 // light towers + scoreboard
 const towerGlows=[];
@@ -823,7 +847,6 @@ function renderRep(last){ // the pitcher's repertoire: movement, name, typical s
   const arrows=['→','↗','↑','↖','←','↙','↓','↘'];
   $('replist').innerHTML=PITCHES.map(P=>{const m=Math.hypot(P.brk[0],P.brk[1]),a=m<.1?'•':arrows[((Math.round(Math.atan2(P.brk[1],P.brk[0])/(PI/4))%8)+8)%8];
     return `<div class="pill${P.sp?' sp':''}${P===last?' last':''}"><span class="k">${P.wob?'~':a}</span>${P.n}<b>${pitchMph(P.dur*inningSp())}</b></div>`;}).join('');
-  $('rep').hidden=false;
 }
 function payHeat(){if(pitch&&pitch.P.sp&&!pitch.paid){pitch.paid=true;S.heat=Math.max(0,S.heat-.3334);hud();}}
 function choosePitch(){
@@ -925,7 +948,7 @@ function tryContact(){
   const v0=new V3(Math.sin(phi*DEG)*Math.cos(la*DEG),Math.sin(la*DEG),-Math.cos(phi*DEG)*Math.cos(la*DEG)).multiplyScalar(v);
   const tr=simulate(p0,v0,spin),play=judge(tr,b);
   flight={tr,play,t0:now,q,pw,tb,v,done:false,called:false,trailC:tb?[1,.45,.1]:S.over?[.25,.8,1]:pw&&q>.75?[1,.85,.25]:[.5,.5,.55]};
-  pitch.hit=true;pring.visible=false;S.state='flight';payHeat();$('mph').textContent=pitchMph(pitch.dur);$('pitchinfo').classList.add('on');renderRep(pitch.P);
+  pitch.hit=true;pring.visible=false;S.state='flight';payHeat();$('mph').textContent=pitchMph(pitch.dur);$('plast').textContent=pitch.P.n+' · '+pitchMph(pitch.dur)+' MPH';$('pitchinfo').classList.add('on'),$('plast').classList.add('on');renderRep(pitch.P);
   if(tb){S.juice=Math.max(0,S.juice-.3334);juiceArmed=false;}
   // ── the payoff
   hitstop=(.045+.14*q*(pw?1:.6)+(tb?.06:0))*(REDUCE?.5:1);
@@ -1039,7 +1062,7 @@ function setPaused(on){
 }
 function toMenu(){
   setPaused(false);fireworks.length=0;toReady();S.state='title';
-  $('over').hidden=true;$('title').hidden=false;$('pausebtn').hidden=true;$('rep').hidden=true;$('walk').hidden=true;$('hud').classList.remove('wk');$('pop').className='';$('tim').className='';$('pitchinfo').classList.remove('on');
+  $('over').hidden=true;$('title').hidden=false;$('pausebtn').hidden=true;$('rep').hidden=true;$('walk').hidden=true;$('hud').classList.remove('wk');$('pop').className='';$('tim').className='';$('pitchinfo').classList.remove('on'),$('plast').classList.remove('on');
   scoreboard('MOONSHOT','MAYHEM');
   try{const b=+localStorage.getItem('mm_best')||0;if(b)$('best').textContent='Best game: '+b+' runs';}catch(e){}
 }
@@ -1163,20 +1186,23 @@ function setupClip(obj,clip,B,sk){
   // keep him in the batter's box: measure where his feet are in the stance and at contact, and back him off the plate if needed
   {const v=new V3();let fx=-1e9;const feet=['LeftFoot','RightFoot','LeftToeBase','RightToeBase'].map(B).filter(Boolean),far=()=>feet.forEach(f=>{fx=Math.max(fx,f.getWorldPosition(v).x);});
     probe(ic||clip,at=>{at(0);far();});probe(clip,at=>{at(tC);far();});
-    C.backOff=Math.min(0,BOX_EDGE-fx);obj.position.x+=C.backOff;C.baseX=obj.position.x;}
+    C.backOff=Math.min(0,BOX_EDGE-fx);obj.position.x+=C.backOff;C.baseX=obj.position.x;C.baseZ=obj.position.z;}
   if(sc){C.tCs=contact(sc,.4,1.8,1.1);C.sDur=sc.duration;}
   const mixer=C.mixer=new T.AnimationMixer(obj);
   C.hit=mixer.clipAction(clip);C.hit.play();
   if(ic){C.idle=mixer.clipAction(ic);C.idle.play();C.idleDur=ic.duration;}
   if(sc){C.strike=mixer.clipAction(sc);C.strike.play();C.strike.setEffectiveWeight(0);}
-  C.intros={};obj.animations.filter(c=>/^w_/.test(c.name)).forEach(c=>{keep(c);const a=mixer.clipAction(c);a.play();a.setEffectiveWeight(0);C.intros[c.name]={a,dur:c.duration};});
+  // intros stay in the batter's box: work out how far each clip sits (or finishes) from where he stands in his stance
+  const hipsAt=(c,ts)=>{const v=new V3(),sum=new V3();probe(c,at=>ts.forEach(t=>{at(t);C.hips.getWorldPosition(v);sum.add(v);}));return sum.multiplyScalar(1/ts.length);},home=hipsAt(ic||clip,[0]);
+  C.intros={};obj.animations.filter(c=>/^w_/.test(c.name)).forEach(c=>{keep(c);const loop=c.duration<2.5,ref=hipsAt(c,loop?[0,1,2,3,4,5,6,7].map(k=>k/8*c.duration):[c.duration-.02]);
+    const a=mixer.clipAction(c);a.play();a.setEffectiveWeight(0);C.intros[c.name]={a,dur:c.duration,loop,off:{x:home.x-ref.x,z:home.z-ref.z}};});
 }
 const WHIFF_HOLD=1.15; // seconds of the swing-and-miss clip shown after the miss before he resets
 function batterOpacity(k){const set=m=>{if(m){m.transparent=k<1;m.opacity=k;}};
   if(MX.obj)MX.obj.traverse(n=>{if(n.isMesh)[].concat(n.material).forEach(set);});set(bat.userData.wood);}
 function updateClip(dt){
   const C=MX.clip,o=MX.obj;let w=0,want=0,rate=.55,skT=0;
-  o.scale.x=Math.abs(o.scale.x);o.position.x=C.baseX; // everything below is worked out right-handed; a lefty is mirrored at the end
+  o.scale.x=Math.abs(o.scale.x);o.position.x=C.baseX;o.position.z=C.baseZ; // everything below is worked out right-handed; a lefty is mirrored at the end
   // The next hitter is announced as soon as a play ends, but the man on screen is still the one who just swung.
   // Keep showing him (and his side of the plate) until he is back in his stance, then fade to the new batter.
   if(S.bi>=0&&C.bi!==S.bi){
@@ -1206,7 +1232,8 @@ function updateClip(dt){
   // walk-up: his intro clip takes over; he stays facing the pitcher, so it plays as a taunt
   const intro=S.state==='walkup'&&C.bi===S.bi?C.intros[WALK.by[curBatter().name]]:null,base=intro?0:1;
   for(const k in C.intros)C.intros[k].a.setEffectiveWeight(0);
-  if(intro){const e=now-S.t;intro.a.time=intro.dur<2.5?e%intro.dur:Math.min(intro.dur-.01,e);intro.a.setEffectiveWeight(1);
+  if(intro){const e=now-S.t;intro.a.time=intro.loop?e%intro.dur:clamp(intro.dur-(WALK.dur-.25-e),0,intro.dur-.01);intro.a.setEffectiveWeight(1); // a walk-in is timed to arrive in the box as the intro ends
+    o.position.x+=intro.off.x;o.position.z+=intro.off.z;
     const rem=WALK.dur-e;if(rem<.2&&C.swap==null)batterOpacity(Math.max(0,rem/.2));}
   C.hit.time=C.t;C.hit.setEffectiveWeight(base*hw*(1-C.sk));
   if(C.strike){C.strike.time=C.st;C.strike.setEffectiveWeight(base*hw*C.sk);}
@@ -1218,7 +1245,7 @@ function updateClip(dt){
   o.updateMatrixWorld(true);clipBat();
   if(MX.lefty){ // mirror the batter and his bat across the plate
     bat.position.x*=-1;_bd.x*=-1;bat.quaternion.setFromUnitVectors(UP,_bd);bat.updateMatrixWorld(true);
-    o.scale.x=-o.scale.x;o.position.x=-C.baseX;o.updateMatrixWorld(true);}
+    o.scale.x=-o.scale.x;o.position.x=-o.position.x;o.updateMatrixWorld(true);}
 }
 function prepModel(obj,tx,custom){ // dress + bulk a Mixamo mannequin; returns its skeleton helpers and measurements
   const s=.87/88.9;
@@ -1498,7 +1525,7 @@ function step(dt){
   const kx=(keys.ArrowRight||keys.KeyD?1:0)-(keys.ArrowLeft||keys.KeyA?1:0),ky=(keys.ArrowUp||keys.KeyW?1:0)-(keys.ArrowDown||keys.KeyS?1:0);
   if(kx||ky)setAim(aim.x+kx*1.5*dt,aim.y+ky*1.5*dt);
   const st=S.state,el=now-S.t;
-  if(st==='ready'&&el>=readyDur){S.state='windup';windupT0=now;released=false;S.fresh=false;pitch=choosePitch();S.pitches++;readyDur=1.15;$('pitchinfo').classList.remove('on');}
+  if(st==='ready'&&el>=readyDur){S.state='windup';windupT0=now;released=false;S.fresh=false;pitch=choosePitch();S.pitches++;readyDur=1.15;$('pitchinfo').classList.remove('on'),$('plast').classList.remove('on');}
   else if(st==='windup'&&now-windupT0>=1.0){
     if(MX.pit&&MX.on){MX.pit.obj.updateMatrixWorld(true);MX.pit.hand.getWorldPosition(pitch.rel);}else{pitcher.root.updateMatrixWorld(true);pitcher.handR.getWorldPosition(pitch.rel);}pitch.t0=now;S.state='pitch';ball.visible=true;ballShadow.visible=true;
   }
@@ -1518,8 +1545,8 @@ function step(dt){
     if(show){pring.position.set(pitch.tx,pitch.ty,0);const r=lerp(.42,.055,ease(clamp((u-.22)/.78,0,1)));pring.scale.setScalar(r);pring.material.color.setHex(u>.86?0xff4d2e:0xffe53b);}
     if(pitch.P.col&&u<1)trail(pitch,pitch.P.col,u<.75,true);
     if(u>=1&&!pitch.called){pitch.called=true;
-      payHeat();$('mph').textContent=pitchMph(pitch.dur);
-      {const d=$('zdot');d.hidden=false;d.style.left=clamp(50+pitch.tx/.28*33,4,96)+'%';d.style.top=clamp(50-(pitch.ty-.825)/.325*33,4,96)+'%';d.className=pitch.inZone?'':'out';}$('pitchinfo').classList.add('on');renderRep(pitch.P);}
+      payHeat();$('mph').textContent=pitchMph(pitch.dur);$('plast').textContent=pitch.P.n+' · '+pitchMph(pitch.dur)+' MPH';
+      {const d=$('zdot');d.hidden=false;d.style.left=clamp(50+pitch.tx/.28*33,4,96)+'%';d.style.top=clamp(50-(pitch.ty-.825)/.325*33,4,96)+'%';d.className=pitch.inZone?'':'out';}$('pitchinfo').classList.add('on'),$('plast').classList.add('on');renderRep(pitch.P);}
     if(u>=1.07){ball.visible=false;ballShadow.visible=false;SND.mitt();
       _p.copy(ball.position);burst(fxS,_p,8,2,.3,[.8,.7,.5],3);
       if(swing){strike('swing');}
