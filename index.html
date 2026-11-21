@@ -1225,8 +1225,10 @@ function updateClip(dt){
   if(S.bi>=0&&C.bi!==S.bi){
     if(C.bi===undefined){C.bi=S.bi;MX.lefty=!!curBatter().lh;}
     else if(C.swap==null&&((C.mode==='idle'&&C.h<=.001)||(S.state==='ready'&&now-S.t>.6)||S.state==='walkup'))C.swap=0;}
-  if(C.swap!=null){C.swap+=dt;
-    if(C.swap>=.2&&C.bi!==S.bi){C.bi=S.bi;MX.lefty=!!curBatter().lh;C.mode='idle';C.h=0;C.sk=0;C.t=0;}
+  // if the next hitter has a walk-up coming, the box stays empty after the last man fades out; he first appears in his intro
+  const waitWalk=S.bi>=0&&C.bi!==S.bi&&S.state!=='walkup'&&WALK.on&&S.fresh&&!S.seen[S.bi%LINEUP.length]&&!!C.intros[WALK.by[curBatter().name]];
+  if(C.swap!=null){C.swap+=dt;if(waitWalk)C.swap=Math.min(C.swap,.2);
+    if(C.swap>=.2&&C.bi!==S.bi&&!waitWalk){C.bi=S.bi;MX.lefty=!!curBatter().lh;C.mode='idle';C.h=0;C.sk=0;C.t=0;}
     batterOpacity(C.swap<.2?1-C.swap/.2:Math.min(1,(C.swap-.2)/.25));
     if(C.swap>=.45){C.swap=null;batterOpacity(1);}}
   const incoming=S.state==='pitch'||(S.state==='windup'&&now-windupT0>C.loadAt);
