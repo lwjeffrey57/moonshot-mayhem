@@ -821,6 +821,7 @@ const SND={
   crack(q,power){noise(.07,'bandpass',2400,900,.9*q+.3,1.2);tone('triangle',1100,260,.06,.5*q+.2);tone('square',520,140,.04,.12);
     if(power&&q>.6){tone('sine',150,38,.5,.9*q);noise(.35,'lowpass',900,120,.5*q);}},
   whoosh(){if(!sfx('swing'+(1+(Math.random()*4|0)),.8,rand(.94,1.08)))noise(.2,'bandpass',300,1900,.35,1.5);},
+  pitch(){if(!sfx('swing'+(1+(Math.random()*4|0)),.5,rand(1.15,1.35)))noise(.16,'bandpass',500,2400,.22,1.5);}, // the ball leaving the pitcher's hand: same whoosh for every pitch, so it gives nothing away
   mitt(){noise(.06,'lowpass',1400,300,.7);tone('sine',190,90,.09,.5);},
   call(hi){if(sfx(hi?'ball':'strike',.9))return;tone('square',hi?620:300,hi?620:240,.09,.12);tone('square',hi?830:220,hi?830:180,.14,.12,.1);},
   boom(){tone('sine',90,30,.6,.6);noise(.5,'bandpass',2400,5000,.18,.6,.05);},
@@ -883,14 +884,34 @@ function basePos(sv,out){const i=clamp(Math.floor(sv),0,3),u=sv-i;return out.set
 function setupRunners(make,skins){
   RUN.pose=pose({y:.88,lean:.22,hL:[-.3,0,.3],kL:.5,hR:[-.3,0,-.3],kR:.5,sL:[-.2,0,.25],eL:-.5,sR:[-.2,0,-.25],eR:-.5}); // a short lead: knees bent, hands loose
   for(let i=0;i<4;i++){const R={fig:mkFielder('RUN',i),s:0,target:0,active:false,jog:false,delay:0};R.fig.root.scale.setScalar(1.25);R.fig.root.visible=false;scene.add(R.fig.root);
-    setupFielder(R,make(['run','jog']),skins.home,true);
+    setupFielder(R,make(['run','jog','turn','c_fist']),skins.home,true);
+    const still=name=>{const c=R.obj.animations.find(c=>c.name===name);if(!c)return null;c.tracks=c.tracks.filter(t=>/quaternion$/.test(t.name)||/Hips\.position$/.test(t.name));
+      const ht=c.tracks.find(t=>/Hips\.position$/.test(t.name));if(ht){const v=ht.values;for(let k=3;k<v.length;k+=3){v[k]=v[0];v[k+2]=v[2];}}const a=R.mixer.clipAction(c);a.dur=c.duration;return a;};
+    R.turnAct=still('turn');R.fistAct=still('c_fist');
     const jc=R.obj.animations.find(c=>c.name==='jog');
     if(jc){jc.tracks=jc.tracks.filter(t=>/quaternion$/.test(t.name)||/Hips\.position$/.test(t.name));const ht=jc.tracks.find(t=>/Hips\.position$/.test(t.name));if(ht){const v=ht.values;for(let k=3;k<v.length;k+=3){v[k]=v[0];v[k+2]=v[2];}}
       R.jogAct=R.mixer.clipAction(jc);R.jogDur=jc.duration;}
     RUN.list.push(R);}
   syncRunners();
 }
-function syncRunners(){const L=RUN.list;L.forEach(R=>{R.keep=false;});
+// ── Home-run trot, shown as a highlight cut on no-doubters: out of the box, rounding second, touching home, then a fist pump on the plate.
+const TROT={dur:5.9,R:null,cam:new V3(),segs:[[0,1.5,.12,.62],[1.5,3.1,1.72,2.34],[3.1,4.3,3.55,3.999]]};
+function startTrot(){const R=RUN.list.find(R=>!R.active)||null;if(!R||!R.jogAct)return false;
+  R.active=true;R.trot=true;R.delay=0;R.s=0;R.target=4;TROT.R=R;S.state='trot';S.t=now;return true;}
+function endTrot(){const R=TROT.R;if(R){R.trot=false;R.active=false;R.fig.root.visible=false;R.obj.scale.x=R.sx;}TROT.R=null;}
+function updateTrot(dt){
+  const R=TROT.R;if(!R||S.state!=='trot')return;const e=now-S.t,root=R.fig.root,seg=TROT.segs.find(g=>e>=g[0]&&e<g[1]);let mode='fist',mir=false;
+  root.visible=true;
+  if(seg){const sv=lerp(seg[2],seg[3],(e-seg[0])/(seg[1]-seg[0]));basePos(sv,_rv);root.position.copy(_rv);
+    basePos(Math.min(3.999,sv+.04),_a);basePos(Math.max(0,sv-.04),_b);root.rotation.y=Math.atan2(_a.x-_b.x,_a.z-_b.z);   // heading follows the path, so it swings round at the bag
+    const near=Math.abs(sv-Math.round(sv))<.17&&Math.round(sv)>0&&Math.round(sv)<4;mode=near&&R.turnAct?'turn':'jog';mir=mode==='turn';
+    basePos(Math.min(3.999,sv+.3),_a);_b.set(_a.x,0,_a.z+19.4).normalize();TROT.cam.set(_a.x+_b.x*3.5,1.5,_a.z+_b.z*3.5);}
+  else{root.position.set(0,0,0);TROT.cam.set(1.2,1.25,-4.2);root.rotation.y=Math.atan2(1.2,-4.2);if(!R.fistAct)mode='jog';}
+  if(mode!==R.mode){R.mode=mode;R.mixer.stopAllAction();(mode==='turn'?R.turnAct:mode==='fist'?R.fistAct:R.jogAct).reset().play();}
+  R.obj.scale.x=R.sx*(mir?-1:1); // the clip turns right; runners turn left
+  const a=mode==='turn'?R.turnAct:mode==='fist'?R.fistAct:R.jogAct,d=mode==='jog'?R.jogDur:a.dur;R.runT=(R.runT+dt*(mode==='jog'?1.25:1))%d;a.time=R.runT;R.mixer.update(0);
+}
+function syncRunners(){const L=RUN.list;TROT.R=null;L.forEach(R=>{R.keep=false;R.trot=false;if(R.obj)R.obj.scale.x=R.sx;});
   for(let b=0;b<3;b++)if(S.bases[b]){const R=L.find(R=>R.active&&!R.keep&&Math.round(R.target)===b+1)||L.find(R=>!R.keep&&!R.active)||L.find(R=>!R.keep);
     if(R){R.keep=true;R.active=true;R.s=R.target=b+1;R.delay=0;R.jog=false;}}
   L.forEach(R=>{if(!R.keep)R.active=false;});}
@@ -903,6 +924,7 @@ function walkRunners(){let b=1;const at=k=>RUN.list.find(R=>R.active&&R.s===k&&R
 const _rv=new V3();
 function updateRunners(dt){
   for(const R of RUN.list){const root=R.fig.root;
+    if(R.trot)continue;
     if(!R.active){root.visible=false;continue;}
     if(R.delay>0){R.delay-=dt;root.visible=false;continue;}
     const moving=R.s<R.target-1e-4;
@@ -1125,6 +1147,7 @@ function finishPlay(){
     const ft=Math.round(pl.dist*3.281);S.hrs++;S.longest=Math.max(S.longest,ft);const r=advance(4);
     pop(r===4?'GRAND SLAM!':'GONE!',`${ft} FT · +${r} RUN${r>1?'S':''}`,'hot',true);scoreboard('HOME RUN',ft+' FT');
     S.state='celebrate';S.t=now;readyDur=3.1;
+    if(f.admire&&WALK.on)startTrot(); // the biggest ones get the trot (skipped in fast mode)
     for(let i=0;i<9;i++)fireworks.push({t:now+.1+i*.3,p:new V3(rand(-65,65),rand(50,88),rand(-165,-115))});
     cheer(.5,3.5);
   }else{
@@ -1134,7 +1157,7 @@ function finishPlay(){
     if(pl.f&&pl.f.thrAct&&!pl.grd){const tb=pl.infield?1:[2,3,0][pl.bases-1];f.thr={t0:now+.15,to:new V3(BASES[tb][0],1.2,BASES[tb][1])};}
   }
   if(S.streak>=3&&!S.over){S.over=true;SND.zap();setTimeout(()=>{if(S.over)timing('⚡ OVERDRIVE — BAT IS LIVE ⚡','#3ad6ff');},900);}
-  const cel=S.state==='celebrate';setBatter();if(cel)readyDur=3.1;else readyDur=f.thr?2.0:1.5;S.next=null;hud();
+  const cel=S.state==='celebrate'||S.state==='trot';setBatter();if(cel)readyDur=3.1;else readyDur=f.thr?2.0:1.5;S.next=null;hud();
 }
 function endGame(){
   S.state='over';let best=0;try{best=+localStorage.getItem('mm_best')||0;if(S.runs>best)localStorage.setItem('mm_best',S.runs);}catch(e){}
@@ -1146,6 +1169,7 @@ function endGame(){
 // ───────────────────────── input
 function doSwing(type){
   if(paused||S.state==='title'||S.state==='over')return;
+  if(S.state==='trot'){S.t=now-TROT.dur;return;} // skip the trot
   if(S.state==='walkup'){S.t=Math.min(S.t,now-WALK.dur+.22);return;} // skip the intro
   if(flight&&flight.admire&&!flight.done){flight.A=Math.min(flight.A,now-flight.t0);return;} // cut to the ball
   if(swing)return;
@@ -1351,7 +1375,7 @@ function updateClip(dt){
   // Keep showing him (and his side of the plate) until he is back in his stance, then fade to the new batter.
   if(S.bi>=0&&C.bi!==S.bi){
     if(C.bi===undefined){C.bi=S.bi;MX.lefty=!!curBatter().lh;}
-    else if(C.swap==null&&!(S.kOut&&now<S.kOut.t+DEFEAT)&&((C.mode==='idle'&&C.h<=.001)||(S.state==='ready'&&now-S.t>.6)||S.state==='walkup'))C.swap=0;}
+    else if(C.swap==null&&S.state!=='trot'&&!(S.kOut&&now<S.kOut.t+DEFEAT)&&((C.mode==='idle'&&C.h<=.001)||(S.state==='ready'&&now-S.t>.6)||S.state==='walkup'))C.swap=0;}
   // if the next hitter has a walk-up coming, the box stays empty after the last man fades out; he first appears in his intro
   const waitWalk=S.bi>=0&&C.bi!==S.bi&&S.state!=='walkup'&&WALK.on&&S.fresh&&!S.seen[S.bi%LINEUP.length]&&!!C.intros[WALK.by[curBatter().name]];
   if(C.swap!=null){C.swap+=dt;if(waitWalk)C.swap=Math.min(C.swap,.2);
@@ -1754,10 +1778,11 @@ function step(dt){
   const st=S.state,el=now-S.t;
   if(st==='ready'&&el>=readyDur){S.state='windup';windupT0=now;released=false;S.fresh=false;pitch=choosePitch();S.pitches++;readyDur=1.15;$('pitchinfo').classList.remove('on'),$('plast').classList.remove('on');}
   else if(st==='windup'&&now-windupT0>=1.0){
-    if(MX.pit&&MX.on){MX.pit.obj.updateMatrixWorld(true);MX.pit.hand.getWorldPosition(pitch.rel);}else{pitcher.root.updateMatrixWorld(true);pitcher.handR.getWorldPosition(pitch.rel);}pitch.t0=now;S.state='pitch';ball.visible=true;ballShadow.visible=true;
+    if(MX.pit&&MX.on){MX.pit.obj.updateMatrixWorld(true);MX.pit.hand.getWorldPosition(pitch.rel);}else{pitcher.root.updateMatrixWorld(true);pitcher.handR.getWorldPosition(pitch.rel);}pitch.t0=now;S.state='pitch';SND.pitch();ball.visible=true;ballShadow.visible=true;
   }
   else if(st==='result'&&el>=readyDur){if(S.next){const n=S.next;S.next=null;n();}else toReady(S.fresh?PACE.newBatter:PACE.samePitch);}
   else if(st==='walkup'&&el>=WALK.dur)endWalkup();
+  else if(st==='trot'&&el>=TROT.dur){endTrot();if(S.inning>3)endGame();else toReady(PACE.newBatter);}
   else if(st==='celebrate'&&el>=readyDur){
     if(S.inning>3)endGame();else toReady(PACE.newBatter);}
   else if(st==='end'&&el>=readyDur){endGame();}
@@ -1806,7 +1831,8 @@ function step(dt){
   // shock ring
   if(shock.userData.t!==undefined&&shock.userData.t<.3){shock.userData.t+=dt;const k=shock.userData.t/.3;shock.scale.setScalar(.06+k*shock.userData.s*.9);shock.material.opacity=(1-k)*.9;}else shock.material.opacity=0;
 
-  updateBatter(dt);updatePitcher();updateFielders(dt);updatePlateCrew();updateRunners(dt);updateThrow();
+  updateBatter(dt);updatePitcher();updateFielders(dt);updatePlateCrew();updateRunners(dt);updateTrot(dt);updateThrow();
+  if(MX.ready&&MX.clip&&MX.obj){const v=S.state!=='trot';MX.obj.visible=v;bat.visible=v;} // the man at the plate is the one trotting
   fxS.update(dt);fxL.update(dt);fxT.update(dt);
 
   // reticle
@@ -1839,6 +1865,7 @@ function updateCamera(rdt){
   else if(S.kOut&&MX.clip&&MX.clip.bi===S.kOut.bi&&now>S.kOut.t&&now<S.kOut.t+DEFEAT&&S.state==='result'){ // strikeout: close on the hitter from the pitcher's side
     const e=clamp((now-S.kOut.t)/DEFEAT,0,1);MX.clip.hips.getWorldPosition(_a);const sd=_a.x<0?1:-1;
     camLook.set(_a.x,1.2,_a.z);camPos.set(_a.x+sd*lerp(1.5,1.0,ease(e)),1.25,_a.z-lerp(3.2,2.5,ease(e)));}
+  else if(S.state==='trot'&&TROT.R){camPos.copy(TROT.cam);TROT.R.fig.root.getWorldPosition(_a);camLook.set(_a.x,1.3,_a.z);}
   else if(S.state==='walkup'&&MX.clip){ // from the pitcher's side, across the plate: his front three-quarter, with the stands behind him
     const e=clamp((now-S.t)/WALK.dur,0,1);MX.clip.hips.getWorldPosition(_a);const sd=_a.x<0?1:-1;
     const ly=camLook.y=lerp(camLook.y>0&&camLook.y<1.2?camLook.y:1.1,clamp(_a.y*.75+.1,.2,1.1),.08); // follow him down when he is on the ground, so the name card doesn't cover him
