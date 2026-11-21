@@ -699,7 +699,7 @@ function simulate(p0,v0,spin){spin=spin||{side:0,lift:0};
 }
 function judge(tr){
   if(tr.hr)return {type:'hr',endT:tr.endT,dist:tr.dist};
-  if(tr.foul)return {type:'foul',endT:Math.min(1.5,tr.endT)};
+  if(tr.foul)return {type:'foul',endT:tr.land?Math.min(tr.land.t+.55,tr.endT):tr.endT}; // let it come down (or reach the seats) before the call
   let f=null,p=null;
   outer:for(const q of tr.pts){if(q.y>2.2)continue;
     for(const c of fielders){const d=Math.hypot(c.home.x-q.x,c.home.z-q.z);if(d<=c.reach+c.speed*Math.max(0,q.t-c.react)){f=c;p=q;break outer;}}}
@@ -1312,6 +1312,7 @@ function step(dt){
   if(flight&&!flight.done&&(S.state==='flight')){
     const tf=now-flight.t0,tr=flight.tr,i=Math.min(tr.pts.length-1,Math.floor(tf*120)),p=tr.pts[i];
     ball.visible=true;ball.position.set(p.x,p.y,p.z);
+    if(tr.land&&!flight.landed&&tf>=tr.land.t){flight.landed=true;_p.set(tr.land.x,.05,tr.land.z);burst(fxL,_p,10,3,.5,[.75,.6,.42],4,2);} // dust where it comes down, so fair or foul is clear
     const dc=camera.position.distanceTo(ball.position);ball.scale.setScalar(Math.max(1,dc*.05));
     ballShadow.visible=true;ballShadow.position.set(p.x,.03,p.z);ballShadow.scale.setScalar(.2+Math.min(1.2,p.y*.03));
     trail(ball.position,flight.trailC,dc>9);if(flight.tb)trail(ball.position,[1,.8,.2],dc>9);
