@@ -856,7 +856,7 @@ function setBatter(){
   readyDur=1.7;S.fresh=true;
 }
 // Walk-ups: the first time each hitter comes up, a short intro animation with his card. Any swing button skips it.
-const WALK={on:true,dur:3.4,by:{VASQUEZ:'w_walkin',OKAFOR:'w_flair',DELACROIX:'w_ondeck',BRICKHOUSE:'w_boxing',TANAKA:'w_walkin',MONTOYA:'w_boxing',ABERNATHY:'w_bdance','JACKSON-BELL':'w_ondeck',KOWALSKI:'w_walkin'}};
+const WALK={on:true,dur:3.4,by:{VASQUEZ:'w_walkin',OKAFOR:'w_flair',DELACROIX:'w_ondeck',BRICKHOUSE:'w_boxing',TANAKA:'w_arrow',MONTOYA:'w_boxing',ABERNATHY:'w_bdance','JACKSON-BELL':'w_ondeck',KOWALSKI:'w_salsa'}};
 try{WALK.on=localStorage.getItem('mm_walk')!=='0';}catch(e){}
 function walkLabel(){$('wk').textContent='Walk-ups: '+(WALK.on?'on':'off (faster pace)')+' — tap to change';}
 function startWalkup(){
