@@ -959,7 +959,7 @@ const fireworks=[];
 // ───────────────────────── audio (all synthesized)
 let AC=null,master=null,crowdGain=null,noiseBuf=null,crowdBase=.05,crowdReal=false;
 // Recorded sounds (sfx/*.mp3). Each one replaces a synthesized sound once it has loaded; if a file is missing the synth version plays.
-const SFX={},SFX_FILES=['crowd','cheer','cheer_big','strike','ball','swing1','swing2','swing3','swing4','playball','ball2','ball3','ball4','strike2','out'];
+const SFX={},SFX_FILES=['crowd','cheer','cheer_big','strike','ball','swing1','swing2','swing3','swing4','playball','ball2','ball3','ball4','strike2','out','catch'];
 function loadSfx(noiseSrc){SFX_FILES.forEach(n=>fetch('sfx/'+n+'.mp3').then(r=>r.ok?r.arrayBuffer():Promise.reject()).then(b=>new Promise((res,rej)=>AC.decodeAudioData(b,res,rej))).then(buf=>{SFX[n]=buf;
   if(n==='crowd'){ // real stadium ambience takes over from the filtered noise
     const s=AC.createBufferSource();s.buffer=buf;s.loop=true;s.loopStart=.06;s.loopEnd=buf.duration-.06;s.connect(crowdGain);
@@ -1007,7 +1007,8 @@ const SND={
   whoosh(){if(!sfx('swing'+(1+(Math.random()*4|0)),.8,rand(.94,1.08)))noise(.2,'bandpass',300,1900,.35,1.5);},
   pitch(){if(!sfx('swing'+(1+(Math.random()*4|0)),.5,rand(1.15,1.35)))noise(.16,'bandpass',500,2400,.22,1.5);}, // the ball leaving the pitcher's hand: same whoosh for every pitch, so it gives nothing away
   playball(n=6){if(sfx('playball',.95))return;if(n>0)setTimeout(()=>SND.playball(n-1),250);else SND.organ();}, // the umpire's call; waits briefly for the file on the first game, falls back to the jingle
-  mitt(k){if(k==null){noise(.06,'lowpass',1400,300,.7);tone('sine',190,90,.09,.5);return;}
+  mitt(k){if(sfx('catch',k==null?.85:lerp(.6,1,k),k==null?rand(.95,1.05):lerp(.86,1.08,k)))return; // recorded glove pop; pitches play it louder and brighter the faster they are
+    if(k==null){noise(.06,'lowpass',1400,300,.7);tone('sine',190,90,.09,.5);return;}
     // a pitch hitting the catcher's mitt: a sharp leather crack plus a low thud, harder and brighter the faster the pitch (k: 0 = slow, 1 = heat)
     noise(.035,'highpass',lerp(1800,3200,k),900,lerp(.55,1,k));noise(.07,'lowpass',lerp(1100,1900,k),260,lerp(.6,.95,k));tone('sine',lerp(150,230,k),70,lerp(.14,.09,k),lerp(.55,.8,k));},
   call(hi,n){if(hi&&n>1&&sfx('ball'+Math.min(4,n),.95))return; // the umpire counts them: ball two, ball three, ball four
