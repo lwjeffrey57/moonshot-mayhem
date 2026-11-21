@@ -263,6 +263,7 @@ body.mob #tip{display:block}body.mob .how{display:none}
 #hud.mob #pausebtn::after{content:'PAUSE';font-family:var(--display);font-style:italic;font-size:15px;letter-spacing:.04em}
 #mutebtn{display:none;top:148px;right:max(16px,env(safe-area-inset-right,0px));pointer-events:auto;height:36px;padding:0 13px;font-family:var(--display);font-style:italic;font-size:13px;letter-spacing:.04em;color:var(--chrome);background:rgba(8,9,26,.72);border:2px solid rgba(242,245,255,.45);border-radius:18px;cursor:pointer}
 #hud.mob #mutebtn{display:block}#hud.mob #mutebtn[hidden]{display:none}#mutebtn.off{color:var(--ink);background:var(--heat);border-color:#000}
+#fps{left:50%;top:64px;transform:translateX(-50%);padding:3px 9px;font:700 12px/1.3 ui-monospace,Menlo,monospace;color:#9f9;background:rgba(0,0,0,.7);border-radius:6px;white-space:nowrap;z-index:50}
 #pausebtn:hover{border-color:var(--volt);color:var(--volt)}
 #pausebtn:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
 .cta:hover{background:#fff}.cta:active{transform:skewX(-10deg) translateY(4px);box-shadow:0 2px 0 #000}
@@ -337,6 +338,7 @@ body.mob #tip{display:block}body.mob .how{display:none}
     </div>
     <div id="pop"><div class="t"></div><div class="s"></div></div>
     <div id="tim"></div>
+    <div id="fps" hidden></div>
   </div>
   <div class="overlay" id="title">
     <div class="logo"><span class="a">MOONSHOT</span><span class="b">MAYHEM</span></div>
@@ -370,6 +372,7 @@ body.mob #tip{display:block}body.mob .how{display:none}
     <button class="cta alt" id="cambtn" type="button">CAMERA</button>
     <button class="cta alt sens" id="sens2" type="button"></button>
     <button class="cta alt" id="howbtn" type="button">HOW TO PLAY</button>
+    <button class="cta alt" id="fpsbtn" type="button">SHOW SPEED: OFF</button>
     <button class="cta alt" id="restart" type="button">RESTART GAME</button>
     <button class="cta alt" id="quit" type="button">QUIT TO MAIN MENU</button>
     <div class="tag">Esc or P to resume</div>
@@ -2133,7 +2136,14 @@ let last=performance.now();
 // Keeps the game responsive on slower phones: if frames are slow for a while, drop a quality level (never goes back up).
 let qN=0,qT=0,qLvl=0;function qualityWatch(dt){qN++;qT+=dt;if(qN<90)return;const avg=qT/qN;qN=0;qT=0;if(avg<1/42||qLvl>=2)return;qLvl++;
   if(qLvl===1){QS=.78;rim.castShadow=false;}else{QS=.62;composer=null;fxaa=null;}resize();}
+// optional on-screen readout (pause menu): frames per second, the slowest frame in the last half second, and the current quality level
+let fpsOn=false,fN=0,fT=0,fMax=0,fWork=0;
+$('fpsbtn').addEventListener('click',()=>{fpsOn=!fpsOn;$('fps').hidden=!fpsOn;$('fpsbtn').textContent='SHOW SPEED: '+(fpsOn?'ON':'OFF');});
+function fpsTick(ms,work){fN++;fT+=ms;fWork+=work;if(ms>fMax)fMax=ms;if(fT<500)return;
+  $('fps').textContent=Math.round(fN*1000/fT)+' fps · worst '+Math.round(fMax)+' ms · work '+(fWork/fN).toFixed(1)+' ms · Q'+qLvl+' · '+renderer.domElement.width+'×'+renderer.domElement.height;fN=0;fT=0;fMax=0;fWork=0;}
 function frame(t){
+  const w0=performance.now();
+  const rawMs=t-last;
   const rdt=Math.min(.05,(t-last)/1000);last=t;
   if(paused||tutHold){draw();requestAnimationFrame(frame);return;}
   qualityWatch(rdt);
@@ -2144,6 +2154,7 @@ function frame(t){
   }
   updateCamera(rdt);
   draw();
+  if(fpsOn)fpsTick(rawMs,performance.now()-w0);
   requestAnimationFrame(frame);
 }
 try{const b=+localStorage.getItem('mm_best')||0;if(b)$('best').textContent='Best game: '+b+' runs';}catch(e){}
