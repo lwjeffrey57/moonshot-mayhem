@@ -207,13 +207,13 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 :root{--tbb:max(calc(env(safe-area-inset-bottom,0px) + 70px),13vh);--padl:max(4px,env(safe-area-inset-left,0px));--pad:min(146px,calc(100vw - 272px))} /* --pad: the aim pad fills everything left of CONTACT */ /* how far the swing buttons sit above the bottom edge: thumb height, not the screen edge */
 @media (max-height:520px){:root{--tbb:20px}}
 #touch{right:max(14px,env(safe-area-inset-right,0px));bottom:var(--tbb);display:none;gap:12px;isolation:isolate;touch-action:none;align-items:flex-end;pointer-events:auto}
-.tb{font-family:var(--display);font-weight:900;font-size:clamp(15px,4.6vw,19px);letter-spacing:.02em;padding:0;color:#04140a;border:4px solid #000;border-radius:50%;width:min(112px,28vw);height:min(112px,28vw);background:var(--turf);box-shadow:0 4px 0 #000;touch-action:none;position:relative;isolation:isolate}
+.tb{font-family:var(--display);font-weight:900;font-size:clamp(15px,4.6vw,19px);letter-spacing:.02em;padding:0;color:#fff;text-shadow:0 2px 0 #000,0 0 3px #000,1px 1px 0 #000,-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000;border:4px solid #000;border-radius:50%;width:min(112px,28vw);height:min(112px,28vw);background:var(--turf);box-shadow:0 4px 0 #000;touch-action:none;position:relative;isolation:isolate}
 .tb::before{content:'';position:absolute;inset:-24px -6px -32px -6px;border-radius:36px} /* the touch target is bigger than the button you see */
 .tb.pw{background:var(--heat);width:min(128px,32vw);height:min(128px,32vw);color:#fff;font-size:clamp(17px,5.4vw,22px);text-shadow:0 2px 0 #000,0 0 3px #000,1px 1px 0 #000,-1px -1px 0 #000}
 .tb.jc{background:var(--chrome);width:min(76px,19vw);height:min(76px,19vw);font-size:clamp(12px,3.6vw,15px)}
 .tb.jc{position:absolute;right:0;bottom:calc(100% + 14px);z-index:2}.tb.jc::before{inset:0} /* JUICE sits above POWER, leaving the bottom-left for the aim thumb */
 /* Juice you can't miss: dim and grey when empty; gold, pulsing and counted when there is a bar to spend */
-.tb.jc.none{background:#8a8fa8;color:#2a2d40;opacity:.55;box-shadow:0 4px 0 #000}
+.tb.jc.none{background:#8a8fa8;color:#e6e8f2;opacity:.55;box-shadow:0 4px 0 #000}
 .tb.jc.has{background:#ffd23b;animation:jpulse .7s ease-in-out infinite alternate}
 @keyframes jpulse{from{box-shadow:0 4px 0 #000,0 0 8px 2px rgba(255,210,59,.6);transform:scale(1)}to{box-shadow:0 4px 0 #000,0 0 26px 10px rgba(255,210,59,.95);transform:scale(1.07)}}
 .tb.jc b{position:absolute;right:-7px;top:-7px;min-width:28px;height:28px;padding:0 5px;border-radius:14px;background:var(--heat);color:#fff;font-size:15px;line-height:24px;border:2px solid #000;font-weight:400;text-shadow:none}.tb.jc.none b{display:none}
@@ -280,8 +280,7 @@ body.mob #tip{display:block}body.mob .how{display:none}
 #tut.s3 .spot::after{border:3px solid var(--volt);animation:tutring 1.8s linear infinite}
 @keyframes tutring{0%{transform:scale(6);opacity:0;border-width:.6px}10%{opacity:1}72%{transform:scale(1);border-color:var(--volt);border-width:3px}74%,100%{transform:scale(1);border-color:#fff;border-width:3px;opacity:1}}
 /* step 2 demo: a ball lands in the green zone and CONTACT lights up, then in the red core and POWER lights up */
-#tut.s2 .spot::before{content:'';position:absolute;left:var(--tx,50%);top:var(--ty,50%);box-sizing:border-box;width:calc(var(--tr,14px)*2);height:calc(var(--tr,14px)*2);margin:calc(var(--tr,14px)*-1);border-radius:50%;border:3px solid #fff;background:rgba(255,255,255,.6);animation:tutball 3.4s ease-in-out infinite}
-@keyframes tutball{0%{transform:translate(var(--gx,30px),calc(var(--gx,30px)*-.4));opacity:0}8%,42%{transform:translate(var(--gx,30px),calc(var(--gx,30px)*-.4));opacity:1}54%,90%{transform:none;opacity:1}100%{transform:none;opacity:0}}
+#tut.s2 .spot::before{content:'';position:absolute;left:var(--tx,50%);top:var(--ty,50%);box-sizing:border-box;width:calc(var(--tr,14px)*2);height:calc(var(--tr,14px)*2);margin:calc(var(--tr,14px)*-1);border-radius:50%;border:3px solid #fff;background:rgba(255,255,255,.6)} /* the ball stays put: the bat ring moves onto it */
 #hud.tut2 #tc{animation:tutbA 3.4s ease-in-out infinite}#hud.tut2 #tp{animation:tutbB 3.4s ease-in-out infinite}
 @keyframes tutbA{0%,6%{opacity:.4;transform:none}12%,40%{opacity:1;transform:scale(1.1);box-shadow:0 4px 0 #000,0 0 26px 8px rgba(61,220,106,.95)}48%,100%{opacity:.4;transform:none}}
 @keyframes tutbB{0%,50%{opacity:.4;transform:none}58%,88%{opacity:1;transform:scale(1.1);box-shadow:0 4px 0 #000,0 0 26px 8px rgba(255,90,50,.95)}96%,100%{opacity:.4;transform:none}}
@@ -1069,7 +1068,7 @@ let tutOff=false,jtutSeen=!MOB;try{tutOff=localStorage.getItem('mm_tutoff')==='1
 let tutStep=0;const TUT_N=6;
 function tutShow(mode){const T=$('tut');T.className=mode;T.hidden=false;tutHold=true;const n=mode==='j'||mode==='o'?0:+mode.slice(1);tutStep=n;$('tutstp').textContent=n?n+' / '+TUT_N:'';$('tutgo').textContent=n&&n<TUT_N?'NEXT ▶  '+n+'/'+TUT_N:'GOT IT — PLAY ▶';
   const sp=T.querySelector('.spot');sp.style.cssText='';T.querySelectorAll('.pcz,.tmz').forEach(c=>c.style.bottom='');
-  $('hud').classList.toggle('tut2',n===2);
+  $('hud').classList.toggle('tut2',n===2);if(n===2)tutT0=performance.now();
   if(n===2){const H=$('hud').getBoundingClientRect();[['tc','tlc'],['tp','tlp']].forEach(([b,l])=>{const r=$(b).getBoundingClientRect(),e=$(l);e.style.left=(r.left-H.left+r.width/2)+'px';e.style.top=(r.top-H.top-46)+'px';});}
   if(n===6||mode==='o'){const r=$('juice').getBoundingClientRect(),h=$('hud').getBoundingClientRect();sp.style.cssText='left:'+(r.left-h.left-10)+'px;top:'+(r.top-h.top-8)+'px;width:'+(r.width+12)+'px;height:'+(r.height+14)+'px';} // the Juice / Overdrive meter
   if(n===2||n===3){ // spotlight the strike zone itself: project its corners to the screen
@@ -1077,6 +1076,10 @@ function tutShow(mode){const T=$('tut');T.className=mode;T.hidden=false;tutHold=
     const l=(a.x+1)/2*W-pad,t=(1-a.y)/2*H-pad,r=(b.x+1)/2*W+pad,bt=(1-b.y)/2*H+pad;
     aim.x=0;aim.y=.825;reticle.position.set(0,.825,0);const c0=new V3(0,.825,0).project(camera); // bat dead centre for the demo; the ball marker is placed on that exact point (4 = the spotlight's border)
     sp.style.cssText='left:'+l+'px;top:'+t+'px;width:'+(r-l)+'px;height:'+(bt-t)+'px;--tr:'+(PT_R*(r-l-2*pad)/(ZONE.x1-ZONE.x0)).toFixed(1)+'px;--tx:'+((c0.x+1)/2*W-l-4).toFixed(1)+'px;--ty:'+((1-c0.y)/2*H-t-4).toFixed(1)+'px;--gx:'+((retC.scale.x+retP.scale.x)/2*(r-l-2*pad)/(ZONE.x1-ZONE.x0)).toFixed(1)+'px';T.querySelector(n===2?'.pcz':'.tmz').style.bottom=(H-t+16)+'px';}}
+// Step 2 demo, in step with the button highlights: the ball never moves. The bat ring starts off it, slides until the ball is in the green
+// (CONTACT lights), then until the ball is in the red core (POWER lights): move the circle to the ball.
+let tutT0=0;function tutAnim(t){if(tutStep!==2||$('tut').hidden)return;const ph=((t-tutT0)%3400)/3400,Rc=retC.scale.x,Rp=retP.scale.x,far=Rc*1.22,mid=(Rc+Rp)/2,sm=(a,b,u)=>lerp(a,b,ease(clamp(u,0,1)));
+  const d=ph<.12?sm(far,mid,(ph-.02)/.1):ph<.42?mid:ph<.56?sm(mid,0,(ph-.42)/.14):ph<.9?0:sm(0,far,(ph-.9)/.1);reticle.position.set(-d*.92,.825-d*.4,0);}
 function tutClose(){$('hud').classList.remove('tut2');$('tut').hidden=true;tutHold=false;if(tutFirst){tutFirst=false;S.t=now-readyDur+.7;}}
 function jtutNeed(){if(tutOff||jtutSeen||window.__mmManual&&!window.__mmTut)return false;jtutSeen=true;tutFirst=true;tutShow('j');try{localStorage.setItem('mm_jtut','1');}catch(e){}return true;}
 let otutSeen=!MOB;try{if(!TUT_EVERY_LAUNCH&&localStorage.getItem('mm_otut')==='1')otutSeen=true;}catch(e){}
@@ -2341,6 +2344,7 @@ function frame(t){
   const w0=performance.now();
   const rawMs=t-last;
   const rdt=Math.min(.05,(t-last)/1000);last=t;
+  if(tutHold)tutAnim(t);
   if(paused||tutHold){draw();requestAnimationFrame(frame);return;}
   qualityWatch(rdt);
   if(hitstop>0){hitstop-=rdt;}
@@ -2359,7 +2363,7 @@ const LITE=matchMedia('(pointer:coarse)').matches;
 if(LITE){QS=.85;rim.shadow.mapSize.set(512,512);renderer.shadowMap.type=T.PCFShadowMap;}else initPost();
 resize();hud();
 const DBG={dbl:false,cam:false,admire:'',trip:false,fist:false,pop:false,loser:false}; // test hook: pin the camera to CAM_HOME/CAM_LOOK
-window.__mm={S,aim,MX,DBG,hud,endGame,TROT,SFX,RUN,ballPos:()=>ball.position,fielders,toReady,CAM_HOME,CAM_LOOK,now:()=>now,simulate,judge,get pitch(){return pitch;},get flight(){return flight;},lastSwing:()=>{const t=swing&&swing.type;swing=null;return t;},lastSwingTurbo:()=>!!(swing&&swing.turbo),doSwing,newGame,V3,
+window.__mm={S,aim,MX,DBG,hud,tutAnim,draw:()=>draw(),endGame,TROT,SFX,RUN,ballPos:()=>ball.position,fielders,toReady,CAM_HOME,CAM_LOOK,now:()=>now,simulate,judge,get pitch(){return pitch;},get flight(){return flight;},lastSwing:()=>{const t=swing&&swing.type;swing=null;return t;},lastSwingTurbo:()=>!!(swing&&swing.turbo),doSwing,newGame,V3,
   sim:(dt)=>{hitstop=0;now+=dt;step(dt);},
   step:(n,dt=1/60)=>{for(let i=0;i<n;i++){if(hitstop>0)hitstop=0;now+=dt;step(dt);}updateCamera(dt);draw();}};
 if(!window.__mmManual)requestAnimationFrame(frame);
