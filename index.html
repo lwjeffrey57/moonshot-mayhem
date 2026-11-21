@@ -920,8 +920,8 @@ function updateThrow(){
   if(!(flight&&flight.thr))return;const Th=flight.thr,e=now-Th.t0-THROW_REL;if(e<0)return;
   if(!Th.from){const f=flight.play.f,r=f.fig.root;Th.from=new V3(r.position.x,1.75*(f.scale||1),r.position.z);Th.len=Th.from.distanceTo(Th.to);Th.dur=clamp(Th.len/42,.35,1.3);SND.whoosh();}
   const u=e/Th.dur;
-  if(u<=1){ball.visible=true;ball.position.lerpVectors(Th.from,Th.to,u);ball.position.y+=Math.sin(u*PI)*Th.len*.07;ball.scale.setScalar(Math.max(1,camera.position.distanceTo(ball.position)*.05));}
-  else if(!Th.done){Th.done=true;ball.visible=false;SND.mitt();}
+  if(u<=1&&e<.45){ball.visible=true;ball.position.lerpVectors(Th.from,Th.to,u);ball.position.y+=Math.sin(u*PI)*Th.len*.07;ball.scale.setScalar(Math.max(1,camera.position.distanceTo(ball.position)*.05));}
+  else if(!Th.done){Th.done=true;ball.visible=false;} // we only show the release and the first part of the throw
 }
 function toReady(d){$('hitinfo').hidden=true;S.state='ready';S.t=now;if(d)readyDur=d;swing=null;pitch=null;flight=null;ball.visible=false;ballShadow.visible=false;pring.visible=false;ballGlow.material.opacity=0;
   fielders.forEach(f=>{if(!f.isP){f.fig.root.position.copy(f.home);f.fig.root.rotation.y=Math.atan2(-f.home.x,-f.home.z);}f.run=null;});
@@ -1131,7 +1131,7 @@ function finishPlay(){
     if(pl.f&&pl.f.thrAct&&!pl.grd){const tb=pl.infield?1:[2,3,0][pl.bases-1];f.thr={t0:now+.15,to:new V3(BASES[tb][0],1.2,BASES[tb][1])};}
   }
   if(S.streak>=3&&!S.over){S.over=true;SND.zap();setTimeout(()=>{if(S.over)timing('⚡ OVERDRIVE — BAT IS LIVE ⚡','#3ad6ff');},900);}
-  const cel=S.state==='celebrate';setBatter();if(cel)readyDur=3.1;else readyDur=f.thr?2.5:1.5;S.next=null;hud();
+  const cel=S.state==='celebrate';setBatter();if(cel)readyDur=3.1;else readyDur=f.thr?2.0:1.5;S.next=null;hud();
 }
 function endGame(){
   S.state='over';let best=0;try{best=+localStorage.getItem('mm_best')||0;if(S.runs>best)localStorage.setItem('mm_best',S.runs);}catch(e){}
@@ -1298,14 +1298,18 @@ Object.assign(MX,{arm:0,chestZ:0,chestX:0,waist:0,leg:0,hip:0,spineK:1,bulk:fals
 // motion-captured swing: the clip drives the skeleton, the bat rides the bottom hand
 const ZAX=new V3(0,0,1),_pl=new V3(),_bd=new V3(),_hq=new T.Quaternion();
 function clipBat(){const C=MX.clip;C.hL.getWorldPosition(_pl);C.mL.getWorldPosition(_b);_pl.lerp(_b,.55);C.hL.getWorldQuaternion(_hq);
-  _bd.copy(C.dl).applyQuaternion(_hq).normalize();bat.position.copy(_pl).addScaledVector(_bd,-.07);bat.quaternion.setFromUnitVectors(UP,_bd);bat.updateMatrixWorld(true);}
+  _bd.copy(C.dl).applyQuaternion(_hq).normalize();
+  if(C.crW>0&&C.hR){ // crouched stance: the hands sit differently, so run the bat through both hands and stand it up more
+    C.hR.getWorldPosition(_t1);C.mR.getWorldPosition(_t2);_t1.lerp(_t2,.55).sub(_pl);
+    if(_t1.lengthSq()>1e-4){_t1.normalize().multiplyScalar(.55).add(_t2.set(0,.45,0)).normalize();_bd.lerp(_t1,C.crW).normalize();}}
+  bat.position.copy(_pl).addScaledVector(_bd,-.07);bat.quaternion.setFromUnitVectors(UP,_bd);bat.updateMatrixWorld(true);}
 const BOX_EDGE=-.52; // nearest a foot bone may get to the middle of the plate (the box's inside line is at 0.35 m)
 function setupClip(obj,clip,B,sk){
   const keep=c=>{if(c)c.tracks=c.tracks.filter(t=>/quaternion$/.test(t.name)||/Hips\.position$/.test(t.name));return c;};
   keep(clip);const ic=keep(obj.animations.find(c=>c.name==='idle')),sc=keep(obj.animations.find(c=>c.name==='strike'));
   scene.add(obj);scene.add(bat);obj.rotation.y=PI;obj.position.set(0,0,0);
   const hL=B('LeftHand'),hR=B('RightHand'),mL=B('LeftHandMiddle1'),mR=B('RightHandMiddle1');
-  const C=MX.clip={hL,mL,dl:new V3(),spine:B('Spine'),hips:B('Hips'),t:0,st:0,c0:0,h:0,sk:0,mode:'idle',sw:null};
+  const C=MX.clip={hL,mL,hR,mR,crW:0,dl:new V3(),spine:B('Spine'),hips:B('Hips'),t:0,st:0,c0:0,h:0,sk:0,mode:'idle',sw:null};
   // pose the skeleton from one clip at a time while measuring
   const probe=(c,fn)=>{const m=new T.AnimationMixer(obj);m.clipAction(c).play();fn(t=>{m.setTime(t);obj.updateMatrixWorld(true);});m.stopAllAction();m.uncacheRoot(obj);};
   // grip axis in the bottom hand's frame, taken from the stance so both hands sit on the handle
@@ -1382,7 +1386,7 @@ function updateClip(dt){
   if(C.strike){C.strike.time=C.st;C.strike.setEffectiveWeight(base*hw*C.sk);}
   if(C.idle){const cr=C.idle2&&C.bi>=0&&LINEUP[C.bi%LINEUP.length].crouch?1:0,wI=base*(1-hw); // which stance this hitter uses
     C.idle.time=(now*.9)%C.idleDur;C.idle.setEffectiveWeight(wI*(1-cr));
-    if(C.idle2){C.idle2.time=(now*.9)%C.idle2Dur;C.idle2.setEffectiveWeight(wI*cr);}}
+    if(C.idle2){C.idle2.time=(now*.9)%C.idle2Dur;C.idle2.setEffectiveWeight(wI*cr);}C.crW=wI*cr;}
   C.mixer.update(0);
   if(w>0){ // lean the upper body so the barrel meets the height you aimed at
     const th=clamp((aim.y-C.y0)/.9,-.45,.45)*w*(MX.leanSign||1);
@@ -1837,6 +1841,7 @@ function updateCamera(rdt){
     if(S.state==='title'||S.state==='over'){const a=performance.now()*.00012;camPos.set(Math.sin(a)*9,3.2+Math.sin(a*2)*.6,7);camLook.set(0,3,-40);}
   }else if(S.state==='celebrate'){
     const k=1-Math.exp(-3*rdt);camPos.lerp(_p.set(0,18,-12),k);camLook.lerp(_t1.set(8,58,-150),k);
+  }else if(flight&&flight.thr){ // hold the shot on the fielder while he throws; no chasing the ball back in
   }else if(flight){
     const bp=ball.position,h=Math.hypot(bp.x,bp.z)||1,k=1-Math.exp(-2.6*rdt);
     const back=13+h*.14,r=Math.min(72,Math.max(0,h-back));
