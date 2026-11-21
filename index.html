@@ -895,8 +895,8 @@ function setupRunners(make,skins){
     RUN.list.push(R);}
   syncRunners();
 }
-// ── Home-run trot, shown as a highlight cut on no-doubters: out of the box, rounding second, touching home, then a fist pump on the plate.
-const TROT={dur:5.9,R:null,cam:new V3(),segs:[[0,1.5,.12,.62],[1.5,3.1,1.72,2.34],[3.1,4.3,3.55,3.999]]};
+// ── Home-run trot, shown as a highlight cut on no-doubters: rounding second, then touching home and a fist pump on the plate.
+const TROT={dur:4.3,R:null,cam:new V3(),segs:[[0,1.7,1.7,2.36],[1.7,2.6,3.68,3.999]]}; // rounding second, then the last steps home; the fist pump fills the rest
 function startTrot(){const R=RUN.list.find(R=>!R.active)||null;if(!R||!R.jogAct)return false;
   R.active=true;R.trot=true;R.delay=0;R.s=0;R.target=4;TROT.R=R;S.state='trot';S.t=now;return true;}
 function endTrot(){const R=TROT.R;if(R){R.trot=false;R.active=false;R.fig.root.visible=false;R.obj.scale.x=R.sx;}TROT.R=null;}
@@ -1044,10 +1044,19 @@ function simulate(p0,v0,spin){spin=spin||{side:0,lift:0};
 function judge(tr,bt){const spd=bt&&bt.spd||1; // batter's speed: 0.85 (plodder) to 1.15 (burner)
   if(tr.hr)return {type:'hr',endT:tr.endT,dist:tr.dist};
   if(tr.grd&&!tr.foul)return {type:'hit',bases:2,endT:tr.endT,grd:true};
-  if(tr.foul)return {type:'foul',endT:tr.land?Math.min(tr.land.t+.55,tr.endT):tr.endT}; // let it come down (or reach the seats) before the call
+  if(tr.foul){const endT=tr.land?Math.min(tr.land.t+.55,tr.endT):tr.endT,L=tr.land||tr.pts[tr.pts.length-1];
+    // a foul fly that stays in the park can be caught: inside the side walls and in front of the backstop
+    const perp=(Math.abs(L.x)-(.216-L.z))/Math.SQRT2,playable=tr.land&&L.z<11&&perp<13;
+    if(playable)for(const q of tr.pts){if(q.t>=tr.land.t)break;if(q.t<1.2)continue;
+      for(const c of fielders){if(c.isP||q.y>2.2*(c.scale||1))continue;const d=Math.hypot(c.home.x-q.x,c.home.z-q.z);
+        if(d<=c.reach+c.speed*Math.max(0,q.t-c.react))return {type:'out',label:'FOUL OUT',endT:q.t,f:c,p:q,air:true};}}
+    // otherwise the nearest man gives it a courtesy run for as long as the ball is in the air
+    let f=null,bd=1e9;for(const c of fielders){if(c.isP)continue;const d=Math.hypot(c.home.x-L.x,c.home.z-L.z);if(d<bd){bd=d;f=c;}}
+    const go=Math.min(bd*.8,f.speed*.8*Math.max(0,endT-f.react)),k=bd>0?go/bd:0;
+    return {type:'foul',endT,f,p:{x:lerp(f.home.x,L.x,k),y:0,z:lerp(f.home.z,L.z,k),t:endT},chase:true};}
   let f=null,p=null;
   outer:for(const q of tr.pts){if(q.y>3.5)continue;
-    for(const c of fielders){if(q.y>2.2*(c.scale||1))continue;const d=Math.hypot(c.home.x-q.x,c.home.z-q.z);if(d<=c.reach+c.speed*Math.max(0,q.t-c.react)){f=c;p=q;break outer;}}}
+    for(const c of fielders){if(q.y>2.2*(c.scale||1)||(c.isP&&q.t>1.5))continue;const d=Math.hypot(c.home.x-q.x,c.home.z-q.z);if(d<=c.reach+c.speed*Math.max(0,q.t-c.react)){f=c;p=q;break outer;}}} // the pitcher only handles what comes straight back at him
   if(!f){p=tr.pts[tr.pts.length-1];let bd=1e9;for(const c of fielders){const d=Math.hypot(c.home.x-p.x,c.home.z-p.z);if(d<bd){bd=d;f=c;}}p={x:p.x,y:0,z:p.z,t:p.t};}
   const air=!tr.land||p.t<tr.land.t;
   if(air)return {type:'out',label:f.of?'FLY OUT':(p.t<1.2?'LINE OUT':'POP OUT'),endT:p.t,f,p,air:true};
@@ -1065,7 +1074,8 @@ function judge(tr,bt){const spd=bt&&bt.spd||1; // batter's speed: 0.85 (plodder)
   return {type:'hit',bases,endT:Math.min(p.t,shown),tField:p.t,f,p,wall:wallBall}; // wall: it reached the fence before anyone got to it
 }
 
-function tryContact(){
+let flight_pop=false;
+function tryContact(){flight_pop=false;
   swing.done=true;
   const b=curBatter(),tCross=pitch.t0+pitch.dur,dt=(swing.t0+SW_T)-tCross;
   const pw=swing.type==='power',tb=swing.turbo;
@@ -1076,7 +1086,7 @@ function tryContact(){
   const d=Math.hypot(aim.x-pitch.tx,aim.y-pitch.ty);
   if(Math.abs(n)>1.4||d>R*1.3){swing.miss=true;timing(Math.abs(n)>1.4?(n<0?'WAY EARLY':'WAY LATE'):'MISSED IT','#9aa3c7');return;}
   const tipped=d>R;
-  const qT=Math.max(0,1-.75*Math.pow(Math.abs(n),1.6)),qA=tipped?.15:1-.6*(d/R)*(d/R),q=qT*qA*(1-.8*chase);
+  const qT=Math.max(0,1-.75*Math.pow(Math.abs(n),1.6)),qA=tipped?.15:1-.6*(d/R)*(d/R);let q=qT*qA*(1-.8*chase);
   const gs=()=>(Math.random()+Math.random()+Math.random()-1.5)/1.5; // bell-ish, ±1
   // launch: where the barrel met the ball, pitch height, and how square it was
   let la=(pw?25:11)+clamp((pitch.ty-aim.y)/R,-1.3,1.3)*28+(pitch.ty-.82)/.33*5+gs()*(pw?16:12);la=clamp(la,-20,62);
@@ -1085,6 +1095,9 @@ function tryContact(){
   let v=(pw?47:37)*(.5+.5*q)*b.pwr*(tb?1.22:1)*(S.over?1.14:1)*rand(.9,1.07);
   if(chase>0){ // off the end, off the handle, beaten into the ground or popped up
     v*=1-.45*chase;la+=(pitch.ty<ZONE.y0?-16:pitch.ty>ZONE.y1?20:0)*chase;phi+=(pitch.tx<ZONE.x0?-1:pitch.tx>ZONE.x1?1:0)*14*chase;la=clamp(la,-25,70);}
+  // The big-league pop-up: getting under the ball, or being badly off on timing, can send it straight up.
+  {const under=(pitch.ty-aim.y)/R,popP=Math.max(0,under-.4)*.5+(Math.abs(n)>.72?.12:0)+(tipped?.12:0);
+    if(DBG.pop||Math.random()<popP){la=rand(68,81);v=rand(27,33);phi=phi*.6+gs()*28;q*=.35;flight_pop=true;}}
   const spin={side:phi/40*3.2+gs()*4,lift:rand(-2.5,2.6)+(la>18?.5:0)};
   const p0=new V3(pitch.tx,pitch.ty,clamp(-dt*6,-.7,.7));
   const v0=new V3(Math.sin(phi*DEG)*Math.cos(la*DEG),Math.sin(la*DEG),-Math.cos(phi*DEG)*Math.cos(la*DEG)).multiplyScalar(v);
@@ -1104,7 +1117,7 @@ function tryContact(){
   const mph=Math.round(v*2.237*1.02);
   const lab=Math.abs(n)<.22?'PERFECT':n<0?(n<-.7?'EARLY':'A HAIR EARLY'):(n>.7?'LATE':'A HAIR LATE');
   {const lvl=tipped||chase>.3||q<.35?1:q<.6?2:q<.85?3:4;
-    $('hq').textContent=chase>.3?'CHASED · WEAK':tipped?'TIPPED':['','WEAK','FAIR','SOLID','BARRELED'][lvl];$('hq').className='q q'+lvl;
+    $('hq').textContent=flight_pop?'POPPED UP':chase>.3?'CHASED · WEAK':tipped?'TIPPED':['','WEAK','FAIR','SOLID','BARRELED'][lvl];$('hq').className='q q'+lvl;
     $('hev').textContent=mph+' MPH';$('hla').textContent=Math.round(la)+'°';$('hitinfo').hidden=false;}
   timing(chase>.3?'CHASED':tipped?'TIPPED':lab,chase>.3?'#ff4d2e':Math.abs(n)<.22&&!tipped?'#ffe53b':'#f2f5ff');
   // No-doubters: sometimes stay on the hitter instead of the ball. 'admire' = he holds his finish, watches it and drops the bat;
@@ -1908,7 +1921,7 @@ function frame(t){
 }
 try{const b=+localStorage.getItem('mm_best')||0;if(b)$('best').textContent='Best game: '+b+' runs';}catch(e){}
 initPost();resize();hud();
-const DBG={cam:false,admire:'',trip:false,fist:false}; // test hook: pin the camera to CAM_HOME/CAM_LOOK
+const DBG={cam:false,admire:'',trip:false,fist:false,pop:false}; // test hook: pin the camera to CAM_HOME/CAM_LOOK
 window.__mm={S,aim,MX,DBG,SFX,RUN,ballPos:()=>ball.position,fielders,toReady,CAM_HOME,CAM_LOOK,now:()=>now,simulate,judge,get pitch(){return pitch;},get flight(){return flight;},doSwing,newGame,V3,
   sim:(dt)=>{hitstop=0;now+=dt;step(dt);},
   step:(n,dt=1/60)=>{for(let i=0;i<n;i++){if(hitstop>0)hitstop=0;now+=dt;step(dt);}updateCamera(dt);draw();}};
