@@ -982,10 +982,20 @@ function setupClip(obj,clip,B,sk){
   if(sc){C.strike=mixer.clipAction(sc);C.strike.play();C.strike.setEffectiveWeight(0);}
 }
 const WHIFF_HOLD=1.15; // seconds of the swing-and-miss clip shown after the miss before he resets
+function batterOpacity(k){const set=m=>{if(m){m.transparent=k<1;m.opacity=k;}};
+  if(MX.obj)MX.obj.traverse(n=>{if(n.isMesh)[].concat(n.material).forEach(set);});set(bat.userData.wood);}
 function updateClip(dt){
   const C=MX.clip,o=MX.obj;let w=0,want=0,rate=.55,skT=0;
   o.scale.x=Math.abs(o.scale.x);o.position.x=C.baseX; // everything below is worked out right-handed; a lefty is mirrored at the end
-  MX.lefty=S.bi>=0&&!!curBatter().lh;
+  // The next hitter is announced as soon as a play ends, but the man on screen is still the one who just swung.
+  // Keep showing him (and his side of the plate) until he is back in his stance, then fade to the new batter.
+  if(S.bi>=0&&C.bi!==S.bi){
+    if(C.bi===undefined){C.bi=S.bi;MX.lefty=!!curBatter().lh;}
+    else if(C.swap==null&&((C.mode==='idle'&&C.h<=.001)||(S.state==='ready'&&now-S.t>.6)))C.swap=0;}
+  if(C.swap!=null){C.swap+=dt;
+    if(C.swap>=.2&&C.bi!==S.bi){C.bi=S.bi;MX.lefty=!!curBatter().lh;C.mode='idle';C.h=0;C.sk=0;C.t=0;}
+    batterOpacity(C.swap<.2?1-C.swap/.2:Math.min(1,(C.swap-.2)/.25));
+    if(C.swap>=.45){C.swap=null;batterOpacity(1);}}
   if(!DBG.cam){CAM_HOME.x=MX.lefty?.15:-.15;CAM_LOOK.x=MX.lefty?-.3:.3;} // lefties stand in the other box, so the camera moves to their side
   const incoming=S.state==='pitch'||(S.state==='windup'&&now-windupT0>C.loadAt);
   if(swing&&C.sw!==swing){C.sw=swing;C.c0=C.t;C.mode='swing';}
@@ -1114,7 +1124,7 @@ function showChunky(fig,on,keep){fig.root.children.forEach(ch=>{if(ch!==bat&&ch!
 function unloadPlayers(){
   if(MX.obj){if(MX.obj.parent)MX.obj.parent.remove(MX.obj);MX.obj=null;}
   if(MX.pit){scene.remove(MX.pit.obj);MX.pit=null;}
-  MX.ready=false;MX.clip=null;MX.lefty=false;CAM_HOME.x=-.15;CAM_LOOK.x=.3;batter.root.add(bat);showChunky(batter,true);showChunky(pitcher,true);unfitDriver(batter);
+  batterOpacity(1);MX.ready=false;MX.clip=null;MX.lefty=false;CAM_HOME.x=-.15;CAM_LOOK.x=.3;batter.root.add(bat);showChunky(batter,true);showChunky(pitcher,true);unfitDriver(batter);
   fielders.forEach(f=>{if(f.obj){f.fig.root.remove(f.obj);f.obj=f.rt=f.mixer=f.act=null;f.catching=false;unfitDriver(f.fig);showChunky(f.fig,true);}});
 }
 function retarget(){retargetFig(batter,MX);}
