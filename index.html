@@ -279,6 +279,11 @@ body.mob #tip{display:block}body.mob .how{display:none}
 #tut.s3 .spot::before{border:3px solid #fff;background:rgba(255,255,255,.4)}
 #tut.s3 .spot::after{border:3px solid var(--volt);animation:tutring 1.8s linear infinite}
 @keyframes tutring{0%{transform:scale(6);opacity:0;border-width:.6px}10%{opacity:1}72%{transform:scale(1);border-color:var(--volt);border-width:3px}74%,100%{transform:scale(1);border-color:#fff;border-width:3px;opacity:1}}
+/* step 2: the two swing buttons stay lit under the dimming, each labelled with its part of the bat */
+#hud.tut2 #touch{z-index:31;pointer-events:none}#hud.tut2 #touch .jc{opacity:.15;animation:none}
+#tut .lbl{font-size:15px;white-space:nowrap;transform:translateX(-50%)}#tut .lbl span{display:block;font-size:20px;line-height:.9;animation:tutbob 1s ease-in-out infinite}
+#tut.s2 .lbl{display:block}#tut .lc{color:#3ddc6a}#tut .lp{color:#ff6a4a}
+@keyframes tutbob{50%{transform:translateY(5px)}}
 #tut.s6 .spot,#tut.o .spot{border-radius:20px}#tut.s6 .ovz,#tut.o .ovz2{display:block;left:12px;right:12px;top:250px}
 #tut.s5 .jcz,#tut.j .jz{display:block;left:12px;right:12px;text-align:right;bottom:calc(var(--tbb) + min(128px,32vw) + min(76px,19vw) + 44px)}
 #tut .go{display:block;left:50%;top:186px;transform:translateX(-50%);white-space:nowrap;padding:12px 28px;font-size:20px;color:var(--ink);text-shadow:none;background:var(--volt);border:3px solid #000;border-radius:28px;box-shadow:0 4px 0 #000}
@@ -373,7 +378,8 @@ body.mob #tip{display:block}body.mob .how{display:none}
       <div class="tz skip" id="tutskip">Skip ▶▶</div>
       <div class="tz off" id="tutoff">Don't show tutorials again</div>
       <div class="tz aimz"><b>LEFT THUMB: AIM</b>Drag here (or anywhere) to move the ring onto the pitch</div>
-      <div class="tz pcz"><b>GET THE BALL INSIDE YOUR BAT</b><small><i style="color:#3ddc6a"></i>CONTACT: anywhere inside the green ring. <i style="color:#ff4d2e;background:rgba(255,77,46,.55)"></i>POWER: inside the red core. Ball in the right spot, on time = a hit.</small></div>
+      <div class="tz pcz"><b>GET THE BALL INSIDE THE CIRCLE</b><small><i style="color:#3ddc6a"></i>Green ring = CONTACT button. <i style="color:#ff4d2e;background:rgba(255,77,46,.55)"></i>Red core = POWER button. The closer the ball is to the middle, the better you hit it.</small></div>
+      <div class="tz lbl lc" id="tlc">GREEN RING<span>▼</span></div><div class="tz lbl lp" id="tlp">RED CORE<span>▼</span></div>
       <div class="tz tmz"><b>YELLOW RING = TIMING</b>It shrinks onto a white circle the size of the ball<small>Ring still bigger than the ball: too early. Ring meets the circle: swing. Move your bat onto it first.</small></div>
       <div class="tz swz"><b>RIGHT THUMB: SWING</b>Tap as the yellow ring closes on the ball<small>CONTACT is easier and hits line drives. POWER is harder and hits moonshots.</small></div>
       <div class="tz jcz"><b>JUICE: MONSTER SWING</b>Tap JUICE, then swing. Costs one bar<small>Hits and taking balls refill it. Save it for a pitch you can drive.</small></div>
@@ -1055,13 +1061,15 @@ let tutOff=false,jtutSeen=!MOB;try{tutOff=localStorage.getItem('mm_tutoff')==='1
 let tutStep=0;const TUT_N=6;
 function tutShow(mode){const T=$('tut');T.className=mode;T.hidden=false;tutHold=true;const n=mode==='j'||mode==='o'?0:+mode.slice(1);tutStep=n;$('tutstp').textContent=n?n+' / '+TUT_N:'';$('tutgo').textContent=n&&n<TUT_N?'NEXT ▶  '+n+'/'+TUT_N:'GOT IT — PLAY ▶';
   const sp=T.querySelector('.spot');sp.style.cssText='';T.querySelectorAll('.pcz,.tmz').forEach(c=>c.style.bottom='');
+  $('hud').classList.toggle('tut2',n===2);
+  if(n===2){const H=$('hud').getBoundingClientRect();[['tc','tlc'],['tp','tlp']].forEach(([b,l])=>{const r=$(b).getBoundingClientRect(),e=$(l);e.style.left=(r.left-H.left+r.width/2)+'px';e.style.top=(r.top-H.top-46)+'px';});}
   if(n===6||mode==='o'){const r=$('juice').getBoundingClientRect(),h=$('hud').getBoundingClientRect();sp.style.cssText='left:'+(r.left-h.left-10)+'px;top:'+(r.top-h.top-8)+'px;width:'+(r.width+12)+'px;height:'+(r.height+14)+'px';} // the Juice / Overdrive meter
   if(n===2||n===3){ // spotlight the strike zone itself: project its corners to the screen
     const H=canvas.clientHeight,W=canvas.clientWidth,a=new V3(ZONE.x0,ZONE.y1,0).project(camera),b=new V3(ZONE.x1,ZONE.y0,0).project(camera),pad=16;
     const l=(a.x+1)/2*W-pad,t=(1-a.y)/2*H-pad,r=(b.x+1)/2*W+pad,bt=(1-b.y)/2*H+pad;
     aim.x=0;aim.y=.825;reticle.position.set(0,.825,0);const c0=new V3(0,.825,0).project(camera); // bat dead centre for the demo; the ball marker is placed on that exact point (4 = the spotlight's border)
     sp.style.cssText='left:'+l+'px;top:'+t+'px;width:'+(r-l)+'px;height:'+(bt-t)+'px;--tr:'+(PT_R*(r-l-2*pad)/(ZONE.x1-ZONE.x0)).toFixed(1)+'px;--tx:'+((c0.x+1)/2*W-l-4).toFixed(1)+'px;--ty:'+((1-c0.y)/2*H-t-4).toFixed(1)+'px';T.querySelector(n===2?'.pcz':'.tmz').style.bottom=(H-t+16)+'px';}}
-function tutClose(){$('tut').hidden=true;tutHold=false;if(tutFirst){tutFirst=false;S.t=now-readyDur+.7;}}
+function tutClose(){$('hud').classList.remove('tut2');$('tut').hidden=true;tutHold=false;if(tutFirst){tutFirst=false;S.t=now-readyDur+.7;}}
 function jtutNeed(){if(tutOff||jtutSeen||window.__mmManual&&!window.__mmTut)return false;jtutSeen=true;tutFirst=true;tutShow('j');try{localStorage.setItem('mm_jtut','1');}catch(e){}return true;}
 let otutSeen=!MOB;try{if(!TUT_EVERY_LAUNCH&&localStorage.getItem('mm_otut')==='1')otutSeen=true;}catch(e){}
 // the first time Overdrive is live: point at the bar and say what it does
