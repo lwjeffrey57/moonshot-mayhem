@@ -221,6 +221,7 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 #jtoast{display:none;right:max(10px,env(safe-area-inset-right,0px));bottom:calc(var(--tbb) + min(128px,32vw) + min(76px,19vw) + 34px);padding:7px 14px;text-align:center;font-family:var(--display);font-style:italic;font-size:19px;color:var(--ink);background:#ffd23b;border:3px solid #000;border-radius:14px;box-shadow:0 4px 0 #000;opacity:0}
 #jtoast small{display:block;font-family:var(--hud);font-style:normal;font-weight:800;font-size:12px;letter-spacing:.08em;text-transform:uppercase}
 #jtoast::after{content:'';position:absolute;right:34px;bottom:-13px;border:7px solid transparent;border-top-color:#000}
+#hud #tut.o .ovz2{bottom:calc(var(--tbb) + min(128px,32vw) + min(100px,25vw) + 56px)}
 #jtoast.odt{background:#58d6ff;bottom:calc(var(--tbb) + min(128px,32vw) + min(100px,25vw) + 66px)}
 #hud.mob #jtoast{display:block}#jtoast.go{animation:jtoast 2.2s ease-out both}
 @keyframes jtoast{0%{opacity:0;transform:translateY(10px) scale(.8)}10%{opacity:1;transform:none}80%{opacity:1}100%{opacity:0}}
@@ -1080,6 +1081,7 @@ function tutShow(mode){const T=$('tut');T.className=mode;T.hidden=false;tutHold=
   const sp=T.querySelector('.spot');sp.style.cssText='';T.querySelectorAll('.pcz,.tmz').forEach(c=>c.style.bottom='');
   $('hud').classList.toggle('tut2',n===2);if(n===2)tutT0=performance.now();
   if(n===2){const H=$('hud').getBoundingClientRect();[['tc','tlc'],['tp','tlp']].forEach(([b,l])=>{const r=$(b).getBoundingClientRect(),e=$(l);e.style.left=(r.left-H.left+r.width/2)+'px';e.style.top=(r.top-H.top-46)+'px';});}
+  if(n===5||mode==='j'||mode==='o'){const r=$('tj').getBoundingClientRect(),h=$('hud').getBoundingClientRect(),g=10;sp.style.cssText='left:'+(r.left-h.left-g-4)+'px;top:'+(r.top-h.top-g-4)+'px;right:auto;bottom:auto;width:'+(r.width+2*g)+'px;height:'+(r.height+2*g)+'px;box-sizing:content-box;aspect-ratio:auto';} // ring drawn around the button as it actually is (JUICE and OVERDRIVE are different sizes); 4 = the ring's border
   if(n===6){const r=$('juice').getBoundingClientRect(),h=$('hud').getBoundingClientRect();sp.style.cssText='left:'+(r.left-h.left-10)+'px;top:'+(r.top-h.top-8)+'px;width:'+(r.width+12)+'px;height:'+(r.height+14)+'px';} // the Juice / Overdrive meter
   if(n===2||n===3){ // spotlight the strike zone itself: project its corners to the screen
     const H=canvas.clientHeight,W=canvas.clientWidth,a=new V3(ZONE.x0,ZONE.y1,0).project(camera),b=new V3(ZONE.x1,ZONE.y0,0).project(camera),pad=16;
