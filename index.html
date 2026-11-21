@@ -203,11 +203,11 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 @media (prefers-reduced-motion:reduce){.tb.pw.fire,.tb.pw.fire::after{animation:none}}
 .tb:active{transform:scale(.93)}
 .tb:focus-visible,.cta:focus-visible{outline:3px solid var(--ice);outline-offset:3px}
-@media (pointer:coarse){#touch{display:flex}#keys{display:none}
-  /* the swing buttons own the bottom edge: batter card and pitch readout stack above them, on the left */
-  #hud>#card,#hud.kr #card{left:max(12px,env(safe-area-inset-left,0px));right:auto;top:166px;bottom:auto;padding:4px 10px}
-  #hud>#card #cnum{font-size:24px}
-  #plast{left:max(14px,env(safe-area-inset-left,0px));transform:none;bottom:170px;font-size:15px}}
+/* phone layout (touch device, or any window 560px wide or less) */
+#hud.mob #touch{display:flex}#hud.mob #keys{display:none}#hud.mob #rep{display:none}
+/* the swing buttons own the bottom edge: the batter card moves up under the scoreboard */
+#hud.mob>#card,#hud.mob.kr #card{left:max(12px,env(safe-area-inset-left,0px));right:auto;top:166px;bottom:auto;padding:4px 10px}
+#hud.mob>#card #cnum{font-size:24px}
 /* overlays */
 .overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;
   background:radial-gradient(ellipse at 50% 40%,rgba(11,10,26,.55),rgba(11,10,26,.92));
@@ -904,7 +904,8 @@ const SW_T=.13;
 const curBatter=()=>LINEUP[S.bi%LINEUP.length];
 
 function pop(t,s='',cls='',long=false){const e=$('pop');e.className='';e.querySelector('.t').textContent=t;e.querySelector('.s').textContent=s;void e.offsetWidth;e.className='go '+cls+(long?' long':'');}
-const MOB=matchMedia('(pointer:coarse)').matches||innerWidth<=560;$('hud').classList.toggle('mob',MOB);document.body.classList.toggle('mob',MOB);const buzz=p=>{try{if(navigator.vibrate)navigator.vibrate(p);}catch(e){}};
+let MOB=false;function setMob(){MOB=matchMedia('(pointer:coarse)').matches||innerWidth<=560;$('hud').classList.toggle('mob',MOB);document.body.classList.toggle('mob',MOB);}setMob();addEventListener('resize',setMob); // narrow a desktop window to preview the phone layout
+const buzz=p=>{try{if(navigator.vibrate)navigator.vibrate(p);}catch(e){}};
 const TIPS=[['AIM','Drag your left thumb anywhere on the screen to move the bat ring onto the pitch.'],['SWING','Tap CONTACT or POWER with your right thumb as the yellow ring closes on the ball.'],
   ['CONTACT OR POWER','Contact has a big sweet spot and sprays line drives. Power has a small one and hits moonshots.'],
   ['JUICE','Tap JUICE before you swing to burn one bar: the ball comes off about 20% harder and the sweet spot grows.'],
