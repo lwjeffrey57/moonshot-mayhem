@@ -1387,7 +1387,7 @@ function tryContact(){flight_pop=false;
   const col=tb?[1,.5,.15]:S.over?[.3,.8,1]:[1,.9,.5];
   burst(fxS,p0,Math.round(14+60*q),4+9*q,.5,col,6,1);
   const mph=Math.round(v*2.237*1.02);
-  const lab=Math.abs(n)<.22?'PERFECT':n<0?(n<-.7?'EARLY':'A HAIR EARLY'):(n>.7?'LATE':'A HAIR LATE');
+  const lab=Math.abs(n)<.22?'ON TIME':n<0?(n<-.7?'EARLY':'A HAIR EARLY'):(n>.7?'LATE':'A HAIR LATE');
   {const lvl=tipped||chase>.3||q<.35?1:q<.6?2:q<.85?3:4;
     $('hq').textContent=flight_pop?'POPPED UP':chase>.3?'CHASED · WEAK':tipped?'TIPPED':['','WEAK','OKAY','SOLID','BARRELED'][lvl];if(MOB)$('hq').textContent+=' · '+mph+' MPH';$('hq').className='q q'+lvl;flight.lvl=lvl;if(lvl===4)buzz(35);
     {const L=tr.land,far=L?Math.hypot(L.x,L.z):0,lastP=tr.pts[tr.pts.length-1]; // distance ticks up on anything driven in the air
@@ -1397,7 +1397,8 @@ function tryContact(){flight_pop=false;
       // picture of it: the ball against the barrel, red dot = the sweet spot
       const bx=clamp((aim.x-pitch.tx)/R,-1.4,1.4)*13,by=clamp((aim.y-pitch.ty)/R,-1.4,1.4)*13,cy=23-by;$('hbat').setAttribute('y',cy-5);$('hdot').setAttribute('cy',cy);$('hdot').setAttribute('cx',86+bx);$('hbat').setAttribute('x',20+bx);}
     $('hitinfo').hidden=false;}
-  timing(lab+' · '+(chase>.3?'CHASED':where),chase>.3?'#ff4d2e':Math.abs(n)<.22&&cr<.3?'#ffe53b':flight.lvl===1?'#9aa3c7':'#f2f5ff',flight.lvl); // timing, then where the barrel met it
+  timing(Math.abs(n)<.22&&cr<.3&&chase<=.3?'PERFECT!':lab+' · '+(chase>.3?'CHASED':where), // PERFECT is reserved for on time AND squared up
+    chase>.3?'#ff4d2e':Math.abs(n)<.22&&cr<.3?'#ffe53b':flight.lvl===1?'#9aa3c7':'#f2f5ff',flight.lvl); // timing, then where the barrel met it
   // No-doubters: sometimes stay on the hitter instead of the ball. 'admire' = he holds his finish, watches it and drops the bat;
   // 'show' = the same, then his own walk-up routine as a celebration. Decided here because we already know where the ball lands.
   if(play.type==='hr'&&MX.clip){const ft=play.dist*3.281,big=tb||ft>=500,r=Math.random(),early=earlyShow(S.hrs),kind=DBG.admire||(early?'show':big?(r<.6?'show':r<.85?'admire':''):ft>=440?(r<.5?'admire':''):'');wildTrot=early;
