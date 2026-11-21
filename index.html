@@ -197,7 +197,20 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 .tb.pw{background:var(--heat);width:min(128px,32vw);height:min(128px,32vw);color:#fff;font-size:clamp(17px,5.4vw,22px);text-shadow:0 2px 0 #000,0 0 3px #000,1px 1px 0 #000,-1px -1px 0 #000}
 .tb.jc{background:var(--chrome);width:min(76px,19vw);height:min(76px,19vw);font-size:clamp(12px,3.6vw,15px)}
 .tb.jc{position:absolute;right:0;bottom:calc(100% + 14px);z-index:2}.tb.jc::before{inset:0} /* JUICE sits above POWER, leaving the bottom-left for the aim thumb */
-.tb.jc.on{background:var(--volt);box-shadow:0 4px 0 #000,0 0 18px var(--volt)}
+/* Juice you can't miss: dim and grey when empty; gold, pulsing and counted when there is a bar to spend */
+.tb.jc.none{background:#8a8fa8;color:#2a2d40;opacity:.55;box-shadow:0 4px 0 #000}
+.tb.jc.has{background:#ffd23b;animation:jpulse .7s ease-in-out infinite alternate}
+@keyframes jpulse{from{box-shadow:0 4px 0 #000,0 0 8px 2px rgba(255,210,59,.6);transform:scale(1)}to{box-shadow:0 4px 0 #000,0 0 26px 10px rgba(255,210,59,.95);transform:scale(1.07)}}
+.tb.jc b{position:absolute;right:-7px;top:-7px;min-width:28px;height:28px;padding:0 5px;border-radius:14px;background:var(--heat);color:#fff;font-size:15px;line-height:24px;border:2px solid #000;font-weight:400;text-shadow:none}.tb.jc.none b{display:none}
+.tb.jc.gain{animation:jgain .5s cubic-bezier(.2,1.6,.4,1)}@keyframes jgain{0%{transform:scale(1)}40%{transform:scale(1.45)}100%{transform:scale(1)}}
+#jtoast{display:none;right:max(10px,env(safe-area-inset-right,0px));bottom:calc(var(--tbb) + min(128px,32vw) + min(76px,19vw) + 34px);padding:7px 14px;text-align:center;font-family:var(--display);font-style:italic;font-size:19px;color:var(--ink);background:#ffd23b;border:3px solid #000;border-radius:14px;box-shadow:0 4px 0 #000;opacity:0}
+#jtoast small{display:block;font-family:var(--hud);font-style:normal;font-weight:800;font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+#jtoast::after{content:'';position:absolute;right:34px;bottom:-13px;border:7px solid transparent;border-top-color:#000}
+#hud.mob #jtoast{display:block}#jtoast.go{animation:jtoast 2.2s ease-out both}
+@keyframes jtoast{0%{opacity:0;transform:translateY(10px) scale(.8)}10%{opacity:1;transform:none}80%{opacity:1}100%{opacity:0}}
+#kj.has{box-shadow:0 0 14px 3px rgba(255,210,59,.9);border-color:#ffd23b;animation:kjp .7s ease-in-out infinite alternate}@keyframes kjp{to{box-shadow:0 0 22px 7px rgba(255,210,59,1)}}
+@media (prefers-reduced-motion:reduce){.tb.jc.has,#kj.has{animation:none}}
+.tb.jc.on{animation:none;background:var(--volt);box-shadow:0 4px 0 #000,0 0 18px var(--volt)}
 /* POWER on fire: Juice armed, or Overdrive */
 .tb.pw.fire{background:radial-gradient(circle at 50% 115%,#fff6b0 0%,#ffc21e 26%,#ff5a1e 56%,#b3140a 84%);border-color:#2a0500;animation:fireglow .45s ease-in-out infinite alternate}
 .tb.pw.fire::after{content:'';position:absolute;z-index:-1;left:-8%;right:-8%;top:-46%;bottom:38%;pointer-events:none;filter:blur(1.5px);transform-origin:50% 100%;
@@ -314,12 +327,13 @@ body.mob #tip{display:block}body.mob .how{display:none}
       <svg id="hpt" viewBox="0 0 172 46" aria-hidden="true"><rect id="hbat" x="20" y="18" width="132" height="10" rx="5" fill="#d8a25a" stroke="#000" stroke-width="1.5"/><circle id="hball" cx="86" cy="23" r="13" fill="#fff" stroke="#000" stroke-width="1.5" fill-opacity=".92"/><circle id="hdot" cx="86" cy="23" r="3" fill="#e23a22"/></svg></div>
     <div id="plast"></div>
     <div id="rep" hidden><div class="cap">PITCHES</div><div id="replist" class="pills"></div></div>
-    <div id="keys" class="pills"><div class="pill">CONTACT<span class="k">CLICK</span></div><div class="pill">POWER<span class="k">R-CLICK</span></div><div class="pill dk">JUICE<span class="k">SHIFT</span></div><div class="pill dk">CAMERA<span class="k">C</span></div><div class="pill dk">PAUSE<span class="k">ESC</span></div></div>
+    <div id="keys" class="pills"><div class="pill">CONTACT<span class="k">CLICK</span></div><div class="pill">POWER<span class="k">R-CLICK</span></div><div class="pill dk" id="kj">JUICE<span class="k">SHIFT</span></div><div class="pill dk">CAMERA<span class="k">C</span></div><div class="pill dk">PAUSE<span class="k">ESC</span></div></div>
     <button id="pausebtn" type="button" aria-label="Pause game" hidden>❚❚</button>
     <button id="mutebtn" type="button" aria-label="Mute sound" hidden></button>
+    <div id="jtoast" aria-hidden="true">JUICE READY!<small>tap it, then swing</small></div>
     <div id="apad" aria-hidden="true"><i></i><span>AIM</span></div>
     <div id="touch">
-      <button class="tb jc" id="tj" type="button">JUICE</button>
+      <button class="tb jc" id="tj" type="button">JUICE<b id="tjn"></b></button>
       <button class="tb" id="tc" type="button">CONTACT</button>
       <button class="tb pw" id="tp" type="button">POWER</button>
     </div>
@@ -991,8 +1005,15 @@ function hud(){
   $('jfill').style.width=(S.juice*100)+'%';$('hfill').style.width=(S.heat*100)+'%';$('heat').classList.toggle('ready',S.heat>=.333);
   const j=$('juice');j.classList.toggle('ready',S.juice>=.333);j.classList.toggle('armed',juiceOn()&&S.juice>=.333);j.classList.toggle('over',S.over);
   $('jtxt').textContent=S.over?'OVERDRIVE':(S.juice>=.333?'JUICE READY':'JUICE');
+  {const bars=Math.floor(S.juice/.3333+.02),tj=$('tj');tj.classList.toggle('has',bars>0);tj.classList.toggle('none',bars===0);$('tjn').textContent=bars?'×'+bars:'';$('kj').classList.toggle('has',bars>0);
+    if(bars>hudBars&&S.state!=='title'&&S.state!=='over'){ // a new bar just filled: say so, loudly
+      tj.classList.remove('gain');void tj.offsetWidth;tj.classList.add('gain');const jt=$('jtoast');jt.classList.remove('go');void jt.offsetWidth;jt.classList.add('go');
+      buzz(25);try{tone('triangle',660,990,.12,.25);tone('triangle',990,1320,.14,.22,.1);}catch(e){}
+      if(!MOB)setTimeout(()=>timing('JUICE READY — HOLD SHIFT AND SWING','#ffd23b',3),300);}
+    hudBars=bars;}
   $('tj').classList.toggle('on',juiceArmed);$('tp').classList.toggle('fire',!!S.over||(juiceArmed&&S.juice>=.333));
 }
+let hudBars=0;
 const juiceOn=()=>juiceArmed||keys.ShiftLeft||keys.ShiftRight;
 function setBatter(){
   S.bi++;const b=curBatter();S.balls=0;S.strikes=0;aim.x=0;aim.y=.825; // every hitter starts with the ring in the middle of the zone
@@ -2165,7 +2186,7 @@ const LITE=matchMedia('(pointer:coarse)').matches;
 if(LITE){QS=.85;rim.shadow.mapSize.set(512,512);renderer.shadowMap.type=T.PCFShadowMap;}else initPost();
 resize();hud();
 const DBG={cam:false,admire:'',trip:false,fist:false,pop:false,loser:false}; // test hook: pin the camera to CAM_HOME/CAM_LOOK
-window.__mm={S,aim,MX,DBG,SFX,RUN,ballPos:()=>ball.position,fielders,toReady,CAM_HOME,CAM_LOOK,now:()=>now,simulate,judge,get pitch(){return pitch;},get flight(){return flight;},lastSwing:()=>{const t=swing&&swing.type;swing=null;return t;},doSwing,newGame,V3,
+window.__mm={S,aim,MX,DBG,hud,SFX,RUN,ballPos:()=>ball.position,fielders,toReady,CAM_HOME,CAM_LOOK,now:()=>now,simulate,judge,get pitch(){return pitch;},get flight(){return flight;},lastSwing:()=>{const t=swing&&swing.type;swing=null;return t;},doSwing,newGame,V3,
   sim:(dt)=>{hitstop=0;now+=dt;step(dt);},
   step:(n,dt=1/60)=>{for(let i=0;i<n;i++){if(hitstop>0)hitstop=0;now+=dt;step(dt);}updateCamera(dt);draw();}};
 if(!window.__mmManual)requestAnimationFrame(frame);
