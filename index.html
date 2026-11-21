@@ -244,6 +244,10 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 @keyframes flames{0%{transform:scale(1,.86) skewX(-4deg);opacity:.85}50%{transform:scale(1.03,1.06) skewX(3deg)}100%{transform:scale(.98,.94) skewX(-2deg);opacity:1}}
 @media (prefers-reduced-motion:reduce){.tb.pw.fire,.tb.pw.fire::after{animation:none}}
 .tb:active{transform:scale(.93)}
+.tb.dn{transform:scale(.88)!important;filter:brightness(1.45);box-shadow:0 1px 0 #000,0 0 0 5px rgba(255,255,255,.75)!important;transition:none}
+.tb{transition:transform .12s ease-out,filter .12s ease-out}
+#pausebtn:active,#mutebtn:active,.cta:active,.wkopt:active,#tut .go:active,#tut .skip:active,#tut .off:active{transform:scale(.94);filter:brightness(1.3)}#hud.mob #pausebtn:active{transform:scale(.94)}
+#apad.drag{box-shadow:inset 0 0 0 3px rgba(242,245,255,.6),0 3px 0 rgba(0,0,0,.5)}
 .tb:focus-visible,.cta:focus-visible{outline:3px solid var(--ice);outline-offset:3px}
 /* phone layout (touch device, or any window 560px wide or less) */
 /* aim pad: shows where the left thumb goes; dragging anywhere still aims, the knob just mirrors the drag */
@@ -1630,6 +1634,8 @@ const tap=(id,fn)=>$(id).addEventListener('pointerdown',e=>{e.preventDefault();a
 // anything from the buttons down to the bottom edge of the screen counts, so a low or sloppy tap still swings.
 // Inside the JUICE circle = Juice; anywhere else = whichever of CONTACT / POWER is nearer. Listens to touchstart as well as pointerdown,
 // because some mobile browsers drop pointer events for a second finger. A ripple shows exactly where the tap registered.
+// instant press feedback: the button dips and flashes on the same frame the touch lands
+const press=id=>{const e=$(id);e.classList.remove('dn');void e.offsetWidth;e.classList.add('dn');clearTimeout(e._dn);e._dn=setTimeout(()=>e.classList.remove('dn'),140);};
 let lastTapT=0,lastTapX=0,lastTapY=0;
 function cornerTap(x,y){
   if(!MOB||paused||tutHold||!$('title').hidden||!$('over').hidden)return false;
@@ -1639,11 +1645,11 @@ function cornerTap(x,y){
   const t=performance.now();if(t-lastTapT<90&&Math.hypot(x-lastTapX,y-lastTapY)<3)return true;lastTapT=t;lastTapX=x;lastTapY=y; // the same tap arriving as both touchstart and pointerdown
   audioInit();
   {const r=document.createElement('i');r.className='rip';r.style.left=x+'px';r.style.top=y+'px';$('hud').appendChild(r);setTimeout(()=>r.remove(),420);}
-  if(d(J)<=J.r&&d(P)>P.r){juiceTap();return true;} // only a tap squarely on the button arms Juice or Overdrive; a near miss is treated as a swing tap
-  doSwing(d(P)-P.r<=d(C)-C.r?'power':'contact');return true;}
+  if(d(J)<=J.r&&d(P)>P.r){press('tj');juiceTap();return true;} // only a tap squarely on the button arms Juice or Overdrive; a near miss is treated as a swing tap
+  {const pw=d(P)-P.r<=d(C)-C.r;press(pw?'tp':'tc');doSwing(pw?'power':'contact');}return true;}
 document.addEventListener('pointerdown',e=>{if(e.pointerType!=='mouse'||MOB){if(cornerTap(e.clientX,e.clientY)){e.preventDefault();e.stopPropagation();}}},{capture:true});
 document.addEventListener('touchstart',e=>{let hit=false;for(const t of e.changedTouches)if(cornerTap(t.clientX,t.clientY))hit=true;if(hit){e.preventDefault();e.stopPropagation();}},{capture:true,passive:false});
-['tc','tp','tj'].forEach(id=>$(id).addEventListener('click',e=>{if(e.detail===0){if(id==='tj')juiceTap();else doSwing(id==='tp'?'power':'contact');}})); // keyboard activation
+['tc','tp','tj'].forEach(id=>$(id).addEventListener('click',e=>{if(e.detail===0){press(id);if(id==='tj')juiceTap();else doSwing(id==='tp'?'power':'contact');}})); // keyboard activation
 $('start').addEventListener('click',()=>{audioInit();if(AC&&AC.state==='suspended')AC.resume();startGame();});
 $('title').addEventListener('click',e=>{if(e.target.closest('button'))return;$('start').click();}); // a tap anywhere on the title screen starts the game; the option buttons keep their own jobs
 muteLabel();$('mutebtn').addEventListener('click',e=>{e.stopPropagation();toggleMute();});$('mute1').addEventListener('click',toggleMute);
