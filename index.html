@@ -1523,7 +1523,7 @@ function setupPitcher(obj,custom){
   const hand=B('RightHand'),lh=B('LeftHand'),v0=new V3(),v1=new V3();
   // release = the frame the throwing hand is moving fastest toward the plate
   let tRel=1,best=0,th=hand;
-  [hand,lh].forEach(h=>{for(let t=.2;t<clip.duration-.1;t+=1/60){mixer.setTime(t);obj.updateMatrixWorld(true);h.getWorldPosition(v0);mixer.setTime(t+1/60);obj.updateMatrixWorld(true);h.getWorldPosition(v1);
+  [hand].forEach(h=>{for(let t=.2;t<clip.duration-.1;t+=1/60){mixer.setTime(t);obj.updateMatrixWorld(true);h.getWorldPosition(v0);mixer.setTime(t+1/60);obj.updateMatrixWorld(true);h.getWorldPosition(v1);
     const sp=v1.z-v0.z;if(sp>best){best=sp;tRel=t;th=h;}}});
   if(!custom)addHat(B,D,pitcher.mats.cap,false);   // textured characters go bare-headed for now
   // glove on the non-throwing hand
