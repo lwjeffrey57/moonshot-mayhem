@@ -7,14 +7,13 @@ An original over-the-top arcade batting game for the browser, built with three.j
 | File | What it is |
 | --- | --- |
 | `index.html` | The whole game: page markup, styles and game code. It is written as an artifact fragment (no `<html>`/`<body>` wrapper). |
-| `body.txt` | The alternative "mannequin" player (a bare Mixamo body, FBX, textures removed, base64). Its uniform and helmet are painted on in code. Selectable on the title screen. |
 | `ely.txt`, `ely_d/n/s/g.jpg` | The default player: Mixamo's "Ely" armoured character (FBX mesh, base64) with its own colour, normal, specular and glow textures. The pitcher's armour is recoloured in code. |
 | `ely_clips.json` | Swing, stance, swing-and-miss and fly-ball catch clips made for Ely. They override the generic ones in `clips.json` when Ely is selected. |
 | `bat.txt` | The bat model (FBX, base64-encoded). Re-oriented, scaled and coloured in code; a code-built bat is used if it is missing. |
 | `clips.json` | Motion-capture clips as plain keyframe data: `hit` (swing), `idle` (batting stance), `strike` (swing and miss with reaction), `pitch`. |
 | `tools/` | Scripts used to prepare the assets (see below). |
 
-`index.html` loads `body.txt` and `clips.json` with relative `fetch()` calls, and loads three.js plus its FBX loader and post-processing passes from cdnjs / jsDelivr. If the model files are missing, the game falls back to simple code-built figures.
+`index.html` loads the model, texture and clip files with relative `fetch()` calls, and loads three.js plus its FBX loader and post-processing passes from cdnjs / jsDelivr. If the model files are missing, the game falls back to simple code-built figures.
 
 ## Running it locally
 
@@ -42,7 +41,7 @@ Then open `http://localhost:8000/local.html`.
 
 Mixamo downloads "with skin" embed four 4K textures and weigh about 35 MB. The game does not use those textures.
 
-- `tools/fbxstrip.py in.fbx out.fbx` rewrites a binary FBX with the embedded images removed (35 MB becomes about 2 MB). Base64-encode the result to make `body.txt`.
+- `tools/fbxstrip.py in.fbx out.fbx` rewrites a binary FBX with the embedded images removed (35 MB becomes about 2 MB). Base64-encode the result to make a model file such as `ely.txt`.
 - `tools/extract-clips.html` + `tools/extract-clips.js` load animation FBX files in headless Chromium (Playwright) and write each clip's keyframes to JSON. Track names are stored without the `mixamorig` prefix so a clip made for one Mixamo character can drive another.
 
 ## Asset credits

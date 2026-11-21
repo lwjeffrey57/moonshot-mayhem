@@ -915,7 +915,7 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden&&inPlay())s
 // ───────────────────────── rigged batter mesh (Mixamo skeleton), dressed in code and driven by the rig above
 const MX={ready:false,map:[],on:true,token:0,kind:'ely'};
 // player looks you can switch between on the title screen
-const MODELS={ely:{label:'armoured',body:'ely.txt',clips:'ely_clips.json',tex:{d:'ely_d.jpg',n:'ely_n.jpg',s:'ely_s.jpg',g:'ely_g.jpg'}},mann:{label:'mannequin',body:'body.txt'}},ORDER=['ely','mann'];
+const MODELS={ely:{label:'armoured',body:'ely.txt',clips:'ely_clips.json',tex:{d:'ely_d.jpg',n:'ely_n.jpg',s:'ely_s.jpg',g:'ely_g.jpg'}}},ORDER=['ely']; // one look for now; add entries here to offer more on the title screen
 try{const k=localStorage.getItem('mm_kind');if(MODELS[k])MX.kind=k;}catch(e){}
 const atlasC=document.createElement('canvas');atlasC.width=atlasC.height=1024;const atlasT=new T.CanvasTexture(atlasC);
 const SW={skin:[800,544],sleeve:[864,544],trim:[928,544],glove:[992,544],shoe:[800,608],sole:[864,608],band:[928,608],hair:[992,608],belt:[800,672]};
@@ -1223,7 +1223,7 @@ function makeSkins(im){ // a textured character: its own colour, normal, specula
 }
 function loadPlayers(kind){ // body file = character mesh; clips.json = motion-capture clips (swing, stance idle, miss, pitch)
   const cfg=MODELS[kind],my=++MX.token;MX.kind=kind;try{localStorage.setItem('mm_kind',kind);}catch(e){}
-  unloadPlayers();$('mdl').hidden=false;$('mdl').textContent='Players: '+cfg.label+' (tap to switch)';
+  unloadPlayers();$('mdl').hidden=ORDER.length<2;$('mdl').textContent='Players: '+cfg.label+' (tap to switch)';
   if(!cfg.body||!T.FBXLoader)return;
   // the simple built-in figures are only a fallback: keep them out of sight while the models load
   const figs=[batter,pitcher,...fielders.filter(f=>!f.isP).map(f=>f.fig)],fallback=fig=>{showChunky(fig,true);if(fig===batter)bat.visible=true;};
