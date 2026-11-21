@@ -695,7 +695,7 @@ function judge(tr){
   if(tr.hr)return {type:'hr',endT:tr.endT,dist:tr.dist};
   if(tr.foul)return {type:'foul',endT:Math.min(1.5,tr.endT)};
   let f=null,p=null;
-  outer:for(const q of tr.pts){if(q.y>2.7)continue;
+  outer:for(const q of tr.pts){if(q.y>2.2)continue;
     for(const c of fielders){const d=Math.hypot(c.home.x-q.x,c.home.z-q.z);if(d<=c.reach+c.speed*Math.max(0,q.t-c.react)){f=c;p=q;break outer;}}}
   if(!f){p=tr.pts[tr.pts.length-1];let bd=1e9;for(const c of fielders){const d=Math.hypot(c.home.x-p.x,c.home.z-p.z);if(d<bd){bd=d;f=c;}}p={x:p.x,y:0,z:p.z,t:p.t};}
   const air=!tr.land||p.t<tr.land.t;
@@ -1047,27 +1047,50 @@ function setupPitcher(obj,custom){
   MX.pit={obj,mixer,hand:th,tRel,dur:clip.duration};
   showChunky(pitcher,false);
 }
-function setupModel(obj,custom){
-  const d=batter,{s,sk,B,D,K}=prepModel(obj,atlasT,custom);MX.D=D;
-  const clip=obj.animations&&obj.animations.find(c=>c.duration>.5);
-  if(clip)setupClip(obj,clip,B,sk);else{
-  d.root.add(obj);
-  for(const k in GRIP){const bn=B(k);if(bn)bn.quaternion.fromArray(GRIP[k]);}
-  // fit the driver rig to this skeleton's proportions (upper body scaled up for a slugger's build)
+// A code-built figure can "drive" a rigged model: its joints are fitted to the model's proportions once,
+// then each frame the model's bones copy the figure's joint rotations. Used for the fielders' ready and running poses.
+function fitDriver(d,B,D,s,K){
   d.hipW=D.legX*s;d.hipDrop=(D.hipsY-D.legY)*s;d.kneeL.position.y=d.kneeR.position.y=-D.thigh*s;d.footL.position.y=d.footR.position.y=-D.shin*s;
   d.yOff=(.87-(D.thigh+D.shin)*s)-(D.footY*s-.07);
   d.elL.position.y=d.elR.position.y=-D.uarm*s*K;d.L1=D.uarm*s*K;d.L2=D.farm*s*K+.085;
-  const TP=pose({y:.94,sL:[0,0,PI/2],eL:0,sR:[0,0,-PI/2],eR:0,hL:[0,0,0],hR:[0,0,0]});
-  MX.hips=B('Hips');
+  const TP=pose({y:.94,sL:[0,0,PI/2],eL:0,sR:[0,0,-PI/2],eR:0,hL:[0,0,0],hR:[0,0,0]}),hips=B('Hips');
   applyPose(d,TP);d.root.updateMatrixWorld(true);
-  d.upper.getWorldPosition(_a);MX.hips.parent.worldToLocal(_a);MX.hips.position.copy(_a);d.root.updateMatrixWorld(true);
+  d.upper.getWorldPosition(_a);hips.parent.worldToLocal(_a);hips.position.copy(_a);d.root.updateMatrixWorld(true);
   [['LeftArm',d.shL],['RightArm',d.shR]].forEach(([n,j])=>{B(n).getWorldPosition(_a);d.spine.worldToLocal(_a);j.position.copy(_a);});
   d.root.updateMatrixWorld(true);
   const pairs=[['Hips',d.pelvis],['Spine',d.spine],['Spine1',d.spine],['Spine2',d.spine],['Head',d.head],
     ['LeftArm',d.shL],['LeftForeArm',d.elL],['LeftHand',d.elL],['RightArm',d.shR],['RightForeArm',d.elR],['RightHand',d.elR],
     ['LeftUpLeg',d.hipL],['LeftLeg',d.kneeL],['LeftFoot',d.footL],['RightUpLeg',d.hipR],['RightLeg',d.kneeR],['RightFoot',d.footR]];
   const qd=new T.Quaternion(),qb=new T.Quaternion();
-  MX.map=pairs.map(([n,drv])=>{const bone=B(n);drv.getWorldQuaternion(qd);bone.getWorldQuaternion(qb);return {bone,drv,off:qd.invert().multiply(qb).clone()};});
+  return {hips,map:pairs.map(([n,drv])=>{const bone=B(n);drv.getWorldQuaternion(qd);bone.getWorldQuaternion(qb);return {bone,drv,off:qd.invert().multiply(qb).clone()};})};
+}
+function unfitDriver(d){d.hipW=d.L1=d.L2=undefined;d.hipDrop=d.yOff=0;d.kneeL.position.y=d.kneeR.position.y=-.46;d.footL.position.y=d.footR.position.y=-.41;
+  d.elL.position.y=d.elR.position.y=-.31;d.shL.position.set(.275,.455,0);d.shR.position.set(-.275,.455,0);}
+function retargetFig(d,rt){
+  d.root.updateMatrixWorld(true);d.upper.getWorldPosition(_a);rt.hips.parent.worldToLocal(_a);rt.hips.position.copy(_a);
+  for(const m of rt.map){m.drv.getWorldQuaternion(_qd).multiply(m.off);m.bone.parent.getWorldQuaternion(_qp);m.bone.quaternion.copy(_qp.invert()).multiply(_qd);}
+}
+// fly-ball catch clip (a catcher's pop-up): we only use the part where he is already standing under the ball
+const CATCH={start:2.2,t:3.5,end:5.9};
+function setupFielder(f,obj,custom){
+  const d=f.fig,{s,B,D,K}=prepModel(obj,pitT,custom);d.root.add(obj);
+  f.rt=fitDriver(d,B,D,s,K);f.obj=obj;f.catching=false;
+  const gl=new T.Mesh(GEO.glove,pitcher.mats.glove);gl.scale.set(75,100,50);gl.position.set(0,9,0);gl.castShadow=true;B('LeftHand').add(gl);
+  const clip=obj.animations.find(c=>c.name==='catch');
+  if(clip&&clip.duration>CATCH.end){clip.tracks=clip.tracks.filter(t=>/quaternion$/.test(t.name)||/Hips\.position$/.test(t.name));
+    f.mixer=new T.AnimationMixer(obj);f.act=f.mixer.clipAction(clip);f.act.play();
+    // where the hips start and where the glove ends up, relative to the model's origin, so the glove meets the ball
+    const hand=B('LeftHand'),v=new V3(),at=(t,b)=>{f.mixer.setTime(t);d.root.updateMatrixWorld(true);b.getWorldPosition(v);d.root.worldToLocal(v);return {x:v.x,z:v.z};};
+    f.startOff=at(CATCH.start,f.rt.hips);f.catchOff=at(CATCH.t,hand);f.mixer.stopAllAction();}
+  showChunky(d,false,obj);
+}
+function setupModel(obj,custom){
+  const d=batter,{s,sk,B,D,K}=prepModel(obj,atlasT,custom);MX.D=D;
+  const clip=obj.animations&&obj.animations.find(c=>c.duration>.5);
+  if(clip)setupClip(obj,clip,B,sk);else{
+  d.root.add(obj);
+  for(const k in GRIP){const bn=B(k);if(bn)bn.quaternion.fromArray(GRIP[k]);}
+  const rt=fitDriver(d,B,D,s,K);MX.hips=rt.hips;MX.map=rt.map;
   }
   MX.obj=obj;
   MX.helmet=custom?null:addHat(B,D,d.mats.cap,true);
@@ -1075,17 +1098,14 @@ function setupModel(obj,custom){
   showChunky(batter,false);
 }
 const _qd=new T.Quaternion(),_qp=new T.Quaternion();
-function showChunky(fig,on){fig.root.children.forEach(ch=>{if(ch!==bat&&ch!==MX.obj)ch.traverse(m=>{if(m.isMesh&&m!==fig.blob)m.visible=on;});});}
+function showChunky(fig,on,keep){fig.root.children.forEach(ch=>{if(ch!==bat&&ch!==MX.obj&&ch!==keep)ch.traverse(m=>{if(m.isMesh&&m!==fig.blob)m.visible=on;});});}
 function unloadPlayers(){
   if(MX.obj){if(MX.obj.parent)MX.obj.parent.remove(MX.obj);MX.obj=null;}
   if(MX.pit){scene.remove(MX.pit.obj);MX.pit=null;}
-  MX.ready=false;MX.clip=null;batter.root.add(bat);showChunky(batter,true);showChunky(pitcher,true);
+  MX.ready=false;MX.clip=null;batter.root.add(bat);showChunky(batter,true);showChunky(pitcher,true);unfitDriver(batter);
+  fielders.forEach(f=>{if(f.obj){f.fig.root.remove(f.obj);f.obj=f.rt=f.mixer=f.act=null;f.catching=false;unfitDriver(f.fig);showChunky(f.fig,true);}});
 }
-function retarget(){
-  const d=batter;d.root.updateMatrixWorld(true);
-  d.upper.getWorldPosition(_a);MX.hips.parent.worldToLocal(_a);MX.hips.position.copy(_a);
-  for(const m of MX.map){m.drv.getWorldQuaternion(_qd).multiply(m.off);m.bone.parent.getWorldQuaternion(_qp);m.bone.quaternion.copy(_qp.invert()).multiply(_qd);}
-}
+function retarget(){retargetFig(batter,MX);}
 const loadBuf=url=>fetch(url).then(r=>r.ok?r.text():Promise.reject(new Error(url))).then(b64=>{ // models ship as base64 text
   const bin=atob(b64.trim()),buf=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)buf[i]=bin.charCodeAt(i);return buf.buffer;});
 // bat.txt: a modelled bat that replaces the code-built one. Re-oriented so the knob sits at the hands and the barrel runs up +Y.
@@ -1141,6 +1161,9 @@ function loadPlayers(kind){ // body file = character mesh; clips.json = motion-c
     const skins=im?makeSkins(im):null,make=names=>{const o=new T.FBXLoader().parse(bb,'');o.animations=names.map(n=>mkClip(cj[n],n));return o;};
     try{setupModel(make(['hit','idle','strike']),skins&&skins.home);}catch(e){console.warn('batter model failed, using built-in figure',e);}
     try{setupPitcher(make(['pitch']),skins&&skins.away);}catch(e){console.warn('pitcher model failed, using built-in figure',e);}
+    // fielders are built one at a time so the page doesn't freeze while seven more models are prepared
+    fielders.filter(f=>!f.isP).forEach((f,i)=>setTimeout(()=>{if(my!==MX.token)return;
+      try{setupFielder(f,make(cj.catch?['catch']:[]),skins&&skins.away);}catch(e){console.warn('fielder model failed, using built-in figure',e);}},400+i*220));
   }).catch(e=>{console.warn('player models unavailable, using built-in figures',e);});
 }
 loadPlayers(MX.kind);
@@ -1214,16 +1237,27 @@ function updatePitcher(){
 }
 function updateFielders(dt){
   const tf=flight?now-flight.t0:0;
-  for(const f of fielders){if(f.isP)continue;const r=f.fig.root;
-    if(flight&&flight.play.f===f){const pl=flight.play,u=clamp(tf/Math.max(.2,pl.tField||pl.endT),0,1);
-      const px=lerp(pl.from.x,pl.p.x,ease(u)),pz=lerp(pl.from.z,pl.p.z,ease(u));
-      const moving=Math.hypot(pl.p.x-pl.from.x,pl.p.z-pl.from.z)>1.2&&u<.97;
-      if(moving){r.rotation.y=Math.atan2(pl.p.x-pl.from.x,pl.p.z-pl.from.z);f.ph+=dt*13;applyPose(f.fig,runPose(f.ph));}
+  for(const f of fielders){if(f.isP)continue;const r=f.fig.root;let clipT=-1;
+    if(flight&&flight.play.f===f){const pl=flight.play,mocap=pl.air&&f.act;
+      if(!pl.tgt){pl.tgt={x:pl.p.x,z:pl.p.z,face:Math.atan2(-pl.p.x,-pl.p.z),lead:0};
+        if(mocap){ // stop where the clip starts him, so its own drift carries the glove to the ball
+          const dx=f.startOff.x-f.catchOff.x,dz=f.startOff.z-f.catchOff.z,c=Math.cos(pl.tgt.face),sn=Math.sin(pl.tgt.face);
+          pl.tgt.x+=dx*c+dz*sn;pl.tgt.z+=-dx*sn+dz*c;pl.tgt.lead=Math.min(CATCH.t-CATCH.start,pl.endT*.5);}}
+      const g=pl.tgt,u=clamp(tf/Math.max(.2,(pl.tField||pl.endT)-g.lead),0,1);
+      const px=lerp(pl.from.x,g.x,ease(u)),pz=lerp(pl.from.z,g.z,ease(u));
+      const moving=Math.hypot(g.x-pl.from.x,g.z-pl.from.z)>1.2&&u<.97;
+      if(moving){r.rotation.y=Math.atan2(g.x-pl.from.x,g.z-pl.from.z);f.ph+=dt*13;applyPose(f.fig,runPose(f.ph));}
       else{applyPose(f.fig,pl.air||u>.9?POSE.fCatch:POSE.fReady);}
       r.position.x=px;r.position.z=pz;
+      if(mocap&&!moving){const ct=CATCH.t-(pl.endT-tf);if(ct>=CATCH.t-g.lead-.001){clipT=clamp(ct,CATCH.start,CATCH.end);r.rotation.y=g.face;}}
     }else if(flight&&!flight.play.f&&f.of&&flight.play.type==='hr'){ // watch it leave
       applyPose(f.fig,POSE.pSet);r.rotation.y=Math.atan2(ball.position.x-r.position.x,ball.position.z-r.position.z);
     }else{const P=lerpPose(POSE.fReady,POSE.fReady,0,tmpPose);P.y+=Math.sin(now*2+f.ph)*.012;applyPose(f.fig,P);}
+    if(f.rt){
+      if(clipT>=0){if(!f.catching){f.catching=true;f.act.reset().play();}
+        f.act.time=clipT;f.mixer.update(0);f.obj.position.set(-f.startOff.x,0,-f.startOff.z);}
+      else{if(f.catching){f.catching=false;f.mixer.stopAllAction();f.obj.position.set(0,0,0);}retargetFig(f.fig,f.rt);}
+    }
   }
 }
 function trail(p,c,big){_v.set(rand(-.3,.3),rand(-.3,.3),rand(-.3,.3));(big?fxL:fxS).emit(p,_v,big?.45:.22,c[0],c[1],c[2]);}
@@ -1294,7 +1328,8 @@ function step(dt){
 }
 function updateCamera(rdt){
   if(S.state==='flight'&&flight&&!flight.done&&now-flight.t0>.02)camMode='chase';
-  if(camMode==='bat'){camPos.copy(CAM_HOME);camLook.copy(CAM_LOOK);
+  if(DBG.cam){camPos.copy(CAM_HOME);camLook.copy(CAM_LOOK);}
+  else if(camMode==='bat'){camPos.copy(CAM_HOME);camLook.copy(CAM_LOOK);
     if(S.state==='title'||S.state==='over'){const a=performance.now()*.00012;camPos.set(Math.sin(a)*9,3.2+Math.sin(a*2)*.6,7);camLook.set(0,3,-40);}
   }else if(S.state==='celebrate'){
     const k=1-Math.exp(-3*rdt);camPos.lerp(_p.set(0,18,-12),k);camLook.lerp(_t1.set(8,58,-150),k);
@@ -1325,7 +1360,8 @@ function frame(t){
 }
 try{const b=+localStorage.getItem('mm_best')||0;if(b)$('best').textContent='Best game: '+b+' runs';}catch(e){}
 initPost();resize();hud();
-window.__mm={S,aim,MX,CAM_HOME,CAM_LOOK,now:()=>now,simulate,judge,get pitch(){return pitch;},get flight(){return flight;},doSwing,newGame,V3,
+const DBG={cam:false}; // test hook: pin the camera to CAM_HOME/CAM_LOOK
+window.__mm={S,aim,MX,DBG,fielders,CAM_HOME,CAM_LOOK,now:()=>now,simulate,judge,get pitch(){return pitch;},get flight(){return flight;},doSwing,newGame,V3,
   sim:(dt)=>{hitstop=0;now+=dt;step(dt);},
   step:(n,dt=1/60)=>{for(let i=0;i<n;i++){if(hitstop>0)hitstop=0;now+=dt;step(dt);}updateCamera(dt);draw();}};
 if(!window.__mmManual)requestAnimationFrame(frame);
