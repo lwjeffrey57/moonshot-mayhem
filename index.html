@@ -1112,7 +1112,7 @@ $('tut').addEventListener('pointerdown',e=>{e.preventDefault();const id=e.target
 // Timing meter. x is real time and everything is to scale. A coloured band is the whole window in which that swing can touch the ball
 // (green = CONTACT, the narrower red = POWER), brightest in the middle where timing is best and fading toward the edges; a Juice swing adds
 // gold to both ends of the one you used. A marker in the black means the swing was too early or too late to make contact at all.
-function timeBar(x,pw,jt,perfect){const e=$('tbar');e.className='';$('tpt').textContent=pitch?pitch.P.n+' · '+pitchMph(pitch.dur)+' MPH':'';const SPAN=2.05,band=(el,half)=>{el.style.left=(50-half)+'%';el.style.width=(half*2)+'%';},hc=1.4/SPAN*50,hp=hc*.85/1.2,used=(pw?hp:hc)*jt;
+function timeBar(x,pw,jt,perfect){const e=$('tbar');e.className='';$('tpt').textContent=pitch?(pitch.P.sp?'JUICE PITCH · ':'')+pitch.P.n+' · '+pitchMph(pitch.dur)+' MPH':'';const SPAN=2.05,band=(el,half)=>{el.style.left=(50-half)+'%';el.style.width=(half*2)+'%';},hc=1.4/SPAN*50,hp=hc*.85/1.2,used=(pw?hp:hc)*jt;
   band($('tgc'),hc);band($('tgp'),hp);band($('tjx'),jt>1?used:0);$('tgc').classList.toggle('dim',!!pw);$('tgp').classList.toggle('dim',!pw);
   const mx=clamp(x/SPAN,-1,1)*50,miss=Math.abs(mx)>used;$('tmk').style.left=(50+mx)+'%';$('tmk').style.background=perfect?'#ffe53b':miss?'#ff4d2e':'#fff';void e.offsetWidth;e.className='go';}
 function timing(t,c,l){const e=$('tim');e.className='';e.textContent=t;e.style.color=c;e.dataset.l=l||2;void e.offsetWidth;e.className='go';}
@@ -1325,7 +1325,7 @@ function renderRep(last){ // the pitcher's repertoire: movement, name, typical s
 }
 function payHeat(){if(pitch&&pitch.P.sp&&!pitch.paid){pitch.paid=true;if(!S.pOver)S.heat=Math.max(0,S.heat-.3334);hud();
   // said after the pitch has been seen, never before: the first one of the game gets the big call
-  const n=pitch.P.n;S.spSeen=true;buzz(25);setTimeout(()=>timing('JUICE PITCH! · '+n,'#ff6a4a',3),450);}}
+  const n=pitch.P.n;S.spSeen=true;buzz(25);if(!(swing&&!swing.practice))setTimeout(()=>timing('JUICE PITCH! · '+n,'#ff6a4a',3),450);}} // on a swing the line under the timing meter says it instead, so the swing feedback isn't overwritten
 // Welcome at-bat: a new player's first hitter of the game sees slow, straight pitches down the middle and gets a more forgiving bat,
 // for their first three games on this device. Early success matters more than realism here.
 let gamesPlayed=0;try{gamesPlayed=+localStorage.getItem('mm_games')||0;}catch(e){}
@@ -1442,7 +1442,8 @@ function tryContact(){flight_pop=false;
   const d=Math.hypot(aim.x-pitch.tx,aim.y-pitch.ty);
   // where the barrel was relative to the ball, in sweet-spot radii: u>0 = swung under it, e>0 = ball out toward the end of the bat
   const cu=(pitch.ty-aim.y)/R,ce=(pitch.tx-aim.x)/R*(MX.lefty?-1:1),cr=Math.hypot(cu,ce);
-  const where=cr<.3?'SQUARED UP':Math.abs(cu)>=Math.abs(ce)?(cu>0?'UNDER IT':'ON TOP OF IT'):(ce>0?'OFF THE END':'JAMMED');
+  const onT=Math.abs(n)<.22,side=onT?(cr<.7?'JUST MISSED THE BARREL':'OFF THE BARREL'):n<0?'OFF THE END':'JAMMED'; // jammed means late and off the end means early, so the words always agree with the timing
+  const where=cr<.3?'SQUARED UP':Math.abs(cu)>=Math.abs(ce)?(onT&&cr<.7?(cu>0?'JUST UNDER IT':'JUST ON TOP OF IT'):(cu>0?'UNDER IT':'ON TOP OF IT')):side;
   timeBar(n*(pw?.85/1.2:1)*JT,pw,JT,Math.abs(n)<.22);
   if(Math.abs(n)>1.4||d>R*1.3){swing.miss=true;
     if(d>R)ringEcho={t:now,x:aim.x,y:aim.y,bx:pitch.tx,by:pitch.ty,pw}; // freeze the ring and mark where the ball was: it has to be inside
