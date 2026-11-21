@@ -862,7 +862,8 @@ function walkLabel(){$('wk').textContent='Walk-ups: '+(WALK.on?'on':'off (faster
 function startWalkup(){
   const b=curBatter(),i=S.bi%LINEUP.length,r=v=>clamp(Math.round((v-.85)/.3*9+1),1,10);
   S.seen[i]=1;S.state='walkup';S.t=now;
-  S.walkClip=MX.clip.intros.w_trip&&(DBG.trip||Math.random()<.12)?'w_trip':WALK.by[b.name]; // now and then, somebody eats dirt on the way in
+  // now and then a surprise replaces his usual routine: he eats dirt on the way in, or chips a golf shot with the bat
+  {const r=Math.random(),has=k=>!!MX.clip.intros[k];S.walkClip=DBG.trip&&has(DBG.trip===true?'w_trip':DBG.trip)?(DBG.trip===true?'w_trip':DBG.trip):r<.1&&has('w_trip')?'w_trip':r<.2&&has('w_golf')?'w_golf':WALK.by[b.name];}
   $('wnum').textContent=b.num;$('wname').textContent=b.name;
   $('wrat').innerHTML=`<span>POWER <b>${r(b.pwr)}</b></span><span>CONTACT <b>${r(b.con)}</b></span><span>SPEED <b>${r(b.spd)}</b></span><span>BATS <b>${b.lh?'L':'R'}</b></span>`;
   $('wspot').textContent='BATTING '+['1ST','2ND','3RD','4TH','5TH','6TH','7TH','8TH','9TH'][i];$('wskip').textContent='SWING TO SKIP';
@@ -1272,7 +1273,7 @@ function setupClip(obj,clip,B,sk){
   if(sc){C.strike=mixer.clipAction(sc);C.strike.play();C.strike.setEffectiveWeight(0);}
   // intros stay in the batter's box: work out how far each clip sits (or finishes) from where he stands in his stance
   const hipsAt=(c,ts)=>{const v=new V3(),sum=new V3();probe(c,at=>ts.forEach(t=>{at(t);C.hips.getWorldPosition(v);sum.add(v);}));return sum.multiplyScalar(1/ts.length);},home=hipsAt(ic||clip,[0]);
-  C.intros={};obj.animations.filter(c=>/^[wd]_/.test(c.name)).forEach(c=>{keep(c);const loop=c.duration<2.5,ref=hipsAt(c,loop?[0,1,2,3,4,5,6,7].map(k=>k/8*c.duration):[c.duration-.02]);
+  C.intros={};obj.animations.filter(c=>/^[wdc]_/.test(c.name)).forEach(c=>{keep(c);const loop=c.duration<2.5,ref=hipsAt(c,loop?[0,1,2,3,4,5,6,7].map(k=>k/8*c.duration):[c.duration-.02]);
     const a=mixer.clipAction(c);a.play();a.setEffectiveWeight(0);C.intros[c.name]={a,dur:c.duration,loop,off:{x:home.x-ref.x,z:home.z-ref.z}};});
 }
 const WHIFF_HOLD=1.15; // seconds of the swing-and-miss clip shown after the miss before he resets
@@ -1314,8 +1315,9 @@ function updateClip(dt){
   for(const k in C.intros)C.intros[k].a.setEffectiveWeight(0);
   if(S.kOut&&C.bi===S.kOut.bi){const e=now-S.kOut.t,ci=C.intros[S.kOut.clip],k=ci&&e<DEFEAT?ease(clamp(e/.3,0,1))*ease(clamp((DEFEAT-e)/.3,0,1)):0;
     if(k>0){ci.a.time=Math.min(ci.dur-.01,e);ci.a.setEffectiveWeight(k);base=1-k;o.position.x+=ci.off.x*k;o.position.z+=ci.off.z*k;}}
-  if(flight&&flight.admire==='show'&&!flight.done&&C.bi===S.bi){const ci=C.intros[WALK.by[curBatter().name]],tf=now-flight.t0,k=ci?ease(clamp((tf-1.25)/.3,0,1))*ease(clamp((flight.A+.35-tf)/.3,0,1)):0;
-    if(k>0){const e=tf-1.25;ci.a.time=ci.loop?e%ci.dur:Math.min(ci.dur-.01,e);ci.a.setEffectiveWeight(k);base=1-k;}}
+  if(flight&&flight.admire==='show'&&!flight.done&&C.bi===S.bi){if(!flight.cel)flight.cel=C.intros.c_fist&&(DBG.fist||Math.random()<.4)?'c_fist':WALK.by[curBatter().name]; // sometimes a plain fist pump instead of his routine
+    const ci=C.intros[flight.cel],tf=now-flight.t0,k=ci?ease(clamp((tf-1.25)/.3,0,1))*ease(clamp((flight.A+.35-tf)/.3,0,1)):0;
+    if(k>0){const e=tf-1.25;ci.a.time=ci.loop?e%ci.dur:Math.min(ci.dur-.01,e);ci.a.setEffectiveWeight(k);base=1-k;if(flight.cel==='c_fist'){o.position.x+=ci.off.x*k;o.position.z+=ci.off.z*k;}}}
   if(intro){const e=now-S.t;intro.a.time=intro.loop?e%intro.dur:clamp(intro.dur-(WALK.dur-.25-e),0,intro.dur-.01);intro.a.setEffectiveWeight(1); // a walk-in is timed to arrive in the box as the intro ends
     o.position.x+=intro.off.x;o.position.z+=intro.off.z;
     const rem=WALK.dur-e;if(rem<.2&&C.swap==null)batterOpacity(Math.max(0,rem/.2));}
@@ -1533,7 +1535,7 @@ function loadPlayers(kind){ // body file = character mesh; clips.json = motion-c
   Promise.all([loadBuf(cfg.body),clipsP,imgs,own]).then(([bb,cj0,im,oc])=>{const cj=Object.assign({},cj0,oc||{});
     if(my!==MX.token)return;                                   // switched again while loading
     const skins=im?makeSkins(im):null,make=names=>{const o=new T.FBXLoader().parse(bb,'');o.animations=names.map(n=>mkClip(cj[n],n));return o;};
-    try{setupModel(make(['hit','idle','idle2','strike'].filter(k=>cj[k]).concat(Object.keys(cj).filter(k=>/^[wd]_/.test(k)))),skins&&skins.home);}catch(e){console.warn('batter model failed, using built-in figure',e);fallback(batter);}
+    try{setupModel(make(['hit','idle','idle2','strike'].filter(k=>cj[k]).concat(Object.keys(cj).filter(k=>/^[wdc]_/.test(k)))),skins&&skins.home);}catch(e){console.warn('batter model failed, using built-in figure',e);fallback(batter);}
     playersDone();
     try{setupPitcher(make(['pitch',...Object.keys(cj).filter(k=>/^p_/.test(k))]),skins&&skins.away);}catch(e){console.warn('pitcher model failed, using built-in figure',e);fallback(pitcher);}
     // fielders are built one at a time so the page doesn't freeze while seven more models are prepared
@@ -1603,7 +1605,7 @@ function updatePitcher(){
     const e=act?now-windupT0:0;let k=0;
     for(const n in P.taunts)P.taunts[n].a.setEffectiveWeight(0);
     if(S.kOut&&S.kOut.taunt&&now>S.kOut.t&&now<S.kOut.t+DEFEAT){const tn=P.taunts[S.kOut.taunt],te=now-S.kOut.t; // struck him out: rub it in
-      k=ease(clamp(te/.35,0,1))*ease(clamp((DEFEAT-te)/.35,0,1));tn.a.time=Math.min(tn.dur-.01,te);tn.a.setEffectiveWeight(k);}
+      k=ease(clamp(te/.35,0,1))*ease(clamp((DEFEAT-te)/.35,0,1));tn.a.time=tn.dur<2.5?te%tn.dur:Math.min(tn.dur-.01,te);tn.a.setEffectiveWeight(k);}
     P.pact.time=k>.5?0:act?Math.min(P.dur-.01,e<1?e*P.tRel:P.tRel+(e-1)):0;P.pact.setEffectiveWeight(1-k);P.mixer.update(0);return;}
   let P;
   if(S.state==='windup'||(S.state==='pitch'&&now-windupT0<1.7)||(S.state==='flight'&&now-windupT0<1.7)){
@@ -1785,7 +1787,7 @@ function frame(t){
 }
 try{const b=+localStorage.getItem('mm_best')||0;if(b)$('best').textContent='Best game: '+b+' runs';}catch(e){}
 initPost();resize();hud();
-const DBG={cam:false,admire:'',trip:false}; // test hook: pin the camera to CAM_HOME/CAM_LOOK
+const DBG={cam:false,admire:'',trip:false,fist:false}; // test hook: pin the camera to CAM_HOME/CAM_LOOK
 window.__mm={S,aim,MX,DBG,SFX,ballPos:()=>ball.position,fielders,toReady,CAM_HOME,CAM_LOOK,now:()=>now,simulate,judge,get pitch(){return pitch;},get flight(){return flight;},doSwing,newGame,V3,
   sim:(dt)=>{hitstop=0;now+=dt;step(dt);},
   step:(n,dt=1/60)=>{for(let i=0;i<n;i++){if(hitstop>0)hitstop=0;now+=dt;step(dt);}updateCamera(dt);draw();}};
