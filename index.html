@@ -1262,7 +1262,7 @@ function choosePitch(){
   const special=S.heat>=.333&&Math.random()<.5&&!(gamesPlayed<=3&&S.inning===1); // new players don't see special pitches in their first inning // the Heat is only deducted once the pitch has been seen (payHeat), so the meter doesn't give it away
   const pool=PITCHES.filter(p=>special?p.sp:!p.sp);let tw=0;pool.forEach(p=>tw+=p.w||1);let r=Math.random()*tw,P=pool[0];
   for(const p of pool){r-=p.w||1;if(r<=0){P=p;break;}}
-  const inZone=Math.random()<.64;let tx,ty;
+  const inZone=S.bi===0||Math.random()<.64;let tx,ty; // the first hitter of every game only sees strikes: nobody's first at-bat is a walk
   if(inZone){tx=rand(ZONE.x0+.03,ZONE.x1-.03);ty=rand(ZONE.y0+.04,ZONE.y1-.04);}
   else{const side=(Math.random()*4)|0,o=rand(.1,.26);tx=rand(ZONE.x0,ZONE.x1);ty=rand(ZONE.y0,ZONE.y1);
     if(side===0)tx=ZONE.x0-o;else if(side===1)tx=ZONE.x1+o;else if(side===2)ty=ZONE.y0-o;else ty=ZONE.y1+o;}
