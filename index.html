@@ -1193,7 +1193,7 @@ function startTrot(){const R=RUN.list.find(R=>!R.active)||null;if(!R||!R.jogAct)
     TROT.clip=wild.length&&!DBG.loser?wild[(Math.random()*wild.length)|0]:C&&C.intros.p_loser&&(DBG.loser||Math.random()<.3)?'p_loser':C&&C.intros[own]?own:'';} // sometimes he turns and gives the pitcher the 'loser' sign instead // his own routine once he has touched home
   // men already on base stay ahead of him: when the highlight cuts in, each is at least three-quarters of a base in front of the man behind, and they keep that lead home
   RUN.list.filter(o=>o!==R&&o.active&&o.target>=4).sort((a,b)=>a.s-b.s).forEach((o,k)=>{o.s=Math.max(o.s,Math.min(3.7,1.7+.75*(k+1)));o.lead=true;o.delay=0;});
- TROT.dur=TROT.clip==='p_loser'?7.3:5.85;
+ if(DBG.cel)TROT.clip=DBG.cel;TROT.dur=TROT.clip==='p_loser'?7.3:5.85;
  S.state='trot';S.t=now;return true;}
 // after the hitter's 'loser' taunt, the camera cuts to the pitcher wearing it: seconds since that cut, or -1
 const pitCut=()=>S.state==='trot'&&TROT.clip==='p_loser'&&TROT.cele?now-S.t-TROT.celT-2.1:-1;
@@ -1282,7 +1282,7 @@ function gameRating(){const G=S.goal,pts=S.runs*10+S.hits*4+S.hrs*8+(S.longest>=
   const T=[[0,'D','BENCH WARMER'],[20,'C','ROOKIE'],[45,'B','EVERYDAY STARTER'],[75,'A','ALL-STAR'],[110,'S','MOONSHOT LEGEND']];let i=0;T.forEach((t,j)=>{if(pts>=t[0])i=j;});
   return {pts,stars:i+1,grade:T[i][1],title:T[i][2],next:T[i+1]?T[i+1][0]-pts:0,nextTitle:T[i+1]?T[i+1][2]:''};}
 function newGame(){gamesPlayed++;try{localStorage.setItem('mm_games',gamesPlayed);}catch(e){}
-  Object.assign(S,{inning:1,outs:0,balls:0,strikes:0,runs:0,bases:[0,0,0],hits:0,hrs:0,longest:0,streak:0,bestStreak:0,juice:.34,heat:.2,over:false,bi:-1,pitches:0,seen:{},kOut:null});S.goal=pickGoal();S.ks=0;S.d2=0;S.overOn=false;lastWalk='';
+  Object.assign(S,{inning:1,outs:0,balls:0,strikes:0,runs:0,bases:[0,0,0],hits:0,hrs:0,longest:0,streak:0,bestStreak:0,juice:.34,heat:.2,over:false,bi:-1,pitches:0,seen:{},kOut:null});S.goal=pickGoal();S.ks=0;S.d2=0;S.overOn=false;S.spSeen=false;lastWalk='';
   $('title').hidden=true;$('over').hidden=true;$('pausebtn').hidden=false;$('mutebtn').hidden=false;setBatter();renderRep();scoreboard('PLAY BALL','INNING 1');toReady(2);pop('PLAY BALL!','GOAL: '+S.goal.label,'plain',true);SND.playball();cheer(.14,1.5);}
 
 // ───────────────────────── pitching
@@ -1305,7 +1305,10 @@ function renderRep(last){ // the pitcher's repertoire: movement, name, typical s
   $('replist').innerHTML=PITCHES.map(P=>{const m=Math.hypot(P.brk[0],P.brk[1]),a=m<.1?'•':arrows[((Math.round(Math.atan2(P.brk[1],P.brk[0])/(PI/4))%8)+8)%8];
     return `<div class="pill${P.sp?' sp':''}${P===last?' last':''}"><span class="k">${P.wob?'~':a}</span>${P.n}<b>${pitchMph(P.dur*inningSp())}</b></div>`;}).join('');
 }
-function payHeat(){if(pitch&&pitch.P.sp&&!pitch.paid){pitch.paid=true;S.heat=Math.max(0,S.heat-.3334);hud();}}
+function payHeat(){if(pitch&&pitch.P.sp&&!pitch.paid){pitch.paid=true;S.heat=Math.max(0,S.heat-.3334);hud();
+  // said after the pitch has been seen, never before: the first one of the game gets the big call
+  const n=pitch.P.n,first=!S.spSeen;S.spSeen=true;buzz(first?[40,40,90]:30);
+  setTimeout(()=>{if(first)pop('HE HAS JUICE TOO!',n+' · THE PITCHER BURNED A HEAT BAR','hot',true);else timing('🔥 PITCHER JUICE: '+n+' 🔥','#ff6a4a',3);},first?650:500);}}
 // Welcome at-bat: a new player's first hitter of the game sees slow, straight pitches down the middle and gets a more forgiving bat,
 // for their first three games on this device. Early success matters more than realism here.
 let gamesPlayed=0;try{gamesPlayed=+localStorage.getItem('mm_games')||0;}catch(e){}
@@ -1314,7 +1317,10 @@ function choosePitch(){
   if(easyAB()){const P=PITCHES[0],tx=rand(-.11,.11),ty=rand(.72,.94);
     return {P,tx,ty,dur:.84*rand(.98,1.03),brk:new V3(P.brk[0]*.3,P.brk[1]*.3,0),arc:P.arc,rel:new V3(),t0:0,inZone:true};}
   // the pitcher has a meter too: strikes and outs build Heat, and he spends a bar of it to throw a special pitch
-  const special=S.heat>=.333&&Math.random()<.5&&!(gamesPlayed<=3&&S.inning===1); // new players don't see special pitches in their first inning // the Heat is only deducted once the pitch has been seen (payHeat), so the meter doesn't give it away
+  // The pitcher has Juice too. Nobody sees it in the first three at-bats of a game; the fourth hitter on is guaranteed the game's first
+  // special pitch within his first two pitches, so the player learns early that it exists. After that it follows the Heat meter.
+  const due=S.bi>=3&&!S.spSeen&&(S.balls+S.strikes>=1||Math.random()<.5);if(due)S.heat=Math.max(S.heat,.34);
+  const special=S.bi>=3&&S.heat>=.333&&(due||Math.random()<.5); // new players don't see special pitches in their first inning // the Heat is only deducted once the pitch has been seen (payHeat), so the meter doesn't give it away
   const pool=PITCHES.filter(p=>special?p.sp:!p.sp);let tw=0;pool.forEach(p=>tw+=p.w||1);let r=Math.random()*tw,P=pool[0];
   for(const p of pool){r-=p.w||1;if(r<=0){P=p;break;}}
   const inZone=S.bi===0||Math.random()<.64;let tx,ty; // the first hitter of every game only sees strikes: nobody's first at-bat is a walk
@@ -1411,7 +1417,7 @@ function tryContact(){flight_pop=false;
   const ez=easyAB()?1.3:1,JT=tb?1.35:1,win=.118*(pw?.85:1.2)*JT*ez,n=dt/win;
   // chasing: how far outside the strike zone the pitch is (0 in the zone → 1 well off the plate)
   const offX=Math.max(ZONE.x0-pitch.tx,pitch.tx-ZONE.x1,0),offY=Math.max(ZONE.y0-pitch.ty,pitch.ty-ZONE.y1,0),chase=clamp(Math.hypot(offX,offY)/.16,0,1);
-  const R=.17*b.con*(pw?.8:1.25)*(tb?1.2:1)*(1-.3*chase)*ez;
+  const R=.17*b.con*(pw?(tb?.8:.72):1.25)*(tb?1.2:1)*(1-.3*chase)*ez; // the power core is 10% smaller without Juice; Juice gives the old size back, then its usual boost
   const d=Math.hypot(aim.x-pitch.tx,aim.y-pitch.ty);
   // where the barrel was relative to the ball, in sweet-spot radii: u>0 = swung under it, e>0 = ball out toward the end of the bat
   const cu=(pitch.ty-aim.y)/R,ce=(pitch.tx-aim.x)/R*(MX.lefty?-1:1),cr=Math.hypot(cu,ce);
@@ -1740,6 +1746,9 @@ function clipBat(){const C=MX.clip;C.hL.getWorldPosition(_pl);C.mL.getWorldPosit
   if(C.crW>0&&C.hR){ // crouched stance: the hands sit differently, so run the bat through both hands and stand it up more
     C.hR.getWorldPosition(_t1);C.mR.getWorldPosition(_t2);_t1.lerp(_t2,.55).sub(_pl);
     if(_t1.lengthSq()>1e-4){_t1.normalize().multiplyScalar(.55).add(_t2.set(0,.45,0)).normalize();_bd.lerp(_t1,C.crW).normalize();}}
+  if(C.liftW>0&&C.hR){ // clean and jerk: the bat is the barbell, gripped in both hands and centred between them
+    C.hR.getWorldPosition(_t1);C.mR.getWorldPosition(_t2);_t1.lerp(_t2,.55);_t2.copy(_t1).sub(_pl);
+    if(_t2.lengthSq()>1e-4){_t2.normalize();_pl.add(_t1).multiplyScalar(.5).addScaledVector(_t2,-.36);_bd.copy(_t2);}}
   bat.position.copy(_pl).addScaledVector(_bd,-.07);bat.quaternion.setFromUnitVectors(UP,_bd);bat.updateMatrixWorld(true);}
 const BOX_EDGE=-.52; // nearest a foot bone may get to the middle of the plate (the box's inside line is at 0.35 m)
 function setupClip(obj,clip,B,sk){
@@ -1813,6 +1822,7 @@ function updateClip(dt){
   // walk-up: his intro clip takes over; he stays facing the pitcher, so it plays as a taunt
   const intro=S.state==='walkup'&&C.bi===S.bi?C.intros[S.walkClip||WALK.by[curBatter().name]]:null;let base=intro?0:1;
   C.upW=intro&&S.walkClip==='w_walkin'?1:0;C.dnW=intro&&S.walkClip==='w_sad'?1:0;C.flatW=intro&&S.walkClip==='w_pushup'?1:0;
+  C.liftW=(intro&&S.walkClip==='w_lift')||(S.state==='trot'&&TROT.cele&&TROT.clip==='w_lift')||(S.state==='celly2'&&D2.clip==='w_lift')?1:0;
   for(const k in C.intros)C.intros[k].a.setEffectiveWeight(0);
   if(S.kOut&&C.bi===S.kOut.bi){const e=now-S.kOut.t,ci=C.intros[S.kOut.clip],k=ci&&e<DEFEAT?ease(clamp(e/.3,0,1))*ease(clamp((DEFEAT-e)/.3,0,1)):0;
     if(k>0){ci.a.time=Math.min(ci.dur-.01,e);ci.a.setEffectiveWeight(k);base=1-k;o.position.x+=ci.off.x*k;o.position.z+=ci.off.z*k;}}
@@ -1840,10 +1850,10 @@ function updateClip(dt){
     bat.position.x*=-1;_bd.x*=-1;bat.quaternion.setFromUnitVectors(UP,_bd);bat.updateMatrixWorld(true);
     o.scale.x=-o.scale.x;o.position.x=-o.position.x;o.updateMatrixWorld(true);}
   if(S.state==='celly2'&&C.intros[D2.clip]){const L=C.intros[D2.clip].loc; // on the bag at second, facing home
-    o.scale.x=Math.abs(o.scale.x);o.rotation.y=0;o.position.set(-L.x,0,-38.8-L.z);o.updateMatrixWorld(true);}
+    o.scale.x=Math.abs(o.scale.x);o.rotation.y=0;o.position.set(-L.x,0,-38.8-L.z);o.updateMatrixWorld(true);if(C.liftW)clipBat();}
   if(S.state==='trot'&&TROT.cele&&C.intros[TROT.clip]){ // stand him on the plate facing the way he came in, up the third-base line toward home
     const L=C.intros[TROT.clip].loc,th=TROT.clip==='p_loser'?PI:PI/4,cs=Math.cos(th),sn=Math.sin(th);
-    o.scale.x=Math.abs(o.scale.x);o.rotation.y=th;o.position.set(-(L.x*cs+L.z*sn),0,-(-L.x*sn+L.z*cs));o.updateMatrixWorld(true);}
+    o.scale.x=Math.abs(o.scale.x);o.rotation.y=th;o.position.set(-(L.x*cs+L.z*sn),0,-(-L.x*sn+L.z*cs));o.updateMatrixWorld(true);if(C.liftW)clipBat();} // the bat follows him to where he now stands
   if(flight&&flight.admire){const F=flight,tf=now-F.t0;
     if(!F.done&&!MX.lefty&&tf>.35&&tf<F.A+.4){ // watch it go: turn the head toward the ball
       const hd=C.head||(C.head=o.getObjectByName(C.hips.name.replace('Hips','Head')));
@@ -1851,7 +1861,7 @@ function updateClip(dt){
         _q2.setFromUnitVectors(_c,_b);_q3.set(0,0,0,1).slerp(_q2,k);_qd.premultiply(_q3);hd.parent.getWorldQuaternion(_qp);hd.quaternion.copy(_qp.invert()).multiply(_qd);o.updateMatrixWorld(true);}}
     if(!F.bat&&tf>(F.admire==='show'?.75:1.0)){const flip=F.admire==='show'; // let go of the bat: a casual drop, or a full flip on the big ones
       F.bat={p:bat.position.clone(),q:bat.quaternion.clone(),v:new V3((MX.lefty?-1:1)*(flip?-.9:-.4),flip?4.4:.9,flip?-.6:.2),ax:new V3(rand(-.3,.3),rand(-.2,.2),1).normalize(),w:flip?-15:-5,rest:false};}
-    if(F.bat){const B=F.bat;
+    if(F.bat&&!C.liftW){const B=F.bat;
       if(!B.rest){B.v.y-=9.8*dt;B.p.addScaledVector(B.v,dt);_q2.setFromAxisAngle(B.ax,B.w*dt);B.q.premultiply(_q2);
         if(B.p.y<.06){B.p.y=.06;B.rest=true;_bd.set(0,1,0).applyQuaternion(B.q);_bd.y=0;if(_bd.lengthSq()<.01)_bd.set(1,0,0);_bd.normalize();B.q.setFromUnitVectors(UP,_bd);}} // comes to rest lying flat
       bat.position.copy(B.p);bat.quaternion.copy(B.q);bat.updateMatrixWorld(true);}}
@@ -2279,14 +2289,14 @@ function step(dt){
   if(shock.userData.t!==undefined&&shock.userData.t<.3){shock.userData.t+=dt;const k=shock.userData.t/.3;shock.scale.setScalar(.06+k*shock.userData.s*.9);shock.material.opacity=(1-k)*.9;}else shock.material.opacity=0;
 
   updateBatter(dt);updatePitcher();updateFielders(dt);updatePlateCrew();updateRunners(dt);updateTrot(dt);updateThrow();
-  if(MX.ready&&MX.clip&&MX.obj){const v=S.state!=='trot';MX.obj.visible=v||TROT.cele;bat.visible=v;} // the man at the plate is the one trotting
+  if(MX.ready&&MX.clip&&MX.obj){const v=S.state!=='trot';MX.obj.visible=v||TROT.cele;bat.visible=v||(TROT.cele&&TROT.clip==='w_lift');} // the man at the plate is the one trotting
   fxS.update(dt);fxL.update(dt);fxT.update(dt);
 
   ptarget.visible=pring.visible;if(pring.visible)ptarget.position.copy(pring.position);
   // reticle
   const b=S.bi>=0?curBatter():LINEUP[0],tb=(S.over&&S.overOn)||(juiceOn()&&S.juice>=.333);
   reticle.position.set(aim.x,aim.y,0);
-  {const ez=easyAB()?1.3:1;retC.scale.setScalar(.17*b.con*1.25*(tb?1.2:1)*ez);retP.scale.setScalar(.17*b.con*.8*(tb?1.2:1)*ez);}
+  {const ez=easyAB()?1.3:1;retC.scale.setScalar(.17*b.con*1.25*(tb?1.2:1)*ez);retP.scale.setScalar(.17*b.con*(tb?.8:.72)*(tb?1.2:1)*ez);}
   let showRet=(S.state==='ready'||S.state==='windup'||S.state==='pitch')&&!(swing&&swing.done);
   retC.visible=retP.visible=true;echoBall.visible=false;
   if(swing&&!swing.practice){retC.visible=swing.type==='contact';retP.visible=swing.type==='power';} // mid-swing, only the ring that counts for this swing
