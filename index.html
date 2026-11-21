@@ -864,7 +864,7 @@ function startWalkup(){
   S.seen[i]=1;S.state='walkup';S.t=now;
   // now and then a surprise replaces his usual routine: he eats dirt on the way in, chips a golf shot with the bat,
   // gives the pitcher a friendly wave, drops and does push-ups, or squares up like he wants a fight. Each has the same small chance.
-  {const rare=['w_trip','w_golf','w_wave','w_pushup','w_fight','w_threat','w_bboy','w_backflip'].filter(k=>MX.clip.intros[k]),r=Math.random()/.035|0,forced=DBG.trip===true?'w_trip':DBG.trip;
+  {const rare=['w_trip','w_golf','w_wave','w_pushup','w_fight','w_threat','w_bboy','w_backflip','w_lift'].filter(k=>MX.clip.intros[k]),r=Math.random()/.031|0,forced=DBG.trip===true?'w_trip':DBG.trip;
     S.walkClip=forced&&MX.clip.intros[forced]?forced:r<rare.length?rare[r]:WALK.by[b.name];}
   $('wnum').textContent=b.num;$('wname').textContent=b.name;
   $('wrat').innerHTML=`<span>POWER <b>${r(b.pwr)}</b></span><span>CONTACT <b>${r(b.con)}</b></span><span>SPEED <b>${r(b.spd)}</b></span><span>BATS <b>${b.lh?'L':'R'}</b></span>`;
@@ -872,9 +872,59 @@ function startWalkup(){
   $('walk').hidden=false;$('hud').classList.add('wk');cheer(.16,2);
 }
 function endWalkup(){$('walk').hidden=true;$('hud').classList.remove('wk');S.state='ready';S.t=now;readyDur=1.5;if(MX.clip)MX.clip.swap=.2;}
+// ── Baserunners you can see. Purely visual: the game's base state (S.bases) is still the truth, and the runners are
+// re-synced to it before every pitch. On contact they are sent toward where the play will leave them.
+const BASES=[[0,0],[19.4,-19.4],[0,-38.8],[-19.4,-19.4],[0,0]],RUN={list:[],pose:null};
+function basePos(sv,out){const i=clamp(Math.floor(sv),0,3),u=sv-i;return out.set(lerp(BASES[i][0],BASES[i+1][0],u),0,lerp(BASES[i][1],BASES[i+1][1],u));}
+function setupRunners(make,skins){
+  RUN.pose=pose({y:.88,lean:.22,hL:[-.3,0,.3],kL:.5,hR:[-.3,0,-.3],kR:.5,sL:[-.2,0,.25],eL:-.5,sR:[-.2,0,-.25],eR:-.5}); // a short lead: knees bent, hands loose
+  for(let i=0;i<4;i++){const R={fig:mkFielder('RUN',i),s:0,target:0,active:false,jog:false,delay:0};R.fig.root.scale.setScalar(1.25);R.fig.root.visible=false;scene.add(R.fig.root);
+    setupFielder(R,make(['run','jog']),skins.home,true);
+    const jc=R.obj.animations.find(c=>c.name==='jog');
+    if(jc){jc.tracks=jc.tracks.filter(t=>/quaternion$/.test(t.name)||/Hips\.position$/.test(t.name));const ht=jc.tracks.find(t=>/Hips\.position$/.test(t.name));if(ht){const v=ht.values;for(let k=3;k<v.length;k+=3){v[k]=v[0];v[k+2]=v[2];}}
+      R.jogAct=R.mixer.clipAction(jc);R.jogDur=jc.duration;}
+    RUN.list.push(R);}
+  syncRunners();
+}
+function syncRunners(){const L=RUN.list;L.forEach(R=>{R.keep=false;});
+  for(let b=0;b<3;b++)if(S.bases[b]){const R=L.find(R=>R.active&&!R.keep&&Math.round(R.target)===b+1)||L.find(R=>!R.keep&&!R.active)||L.find(R=>!R.keep);
+    if(R){R.keep=true;R.active=true;R.s=R.target=b+1;R.delay=0;R.jog=false;}}
+  L.forEach(R=>{if(!R.keep)R.active=false;});}
+function sendRunners(n,o){ // n bases for men on; o.batter = base the hitter is headed for; o.jog = trot
+  RUN.list.forEach(R=>{if(R.active&&n>0){R.target=Math.min(4,R.s+n);R.jog=!!o.jog;}});
+  if(o.batter){const R=RUN.list.find(R=>!R.active);if(R){R.active=true;R.s=0;R.target=Math.min(4,o.batter);R.delay=.4;R.jog=!!o.jog;}}}
+function walkRunners(){let b=1;const at=k=>RUN.list.find(R=>R.active&&R.s===k&&R.target===k),forced=[];
+  for(;b<=3;b++){const R=at(b);if(!R)break;forced.push(R);}
+  forced.forEach(R=>{R.target=R.s+1;R.jog=true;});sendRunners(0,{batter:1,jog:true});}
+const _rv=new V3();
+function updateRunners(dt){
+  for(const R of RUN.list){const root=R.fig.root;
+    if(!R.active){root.visible=false;continue;}
+    if(R.delay>0){R.delay-=dt;root.visible=false;continue;}
+    const moving=R.s<R.target-1e-4;
+    if(moving)R.s=Math.min(R.target,R.s+(R.jog?10.5:16)*dt/27.43);
+    if(R.s>=4){R.active=false;root.visible=false;continue;}   // crossed the plate
+    root.visible=true;basePos(R.s,_rv);root.position.copy(_rv);
+    const i=clamp(Math.floor(R.s),0,3);root.rotation.y=moving?Math.atan2(BASES[i+1][0]-BASES[i][0],BASES[i+1][1]-BASES[i][1]):Math.atan2(-_rv.x,-_rv.z);
+    const mode=moving?(R.jog&&R.jogAct?'jog':'run'):'pose';
+    if(mode!==R.mode){R.mode=mode;R.mixer.stopAllAction();if(mode==='run')R.runAct.reset().play();else if(mode==='jog')R.jogAct.reset().play();}
+    if(mode==='run'){R.runT=(R.runT+dt*1.5)%R.runDur;R.runAct.time=R.runT;R.mixer.update(0);}
+    else if(mode==='jog'){R.runT=(R.runT+dt*1.25)%R.jogDur;R.jogAct.time=R.runT;R.mixer.update(0);}
+    else{applyPose(R.fig,RUN.pose);retargetFig(R.fig,R.rt);}
+  }
+}
+// ── The throw back in after a hit is fielded (visual only): the fielder winds up and the ball flies to the base ahead of the lead runner.
+const THROW_REL=.77;
+function updateThrow(){
+  if(!(flight&&flight.thr))return;const Th=flight.thr,e=now-Th.t0-THROW_REL;if(e<0)return;
+  if(!Th.from){const f=flight.play.f,r=f.fig.root;Th.from=new V3(r.position.x,1.75*(f.scale||1),r.position.z);Th.len=Th.from.distanceTo(Th.to);Th.dur=clamp(Th.len/42,.35,1.3);SND.whoosh();}
+  const u=e/Th.dur;
+  if(u<=1){ball.visible=true;ball.position.lerpVectors(Th.from,Th.to,u);ball.position.y+=Math.sin(u*PI)*Th.len*.07;ball.scale.setScalar(Math.max(1,camera.position.distanceTo(ball.position)*.05));}
+  else if(!Th.done){Th.done=true;ball.visible=false;SND.mitt();}
+}
 function toReady(d){$('hitinfo').hidden=true;S.state='ready';S.t=now;if(d)readyDur=d;swing=null;pitch=null;flight=null;ball.visible=false;ballShadow.visible=false;pring.visible=false;ballGlow.material.opacity=0;
   fielders.forEach(f=>{if(!f.isP){f.fig.root.position.copy(f.home);f.fig.root.rotation.y=Math.atan2(-f.home.x,-f.home.z);}f.run=null;});
-  camMode='bat';hud();
+  camMode='bat';hud();syncRunners();
   if(WALK.on&&S.fresh&&S.bi>=0&&!S.seen[S.bi%LINEUP.length]&&MX.clip&&MX.clip.intros[WALK.by[curBatter().name]])startWalkup();}
 // Starting before the player models have arrived left an empty batter's box and skipped the first walk-up, so Play Ball waits for them.
 function startGame(){
@@ -1037,6 +1087,9 @@ function tryContact(){
   if(!flight.admire&&q>.82&&pw&&play.type!=='foul')pop(['CRUSHED!','SMOKED!','TATTOOED!','OBLITERATED!'][(Math.random()*4)|0],'',tb?'hot':'');
   cheer(play.type==='hr'?.42:.12+.2*q,play.type==='hr'?5:1.6);
   if(play.f){play.from=play.f.fig.root.position.clone();}
+  if(play.type==='hit')sendRunners(play.bases,{batter:play.bases});
+  else if(play.type==='hr')sendRunners(4,{batter:flight.admire?0:4,jog:true});
+  else if(play.type==='out')sendRunners(0,{batter:1,jog:!!play.air});
 }
 
 function addRuns(n){if(!n)return;S.runs+=n;}
@@ -1074,9 +1127,10 @@ function finishPlay(){
     const r=advance(pl.bases);
     pop(['SINGLE!','DOUBLE!','TRIPLE!'][pl.bases-1],r?`+${r} RUN${r>1?'S':''}`:(pl.grd?'GROUND-RULE DOUBLE':pl.infield?'BEAT THE THROW':pl.wall?'OFF THE WALL':''),'');cheer(.25,2);
     S.state='result';S.t=now;readyDur=1.5;
+    if(pl.f&&pl.f.thrAct&&!pl.grd){const tb=pl.infield?1:[2,3,0][pl.bases-1];f.thr={t0:now+.15,to:new V3(BASES[tb][0],1.2,BASES[tb][1])};}
   }
   if(S.streak>=3&&!S.over){S.over=true;SND.zap();setTimeout(()=>{if(S.over)timing('⚡ OVERDRIVE — BAT IS LIVE ⚡','#3ad6ff');},900);}
-  const cel=S.state==='celebrate';setBatter();if(cel)readyDur=3.1;else readyDur=1.5;S.next=null;hud();
+  const cel=S.state==='celebrate';setBatter();if(cel)readyDur=3.1;else readyDur=f.thr?2.5:1.5;S.next=null;hud();
 }
 function endGame(){
   S.state='over';let best=0;try{best=+localStorage.getItem('mm_best')||0;if(S.runs>best)localStorage.setItem('mm_best',S.runs);}catch(e){}
@@ -1454,6 +1508,10 @@ function setupFielder(f,obj,custom,noGlove){
   if(sc){sc.tracks=sc.tracks.filter(t=>/quaternion$/.test(t.name)||/Hips\.position$/.test(t.name));
     const ht=sc.tracks.find(t=>/Hips\.position$/.test(t.name));if(ht){const v=ht.values;for(let i=3;i<v.length;i+=3){v[i]=v[0];v[i+2]=v[2];}}
     f.mixer=f.mixer||new T.AnimationMixer(obj);f.strAct=f.mixer.clipAction(sc);f.strDur=sc.duration;}
+  const tc=obj.animations.find(c=>c.name==='throw');
+  if(tc){tc.tracks=tc.tracks.filter(t=>/quaternion$/.test(t.name)||/Hips\.position$/.test(t.name));
+    const ht=tc.tracks.find(t=>/Hips\.position$/.test(t.name));if(ht){const v=ht.values;for(let i=3;i<v.length;i+=3){v[i]=v[0];v[i+2]=v[2];}}
+    f.mixer=f.mixer||new T.AnimationMixer(obj);f.thrAct=f.mixer.clipAction(tc);f.thrDur=tc.duration;}
   f.sx=Math.abs(obj.scale.x);
   f.mode='pose';
   showChunky(d,false,obj);
@@ -1476,9 +1534,10 @@ function showChunky(fig,on,keep){fig.root.children.forEach(ch=>{if(ch!==bat&&ch!
 function unloadPlayers(){
   if(MX.obj){if(MX.obj.parent)MX.obj.parent.remove(MX.obj);MX.obj=null;}
   if(MX.pit){scene.remove(MX.pit.obj);MX.pit=null;}
+  RUN.list.forEach(R=>scene.remove(R.fig.root));RUN.list=[];
   if(MX.crew){scene.remove(MX.crew.cat);scene.remove(MX.crew.uf.fig.root);MX.crew=null;}
   batterOpacity(1);MX.ready=false;MX.clip=null;MX.lefty=false;CAM_HOME.x=-.15;CAM_LOOK.x=.3;batter.root.add(bat);showChunky(batter,true);showChunky(pitcher,true);unfitDriver(batter);
-  fielders.forEach(f=>{if(f.obj){f.fig.root.remove(f.obj);f.obj=f.rt=f.mixer=f.act=f.runAct=f.strAct=null;f.mode='pose';unfitDriver(f.fig);showChunky(f.fig,true);}});
+  fielders.forEach(f=>{if(f.obj){f.fig.root.remove(f.obj);f.obj=f.rt=f.mixer=f.act=f.runAct=f.strAct=f.thrAct=null;f.mode='pose';unfitDriver(f.fig);showChunky(f.fig,true);}});
 }
 function retarget(){retargetFig(batter,MX);}
 const loadBuf=url=>fetch(url).then(r=>r.ok?r.text():Promise.reject(new Error(url))).then(b64=>{ // models ship as base64 text
@@ -1548,7 +1607,8 @@ function loadPlayers(kind){ // body file = character mesh; clips.json = motion-c
     try{setupPitcher(make(['pitch',...Object.keys(cj).filter(k=>/^p_/.test(k))]),skins&&skins.away);}catch(e){console.warn('pitcher model failed, using built-in figure',e);fallback(pitcher);}
     // fielders are built one at a time so the page doesn't freeze while seven more models are prepared
     fielders.filter(f=>!f.isP).forEach((f,i)=>setTimeout(()=>{if(my!==MX.token)return;
-      try{setupFielder(f,make(['catch','run','strafe'].filter(k=>cj[k])),skins&&skins.away);}catch(e){console.warn('fielder model failed, using built-in figure',e);fallback(f.fig);}},400+i*220));
+      try{setupFielder(f,make(['catch','run','strafe','throw'].filter(k=>cj[k])),skins&&skins.away);}catch(e){console.warn('fielder model failed, using built-in figure',e);fallback(f.fig);}},400+i*220));
+    if(skins&&cj.run)setTimeout(()=>{if(my!==MX.token)return;try{setupRunners(make,skins);}catch(e){console.warn('baserunners failed',e);}},2300);
     if(skins&&cj.catch)setTimeout(()=>{if(my!==MX.token)return;try{setupPlateCrew(make,skins);}catch(e){console.warn('catcher/umpire failed',e);}},250);
   }).catch(e=>{console.warn('player models unavailable, using built-in figures',e);if(my===MX.token){figs.forEach(fallback);playersDone();}});
 }
@@ -1648,11 +1708,13 @@ function updateFielders(dt){
       applyPose(f.fig,POSE.pSet);r.rotation.y=Math.atan2(ball.position.x-r.position.x,ball.position.z-r.position.z);
     }else{const P=lerpPose(POSE.fReady,POSE.fReady,0,tmpPose);P.y+=Math.sin(now*2+f.ph)*.012;applyPose(f.fig,P);}
     if(f.rt){
-      const mode=clipT>=0?'catch':running&&strafe?'strafe':running&&f.runAct?'run':'pose';
+      let thrT=-1;if(flight&&flight.thr&&flight.play.f===f&&f.thrAct){const e=(now-flight.thr.t0)*1.3;if(e>=0&&e<f.thrDur){thrT=e;r.rotation.y=Math.atan2(flight.thr.to.x-r.position.x,flight.thr.to.z-r.position.z);}}
+      const mode=thrT>=0?'throw':clipT>=0?'catch':running&&strafe?'strafe':running&&f.runAct?'run':'pose';
       if(mode!==f.mode){f.mode=mode;if(f.mixer)f.mixer.stopAllAction();f.obj.position.set(0,0,0);
-        if(mode==='catch')f.act.reset().play();else if(mode==='run')f.runAct.reset().play();else if(mode==='strafe')f.strAct.reset().play();}
+        if(mode==='catch')f.act.reset().play();else if(mode==='run')f.runAct.reset().play();else if(mode==='strafe')f.strAct.reset().play();else if(mode==='throw')f.thrAct.reset().play();}
       f.obj.scale.x=f.sx*(mode==='strafe'&&strafe<0?-1:1);
       if(mode==='catch'){f.act.time=clipT;f.mixer.update(0);f.obj.position.set(-f.startOff.x,0,-f.startOff.z);}
+      else if(mode==='throw'){f.thrAct.time=thrT;f.mixer.update(0);}
       else if(mode==='strafe'){f.runT=(f.runT+dt*f.speed/4.2)%f.strDur;f.strAct.time=f.runT;f.mixer.update(0);}
       else if(mode==='run'){f.runT%=f.runDur;f.runT=(f.runT+dt*f.speed/4.4)%f.runDur;f.runAct.time=f.runT;f.mixer.update(0);} // stride rate follows how fast he is covering ground
       else retargetFig(f.fig,f.rt);
@@ -1705,7 +1767,7 @@ function step(dt){
       if(swing){strike('swing');}
       else if(pitch.inZone){strike('look');}
       else{S.balls++;S.juice=Math.min(1,S.juice+.07);SND.call(true);
-        if(S.balls>=4){const r=advance(1,true);pop('WALK',r?'+1 RUN':'TAKE YOUR BASE','plain');afterPA(1.3);}
+        if(S.balls>=4){walkRunners();const r=advance(1,true);pop('WALK',r?'+1 RUN':'TAKE YOUR BASE','plain');afterPA(1.3);}
         else{pop('BALL','','plain');samePA(.95);}}
     }
   }
@@ -1730,7 +1792,7 @@ function step(dt){
   // shock ring
   if(shock.userData.t!==undefined&&shock.userData.t<.3){shock.userData.t+=dt;const k=shock.userData.t/.3;shock.scale.setScalar(.06+k*shock.userData.s*.9);shock.material.opacity=(1-k)*.9;}else shock.material.opacity=0;
 
-  updateBatter(dt);updatePitcher();updateFielders(dt);updatePlateCrew();
+  updateBatter(dt);updatePitcher();updateFielders(dt);updatePlateCrew();updateRunners(dt);updateThrow();
   fxS.update(dt);fxL.update(dt);fxT.update(dt);
 
   // reticle
@@ -1803,7 +1865,7 @@ function frame(t){
 try{const b=+localStorage.getItem('mm_best')||0;if(b)$('best').textContent='Best game: '+b+' runs';}catch(e){}
 initPost();resize();hud();
 const DBG={cam:false,admire:'',trip:false,fist:false}; // test hook: pin the camera to CAM_HOME/CAM_LOOK
-window.__mm={S,aim,MX,DBG,SFX,ballPos:()=>ball.position,fielders,toReady,CAM_HOME,CAM_LOOK,now:()=>now,simulate,judge,get pitch(){return pitch;},get flight(){return flight;},doSwing,newGame,V3,
+window.__mm={S,aim,MX,DBG,SFX,RUN,ballPos:()=>ball.position,fielders,toReady,CAM_HOME,CAM_LOOK,now:()=>now,simulate,judge,get pitch(){return pitch;},get flight(){return flight;},doSwing,newGame,V3,
   sim:(dt)=>{hitstop=0;now+=dt;step(dt);},
   step:(n,dt=1/60)=>{for(let i=0;i<n;i++){if(hitstop>0)hitstop=0;now+=dt;step(dt);}updateCamera(dt);draw();}};
 if(!window.__mmManual)requestAnimationFrame(frame);
