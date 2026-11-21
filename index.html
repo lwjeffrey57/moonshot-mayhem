@@ -228,7 +228,7 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 .tag{font-size:clamp(14px,2vw,18px);font-weight:700;letter-spacing:.2em;color:var(--dim);text-transform:uppercase}
 #ldbar{width:min(260px,70vw);height:8px;margin:0 auto;border:2px solid #000;border-radius:6px;background:rgba(255,255,255,.15);overflow:hidden;transition:opacity .4s}#ldbar i{display:block;height:100%;width:0;background:var(--volt);transition:width .25s}#ldbar.done{display:none}#ldtxt:empty{display:none}
 #tip{display:none;max-width:min(340px,86vw);min-height:92px;margin:0 auto;padding:10px 14px;text-align:center;font-size:15px;line-height:1.3;color:var(--chrome);background:rgba(8,9,26,.72);border:1px solid rgba(242,245,255,.25);border-radius:10px}#tip b{display:block;color:var(--volt);font-family:var(--display);font-style:italic;font-size:17px;letter-spacing:.04em;margin-bottom:3px}
-#howbtn{display:none}body.mob #howbtn{display:revert}
+#howbtn,.sens{display:none}body.mob #howbtn,body.mob .sens{display:revert}
 body.mob #tip{display:block}body.mob .how{display:none}
 /* first-game thumb guide */
 #tut{position:absolute;inset:0;z-index:30;overflow:hidden;pointer-events:auto;font-family:var(--display);font-style:italic;color:#fff;text-shadow:0 2px 0 #000}#tut[hidden]{display:none}
@@ -349,6 +349,7 @@ body.mob #tip{display:block}body.mob .how{display:none}
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
     <button class="tag wkopt" id="wk" type="button"></button>
+    <button class="tag wkopt sens" id="sens1" type="button"></button>
     <button class="tag" id="mdl" type="button" hidden style="pointer-events:auto;background:none;border:1px solid var(--dim);padding:6px 12px;cursor:pointer;font-family:var(--hud)"></button>
     <div class="tag" id="best"></div>
   </div>
@@ -362,6 +363,7 @@ body.mob #tip{display:block}body.mob .how{display:none}
     <div class="logo"><span class="b">PAUSED</span></div>
     <button class="cta" id="resume" type="button">RESUME</button>
     <button class="cta alt" id="cambtn" type="button">CAMERA</button>
+    <button class="cta alt sens" id="sens2" type="button"></button>
     <button class="cta alt" id="howbtn" type="button">HOW TO PLAY</button>
     <button class="cta alt" id="restart" type="button">RESTART GAME</button>
     <button class="cta alt" id="quit" type="button">QUIT TO MAIN MENU</button>
@@ -1363,8 +1365,12 @@ function pointerAim(e){
 }
 function setAim(x,y){aim.x=clamp(x,-.62,.62);aim.y=clamp(y,.22,1.5);}
 let touchLast=null;
+// aim sensitivity (touch): how far the ring moves per unit of thumb travel. 3 is the default; saved on the device.
+const SENS=[1,1.3,1.6,2,2.5,3.1];let sensI=2;try{const v=localStorage.getItem('mm_sens');if(v!==null)sensI=clamp(+v|0,0,SENS.length-1);}catch(e){}
+function sensLabel(){$('sens1').textContent='Aim sensitivity: '+(sensI+1)+' / '+SENS.length;$('sens2').textContent='AIM SENSITIVITY: '+(sensI+1)+' / '+SENS.length;}
+['sens1','sens2'].forEach(id=>$(id).addEventListener('click',()=>{sensI=(sensI+1)%SENS.length;try{localStorage.setItem('mm_sens',sensI);}catch(e){}sensLabel();}));sensLabel();
 canvas.addEventListener('pointermove',e=>{
-  if(e.pointerType==='touch'){if(touchLast&&touchLast.id===e.pointerId){const m=2*CAM_HOME.z*Math.tan(camera.userData.baseFov*DEG/2)/viewH*1.6;
+  if(e.pointerType==='touch'){if(touchLast&&touchLast.id===e.pointerId){const m=2*CAM_HOME.z*Math.tan(camera.userData.baseFov*DEG/2)/viewH*SENS[sensI];
       setAim(aim.x+(e.clientX-touchLast.x)*m,aim.y-(e.clientY-touchLast.y)*m);touchLast.x=e.clientX;touchLast.y=e.clientY;
       {let dx=e.clientX-touchLast.x0,dy=e.clientY-touchLast.y0;const L=Math.hypot(dx,dy),R=34;if(L>R){dx*=R/L;dy*=R/L;}padKnob.style.transform='translate('+dx+'px,'+dy+'px)';}}}
   else pointerAim(e);});
