@@ -247,6 +247,7 @@ const basic=(o)=>new T.MeshBasicMaterial(Object.assign({side:T.DoubleSide},o));
     for(let i=0;i<9000;i++){g.fillStyle=Math.random()<.5?'rgba(0,30,0,.1)':'rgba(220,255,140,.07)';g.fillRect(rand(0,256),rand(0,256),1,rand(2,5));}},[90,90]);
   grass.anisotropy=ANISO;
   const gp=new T.Mesh(new T.PlaneGeometry(900,900),new T.MeshBasicMaterial({map:grass}));gp.rotation.x=-PI/2;gp.position.set(0,0,-150);scene.add(gp);
+  const APEX=.216; // back point of home plate, where the foul lines meet
   const S=1024/72,X=x=>(x+36)*S,Z=z=>(z+62)*S;
   const dirt=tex(1024,1024,(g)=>{
     const D='#b06e3c';
@@ -257,8 +258,7 @@ const basic=(o)=>new T.MeshBasicMaterial(Object.assign({side:T.DoubleSide},o));
     g.fillStyle=D;g.beginPath();g.arc(X(0),Z(0),4.2*S,0,7);g.fill();
     g.fillStyle='#bd7a45';g.beginPath();g.arc(X(0),Z(-18.4),2.8*S,0,7);g.fill();
     for(let i=0;i<9000;i++){const x=rand(0,1024),y=rand(0,1024);const d=g.getImageData(x,y,1,1).data;if(d[0]>140&&d[3]>0){g.fillStyle=Math.random()<.5?'rgba(60,30,10,.12)':'rgba(255,220,170,.1)';g.fillRect(x,y,3,2);}}
-    g.strokeStyle='#fff';g.lineWidth=2.2;g.beginPath();g.moveTo(X(0),Z(0));g.lineTo(X(40),Z(-40));g.moveTo(X(0),Z(0));g.lineTo(X(-40),Z(-40));g.stroke();
-    g.lineWidth=1.8;g.strokeRect(X(-1.6),Z(-0.95),1.25*S,1.9*S);g.strokeRect(X(0.35),Z(-0.95),1.25*S,1.9*S);
+    g.strokeStyle='#fff';g.lineWidth=2.2;g.beginPath();[1,-1].forEach(sg=>{g.moveTo(X(sg*3.2),Z(APEX-3.2));g.lineTo(X(sg*40),Z(APEX-40));});g.stroke();
     g.fillStyle='#fff';g.fillRect(X(-.3),Z(-18.55),.6*S,.16*S);
     g.beginPath();g.moveTo(X(-.22),Z(-.22));g.lineTo(X(.22),Z(-.22));g.lineTo(X(.22),Z(0));g.lineTo(X(0),Z(.22));g.lineTo(X(-.22),Z(0));g.closePath();g.fill();
   });
@@ -269,8 +269,14 @@ const basic=(o)=>new T.MeshBasicMaterial(Object.assign({side:T.DoubleSide},o));
       g.save();g.beginPath();g.arc(X2(0),Z2(0),4.15*S2,0,7);g.clip();
       for(let i=0;i<5000;i++){g.fillStyle=Math.random()<.5?'rgba(60,30,10,.1)':'rgba(255,225,180,.09)';g.fillRect(rand(0,1024),rand(0,1024),rand(2,7),rand(1,3));}
       for(let i=0;i<40;i++){const x=rand(X2(-2),X2(2)),y=rand(Z2(-1.5),Z2(1.5));g.fillStyle='rgba(70,35,12,.12)';g.beginPath();g.ellipse(x,y,rand(8,22),rand(4,10),rand(0,3),0,7);g.fill();}
-      g.strokeStyle='#fff';g.lineWidth=.1*S2;g.beginPath();g.moveTo(X2(0),Z2(0));g.lineTo(X2(5),Z2(-5));g.moveTo(X2(0),Z2(0));g.lineTo(X2(-5),Z2(-5));g.stroke();
-      g.lineWidth=.08*S2;g.strokeRect(X2(-1.6),Z2(-.95),1.25*S2,1.9*S2);g.strokeRect(X2(.35),Z2(-.95),1.25*S2,1.9*S2);
+      // regulation layout: 4 ft x 6 ft boxes set 6 in off the plate and centred on it, 4 in chalk,
+      // foul lines running off the plate's back point but not chalked inside the boxes, and a catcher's box behind
+      const BX0=.216+.152,BX1=BX0+1.219,BZ=.914,CW=.546,CZ=APEX+2.44;
+      g.strokeStyle='#fff';g.lineWidth=.1*S2;g.lineCap='butt';g.lineJoin='miter';
+      [1,-1].forEach(sg=>{g.strokeRect(X2(sg>0?BX0:-BX1),Z2(-BZ),(BX1-BX0)*S2,2*BZ*S2);
+        const t0=APEX+BZ;g.beginPath();g.moveTo(X2(sg*t0),Z2(-BZ));g.lineTo(X2(sg*6),Z2(APEX-6));g.stroke();   // foul line picks up at the front of the box
+        g.beginPath();g.moveTo(X2(sg*CW),Z2(BZ));g.lineTo(X2(sg*CW),Z2(CZ));g.stroke();});
+      g.beginPath();g.moveTo(X2(-CW)-.05*S2,Z2(CZ));g.lineTo(X2(CW)+.05*S2,Z2(CZ));g.stroke();
       g.restore();
       g.fillStyle='#fafafa';g.strokeStyle='#222';g.lineWidth=2;g.beginPath();g.moveTo(X2(-.22),Z2(-.22));g.lineTo(X2(.22),Z2(-.22));g.lineTo(X2(.22),Z2(0));g.lineTo(X2(0),Z2(.22));g.lineTo(X2(-.22),Z2(0));g.closePath();g.fill();g.stroke();});
     home.anisotropy=ANISO;const hp=new T.Mesh(new T.PlaneGeometry(14,14),new T.MeshBasicMaterial({map:home,transparent:true,depthWrite:false}));hp.rotation.x=-PI/2;hp.position.set(0,.025,-1);hp.renderOrder=0.5;scene.add(hp);}
@@ -278,7 +284,7 @@ const basic=(o)=>new T.MeshBasicMaterial(Object.assign({side:T.DoubleSide},o));
   const bg=new T.BoxGeometry(.42,.09,.42),bm=new T.MeshLambertMaterial({color:0xffffff});
   [[19.4,-19.4],[0,-38.8],[-19.4,-19.4]].forEach(p=>{const b=new T.Mesh(bg,bm);b.position.set(p[0],.045,p[1]);b.rotation.y=PI/4;scene.add(b);});
   // foul lines past the dirt, warning track, wall
-  [-1,1].forEach(s=>{const a=[],b=[];[38,99].forEach(r=>{a.push(pol(r,s*PI/4-0.0012*s*60/r,.03));b.push(pol(r,s*PI/4+0.0012*s*60/r,.03));});scene.add(new T.Mesh(ribbon(a,b),basic({color:0xffffff})));});
+  [-1,1].forEach(s=>{const a=[],b=[];[38,99].forEach(r=>{a.push(pol(r,s*PI/4-0.0012*s*60/r,.03));b.push(pol(r,s*PI/4+0.0012*s*60/r,.03));});a.concat(b).forEach(p=>{p.z+=APEX;});scene.add(new T.Mesh(ribbon(a,b),basic({color:0xffffff})));});
   const N=36,wa=[],wb=[],fa=[],fb=[],s1a=[],s1b=[],s2a=[],s2b=[],fca=[],fcb=[];
   for(let i=0;i<=N;i++){const phi=lerp(-PI/4,PI/4,i/N),r=fenceR(phi);
     wa.push(pol(r-5,phi,.03));wb.push(pol(r,phi,.03));fa.push(pol(r,phi,0));fb.push(pol(r,phi,WALL_H));
@@ -964,7 +970,7 @@ function setupClip(obj,clip,B,sk){
   const sp=new V3(),contact=(c,t0,t1,fb)=>{let r=fb,best=-1e9;probe(c,at=>{for(let t=t0;t<Math.min(t1,c.duration);t+=1/120){at(t);clipBat();sp.set(0,.62,0);bat.localToWorld(sp);if(sp.y<1.25&&_bd.x>best){best=_bd.x;r=t;}}});return r;};
   const tC=contact(clip,.3,1.8,.69);C.tC=tC;C.tL=Math.max(.1,tC-.22);C.tE=Math.min(clip.duration,tC+.6);
   C.loadAt=clamp(1.2-C.tL/1.25,.3,.85); // when in the windup to start loading, so he is set just after release
-  probe(clip,at=>{at(tC);clipBat();const sw=bat.localToWorld(new V3(0,.62,0));obj.position.set(clamp(-sw.x,-1.5,-.5),0,clamp(-sw.z,-.1,.4));C.y0=sw.y;});
+  probe(clip,at=>{at(tC);clipBat();const sw=bat.localToWorld(new V3(0,.62,0));obj.position.set(clamp(-sw.x,-1.5,-.5),0,clamp(-sw.z,-.1,.12));C.y0=sw.y;});
   // keep him in the batter's box: measure where his feet are in the stance and at contact, and back him off the plate if needed
   {const v=new V3();let fx=-1e9;const feet=['LeftFoot','RightFoot','LeftToeBase','RightToeBase'].map(B).filter(Boolean),far=()=>feet.forEach(f=>{fx=Math.max(fx,f.getWorldPosition(v).x);});
     probe(ic||clip,at=>{at(0);far();});probe(clip,at=>{at(tC);far();});
