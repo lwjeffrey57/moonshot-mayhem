@@ -287,7 +287,7 @@ body.mob #tip{display:block}body.mob .how{display:none}
 #tut.s3 .spot::before,#tut.s3 .spot::after{content:'';position:absolute;left:var(--tx,50%);top:var(--ty,50%);box-sizing:border-box;width:calc(var(--tr,14px)*2);height:calc(var(--tr,14px)*2);margin:calc(var(--tr,14px)*-1);border-radius:50%}
 #tut.s3 .spot::before{border:3px solid #fff;background:rgba(255,255,255,.4)}
 #tut.s3 .spot::after{border:3px solid var(--volt);animation:tutring 1.8s linear infinite}
-@keyframes tutring{0%{transform:scale(6);opacity:0;border-width:.6px}10%{opacity:1}72%{transform:scale(1);border-color:var(--volt);border-width:3px}74%,100%{transform:scale(1);border-color:#fff;border-width:3px;opacity:1}}
+@keyframes tutring{0%{transform:scale(6);opacity:0;border-width:.6px}10%{opacity:1}72%{transform:scale(1);border-color:var(--volt);border-width:3px;box-shadow:none}74%,100%{transform:scale(1.12);border-color:#39ff6a;border-width:4px;opacity:1;box-shadow:0 0 14px 4px rgba(57,255,106,.9)}}
 /* step 2 demo: a ball lands in the green zone and CONTACT lights up, then in the red core and POWER lights up */
 #tut.s2 .spot::before{content:'';position:absolute;left:var(--tx,50%);top:var(--ty,50%);box-sizing:border-box;width:calc(var(--tr,14px)*2);height:calc(var(--tr,14px)*2);margin:calc(var(--tr,14px)*-1);border-radius:50%;border:3px solid #fff;background:rgba(255,255,255,.6)} /* the ball stays put: the bat ring moves onto it */
 #hud.tut2 #tc{animation:tutbA 5.2s linear infinite}#hud.tut2 #tp{animation:tutbB 5.2s linear infinite}
@@ -397,7 +397,7 @@ body.mob #tip{display:block}body.mob .how{display:none}
       <div class="tz aimz"><b>LEFT THUMB: AIM</b>Drag here (or anywhere) to move the ring onto the pitch</div>
       <div class="tz pcz"><b><span style="color:#3ddc6a">GREEN = CONTACT</span> · <span style="color:#ff6a4a">RED = POWER</span></b>Each swing has its own zone on your bat<small>Move your ring onto the ball. Ball in the green: CONTACT. Ball in the red core: POWER. Closer to the middle = better contact.</small></div>
       <div class="tz lbl lc" id="tlc">IN THE GREEN<span>▼</span></div><div class="tz lbl lp" id="tlp">IN THE RED<span>▼</span></div>
-      <div class="tz tmz"><b>YELLOW RING = TIMING</b>It shrinks onto a white circle the size of the ball<small>Ring still bigger than the ball: too early. Ring meets the circle: swing. Move your bat onto it first.</small></div>
+      <div class="tz tmz"><b>YELLOW RING = TIMING</b>It shrinks onto a white circle the size of the ball<small>Ring still bigger than the ball: too early. Ring meets the circle and turns <span style="color:#39ff6a">green</span>: swing!</small></div>
       <div class="tz swz"><b>RIGHT THUMB: SWING</b>Tap as the yellow ring closes on the ball<small>CONTACT is easier and hits line drives. POWER is harder and hits moonshots.</small></div>
       <div class="tz jcz"><b>JUICE: MONSTER SWING</b>Tap JUICE, then swing. Costs one bar<small>Hits and taking balls refill it. Save it for a pitch you can drive.</small></div>
       <div class="tz ovz"><b>FULL METER = OVERDRIVE</b>Fill this bar all the way and it catches fire<small>JUICE turns into a blue OVERDRIVE button. Tap it and every swing that at-bat is a free Juice swing. Then the bar starts over.</small></div>
@@ -1060,7 +1060,7 @@ const curBatter=()=>LINEUP[S.bi%LINEUP.length];
 function pop(t,s='',cls='',long=false){const e=$('pop');e.className='';e.querySelector('.t').textContent=t;e.querySelector('.s').textContent=s;void e.offsetWidth;e.className='go '+cls+(long?' long':'');}
 let MOB=false;function setMob(){MOB=matchMedia('(pointer:coarse)').matches||innerWidth<=560;$('hud').classList.toggle('mob',MOB);document.body.classList.toggle('mob',MOB);}setMob();addEventListener('resize',setMob); // narrow a desktop window to preview the phone layout
 const buzz=p=>{try{if(navigator.vibrate)navigator.vibrate(p);}catch(e){}};
-const TIPS=[['AIM','Drag your left thumb anywhere on the screen to move the bat ring onto the pitch.'],['SWING','Tap CONTACT or POWER the moment the shrinking yellow ring meets the white circle: the size of the ball. Bigger is too early, smaller is late.'],
+const TIPS=[['AIM','Drag your left thumb anywhere on the screen to move the bat ring onto the pitch.'],['SWING','Tap CONTACT or POWER the moment the shrinking yellow ring meets the white circle and turns green. Bigger is too early, smaller is late.'],
   ['CONTACT OR POWER','Contact has a big sweet spot and sprays line drives. Power has a small one and hits moonshots.'],
   ['INSIDE THE RING','To hit it, the ball has to be inside your ring when you swing: anywhere in the green ring for CONTACT, inside the red core for POWER.'],
   ['JUICE','Tap JUICE before you swing to burn one bar: the ball comes off about 20% harder and the sweet spot grows.'],
@@ -2269,7 +2269,7 @@ function step(dt){
     const show=u>(pitch.P.sp?.42:.22)&&u<1;pring.visible=show;
     if(show){pring.position.set(pitch.tx,pitch.ty,0);const uT=u+SW_T/pitch.dur, // the ring runs ahead by the swing time, so 'tap when it finishes closing' is exactly on time
       t=(uT-.22)/.78,r=t<=1?lerp(.42,PT_R,clamp(t,0,1)):Math.max(.02,PT_R-(t-1)*.5),hit=Math.abs(r-PT_R)<.012; // closes at a steady speed onto the target, then keeps shrinking: smaller than the ball = late
-      pring.scale.setScalar(r);pring.material.color.setHex(hit?0xffffff:0xffe53b);ptarget.scale.setScalar(PT_R*(hit?1.25:1));} // flashes white at 'now': red is reserved for the power core
+      pring.scale.setScalar(r);pring.material.color.setHex(hit?0x39ff6a:0xffe53b);ptarget.material.color.setHex(hit?0x39ff6a:0xffffff);ptarget.scale.setScalar(PT_R*(hit?1.3:1));} // flashes white at 'now': red is reserved for the power core
     if(pitch.P.col&&u<1)trail(pitch,pitch.P.col,u<.75,true);
     if(u>=1&&!pitch.called){pitch.called=true;
       payHeat();$('mph').textContent=pitchMph(pitch.dur);$('plast').textContent=pitch.P.n+' · '+pitchMph(pitch.dur)+' MPH';
