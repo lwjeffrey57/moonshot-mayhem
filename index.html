@@ -187,6 +187,7 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 @keyframes tim{0%{opacity:0;transform:translateY(8px)}15%,70%{opacity:1;transform:none}100%{opacity:0}}
 #flash{inset:0;background:radial-gradient(circle at 50% 55%,#fff,rgba(255,240,180,.7) 40%,transparent 75%);opacity:0}
 /* touch */
+#hud .rip{position:absolute;z-index:40;width:56px;height:56px;margin:-28px;border:3px solid #fff;border-radius:50%;pointer-events:none;animation:rip .4s ease-out forwards}@keyframes rip{from{transform:scale(.3);opacity:.9}to{transform:scale(1.5);opacity:0}}
 #touch::before{content:'';position:absolute;z-index:-1;inset:-30px -14px -36px -30px} /* near misses around the buttons still count */
 #hud{--tbb:max(calc(env(safe-area-inset-bottom,0px) + 70px),13vh)} /* how far the swing buttons sit above the bottom edge: thumb height, not the screen edge */
 @media (max-height:520px){#hud{--tbb:20px}}
@@ -1391,13 +1392,23 @@ addEventListener('keydown',e=>{keys[e.code]=true;if(e.repeat)return;
 addEventListener('keyup',e=>{keys[e.code]=false;if(e.code.startsWith('Shift'))hud();});
 addEventListener('blur',()=>{for(const k in keys)keys[k]=false;});
 const tap=(id,fn)=>$(id).addEventListener('pointerdown',e=>{e.preventDefault();audioInit();fn();});
-// Swing buttons: one handler for the whole corner, decided by where the finger lands rather than which element caught it.
-// Inside the JUICE circle = Juice; anywhere else in the corner = whichever of CONTACT / POWER is nearer. A tap can't fall between buttons.
-$('touch').addEventListener('pointerdown',e=>{e.preventDefault();audioInit();
-  const c=id=>{const r=$(id).getBoundingClientRect();return {x:r.left+r.width/2,y:r.top+r.height/2,r:r.width/2};},d=o=>Math.hypot(e.clientX-o.x,e.clientY-o.y);
-  const J=c('tj'),C=c('tc'),P=c('tp');
-  if(d(J)<=J.r+4&&d(P)>P.r){juiceArmed=!juiceArmed;hud();return;}
-  doSwing(d(P)-P.r<=d(C)-C.r?'power':'contact');});
+// Swing buttons. Handled at the document, by where the finger lands, not by which element the browser says was hit:
+// anything from the buttons down to the bottom edge of the screen counts, so a low or sloppy tap still swings.
+// Inside the JUICE circle = Juice; anywhere else = whichever of CONTACT / POWER is nearer. Listens to touchstart as well as pointerdown,
+// because some mobile browsers drop pointer events for a second finger. A ripple shows exactly where the tap registered.
+let lastTapT=0,lastTapX=0,lastTapY=0;
+function cornerTap(x,y){
+  if(!MOB||paused||tutHold||!$('title').hidden||!$('over').hidden)return false;
+  const c=id=>{const r=$(id).getBoundingClientRect();return {x:r.left+r.width/2,y:r.top+r.height/2,r:r.width/2,l:r.left,t:r.top};},d=o=>Math.hypot(x-o.x,y-o.y);
+  const J=c('tj'),C=c('tc'),P=c('tp');if(!C.r)return false;
+  if(!((x>=C.l-26&&y>=Math.min(C.t,P.t)-24)||(x>=J.l-16&&y>=J.t-22)))return false; // the button rows and everything under them, plus the JUICE column
+  const t=performance.now();if(t-lastTapT<90&&Math.hypot(x-lastTapX,y-lastTapY)<3)return true;lastTapT=t;lastTapX=x;lastTapY=y; // the same tap arriving as both touchstart and pointerdown
+  audioInit();
+  {const r=document.createElement('i');r.className='rip';r.style.left=x+'px';r.style.top=y+'px';$('hud').appendChild(r);setTimeout(()=>r.remove(),420);}
+  if(d(J)<=J.r+6&&d(P)>P.r){juiceArmed=!juiceArmed;hud();return true;}
+  doSwing(d(P)-P.r<=d(C)-C.r?'power':'contact');return true;}
+document.addEventListener('pointerdown',e=>{if(e.pointerType!=='mouse'||MOB){if(cornerTap(e.clientX,e.clientY)){e.preventDefault();e.stopPropagation();}}},{capture:true});
+document.addEventListener('touchstart',e=>{let hit=false;for(const t of e.changedTouches)if(cornerTap(t.clientX,t.clientY))hit=true;if(hit){e.preventDefault();e.stopPropagation();}},{capture:true,passive:false});
 ['tc','tp','tj'].forEach(id=>$(id).addEventListener('click',e=>{if(e.detail===0){if(id==='tj'){juiceArmed=!juiceArmed;hud();}else doSwing(id==='tp'?'power':'contact');}})); // keyboard activation
 $('start').addEventListener('click',()=>{audioInit();if(AC&&AC.state==='suspended')AC.resume();startGame();});
 walkLabel();$('wk').addEventListener('click',()=>{WALK.on=!WALK.on;try{localStorage.setItem('mm_walk',WALK.on?'1':'0');}catch(e){}walkLabel();});
