@@ -225,6 +225,13 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 @keyframes jtoast{0%{opacity:0;transform:translateY(10px) scale(.8)}10%{opacity:1;transform:none}80%{opacity:1}100%{opacity:0}}
 #kj.has{box-shadow:0 0 14px 3px rgba(255,210,59,.9);border-color:#ffd23b;animation:kjp .7s ease-in-out infinite alternate}@keyframes kjp{to{box-shadow:0 0 22px 7px rgba(255,210,59,1)}}
 @media (prefers-reduced-motion:reduce){.tb.jc.has,#kj.has{animation:none}}
+/* Overdrive charged: the JUICE button becomes a blue OVERDRIVE button wreathed in blue flame */
+.tb.jc.od{white-space:normal;line-height:.95;font-size:clamp(11px,3.3vw,14px);background:radial-gradient(circle at 50% 115%,#e6fbff 0%,#58d6ff 26%,#1e7bff 58%,#0a2a9a 86%);border-color:#020a2a;animation:odglow .45s ease-in-out infinite alternate}
+.tb.jc.od::after{content:'';position:absolute;z-index:-1;left:-12%;right:-12%;top:-50%;bottom:36%;pointer-events:none;filter:blur(1.5px);transform-origin:50% 100%;
+  background:radial-gradient(ellipse 16% 62% at 16% 100%,#9fe8ff 0,#2e9bff 45%,transparent 72%),radial-gradient(ellipse 18% 88% at 38% 100%,#e6fbff 0,#3aa8ff 42%,transparent 72%),radial-gradient(ellipse 19% 100% at 60% 100%,#b8f0ff 0,#1e7bff 46%,transparent 72%),radial-gradient(ellipse 16% 72% at 82% 100%,#9fe8ff 0,#2e9bff 44%,transparent 72%);animation:flames .38s ease-in-out infinite alternate}
+@keyframes odglow{from{box-shadow:0 4px 0 #000,0 0 14px 3px rgba(58,170,255,.8),0 0 30px 8px rgba(30,100,255,.45)}to{box-shadow:0 4px 0 #000,0 0 22px 7px rgba(120,220,255,.95),0 0 46px 14px rgba(30,100,255,.6)}}
+.tb.jc.odon{transform:scale(1.06)}.tb.jc.od b{display:none}
+.tb.pw.fire.blue{background:radial-gradient(circle at 50% 115%,#e6fbff 0%,#58d6ff 26%,#1e7bff 58%,#0a2a9a 86%);border-color:#020a2a;animation-name:odglow}.tb.pw.fire.blue::after{filter:blur(1.5px) hue-rotate(185deg) saturate(1.4)}
 .tb.jc.on{animation:none;background:var(--volt);box-shadow:0 4px 0 #000,0 0 18px var(--volt)}
 /* POWER on fire: Juice armed, or Overdrive */
 .tb.pw.fire{background:radial-gradient(circle at 50% 115%,#fff6b0 0%,#ffc21e 26%,#ff5a1e 56%,#b3140a 84%);border-color:#2a0500;animation:fireglow .45s ease-in-out infinite alternate}
@@ -257,7 +264,8 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 .logo .a{display:block;font-size:clamp(44px,11vw,120px);color:var(--volt);text-shadow:0 6px 0 #000,0 0 60px rgba(255,229,59,.5)}
 .logo .b{display:block;font-size:clamp(30px,7.4vw,82px);color:var(--heat);text-shadow:0 5px 0 #000}
 .tag{font-size:clamp(14px,2vw,18px);font-weight:700;letter-spacing:.2em;color:var(--dim);text-transform:uppercase}
-#ldbar{width:min(260px,70vw);height:8px;margin:0 auto;border:2px solid #000;border-radius:6px;background:rgba(255,255,255,.15);overflow:hidden;transition:opacity .4s}#ldbar i{display:block;height:100%;width:0;background:var(--volt);transition:width .25s}#ldbar.done{display:none}#ldtxt:empty{display:none}
+#ldbar{width:min(260px,70vw);height:8px;margin:12px auto 10px;border:2px solid #000;border-radius:6px;background:rgba(255,255,255,.15);position:relative;transition:opacity .4s}#ldbar i{display:block;position:relative;height:100%;width:0;min-width:4px;background:linear-gradient(90deg,#ff7a2a,var(--volt));border-radius:4px;transition:width .35s ease-out}
+#ldbar i::after{content:'🚀';position:absolute;right:-17px;top:50%;font-size:26px;line-height:1;font-style:normal;transform:translateY(-52%) rotate(45deg);filter:drop-shadow(0 2px 0 rgba(0,0,0,.6))} /* the rocket rides the front of the loading bar */#ldbar.done{display:none}#ldtxt:empty{display:none}
 #tip{display:none;max-width:min(340px,86vw);min-height:92px;margin:0 auto;padding:10px 14px;text-align:center;font-size:15px;line-height:1.3;color:var(--chrome);background:rgba(8,9,26,.72);border:1px solid rgba(242,245,255,.25);border-radius:10px}#tip b{display:block;color:var(--volt);font-family:var(--display);font-style:italic;font-size:17px;letter-spacing:.04em;margin-bottom:3px}
 #howbtn,.sens{display:none}body.mob #howbtn,body.mob .sens{display:revert}
 body.mob #tip{display:block}body.mob .how{display:none}
@@ -268,7 +276,7 @@ body.mob #tip{display:block}body.mob .how{display:none}
 #tut .spot{position:absolute;z-index:1;border:4px solid var(--volt);box-shadow:0 0 0 200vmax rgba(6,7,20,.8),0 0 24px 4px var(--volt);animation:jring 1s ease-in-out infinite}
 #tut.s1 .spot{left:calc(var(--padl) - 4px);bottom:calc(var(--tbb) - 12px);width:calc(var(--pad) + 8px);aspect-ratio:1;border-radius:50%}
 #tut.s4 .spot{right:calc(max(14px,env(safe-area-inset-right,0px)) - 9px);bottom:calc(var(--tbb) - 9px);width:calc(min(112px,28vw) + min(128px,32vw) + 30px);height:calc(min(128px,32vw) + 18px);border-radius:80px;animation:none}
-#tut.s5 .spot,#tut.j .spot{right:calc(max(14px,env(safe-area-inset-right,0px)) - 10px);bottom:calc(var(--tbb) + min(128px,32vw) + 4px);width:calc(min(76px,19vw) + 20px);aspect-ratio:1;border-radius:50%}
+#tut.s5 .spot,#tut.j .spot,#tut.o .spot{right:calc(max(14px,env(safe-area-inset-right,0px)) - 10px);bottom:calc(var(--tbb) + min(128px,32vw) + 4px);width:calc(min(76px,19vw) + 20px);aspect-ratio:1;border-radius:50%}
 #tut.s1 .aimz{display:block;left:12px;right:30%;text-align:left;bottom:calc(var(--tbb) + var(--pad) + 22px)}
 #tut.s4 .swz{display:block;left:12px;right:12px;text-align:right;bottom:calc(var(--tbb) + min(128px,32vw) + min(76px,19vw) + 44px)}
 #tut.s2 .spot,#tut.s3 .spot{border-radius:16px;animation:none}
@@ -291,8 +299,8 @@ body.mob #tip{display:block}body.mob .how{display:none}
 #tut .lbl{font-size:15px;white-space:nowrap;transform:translateX(-50%)}#tut .lbl span{display:block;font-size:20px;line-height:.9;animation:tutbob 1s ease-in-out infinite}
 #tut.s2 .lbl{display:block}#tut .lc{color:#3ddc6a}#tut .lp{color:#ff6a4a}
 @keyframes tutbob{50%{transform:translateY(5px)}}
-#tut.s6 .spot,#tut.o .spot{border-radius:20px}#tut.s6 .ovz,#tut.o .ovz2{display:block;left:12px;right:12px;top:250px}
-#tut.s5 .jcz,#tut.j .jz{display:block;left:12px;right:12px;text-align:right;bottom:calc(var(--tbb) + min(128px,32vw) + min(76px,19vw) + 44px)}
+#tut.s6 .spot{border-radius:20px}#tut.s6 .ovz{display:block;left:12px;right:12px;top:250px}
+#tut.s5 .jcz,#tut.j .jz,#tut.o .ovz2{display:block;left:12px;right:12px;text-align:right;bottom:calc(var(--tbb) + min(128px,32vw) + min(76px,19vw) + 44px)}
 #tut .go{display:block;left:50%;top:186px;transform:translateX(-50%);white-space:nowrap;padding:12px 28px;font-size:20px;color:var(--ink);text-shadow:none;background:var(--volt);border:3px solid #000;border-radius:28px;box-shadow:0 4px 0 #000}
 #tut .stp{display:none;left:0;right:0;top:calc(30% - 30px);font-family:var(--hud);font-style:normal;font-weight:800;font-size:13px;letter-spacing:.2em;color:var(--chrome)}
 #tut .skip,#tut .off{display:block;left:max(12px,env(safe-area-inset-left,0px));white-space:nowrap;font-family:var(--hud);font-style:normal;font-weight:800;letter-spacing:.1em;text-transform:uppercase;text-shadow:none;border-radius:22px}
@@ -390,8 +398,8 @@ body.mob #tip{display:block}body.mob .how{display:none}
       <div class="tz tmz"><b>YELLOW RING = TIMING</b>It shrinks onto a white circle the size of the ball<small>Ring still bigger than the ball: too early. Ring meets the circle: swing. Move your bat onto it first.</small></div>
       <div class="tz swz"><b>RIGHT THUMB: SWING</b>Tap as the yellow ring closes on the ball<small>CONTACT is easier and hits line drives. POWER is harder and hits moonshots.</small></div>
       <div class="tz jcz"><b>JUICE: MONSTER SWING</b>Tap JUICE, then swing. Costs one bar<small>Hits and taking balls refill it. Save it for a pitch you can drive.</small></div>
-      <div class="tz ovz"><b>OVERDRIVE</b>Three hits in a row lights up this bar<small>The next batter then gets a free Juice swing on every swing for his whole at-bat. No button to press: just swing.</small></div>
-      <div class="tz ovz2"><b>OVERDRIVE IS LIVE!</b>Every swing this at-bat is a free Juice swing<small>Bigger sweet spot, easier timing, harder contact. It lasts this one at-bat, so swing for the fences.</small></div>
+      <div class="tz ovz"><b>OVERDRIVE</b>Three hits in a row fills this bar<small>JUICE turns into a blue OVERDRIVE button. Tap it and every swing that at-bat is a free Juice swing.</small></div>
+      <div class="tz ovz2"><b>OVERDRIVE READY!</b>Tap the blue OVERDRIVE button<small>Every swing this at-bat becomes a free Juice swing: bigger sweet spot, easier timing, harder contact.</small></div>
       <div class="tz jz"><b>YOUR JUICE IS FULL</b>Tap JUICE, then swing for a monster hit<small>Each Juice swing burns one of your three bars.</small></div>
     </div>
     <div id="pop"><div class="t"></div><div class="s"></div></div>
@@ -409,7 +417,7 @@ body.mob #tip{display:block}body.mob .how{display:none}
       <div><b>Power swing</b>Right-click or X. Small sweet spot, moonshots.</div>
       <div><b>Juice</b>Hold Shift while swinging to burn a bar: about 20% harder off the bat, bigger sweet spot. Hits and taking balls refill it.</div>
       <div><b>Timing</b>Swing as the yellow ring closes. Early pulls, late slices.</div>
-      <div><b>Overdrive</b>Three hits in a row: the next batter gets free Juice on every swing for his whole at-bat.</div>
+      <div><b>Overdrive</b>Three hits in a row charges it. Hold Shift and swing to switch it on: free Juice on every swing that at-bat.</div>
     </div>
     <button class="cta" id="start" type="button">PLAY BALL</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
@@ -1057,7 +1065,7 @@ const TIPS=[['AIM','Drag your left thumb anywhere on the screen to move the bat 
   ['EARN YOUR JUICE','The Juice meter refills when you get hits and when you take balls. Save it for a pitch you can drive.'],
   ['LAY OFF','Pitches outside the white box are balls. Chase them and you get weak contact.'],
   ['READ THE SWING','After every swing, the line under the zone tells you your timing and where the barrel missed.'],
-  ['OVERDRIVE','Get three hits in a row and the next batter goes into Overdrive: every swing is a free Juice swing for that whole at-bat.'],
+  ['OVERDRIVE','Get three hits in a row and JUICE turns into a blue OVERDRIVE button. Tap it: every swing that at-bat is a free Juice swing.'],
   ['RECHARGE','Overdrive lasts one at-bat (a walk doesn\'t use it up). String together three more hits in a row to charge it again.']];
 let tipI=(Math.random()*3)|0;function nextTip(){const t=TIPS[tipI++%TIPS.length];$('tiph').textContent=t[0];$('tipb').textContent=t[1];}nextTip();setInterval(()=>{if(!$('title').hidden)nextTip();},4500);
 // thumb guide before the very first pitch on a phone
@@ -1070,7 +1078,7 @@ function tutShow(mode){const T=$('tut');T.className=mode;T.hidden=false;tutHold=
   const sp=T.querySelector('.spot');sp.style.cssText='';T.querySelectorAll('.pcz,.tmz').forEach(c=>c.style.bottom='');
   $('hud').classList.toggle('tut2',n===2);if(n===2)tutT0=performance.now();
   if(n===2){const H=$('hud').getBoundingClientRect();[['tc','tlc'],['tp','tlp']].forEach(([b,l])=>{const r=$(b).getBoundingClientRect(),e=$(l);e.style.left=(r.left-H.left+r.width/2)+'px';e.style.top=(r.top-H.top-46)+'px';});}
-  if(n===6||mode==='o'){const r=$('juice').getBoundingClientRect(),h=$('hud').getBoundingClientRect();sp.style.cssText='left:'+(r.left-h.left-10)+'px;top:'+(r.top-h.top-8)+'px;width:'+(r.width+12)+'px;height:'+(r.height+14)+'px';} // the Juice / Overdrive meter
+  if(n===6){const r=$('juice').getBoundingClientRect(),h=$('hud').getBoundingClientRect();sp.style.cssText='left:'+(r.left-h.left-10)+'px;top:'+(r.top-h.top-8)+'px;width:'+(r.width+12)+'px;height:'+(r.height+14)+'px';} // the Juice / Overdrive meter
   if(n===2||n===3){ // spotlight the strike zone itself: project its corners to the screen
     const H=canvas.clientHeight,W=canvas.clientWidth,a=new V3(ZONE.x0,ZONE.y1,0).project(camera),b=new V3(ZONE.x1,ZONE.y0,0).project(camera),pad=16;
     const l=(a.x+1)/2*W-pad,t=(1-a.y)/2*H-pad,r=(b.x+1)/2*W+pad,bt=(1-b.y)/2*H+pad;
@@ -1091,6 +1099,7 @@ $('tut').addEventListener('pointerdown',e=>{e.preventDefault();const id=e.target
   if(id==='tutskip'){tutClose();return;}
   if(tutStep&&tutStep<TUT_N){tutShow('s'+(tutStep+1));return;}                                            // a tap anywhere moves to the next step
   if($('tut').className==='j'&&e.target.classList.contains('spot')&&S.juice>=.333){juiceArmed=true;hud();}
+  if($('tut').className==='o'&&e.target.classList.contains('spot'))juiceTap();
   tutClose();});
 // Timing meter. x is real time and everything is to scale. A coloured band is the whole window in which that swing can touch the ball
 // (green = CONTACT, the narrower red = POWER), brightest in the middle where timing is best and fading toward the edges; a Juice swing adds
@@ -1107,16 +1116,16 @@ function hud(){
   $('jfill').style.width=(S.over?100:S.juice*100)+'%'; // Overdrive is all or nothing: the bar is simply full while it is live
   $('hfill').style.width=(S.heat*100)+'%';$('heat').classList.toggle('ready',S.heat>=.333);
   const j=$('juice');j.classList.toggle('ready',S.juice>=.333);j.classList.toggle('armed',juiceOn()&&S.juice>=.333);j.classList.toggle('over',S.over);
-  $('jtxt').textContent=S.over?'OVERDRIVE':(S.juice>=.333?'JUICE READY':'JUICE');
+  $('jtxt').textContent=S.over?(S.overOn?'OVERDRIVE ON':'OVERDRIVE READY'):(S.juice>=.333?'JUICE READY':'JUICE');
   {const bars=S.juice>=.333?1+Math.floor((S.juice-.333)/.3334+.001):0,tj=$('tj'); // counted exactly the way a Juice swing is paid for, so the badge never promises a bar that isn't there
-   tj.classList.toggle('has',bars>0);tj.classList.toggle('none',bars===0);$('tjn').textContent=S.over&&S.bi===S.overBi?'FREE':bars?'×'+bars:'';if(S.over&&S.bi===S.overBi){tj.classList.add('has');tj.classList.remove('none');}$('kj').classList.toggle('has',bars>0);
+   tj.classList.toggle('has',bars>0);tj.classList.toggle('none',bars===0);$('tjn').textContent=S.over?'':bars?'×'+bars:'';tj.firstChild.nodeValue=S.over?'OVER DRIVE':'JUICE';tj.classList.toggle('od',!!S.over);tj.classList.toggle('odon',!!(S.over&&S.overOn));if(S.over){tj.classList.remove('none','has');}$('tp').classList.toggle('blue',!!(S.over&&S.overOn));$('kj').classList.toggle('has',bars>0);
     if(bars>hudBars&&S.state!=='title'&&S.state!=='over'){ // a new bar just filled: say so, loudly
       tj.classList.remove('gain');void tj.offsetWidth;tj.classList.add('gain');const jt=$('jtoast');jt.classList.remove('go');void jt.offsetWidth;jt.classList.add('go');
       buzz(25);try{tone('triangle',660,990,.12,.25);tone('triangle',990,1320,.14,.22,.1);}catch(e){}
       if(!MOB)setTimeout(()=>timing('JUICE READY — HOLD SHIFT AND SWING','#ffd23b',3),300);}
     hudBars=bars;}
   goalHud();
-  $('tj').classList.toggle('on',juiceArmed);$('tp').classList.toggle('fire',!!S.over||(juiceArmed&&S.juice>=.333));
+  $('tj').classList.toggle('on',juiceArmed);$('tp').classList.toggle('fire',!!(S.over&&S.overOn)||(juiceArmed&&S.juice>=.333));
 }
 let hudBars=0,ringEcho=null,lastWalk='';
 // Flavour first: the first home run and the first strikeout of every game always get the full, ridiculous treatment
@@ -1129,10 +1138,10 @@ const juiceOn=()=>juiceArmed||keys.ShiftLeft||keys.ShiftRight;
 const GRADE_COL={S:'#ffd23b',A:'#3ddc6a',B:'#3ad6ff',C:'#f2f5ff',D:'#ff9a3b',F:'#ff4d2e'};
 function statGrade(v){const t=(v-.85)/.32;return t>=.9?'S':t>=.72?'A':t>=.52?'B':t>=.36?'C':t>=.2?'D':'F';}
 function setBatter(){
-  if(S.over&&S.bi>=S.overBi&&S.walked){S.overBi=S.bi+1;} // a walk doesn't use it up: it carries to the next hitter
-  else if(S.over&&S.bi>=S.overBi){S.over=false;S.streak=0;setTimeout(()=>timing('OVERDRIVE SPENT · 3 HITS IN A ROW TO RECHARGE','#3ad6ff',2),700);}
+  if(S.over&&S.overOn&&S.walked){} // a walk doesn't use it up: it stays on for the next hitter
+  else if(S.over&&S.overOn){S.over=false;S.overOn=false;S.streak=0;setTimeout(()=>timing('OVERDRIVE SPENT · 3 HITS IN A ROW TO RECHARGE','#3ad6ff',2),700);}
   S.walked=false;S.bi++;const b=curBatter();S.balls=0;S.strikes=0;
-  if(S.over&&S.bi===S.overBi)setTimeout(()=>{if(S.over)timing('⚡ OVERDRIVE: FREE JUICE THIS AT-BAT ⚡','#3ad6ff',4);},1500);aim.x=0;aim.y=.825; // every hitter starts with the ring in the middle of the zone
+  aim.x=0;aim.y=.825; // every hitter starts with the ring in the middle of the zone
  
   paintJersey(batter,Object.assign({name:b.name,num:b.num},HOME));paintSkin(batter,b.skin);if(MX.ready)paintAtlas(b);
   $('cnum').textContent=b.num;$('cname').textContent=b.name+(b.lh?' · L':' · R');[['pw',b.pwr],['co',b.con],['sp',b.spd]].forEach(([k,v])=>{const g=statGrade(v);$('s'+k).style.width=clamp((v-.85)/.32*100,6,100)+'%';$('s'+k).style.background=GRADE_COL[g];const e=$('g'+k);e.textContent=g;e.className='g'+g;});
@@ -1271,7 +1280,7 @@ function gameRating(){const G=S.goal,pts=S.runs*10+S.hits*4+S.hrs*8+(S.longest>=
   const T=[[0,'D','BENCH WARMER'],[20,'C','ROOKIE'],[45,'B','EVERYDAY STARTER'],[75,'A','ALL-STAR'],[110,'S','MOONSHOT LEGEND']];let i=0;T.forEach((t,j)=>{if(pts>=t[0])i=j;});
   return {pts,stars:i+1,grade:T[i][1],title:T[i][2],next:T[i+1]?T[i+1][0]-pts:0,nextTitle:T[i+1]?T[i+1][2]:''};}
 function newGame(){gamesPlayed++;try{localStorage.setItem('mm_games',gamesPlayed);}catch(e){}
-  Object.assign(S,{inning:1,outs:0,balls:0,strikes:0,runs:0,bases:[0,0,0],hits:0,hrs:0,longest:0,streak:0,bestStreak:0,juice:.34,heat:.2,over:false,bi:-1,pitches:0,seen:{},kOut:null});S.goal=pickGoal();S.ks=0;S.d2=0;S.overBi=-9;lastWalk='';
+  Object.assign(S,{inning:1,outs:0,balls:0,strikes:0,runs:0,bases:[0,0,0],hits:0,hrs:0,longest:0,streak:0,bestStreak:0,juice:.34,heat:.2,over:false,bi:-1,pitches:0,seen:{},kOut:null});S.goal=pickGoal();S.ks=0;S.d2=0;S.overOn=false;lastWalk='';
   $('title').hidden=true;$('over').hidden=true;$('pausebtn').hidden=false;$('mutebtn').hidden=false;setBatter();renderRep();scoreboard('PLAY BALL','INNING 1');toReady(2);pop('PLAY BALL!','GOAL: '+S.goal.label,'plain',true);SND.playball();cheer(.14,1.5);}
 
 // ───────────────────────── pitching
@@ -1512,7 +1521,7 @@ function finishPlay(){
   }
   // OVERDRIVE: three hits in a row charges it. The NEXT hitter's whole at-bat is supercharged: every swing is a free Juice swing, hit harder still.
   // When that at-bat ends it is spent, and it takes three more hits in a row to recharge.
-  if(S.streak>=3&&!S.over){S.over=true;S.overBi=S.bi+1;SND.zap();buzz([30,40,30,40,80]);setTimeout(()=>{if(S.over)pop('OVERDRIVE!','NEXT BATTER: EVERY SWING IS A FREE JUICE SWING','cool',true);},1100);}
+  if(S.streak>=3&&!S.over){S.over=true;S.overOn=false;SND.zap();buzz([30,40,30,40,80]);setTimeout(()=>{if(S.over&&!S.overOn)pop('OVERDRIVE READY!',MOB?'TAP THE BLUE OVERDRIVE BUTTON':'HOLD SHIFT AND SWING TO SWITCH IT ON','cool',true);},1100);}
   const cel=S.state==='celebrate'||S.state==='trot';setBatter();if(cel)readyDur=3.1;else readyDur=f.thr?2.0:1.5;S.next=null;hud();
   // Some doubles get a show of their own: once the play is over, cut to him standing on second doing one of the home-run celebrations.
   if(pl.type==='hit'&&pl.bases===2&&S.state==='result'&&WALK.on&&MX.clip&&(DBG.dbl||earlyShow(S.d2||0)||Math.random()<.4)){
@@ -1531,6 +1540,8 @@ function endGame(){
 }
 
 // ───────────────────────── input
+// The JUICE button. With Overdrive charged it is the OVERDRIVE button: one tap switches Overdrive on for this at-bat.
+function juiceTap(){if(S.over){if(!S.overOn){S.overOn=true;SND.zap();buzz([20,30,60]);timing('⚡ OVERDRIVE ON: FREE JUICE SWINGS THIS AT-BAT ⚡','#3ad6ff',4);}}else juiceArmed=!juiceArmed;hud();}
 function doSwing(type){
   if(paused||S.state==='title'||S.state==='over')return;
   if(S.state==='trot'){S.t=now-TROT.dur;return;} // skip the trot
@@ -1541,7 +1552,8 @@ function doSwing(type){
   // between pitches the buttons still swing the bat: a practice cut, no cost, so the first tap always teaches what the button does
   if(S.state==='ready'||(S.state==='windup'&&now-windupT0<=.55)){swing={t0:now,type,turbo:false,done:false,miss:false,practice:true};SND.whoosh();return;}
   if(!(S.state==='pitch'||(S.state==='windup'&&now-windupT0>.55)))return;
-  const od=S.over&&S.bi===S.overBi,turbo=od||(juiceOn()&&S.juice>=.333);
+  if(S.over&&!S.overOn&&(keys.ShiftLeft||keys.ShiftRight))juiceTap(); // desktop: Shift switches Overdrive on
+  const od=S.over&&S.overOn,turbo=od||(juiceOn()&&S.juice>=.333);
   swing={t0:now,type,turbo,done:false,miss:false};SND.whoosh();
   if(turbo&&!od){S.juice=Math.max(0,S.juice-.3334);juiceArmed=false;hud();} // every Juice swing costs a full bar, hit or miss
 }
@@ -1594,11 +1606,11 @@ function cornerTap(x,y){
   const t=performance.now();if(t-lastTapT<90&&Math.hypot(x-lastTapX,y-lastTapY)<3)return true;lastTapT=t;lastTapX=x;lastTapY=y; // the same tap arriving as both touchstart and pointerdown
   audioInit();
   {const r=document.createElement('i');r.className='rip';r.style.left=x+'px';r.style.top=y+'px';$('hud').appendChild(r);setTimeout(()=>r.remove(),420);}
-  if(d(J)<=J.r+6&&d(P)>P.r){juiceArmed=!juiceArmed;hud();return true;}
+  if(d(J)<=J.r+6&&d(P)>P.r){juiceTap();return true;}
   doSwing(d(P)-P.r<=d(C)-C.r?'power':'contact');return true;}
 document.addEventListener('pointerdown',e=>{if(e.pointerType!=='mouse'||MOB){if(cornerTap(e.clientX,e.clientY)){e.preventDefault();e.stopPropagation();}}},{capture:true});
 document.addEventListener('touchstart',e=>{let hit=false;for(const t of e.changedTouches)if(cornerTap(t.clientX,t.clientY))hit=true;if(hit){e.preventDefault();e.stopPropagation();}},{capture:true,passive:false});
-['tc','tp','tj'].forEach(id=>$(id).addEventListener('click',e=>{if(e.detail===0){if(id==='tj'){juiceArmed=!juiceArmed;hud();}else doSwing(id==='tp'?'power':'contact');}})); // keyboard activation
+['tc','tp','tj'].forEach(id=>$(id).addEventListener('click',e=>{if(e.detail===0){if(id==='tj')juiceTap();else doSwing(id==='tp'?'power':'contact');}})); // keyboard activation
 $('start').addEventListener('click',()=>{audioInit();if(AC&&AC.state==='suspended')AC.resume();startGame();});
 $('title').addEventListener('click',e=>{if(e.target.closest('button'))return;$('start').click();}); // a tap anywhere on the title screen starts the game; the option buttons keep their own jobs
 muteLabel();$('mutebtn').addEventListener('click',e=>{e.stopPropagation();toggleMute();});$('mute1').addEventListener('click',toggleMute);
@@ -2202,7 +2214,7 @@ function step(dt){
   if(kx||ky)setAim(aim.x+kx*1.5*dt,aim.y+ky*1.5*dt);
   const st=S.state,el=now-S.t;
   if(st==='ready'&&el>=.25&&S.pitches===0&&tutNeed())return;   // guides come up as soon as he is set in the box
-  if(st==='ready'&&el>=.25&&S.over&&S.bi===S.overBi&&otutNeed())return;
+  if(st==='ready'&&el>=.25&&S.over&&!S.overOn&&otutNeed())return;
   if(st==='ready'&&el>=.25&&S.juice>=.999&&!S.over&&jtutNeed())return;
   if(st==='ready'&&el>=readyDur&&!swing){S.state='windup'; /* the pitcher waits for a practice cut to finish: no quick pitches */windupT0=now;released=false;S.fresh=false;pitch=choosePitch();S.pitches++;readyDur=1.15;$('pitchinfo').classList.remove('on'),$('plast').classList.remove('on');}
   else if(st==='windup'&&now-windupT0>=1.0){
@@ -2219,7 +2231,7 @@ function step(dt){
   if(swing&&!swing.done&&now>=swing.t0+SW_T){
     if(swing.practice)swing.done=true;else if(S.state==='pitch'&&pitch&&!pitch.hit)tryContact();else{swing.done=true;swing.miss=true;}
   }
-  if(swing&&swing.practice&&now-swing.t0>.55)swing=null; // practice cut finished: bat is back, he can swing for real
+  if(swing&&swing.practice&&now-swing.t0>.55){swing=null;if(S.state==='ready')S.t=Math.max(S.t,now-readyDur+.5);} // bat is back; give him another half second to get set before the windup // practice cut finished: bat is back, he can swing for real
   if(S.state==='pitch'&&pitch){
     const u=(now-pitch.t0)/pitch.dur;pitchPos(pitch,u,ball.position);
     ball.scale.setScalar(1);ballShadow.position.set(ball.position.x,.03,ball.position.z);ballShadow.scale.setScalar(.16);
@@ -2270,7 +2282,7 @@ function step(dt){
 
   ptarget.visible=pring.visible;if(pring.visible)ptarget.position.copy(pring.position);
   // reticle
-  const b=S.bi>=0?curBatter():LINEUP[0],tb=(S.over&&S.bi===S.overBi)||(juiceOn()&&S.juice>=.333);
+  const b=S.bi>=0?curBatter():LINEUP[0],tb=(S.over&&S.overOn)||(juiceOn()&&S.juice>=.333);
   reticle.position.set(aim.x,aim.y,0);
   {const ez=easyAB()?1.3:1;retC.scale.setScalar(.17*b.con*1.25*(tb?1.2:1)*ez);retP.scale.setScalar(.17*b.con*.8*(tb?1.2:1)*ez);}
   let showRet=(S.state==='ready'||S.state==='windup'||S.state==='pitch')&&!(swing&&swing.done);
