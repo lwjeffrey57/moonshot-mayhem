@@ -862,8 +862,8 @@ function walkLabel(){$('wk').textContent='Walk-ups: '+(WALK.on?'on':'off (faster
 function startWalkup(){
   const b=curBatter(),i=S.bi%LINEUP.length,r=v=>clamp(Math.round((v-.85)/.3*9+1),1,10);
   S.seen[i]=1;S.state='walkup';S.t=now;
-  // now and then a surprise replaces his usual routine: he eats dirt on the way in, or chips a golf shot with the bat
-  {const r=Math.random(),has=k=>!!MX.clip.intros[k];S.walkClip=DBG.trip&&has(DBG.trip===true?'w_trip':DBG.trip)?(DBG.trip===true?'w_trip':DBG.trip):r<.1&&has('w_trip')?'w_trip':r<.2&&has('w_golf')?'w_golf':WALK.by[b.name];}
+  // now and then a surprise replaces his usual routine: he eats dirt on the way in, chips a golf shot with the bat, or gives the pitcher a friendly wave
+  {const r=Math.random(),has=k=>!!MX.clip.intros[k];S.walkClip=DBG.trip&&has(DBG.trip===true?'w_trip':DBG.trip)?(DBG.trip===true?'w_trip':DBG.trip):r<.08&&has('w_trip')?'w_trip':r<.16&&has('w_golf')?'w_golf':r<.24&&has('w_wave')?'w_wave':WALK.by[b.name];}
   $('wnum').textContent=b.num;$('wname').textContent=b.name;
   $('wrat').innerHTML=`<span>POWER <b>${r(b.pwr)}</b></span><span>CONTACT <b>${r(b.con)}</b></span><span>SPEED <b>${r(b.spd)}</b></span><span>BATS <b>${b.lh?'L':'R'}</b></span>`;
   $('wspot').textContent='BATTING '+['1ST','2ND','3RD','4TH','5TH','6TH','7TH','8TH','9TH'][i];$('wskip').textContent='SWING TO SKIP';
