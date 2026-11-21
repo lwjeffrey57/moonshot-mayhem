@@ -51,6 +51,22 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 #juice.armed #jbar{border-color:var(--volt);box-shadow:0 0 0 2px var(--navy),0 0 16px var(--volt)}
 #juice.over #jfill{background:linear-gradient(#e8fbff,#3ad6ff 45%,#12a6d8 55%,#7fe6ff)}
 #juice.over #jtxt{color:#fff;text-shadow:0 0 8px var(--ice),0 1px 0 #000}
+/* the Juice meter is a blue flame that builds: the fill is fire, with tongues flickering along its top and a hot tip at the leading edge */
+#juice #jbar::after{display:none}
+#juice #jfill{background:
+  radial-gradient(ellipse 9px 15px at 7px 100%,#eafcff 0,#7fdcff 38%,rgba(46,140,255,0) 72%) 0 100%/14px 100% repeat-x,
+  radial-gradient(ellipse 8px 20px at 9px 100%,#bff0ff 0,#3aa8ff 42%,rgba(30,110,255,0) 74%) 5px 100%/19px 100% repeat-x,
+  linear-gradient(0deg,#9fe8ff 0,#2e8cff 34%,#1647c4 62%,#0a1f6e 100%);
+  animation:jflame .5s steps(4) infinite;filter:saturate(1.2)}
+#juice #jfill::after{content:'';position:absolute;right:-3px;top:-4px;bottom:-4px;width:16px;border-radius:50%;background:radial-gradient(ellipse at 40% 60%,#fff 0,#9fe8ff 40%,rgba(58,170,255,0) 72%);animation:jtip .28s ease-in-out infinite alternate}
+@keyframes jflame{0%{background-position:0 100%,5px 100%,0 0}25%{background-position:4px 100%,1px 100%,0 0}50%{background-position:9px 100%,11px 100%,0 0}75%{background-position:2px 100%,15px 100%,0 0}100%{background-position:14px 100%,24px 100%,0 0}}
+@keyframes jtip{from{transform:scale(.8,.9);opacity:.75}to{transform:scale(1.15,1.1);opacity:1}}
+#juice.over #jfill{background:
+  radial-gradient(ellipse 10px 18px at 7px 100%,#fff 0,#bff4ff 40%,rgba(120,220,255,0) 74%) 0 100%/14px 100% repeat-x,
+  radial-gradient(ellipse 9px 22px at 9px 100%,#eafcff 0,#7fdcff 44%,rgba(58,170,255,0) 76%) 5px 100%/19px 100% repeat-x,
+  linear-gradient(0deg,#eafcff 0,#58d6ff 36%,#1e7bff 70%,#0a2a9a 100%);animation-duration:.3s}
+#juice.over #jbar{box-shadow:0 0 0 2px var(--navy),0 0 14px 3px rgba(88,214,255,.9)}
+@media (prefers-reduced-motion:reduce){#juice #jfill,#juice #jfill::after{animation:none}}
 #card{margin-top:6px;display:flex;gap:8px;align-items:center;justify-content:center;font-family:var(--display);font-style:italic;text-shadow:0 2px 0 #000;white-space:nowrap}
 #cnum{font-size:18px;color:var(--volt)}#cname{font-size:16px;color:var(--volt)}
 .stats{display:flex;gap:7px;font-family:var(--hud);font-style:normal}
@@ -1135,7 +1151,7 @@ function hud(){overCheck();hudLater=false;
   $('jfill').style.width=(S.over?100:S.juice*100)+'%'; // Overdrive is all or nothing: the bar is simply full while it is live
   $('hfill').style.width=(S.pOver?100:S.heat*100)+'%';$('heat').classList.toggle('ready',S.heat>=.333);
   const j=$('juice');j.classList.toggle('ready',S.juice>=.333);j.classList.toggle('armed',juiceOn()&&S.juice>=.333);j.classList.toggle('over',S.over);
-  $('jtxt').textContent=S.over?(S.overOn?'OVERDRIVE ON':'OVERDRIVE READY'):(S.juice>=.333?'JUICE READY':'JUICE');
+  $('jtxt').textContent=S.over?(S.overOn?'OVERDRIVE ON':'OVERDRIVE READY'):'JUICE';
   {const bars=S.juice>=.333?1+Math.floor((S.juice-.333)/.3334+.001):0,tj=$('tj'); // counted exactly the way a Juice swing is paid for, so the badge never promises a bar that isn't there
    tj.classList.toggle('has',bars>0);tj.classList.toggle('none',bars===0);$('tjn').textContent=S.over?'':bars?'×'+bars:'';tj.firstChild.nodeValue=S.over?'OVER DRIVE':'JUICE';tj.classList.toggle('od',!!S.over);tj.classList.toggle('odon',!!(S.over&&S.overOn));if(S.over){tj.classList.remove('none','has');}$('tp').classList.toggle('blue',!!(S.over&&S.overOn));$('kj').classList.toggle('has',bars>0);
     {const jt=$('jtoast'),o=!!(S.over&&!S.overOn);if(o&&!hudOver){jt.innerHTML='OVERDRIVE READY!';jt.classList.add('odt');jt.classList.remove('go');void jt.offsetWidth;jt.classList.add('go');}hudOver=o;}
