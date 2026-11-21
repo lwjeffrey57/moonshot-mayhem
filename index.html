@@ -399,7 +399,7 @@ body.mob #tip{display:block}body.mob .how{display:none}
       <div class="tz tmz"><b>YELLOW RING = TIMING</b>It shrinks onto a white circle the size of the ball<small>Ring still bigger than the ball: too early. Ring meets the circle: swing. Move your bat onto it first.</small></div>
       <div class="tz swz"><b>RIGHT THUMB: SWING</b>Tap as the yellow ring closes on the ball<small>CONTACT is easier and hits line drives. POWER is harder and hits moonshots.</small></div>
       <div class="tz jcz"><b>JUICE: MONSTER SWING</b>Tap JUICE, then swing. Costs one bar<small>Hits and taking balls refill it. Save it for a pitch you can drive.</small></div>
-      <div class="tz ovz"><b>OVERDRIVE</b>Three hits in a row fills this bar<small>JUICE turns into a blue OVERDRIVE button. Tap it and every swing that at-bat is a free Juice swing.</small></div>
+      <div class="tz ovz"><b>FULL METER = OVERDRIVE</b>Fill this bar all the way and it catches fire<small>JUICE turns into a blue OVERDRIVE button. Tap it and every swing that at-bat is a free Juice swing. Then the bar starts over.</small></div>
       <div class="tz ovz2"><b>OVERDRIVE READY!</b>Tap the blue OVERDRIVE button<small>Every swing this at-bat becomes a free Juice swing: bigger sweet spot, easier timing, harder contact.</small></div>
       <div class="tz jz"><b>YOUR JUICE IS FULL</b>Tap JUICE, then swing for a monster hit<small>Each Juice swing burns one of your three bars.</small></div>
     </div>
@@ -418,7 +418,7 @@ body.mob #tip{display:block}body.mob .how{display:none}
       <div><b>Power swing</b>Right-click or X. Small sweet spot, moonshots.</div>
       <div><b>Juice</b>Hold Shift while swinging to burn a bar: about 20% harder off the bat, bigger sweet spot. Hits and taking balls refill it.</div>
       <div><b>Timing</b>Swing as the yellow ring closes. Early pulls, late slices.</div>
-      <div><b>Overdrive</b>Three hits in a row charges it. Hold Shift and swing to switch it on: free Juice on every swing that at-bat.</div>
+      <div><b>Overdrive</b>A full Juice meter charges it. Hold Shift and swing to switch it on: free Juice on every swing that at-bat.</div>
     </div>
     <button class="cta" id="start" type="button">PLAY BALL</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
@@ -1066,8 +1066,8 @@ const TIPS=[['AIM','Drag your left thumb anywhere on the screen to move the bat 
   ['EARN YOUR JUICE','The Juice meter refills when you get hits and when you take balls. Save it for a pitch you can drive.'],
   ['LAY OFF','Pitches outside the white box are balls. Chase them and you get weak contact.'],
   ['READ THE SWING','After every swing, the line under the zone tells you your timing and where the barrel missed.'],
-  ['OVERDRIVE','Get three hits in a row and JUICE turns into a blue OVERDRIVE button. Tap it: every swing that at-bat is a free Juice swing.'],
-  ['RECHARGE','Overdrive lasts one at-bat (a walk doesn\'t use it up). String together three more hits in a row to charge it again.']];
+  ['OVERDRIVE','Fill the Juice meter all the way and JUICE turns into a blue OVERDRIVE button. Tap it: every swing that at-bat is a free Juice swing.'],
+  ['SPEND OR SAVE','Spend Juice a bar at a time, or save all three bars for Overdrive. Overdrive lasts one at-bat, then the meter starts from empty.']];
 let tipI=(Math.random()*3)|0;function nextTip(){const t=TIPS[tipI++%TIPS.length];$('tiph').textContent=t[0];$('tipb').textContent=t[1];}nextTip();setInterval(()=>{if(!$('title').hidden)nextTip();},4500);
 // thumb guide before the very first pitch on a phone
 const TUT_EVERY_LAUNCH=true; // testing: show the guide on every launch; set false to go back to once per device
@@ -1110,12 +1110,17 @@ function timeBar(x,pw,jt,perfect){const e=$('tbar');e.className='';$('tpt').text
   const mx=clamp(x/SPAN,-1,1)*50,miss=Math.abs(mx)>used;$('tmk').style.left=(50+mx)+'%';$('tmk').style.background=perfect?'#ffe53b':miss?'#ff4d2e':'#fff';void e.offsetWidth;e.className='go';}
 function timing(t,c,l){const e=$('tim');e.className='';e.textContent=t;e.style.color=c;e.dataset.l=l||2;void e.offsetWidth;e.className='go';}
 function flash(a){const e=$('flash');e.style.transition='none';e.style.opacity=a*FX;void e.offsetWidth;e.style.transition='opacity .35s';e.style.opacity=0;}
-function hud(){
+// OVERDRIVE: fill the Juice meter all the way and it is charged. The meter burns and reads OVERDRIVE READY and the JUICE button becomes the
+// OVERDRIVE button, but nothing is spent until the player taps it. Tapped, every swing of that at-bat is a free Juice swing; when the at-bat
+// ends (a walk aside) the meter is emptied and has to be filled again.
+function overCheck(){if(S.over||S.juice<.999||S.state==='title'||S.state==='over')return;S.over=true;S.overOn=false;SND.zap();buzz([30,40,30,40,80]);
+  setTimeout(()=>{if(S.over&&!S.overOn)pop('OVERDRIVE READY!',MOB?'JUICE METER FULL · TAP THE BLUE OVERDRIVE BUTTON':'JUICE METER FULL · HOLD SHIFT AND SWING','cool',true);},900);}
+function hud(){overCheck();
   $('runs').textContent=S.runs;$('inn').textContent=['1ST','2ND','3RD'][Math.min(S.inning,3)-1];$('count').textContent=S.balls+'-'+S.strikes;
   $('outs').textContent='O: '+S.outs;
   ['b1','b2','b3'].forEach((id,i)=>$(id).classList.toggle('on',!!S.bases[i]));
   $('jfill').style.width=(S.over?100:S.juice*100)+'%'; // Overdrive is all or nothing: the bar is simply full while it is live
-  $('hfill').style.width=(S.heat*100)+'%';$('heat').classList.toggle('ready',S.heat>=.333);
+  $('hfill').style.width=(S.pOver?100:S.heat*100)+'%';$('heat').classList.toggle('ready',S.heat>=.333);
   const j=$('juice');j.classList.toggle('ready',S.juice>=.333);j.classList.toggle('armed',juiceOn()&&S.juice>=.333);j.classList.toggle('over',S.over);
   $('jtxt').textContent=S.over?(S.overOn?'OVERDRIVE ON':'OVERDRIVE READY'):(S.juice>=.333?'JUICE READY':'JUICE');
   {const bars=S.juice>=.333?1+Math.floor((S.juice-.333)/.3334+.001):0,tj=$('tj'); // counted exactly the way a Juice swing is paid for, so the badge never promises a bar that isn't there
@@ -1142,8 +1147,11 @@ const GRADE_COL={S:'#ffd23b',A:'#3ddc6a',B:'#3ad6ff',C:'#f2f5ff',D:'#ff9a3b',F:'
 function statGrade(v){const t=(v-.85)/.32;return t>=.9?'S':t>=.72?'A':t>=.52?'B':t>=.36?'C':t>=.2?'D':'F';}
 function setBatter(){
   if(S.over&&S.overOn&&S.walked){} // a walk doesn't use it up: it stays on for the next hitter
-  else if(S.over&&S.overOn){S.over=false;S.overOn=false;S.streak=0;setTimeout(()=>timing('OVERDRIVE SPENT · 3 HITS IN A ROW TO RECHARGE','#3ad6ff',2),700);}
+  else if(S.over&&S.overOn){S.over=false;S.overOn=false;S.juice=0;setTimeout(()=>timing('OVERDRIVE SPENT · FILL THE JUICE METER TO RECHARGE','#3ad6ff',2),700);}
   S.walked=false;S.bi++;const b=curBatter();S.balls=0;S.strikes=0;
+  // The pitcher has Overdrive too: when his Heat meter is full, every pitch of the next at-bat is a Juice pitch. Then his meter starts over.
+  if(S.pOver){S.pOver=false;S.heat=0;}
+  else if(S.heat>=.999&&S.bi>=3){S.pOver=true;setTimeout(()=>{if(S.pOver){SND.zap();buzz([40,40,40,40,90]);pop('PITCHER OVERDRIVE!','EVERY PITCH THIS AT-BAT IS A JUICE PITCH','hot',true);}},900);}
   aim.x=0;aim.y=.825; // every hitter starts with the ring in the middle of the zone
  
   paintJersey(batter,Object.assign({name:b.name,num:b.num},HOME));paintSkin(batter,b.skin);if(MX.ready)paintAtlas(b);
@@ -1283,7 +1291,7 @@ function gameRating(){const G=S.goal,pts=S.runs*10+S.hits*4+S.hrs*8+(S.longest>=
   const T=[[0,'D','BENCH WARMER'],[20,'C','ROOKIE'],[45,'B','EVERYDAY STARTER'],[75,'A','ALL-STAR'],[110,'S','MOONSHOT LEGEND']];let i=0;T.forEach((t,j)=>{if(pts>=t[0])i=j;});
   return {pts,stars:i+1,grade:T[i][1],title:T[i][2],next:T[i+1]?T[i+1][0]-pts:0,nextTitle:T[i+1]?T[i+1][2]:''};}
 function newGame(){gamesPlayed++;try{localStorage.setItem('mm_games',gamesPlayed);}catch(e){}
-  Object.assign(S,{inning:1,outs:0,balls:0,strikes:0,runs:0,bases:[0,0,0],hits:0,hrs:0,longest:0,streak:0,bestStreak:0,juice:.34,heat:.2,over:false,bi:-1,pitches:0,seen:{},kOut:null});S.goal=pickGoal();S.ks=0;S.d2=0;S.jSaid=false;S.overOn=false;S.spSeen=false;lastWalk='';
+  Object.assign(S,{inning:1,outs:0,balls:0,strikes:0,runs:0,bases:[0,0,0],hits:0,hrs:0,longest:0,streak:0,bestStreak:0,juice:.34,heat:.2,over:false,bi:-1,pitches:0,seen:{},kOut:null});S.goal=pickGoal();S.ks=0;S.d2=0;S.pOver=false;S.jSaid=false;S.overOn=false;S.spSeen=false;lastWalk='';
   $('title').hidden=true;$('over').hidden=true;$('pausebtn').hidden=false;$('mutebtn').hidden=false;setBatter();renderRep();scoreboard('PLAY BALL','INNING 1');toReady(2);pop('PLAY BALL!','GOAL: '+S.goal.label,'plain',true);SND.playball();cheer(.14,1.5);}
 
 // ───────────────────────── pitching
@@ -1306,10 +1314,9 @@ function renderRep(last){ // the pitcher's repertoire: movement, name, typical s
   $('replist').innerHTML=PITCHES.map(P=>{const m=Math.hypot(P.brk[0],P.brk[1]),a=m<.1?'•':arrows[((Math.round(Math.atan2(P.brk[1],P.brk[0])/(PI/4))%8)+8)%8];
     return `<div class="pill${P.sp?' sp':''}${P===last?' last':''}"><span class="k">${P.wob?'~':a}</span>${P.n}<b>${pitchMph(P.dur*inningSp())}</b></div>`;}).join('');
 }
-function payHeat(){if(pitch&&pitch.P.sp&&!pitch.paid){pitch.paid=true;S.heat=Math.max(0,S.heat-.3334);hud();
+function payHeat(){if(pitch&&pitch.P.sp&&!pitch.paid){pitch.paid=true;if(!S.pOver)S.heat=Math.max(0,S.heat-.3334);hud();
   // said after the pitch has been seen, never before: the first one of the game gets the big call
-  const n=pitch.P.n,first=!S.spSeen;S.spSeen=true;buzz(first?[40,40,90]:30);
-  setTimeout(()=>{if(first)pop('HE HAS JUICE TOO!',n+' · THE PITCHER BURNED A HEAT BAR','hot',true);else timing('🔥 PITCHER JUICE: '+n+' 🔥','#ff6a4a',3);},first?650:500);}}
+  const n=pitch.P.n;S.spSeen=true;buzz(25);setTimeout(()=>timing('JUICE PITCH! · '+n,'#ff6a4a',3),450);}}
 // Welcome at-bat: a new player's first hitter of the game sees slow, straight pitches down the middle and gets a more forgiving bat,
 // for their first three games on this device. Early success matters more than realism here.
 let gamesPlayed=0;try{gamesPlayed=+localStorage.getItem('mm_games')||0;}catch(e){}
@@ -1321,7 +1328,7 @@ function choosePitch(){
   // The pitcher has Juice too. Nobody sees it in the first three at-bats of a game; the fourth hitter on is guaranteed the game's first
   // special pitch within his first two pitches, so the player learns early that it exists. After that it follows the Heat meter.
   const due=S.bi>=3&&!S.spSeen&&(S.balls+S.strikes>=1||Math.random()<.5);if(due)S.heat=Math.max(S.heat,.34);
-  const special=S.bi>=3&&S.heat>=.333&&(due||Math.random()<.5); // new players don't see special pitches in their first inning // the Heat is only deducted once the pitch has been seen (payHeat), so the meter doesn't give it away
+  const special=S.pOver||(S.bi>=3&&S.heat>=.333&&(due||Math.random()<.5)); // new players don't see special pitches in their first inning // the Heat is only deducted once the pitch has been seen (payHeat), so the meter doesn't give it away
   const pool=PITCHES.filter(p=>special?p.sp:!p.sp);let tw=0;pool.forEach(p=>tw+=p.w||1);let r=Math.random()*tw,P=pool[0];
   for(const p of pool){r-=p.w||1;if(r<=0){P=p;break;}}
   const inZone=S.bi===0||Math.random()<.64;let tx,ty; // the first hitter of every game only sees strikes: nobody's first at-bat is a walk
@@ -1379,7 +1386,11 @@ function simulate(p0,v0,spin){spin=spin||{side:0,lift:0};
 }
 function judge(tr,bt){const spd=bt&&bt.spd||1; // batter's speed: 0.85 (plodder) to 1.15 (burner)
   if(tr.hr)return {type:'hr',endT:tr.endT,dist:tr.dist};
-  if(tr.grd&&!tr.foul)return {type:'hit',bases:2,endT:tr.endT,grd:true};
+  if(tr.grd&&!tr.foul){ // ground-rule double: the nearest outfielder still goes after it until it hops the wall
+    const L=tr.land||tr.pts[tr.pts.length-1],endT=tr.endT;let f=null,bd=1e9;for(const c of fielders){if(c.isP||!c.of)continue;const d=Math.hypot(c.home.x-L.x,c.home.z-L.z);if(d<bd){bd=d;f=c;}}
+    if(!f)return {type:'hit',bases:2,endT,grd:true};
+    const go=Math.min(bd*.85,f.speed*.9*Math.max(0,endT-f.react)),k=bd>0?go/bd:0;
+    return {type:'hit',bases:2,endT,grd:true,f,p:{x:lerp(f.home.x,L.x,k),y:0,z:lerp(f.home.z,L.z,k),t:endT},chase:true};}
   if(tr.foul){const endT=tr.land?Math.min(tr.land.t+.55,tr.endT):tr.endT,L=tr.land||tr.pts[tr.pts.length-1];
     // a foul fly that stays in the park can be caught: inside the side walls and in front of the backstop
     const perp=(Math.abs(L.x)-(.216-L.z))/Math.SQRT2,playable=tr.land&&L.z<11&&perp<13;
@@ -1434,7 +1445,7 @@ function tryContact(){flight_pop=false;
   let la=(pw?25:11)+clamp((pitch.ty-aim.y)/R,-1.3,1.3)*28+(pitch.ty-.82)/.33*5+gs()*(pw?16:12);la=clamp(la,-20,62);
   // spray: timing first, then pitch location (inside pulls, outside goes the other way) and bat-path scatter
   let phi=(MX.lefty?-1:1)*n*36+pitch.tx/.28*11+(pitch.tx-aim.x)/R*8+gs()*20;if(tipped)phi+=rand(-1,1)*50;
-  let v=(pw?47:37)*(.5+.5*q)*b.pwr*(tb?1.22:1)*(S.over?1.14:1)*rand(.9,1.07);
+  let v=(pw?47:37)*(.5+.5*q)*b.pwr*(tb?1.22:1)*(S.over&&S.overOn?1.14:1)*rand(.9,1.07);
   if(chase>0){ // off the end, off the handle, beaten into the ground or popped up
     v*=1-.45*chase;la+=(pitch.ty<ZONE.y0?-16:pitch.ty>ZONE.y1?20:0)*chase;phi+=(pitch.tx<ZONE.x0?-1:pitch.tx>ZONE.x1?1:0)*14*chase;la=clamp(la,-25,70);}
   // The big-league pop-up: getting under the ball, or being badly off on timing, can send it straight up.
@@ -1444,7 +1455,7 @@ function tryContact(){flight_pop=false;
   const p0=new V3(pitch.tx,pitch.ty,clamp(-dt*6,-.7,.7));
   const v0=new V3(Math.sin(phi*DEG)*Math.cos(la*DEG),Math.sin(la*DEG),-Math.cos(phi*DEG)*Math.cos(la*DEG)).multiplyScalar(v);
   const tr=simulate(p0,v0,spin),play=judge(tr,b);
-  flight={tr,play,t0:now,q,pw,tb,v,done:false,called:false,trailC:tb?[1,.45,.1]:S.over?[.25,.8,1]:pw&&q>.75?[1,.85,.25]:[.5,.5,.55]};
+  flight={tr,play,t0:now,q,pw,tb,od:!!(S.over&&S.overOn),v,done:false,called:false,trailC:S.over&&S.overOn?[.2,.55,1]:tb?[1,.45,.1]:pw&&q>.75?[1,.85,.25]:[.5,.5,.55]}; // Overdrive hits burn blue, Juice hits orange
   pitch.hit=true;pring.visible=false;S.state='flight';payHeat();$('mph').textContent=pitchMph(pitch.dur);$('plast').textContent=pitch.P.n+' · '+pitchMph(pitch.dur)+' MPH';$('pitchinfo').classList.add('on'),$('plast').classList.add('on');renderRep(pitch.P);
   if(tb)juiceArmed=false;
   // ── the payoff
@@ -1454,7 +1465,7 @@ function tryContact(){flight_pop=false;
   flash(.25+.6*q);SND.crack(q,pw||tb);if(tb||S.over)SND.zap();
   ball.position.copy(p0);
   shock.position.copy(p0);shock.userData.t=0;shock.userData.s=.3+q*.8;
-  const col=tb?[1,.5,.15]:S.over?[.3,.8,1]:[1,.9,.5];
+  const col=flight.od?[.3,.7,1]:tb?[1,.5,.15]:[1,.9,.5];
   burst(fxS,p0,Math.round(14+60*q),4+9*q,.5,col,6,1);
   const mph=Math.round(v*2.237*1.02);
   const lab=Math.abs(n)<.22?'ON TIME':n<0?(n<-.7?'EARLY':'A HAIR EARLY'):(n>.7?'LATE':'A HAIR LATE');
@@ -1528,9 +1539,6 @@ function finishPlay(){
     S.state='result';S.t=now;readyDur=1.5;
     if(pl.f&&pl.f.thrAct&&!pl.grd){const tb=pl.infield?1:[2,3,0][pl.bases-1];f.thr={t0:now+.15,to:new V3(BASES[tb][0],1.2,BASES[tb][1])};}
   }
-  // OVERDRIVE: three hits in a row charges it. The NEXT hitter's whole at-bat is supercharged: every swing is a free Juice swing, hit harder still.
-  // When that at-bat ends it is spent, and it takes three more hits in a row to recharge.
-  if(S.streak>=3&&!S.over){S.over=true;S.overOn=false;SND.zap();buzz([30,40,30,40,80]);setTimeout(()=>{if(S.over&&!S.overOn)pop('OVERDRIVE READY!',MOB?'TAP THE BLUE OVERDRIVE BUTTON':'HOLD SHIFT AND SWING TO SWITCH IT ON','cool',true);},1100);}
   const cel=S.state==='celebrate'||S.state==='trot';setBatter();if(cel)readyDur=3.1;else readyDur=f.thr?2.0:1.5;S.next=null;hud();
   // Some doubles get a show of their own: once the play is over, cut to him standing on second doing one of the home-run celebrations.
   if(pl.type==='hit'&&pl.bases===2&&S.state==='result'&&WALK.on&&MX.clip&&(DBG.dbl||earlyShow(S.d2||0)||Math.random()<.4)){
@@ -2074,7 +2082,7 @@ function loadPlayers(kind){ // body file = character mesh; clips.json = motion-c
     if(my!==MX.token)return;                                   // switched again while loading
     const skins=im?makeSkins(im):null,base=new T.FBXLoader().parse(bb,''),canClone=!!(T.SkeletonUtils&&T.SkeletonUtils.clone); // the character file is read once; every other player is a copy of it
     // space helmets: a clear glass bubble on a metal collar, on every player, so faces and animation stay fully visible
-    const glass=new T.MeshPhongMaterial({color:0xcfe6ff,transparent:true,opacity:.2,specular:0xffffff,shininess:140,depthWrite:false}),rimM=new T.MeshBasicMaterial({color:0xdfeaff,transparent:true,opacity:.2,side:T.BackSide,depthWrite:false}),collarM=new T.MeshPhongMaterial({color:0xc9ced8,specular:0x888888,shininess:60});
+    const glass=new T.MeshPhongMaterial({color:0xcfe6ff,transparent:true,opacity:.34,specular:0xffffff,shininess:140,depthWrite:false}),rimM=new T.MeshBasicMaterial({color:0xdfeaff,transparent:true,opacity:.3,side:T.BackSide,depthWrite:false}),collarM=new T.MeshPhongMaterial({color:0xc9ced8,specular:0x888888,shininess:60});
     const bubbleG=new T.SphereGeometry(17.5,20,14),collarG=new T.TorusGeometry(9.2,1.7,8,22);
     const helmet=o=>{let h=null;o.traverse(b=>{if(b.isBone&&/Head$/.test(b.name)&&!/HeadTop/.test(b.name))h=b;});if(!h)return;
       const a=new T.Mesh(bubbleG,rimM),b=new T.Mesh(bubbleG,glass),c=new T.Mesh(collarG,collarM);a.userData.helm=b.userData.helm=c.userData.helm=true;a.position.y=b.position.y=9;a.renderOrder=3;b.renderOrder=4;c.rotation.x=PI/2;c.position.set(0,-4,1);h.add(a,b,c);};
@@ -2139,9 +2147,9 @@ function updateBatter(dt){
   batAura();
 }
 function batAura(){
-  const hot=S.over||(swing&&swing.turbo)||(juiceOn()&&S.juice>=.333&&(S.state==='windup'||S.state==='pitch'));
+  const hot=(S.over&&S.overOn)||(swing&&swing.turbo)||(juiceOn()&&S.juice>=.333&&(S.state==='windup'||S.state==='pitch'));
   batGlow.material.opacity=lerp(batGlow.material.opacity,hot?.75+.2*Math.sin(now*30):0,.2);
-  batGlow.material.color.setHex(S.over&&!(swing&&swing.turbo)&&!juiceOn()?0x3ad6ff:0xff7a2a);
+  batGlow.material.color.setHex(S.over&&S.overOn?0x3ad6ff:0xff7a2a);
   bat.userData.wood.emissive.setHex(hot?(batGlow.material.color.getHex()):0);bat.userData.wood.emissiveIntensity=.5;
   if(hot&&Math.random()<.5){_p.set(0,rand(.3,.9),0);bat.localToWorld(_p);_v.set(rand(-1,1),rand(0,2),rand(-1,1));const c=batGlow.material.color;fxS.emit(_p,_v,.25,c.r,c.g,c.b,-2);}
 }
@@ -2275,9 +2283,9 @@ function step(dt){
     if(tr.land&&!flight.landed&&tf>=tr.land.t){flight.landed=true;_p.set(tr.land.x,.05,tr.land.z);burst(fxL,_p,10,3,.5,[.75,.6,.42],4,2);} // dust where it comes down, so fair or foul is clear
     const dc=camera.position.distanceTo(ball.position);ball.scale.setScalar(Math.max(1,dc*.05));
     ballShadow.visible=true;ballShadow.position.set(p.x,.03,p.z);ballShadow.scale.setScalar(.2+Math.min(1.2,p.y*.03));
-    trail(flight,flight.trailC,dc>9,flight.tb||S.over||(flight.pw&&flight.q>.75));
-    ballGlow.position.copy(ball.position);ballGlow.material.opacity=flight.tb||S.over?.8:flight.q>.75?.4:0;ballGlow.scale.setScalar(Math.max(.3,dc*.04));
-    ballGlow.material.color.setHex(flight.tb?0xff6a1a:S.over?0x3ad6ff:0xffe53b);
+    trail(flight,flight.trailC,dc>9,flight.tb||(flight.pw&&flight.q>.75));
+    ballGlow.position.copy(ball.position);ballGlow.material.opacity=flight.tb?.8:flight.q>.75?.4:0;ballGlow.scale.setScalar(Math.max(.3,dc*.04));
+    ballGlow.material.color.setHex(flight.od?0x3a9bff:flight.tb?0xff6a1a:0xffe53b);
     if(flight.play.type==='hr'&&!flight.called&&tf>=tr.hrT-.9){flight.called=true;pop("OUTTA HERE!",'','hot');SND.boom();}
     if(tf>=flight.play.endT){
       if(flight.play.type==='hr'){_p.copy(ball.position);burst(fxL,_p,30,14,.9,[1,.9,.6],4,4);SND.boom();}
