@@ -279,6 +279,7 @@ body.mob #tip{display:block}body.mob .how{display:none}
 #tut.s3 .spot::before{border:3px solid #fff;background:rgba(255,255,255,.4)}
 #tut.s3 .spot::after{border:3px solid var(--volt);animation:tutring 1.8s linear infinite}
 @keyframes tutring{0%{transform:scale(6);opacity:0;border-width:.6px}10%{opacity:1}72%{transform:scale(1);border-color:var(--volt);border-width:3px}74%,100%{transform:scale(1);border-color:#fff;border-width:3px;opacity:1}}
+#tut.s6 .spot,#tut.o .spot{border-radius:20px}#tut.s6 .ovz,#tut.o .ovz2{display:block;left:12px;right:12px;top:250px}
 #tut.s5 .jcz,#tut.j .jz{display:block;left:12px;right:12px;text-align:right;bottom:calc(var(--tbb) + min(128px,32vw) + min(76px,19vw) + 44px)}
 #tut .go{display:block;left:50%;top:186px;transform:translateX(-50%);white-space:nowrap;padding:12px 28px;font-size:20px;color:var(--ink);text-shadow:none;background:var(--volt);border:3px solid #000;border-radius:28px;box-shadow:0 4px 0 #000}
 #tut .stp{display:none;left:0;right:0;top:calc(30% - 30px);font-family:var(--hud);font-style:normal;font-weight:800;font-size:13px;letter-spacing:.2em;color:var(--chrome)}
@@ -376,6 +377,8 @@ body.mob #tip{display:block}body.mob .how{display:none}
       <div class="tz tmz"><b>YELLOW RING = TIMING</b>It shrinks onto a white circle the size of the ball<small>Ring still bigger than the ball: too early. Ring meets the circle: swing. Move your bat onto it first.</small></div>
       <div class="tz swz"><b>RIGHT THUMB: SWING</b>Tap as the yellow ring closes on the ball<small>CONTACT is easier and hits line drives. POWER is harder and hits moonshots.</small></div>
       <div class="tz jcz"><b>JUICE: MONSTER SWING</b>Tap JUICE, then swing. Costs one bar<small>Hits and taking balls refill it. Save it for a pitch you can drive.</small></div>
+      <div class="tz ovz"><b>OVERDRIVE</b>Three hits in a row lights up this bar<small>The next batter then gets a free Juice swing on every swing for his whole at-bat. No button to press: just swing.</small></div>
+      <div class="tz ovz2"><b>OVERDRIVE IS LIVE!</b>Every swing this at-bat is a free Juice swing<small>Bigger sweet spot, easier timing, harder contact. It lasts this one at-bat, so swing for the fences.</small></div>
       <div class="tz jz"><b>YOUR JUICE IS FULL</b>Tap JUICE, then swing for a monster hit<small>Each Juice swing burns one of your three bars.</small></div>
     </div>
     <div id="pop"><div class="t"></div><div class="s"></div></div>
@@ -1049,9 +1052,10 @@ const TUT_EVERY_LAUNCH=true; // testing: show the guide on every launch; set fal
 let tutFirst=false,tutHold=false,tutSeen=!MOB;try{if(!TUT_EVERY_LAUNCH&&localStorage.getItem('mm_tut')==='1')tutSeen=true;}catch(e){}
 let tutOff=false,jtutSeen=!MOB;try{tutOff=localStorage.getItem('mm_tutoff')==='1';if(!TUT_EVERY_LAUNCH&&localStorage.getItem('mm_jtut')==='1')jtutSeen=true;}catch(e){}
 // the first time the Juice meter is full: point at the JUICE button
-let tutStep=0;const TUT_N=5;
-function tutShow(mode){const T=$('tut');T.className=mode;T.hidden=false;tutHold=true;const n=mode==='j'?0:+mode.slice(1);tutStep=n;$('tutstp').textContent=n?n+' / '+TUT_N:'';$('tutgo').textContent=n&&n<TUT_N?'NEXT ▶  '+n+'/'+TUT_N:'GOT IT — PLAY ▶';
+let tutStep=0;const TUT_N=6;
+function tutShow(mode){const T=$('tut');T.className=mode;T.hidden=false;tutHold=true;const n=mode==='j'||mode==='o'?0:+mode.slice(1);tutStep=n;$('tutstp').textContent=n?n+' / '+TUT_N:'';$('tutgo').textContent=n&&n<TUT_N?'NEXT ▶  '+n+'/'+TUT_N:'GOT IT — PLAY ▶';
   const sp=T.querySelector('.spot');sp.style.cssText='';T.querySelectorAll('.pcz,.tmz').forEach(c=>c.style.bottom='');
+  if(n===6||mode==='o'){const r=$('juice').getBoundingClientRect(),h=$('hud').getBoundingClientRect();sp.style.cssText='left:'+(r.left-h.left-10)+'px;top:'+(r.top-h.top-8)+'px;width:'+(r.width+12)+'px;height:'+(r.height+14)+'px';} // the Juice / Overdrive meter
   if(n===2||n===3){ // spotlight the strike zone itself: project its corners to the screen
     const H=canvas.clientHeight,W=canvas.clientWidth,a=new V3(ZONE.x0,ZONE.y1,0).project(camera),b=new V3(ZONE.x1,ZONE.y0,0).project(camera),pad=16;
     const l=(a.x+1)/2*W-pad,t=(1-a.y)/2*H-pad,r=(b.x+1)/2*W+pad,bt=(1-b.y)/2*H+pad;
@@ -1059,6 +1063,9 @@ function tutShow(mode){const T=$('tut');T.className=mode;T.hidden=false;tutHold=
     sp.style.cssText='left:'+l+'px;top:'+t+'px;width:'+(r-l)+'px;height:'+(bt-t)+'px;--tr:'+(PT_R*(r-l-2*pad)/(ZONE.x1-ZONE.x0)).toFixed(1)+'px;--tx:'+((c0.x+1)/2*W-l-4).toFixed(1)+'px;--ty:'+((1-c0.y)/2*H-t-4).toFixed(1)+'px';T.querySelector(n===2?'.pcz':'.tmz').style.bottom=(H-t+16)+'px';}}
 function tutClose(){$('tut').hidden=true;tutHold=false;if(tutFirst){tutFirst=false;S.t=now-readyDur+.7;}}
 function jtutNeed(){if(tutOff||jtutSeen||window.__mmManual&&!window.__mmTut)return false;jtutSeen=true;tutFirst=true;tutShow('j');try{localStorage.setItem('mm_jtut','1');}catch(e){}return true;}
+let otutSeen=!MOB;try{if(!TUT_EVERY_LAUNCH&&localStorage.getItem('mm_otut')==='1')otutSeen=true;}catch(e){}
+// the first time Overdrive is live: point at the bar and say what it does
+function otutNeed(){if(tutOff||otutSeen||window.__mmManual&&!window.__mmTut)return false;otutSeen=true;tutFirst=true;tutShow('o');try{localStorage.setItem('mm_otut','1');}catch(e){}return true;}
 function tutNeed(){if(tutOff||tutSeen||window.__mmManual&&!window.__mmTut)return false;tutSeen=true;tutFirst=true;tutShow('s1');try{localStorage.setItem('mm_tut','1');}catch(e){}return true;}
 $('tut').addEventListener('pointerdown',e=>{e.preventDefault();const id=e.target.id;
   if(id==='tutoff'){tutOff=true;try{localStorage.setItem('mm_tutoff','1');}catch(x){}tutClose();return;} // no more guides on this device (HOW TO PLAY in the pause menu still works)
@@ -2176,7 +2183,8 @@ function step(dt){
   if(kx||ky)setAim(aim.x+kx*1.5*dt,aim.y+ky*1.5*dt);
   const st=S.state,el=now-S.t;
   if(st==='ready'&&el>=.25&&S.pitches===0&&tutNeed())return;   // guides come up as soon as he is set in the box
-  if(st==='ready'&&el>=.25&&S.juice>=.999&&jtutNeed())return;
+  if(st==='ready'&&el>=.25&&S.over&&S.bi===S.overBi&&otutNeed())return;
+  if(st==='ready'&&el>=.25&&S.juice>=.999&&!S.over&&jtutNeed())return;
   if(st==='ready'&&el>=readyDur&&!swing){S.state='windup'; /* the pitcher waits for a practice cut to finish: no quick pitches */windupT0=now;released=false;S.fresh=false;pitch=choosePitch();S.pitches++;readyDur=1.15;$('pitchinfo').classList.remove('on'),$('plast').classList.remove('on');}
   else if(st==='windup'&&now-windupT0>=1.0){
     if(MX.pit&&MX.on){MX.pit.obj.updateMatrixWorld(true);MX.pit.hand.getWorldPosition(pitch.rel);}else{pitcher.root.updateMatrixWorld(true);pitcher.handR.getWorldPosition(pitch.rel);}pitch.t0=now;S.state='pitch';SND.pitch();ball.visible=true;ballShadow.visible=true;
