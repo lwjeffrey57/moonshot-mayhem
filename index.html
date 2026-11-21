@@ -1081,7 +1081,7 @@ function hud(){
   goalHud();
   $('tj').classList.toggle('on',juiceArmed);$('tp').classList.toggle('fire',!!S.over||(juiceArmed&&S.juice>=.333));
 }
-let hudBars=0,ringEcho=null;
+let hudBars=0,ringEcho=null,lastWalk='';
 // Flavour first: the first home run and the first strikeout of every game always get the full, ridiculous treatment
 // (the first two of each for a player's first three games), so nobody plays a whole game without seeing what this game is.
 const celClip=own=>{if(own!=='w_milling')return own;const C=MX.clip,w=C?WILD_CEL.filter(k=>C.intros[k]):[];return w.length?w[(Math.random()*w.length)|0]:own;}; // the milling routine is a walk-up only
@@ -1110,6 +1110,7 @@ function startWalkup(){
   {const rare=['w_trip','w_golf','w_wave','w_pushup','w_fight','w_threat','w_bboy','w_backflip','w_lift'].filter(k=>MX.clip.intros[k]),r=Math.random()/.031|0,forced=DBG.trip===true?'w_trip':DBG.trip;
     const first=Object.keys(S.seen).length===1&&MX.clip.intros.w_walkin; // the game always opens with a plain walk to the plate; the silliness starts with the second hitter
     S.walkClip=forced&&MX.clip.intros[forced]?forced:first?'w_walkin':(gamesPlayed<=3&&S.bi===1&&rare.length)?rare[(Math.random()*rare.length)|0]:r<rare.length?rare[r]:WALK.by[b.name];} // new players: the second hitter always brings one of the surprise walk-ups
+  {const I=MX.clip.intros,forcedWalk=DBG.trip===true?'w_trip':DBG.trip;if(S.walkClip===lastWalk&&!(forcedWalk&&I[forcedWalk])){const alt=Object.keys(I).filter(k=>/^w_/.test(k)&&k!==lastWalk&&k!=='w_walkin');if(alt.length)S.walkClip=alt[(Math.random()*alt.length)|0];}lastWalk=S.walkClip;} // never the same walk-up twice in a row
   $('wnum').textContent=b.num;$('wname').textContent=b.name;
   {const gb=v=>{const g=statGrade(v);return `<b class="gr g${g}"><u>${g}</u></b>`;};$('wrat').innerHTML=`<span>POWER ${gb(b.pwr)}</span><span>CONTACT ${gb(b.con)}</span><span>SPEED ${gb(b.spd)}</span><span>BATS <b>${b.lh?'L':'R'}</b></span>`;}
   $('wspot').textContent='BATTING '+['1ST','2ND','3RD','4TH','5TH','6TH','7TH','8TH','9TH'][i];$('wskip').textContent='SWING TO SKIP';
@@ -1226,7 +1227,7 @@ function gameRating(){const G=S.goal,pts=S.runs*10+S.hits*4+S.hrs*8+(S.longest>=
   const T=[[0,'D','BENCH WARMER'],[20,'C','ROOKIE'],[45,'B','EVERYDAY STARTER'],[75,'A','ALL-STAR'],[110,'S','MOONSHOT LEGEND']];let i=0;T.forEach((t,j)=>{if(pts>=t[0])i=j;});
   return {pts,stars:i+1,grade:T[i][1],title:T[i][2],next:T[i+1]?T[i+1][0]-pts:0,nextTitle:T[i+1]?T[i+1][2]:''};}
 function newGame(){gamesPlayed++;try{localStorage.setItem('mm_games',gamesPlayed);}catch(e){}
-  Object.assign(S,{inning:1,outs:0,balls:0,strikes:0,runs:0,bases:[0,0,0],hits:0,hrs:0,longest:0,streak:0,bestStreak:0,juice:.34,heat:.2,over:false,bi:-1,pitches:0,seen:{},kOut:null});S.goal=pickGoal();S.ks=0;
+  Object.assign(S,{inning:1,outs:0,balls:0,strikes:0,runs:0,bases:[0,0,0],hits:0,hrs:0,longest:0,streak:0,bestStreak:0,juice:.34,heat:.2,over:false,bi:-1,pitches:0,seen:{},kOut:null});S.goal=pickGoal();S.ks=0;lastWalk='';
   $('title').hidden=true;$('over').hidden=true;$('pausebtn').hidden=false;$('mutebtn').hidden=false;setBatter();renderRep();scoreboard('PLAY BALL','INNING 1');toReady(2);pop('PLAY BALL!','GOAL: '+S.goal.label,'plain',true);SND.playball();cheer(.14,1.5);}
 
 // ───────────────────────── pitching
