@@ -778,7 +778,7 @@ const fireworks=[];
 // ───────────────────────── audio (all synthesized)
 let AC=null,master=null,crowdGain=null,noiseBuf=null,crowdBase=.05,crowdReal=false;
 // Recorded sounds (sfx/*.mp3). Each one replaces a synthesized sound once it has loaded; if a file is missing the synth version plays.
-const SFX={},SFX_FILES=['crowd','cheer','cheer_big','strike','ball','swing1','swing2','swing3','swing4'];
+const SFX={},SFX_FILES=['crowd','cheer','cheer_big','strike','ball','swing1','swing2','swing3','swing4','playball'];
 function loadSfx(noiseSrc){SFX_FILES.forEach(n=>fetch('sfx/'+n+'.mp3').then(r=>r.ok?r.arrayBuffer():Promise.reject()).then(b=>new Promise((res,rej)=>AC.decodeAudioData(b,res,rej))).then(buf=>{SFX[n]=buf;
   if(n==='crowd'){ // real stadium ambience takes over from the filtered noise
     const s=AC.createBufferSource();s.buffer=buf;s.loop=true;s.loopStart=.06;s.loopEnd=buf.duration-.06;s.connect(crowdGain);
@@ -822,6 +822,7 @@ const SND={
     if(power&&q>.6){tone('sine',150,38,.5,.9*q);noise(.35,'lowpass',900,120,.5*q);}},
   whoosh(){if(!sfx('swing'+(1+(Math.random()*4|0)),.8,rand(.94,1.08)))noise(.2,'bandpass',300,1900,.35,1.5);},
   pitch(){if(!sfx('swing'+(1+(Math.random()*4|0)),.5,rand(1.15,1.35)))noise(.16,'bandpass',500,2400,.22,1.5);}, // the ball leaving the pitcher's hand: same whoosh for every pitch, so it gives nothing away
+  playball(n=6){if(sfx('playball',.95))return;if(n>0)setTimeout(()=>SND.playball(n-1),250);else SND.organ();}, // the umpire's call; waits briefly for the file on the first game, falls back to the jingle
   mitt(){noise(.06,'lowpass',1400,300,.7);tone('sine',190,90,.09,.5);},
   call(hi){if(sfx(hi?'ball':'strike',.9))return;tone('square',hi?620:300,hi?620:240,.09,.12);tone('square',hi?830:220,hi?830:180,.14,.12,.1);},
   boom(){tone('sine',90,30,.6,.6);noise(.5,'bandpass',2400,5000,.18,.6,.05);},
@@ -959,7 +960,7 @@ function startGame(){
 }
 function playersDone(){MX.loading=false;if(MX.pendingStart){MX.pendingStart=false;$('start').textContent='PLAY BALL';newGame();}}
 function newGame(){Object.assign(S,{inning:1,outs:0,balls:0,strikes:0,runs:0,bases:[0,0,0],hits:0,hrs:0,longest:0,streak:0,bestStreak:0,juice:.34,heat:.2,over:false,bi:-1,pitches:0,seen:{},kOut:null});
-  $('title').hidden=true;$('over').hidden=true;$('pausebtn').hidden=false;setBatter();renderRep();scoreboard('PLAY BALL','INNING 1');toReady(2);pop('PLAY BALL!','INNING 1','plain');SND.organ();cheer(.14,1.5);}
+  $('title').hidden=true;$('over').hidden=true;$('pausebtn').hidden=false;setBatter();renderRep();scoreboard('PLAY BALL','INNING 1');toReady(2);pop('PLAY BALL!','INNING 1','plain');SND.playball();cheer(.14,1.5);}
 
 // ───────────────────────── pitching
 // brk = how far the pitch moves off a straight line (sideways, vertical) by the time it reaches the plate; k = how late that
@@ -1327,6 +1328,7 @@ const ZAX=new V3(0,0,1),_pl=new V3(),_bd=new V3(),_hq=new T.Quaternion();
 function clipBat(){const C=MX.clip;C.hL.getWorldPosition(_pl);C.mL.getWorldPosition(_b);_pl.lerp(_b,.55);C.hL.getWorldQuaternion(_hq);
   _bd.copy(C.dl).applyQuaternion(_hq).normalize();
   if(C.upW>0){_t1.copy(_bd).multiplyScalar(.3).add(_t2.set(0,.7,0)).normalize();_bd.lerp(_t1,C.upW).normalize();} // carried upright on the walk to the plate
+  if(C.dnW>0){C.hips.getWorldQuaternion(_q3);_t1.set(0,0,-1).applyQuaternion(_q3);_t1.y=0;_t1.normalize().multiplyScalar(.5).add(_t2.set(0,-.86,0)).normalize();_bd.lerp(_t1,C.dnW).normalize();} // sad walk: barrel down and trailing behind him, dragging
   if(C.crW>0&&C.hR){ // crouched stance: the hands sit differently, so run the bat through both hands and stand it up more
     C.hR.getWorldPosition(_t1);C.mR.getWorldPosition(_t2);_t1.lerp(_t2,.55).sub(_pl);
     if(_t1.lengthSq()>1e-4){_t1.normalize().multiplyScalar(.55).add(_t2.set(0,.45,0)).normalize();_bd.lerp(_t1,C.crW).normalize();}}
@@ -1401,7 +1403,7 @@ function updateClip(dt){
   const hw=C.idle?ease(C.h):1;
   // walk-up: his intro clip takes over; he stays facing the pitcher, so it plays as a taunt
   const intro=S.state==='walkup'&&C.bi===S.bi?C.intros[S.walkClip||WALK.by[curBatter().name]]:null;let base=intro?0:1;
-  C.upW=intro&&/^w_(walkin|sad)$/.test(S.walkClip||'')?1:0;
+  C.upW=intro&&S.walkClip==='w_walkin'?1:0;C.dnW=intro&&S.walkClip==='w_sad'?1:0;
   for(const k in C.intros)C.intros[k].a.setEffectiveWeight(0);
   if(S.kOut&&C.bi===S.kOut.bi){const e=now-S.kOut.t,ci=C.intros[S.kOut.clip],k=ci&&e<DEFEAT?ease(clamp(e/.3,0,1))*ease(clamp((DEFEAT-e)/.3,0,1)):0;
     if(k>0){ci.a.time=Math.min(ci.dur-.01,e);ci.a.setEffectiveWeight(k);base=1-k;o.position.x+=ci.off.x*k;o.position.z+=ci.off.z*k;}}
