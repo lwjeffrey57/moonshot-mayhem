@@ -1113,9 +1113,11 @@ function flash(a){const e=$('flash');e.style.transition='none';e.style.opacity=a
 // OVERDRIVE: fill the Juice meter all the way and it is charged. The meter burns and reads OVERDRIVE READY and the JUICE button becomes the
 // OVERDRIVE button, but nothing is spent until the player taps it. Tapped, every swing of that at-bat is a free Juice swing; when the at-bat
 // ends (a walk aside) the meter is emptied and has to be filled again.
-function overCheck(){if(S.over||S.juice<.999||S.state==='title'||S.state==='over')return;S.over=true;S.overOn=false;SND.zap();buzz([30,40,30,40,80]);
+function overCheck(){if(S.over||S.juice<.95||S.state==='title'||S.state==='over')return;S.juice=1;S.over=true;S.overOn=false;hudLater=true; // a bar that looks full IS full: anything from 95% up snaps to full and becomes Overdrive on the spot
+ SND.zap();buzz([30,40,30,40,80]);
   setTimeout(()=>{if(S.over&&!S.overOn)pop('OVERDRIVE READY!',MOB?'JUICE METER FULL · TAP THE BLUE OVERDRIVE BUTTON':'JUICE METER FULL · HOLD SHIFT AND SWING','cool',true);},900);}
-function hud(){overCheck();
+let hudLater=false;
+function hud(){overCheck();hudLater=false;
   $('runs').textContent=S.runs;$('inn').textContent=['1ST','2ND','3RD'][Math.min(S.inning,3)-1];$('count').textContent=S.balls+'-'+S.strikes;
   $('outs').textContent='O: '+S.outs;
   ['b1','b2','b3'].forEach((id,i)=>$(id).classList.toggle('on',!!S.bases[i]));
@@ -2229,6 +2231,7 @@ function trail(o,c,far,hot){
 }
 
 function step(dt){
+  overCheck();if(hudLater)hud(); // checked every frame, so the bar and the button switch the instant the meter fills
   landRing.visible=false;
   // aim by keyboard
   const kx=(keys.ArrowRight||keys.KeyD?1:0)-(keys.ArrowLeft||keys.KeyA?1:0),ky=(keys.ArrowUp||keys.KeyW?1:0)-(keys.ArrowDown||keys.KeyS?1:0);
