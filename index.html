@@ -1088,6 +1088,8 @@ const TROT={dur:6.7,celT:3.9,cele:false,clip:'',R:null,cam:new V3(),segs:[[0,3.9
 function startTrot(){const R=RUN.list.find(R=>!R.active)||null;if(!R||!R.jogAct)return false;
   R.active=true;R.trot=true;R.delay=0;R.s=0;R.target=4;TROT.R=R;TROT.cele=false;R.fig.root.scale.setScalar(FSCALE.inf);
   {const C=MX.clip,own=WALK.by[curBatter().name];TROT.clip=C&&C.intros.p_loser&&(DBG.loser||Math.random()<.3)?'p_loser':C&&C.intros[own]?own:'';} // sometimes he turns and gives the pitcher the 'loser' sign instead // his own routine once he has touched home
+  // men already on base stay ahead of him: when the highlight cuts in, each is at least three-quarters of a base in front of the man behind, and they keep that lead home
+  RUN.list.filter(o=>o!==R&&o.active&&o.target>=4).sort((a,b)=>a.s-b.s).forEach((o,k)=>{o.s=Math.max(o.s,Math.min(3.7,1.7+.75*(k+1)));o.lead=true;o.delay=0;});
  S.state='trot';S.t=now;return true;}
 function endTrot(){const R=TROT.R;if(R){R.trot=false;R.active=false;R.fig.root.visible=false;R.obj.scale.x=R.sx;R.fig.root.scale.setScalar(1.25);}TROT.R=null;TROT.cele=false;}
 function updateTrot(dt){
@@ -1104,7 +1106,7 @@ function updateTrot(dt){
   R.obj.scale.x=R.sx*(mir?-1:1); // the clip turns right; runners turn left
   const a=mode==='turn'?R.turnAct:mode==='fist'?R.fistAct:R.jogAct,d=mode==='jog'?R.jogDur:a.dur;R.runT=(R.runT+dt*(mode==='jog'?1.25:1))%d;a.time=R.runT;R.mixer.update(0);
 }
-function syncRunners(){const L=RUN.list;TROT.R=null;TROT.cele=false;L.forEach(R=>{R.keep=false;R.trot=false;R.fig.root.scale.setScalar(1.25);if(R.obj)R.obj.scale.x=R.sx;});
+function syncRunners(){const L=RUN.list;TROT.R=null;TROT.cele=false;L.forEach(R=>{R.keep=false;R.trot=false;R.lead=false;R.fig.root.scale.setScalar(1.25);if(R.obj)R.obj.scale.x=R.sx;});
   for(let b=0;b<3;b++)if(S.bases[b]){const R=L.find(R=>R.active&&!R.keep&&Math.round(R.target)===b+1)||L.find(R=>!R.keep&&!R.active)||L.find(R=>!R.keep);
     if(R){R.keep=true;R.active=true;R.s=R.target=b+1;R.delay=0;R.jog=false;}}
   L.forEach(R=>{if(!R.keep)R.active=false;});}
@@ -1121,8 +1123,8 @@ function updateRunners(dt){
     if(!R.active){root.visible=false;continue;}
     if(R.delay>0){R.delay-=dt;root.visible=false;continue;}
     const moving=R.s<R.target-1e-4;
-    if(moving)R.s=Math.min(R.target,R.s+(R.jog?10.5:16)*dt/27.43);
-    if(R.s>=4){R.active=false;root.visible=false;continue;}   // crossed the plate
+    if(moving)R.s=Math.min(R.target,R.s+(R.lead?17.5:R.jog?10.5:16)*dt/27.43);
+    if(R.s>=4){R.active=false;R.lead=false;root.visible=false;continue;}   // crossed the plate
     root.visible=true;basePos(R.s,_rv);root.position.copy(_rv);
     const i=clamp(Math.floor(R.s),0,3);root.rotation.y=moving?Math.atan2(BASES[i+1][0]-BASES[i][0],BASES[i+1][1]-BASES[i][1]):Math.atan2(-_rv.x,-_rv.z);
     const mode=moving?(R.jog&&R.jogAct?'jog':'run'):'pose';
