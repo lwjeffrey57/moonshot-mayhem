@@ -1048,12 +1048,12 @@ function afterPA(delay){ // plate appearance over
   setBatter();S.state='result';S.t=now;S.next=null;readyDur=delay;hud();
 }
 function samePA(delay){S.state='result';S.t=now;S.next=null;readyDur=delay;hud();}
-const DEFEAT=2.9; // seconds of strikeout reaction
+const DEFEAT=3.5,DEF_CUT=1.6; // strikeout reaction: the camera holds on the hitter until DEF_CUT, then cuts to the pitcher's taunt
 function strike(kind){S.heat=Math.min(1,S.heat+.09);S.strikes++;SND.call(false);
   if(S.strikes>=3){recordOut();pop('STRUCK OUT',kind==='look'?'CAUGHT LOOKING':'SWINGING','cool');cheer(.03,1);
     // the strikeout sulk: one of the defeat routines, with the camera on him (skipped when walk-ups are off, for pace)
     const ds=MX.clip&&WALK.on?Object.keys(MX.clip.intros).filter(k=>/^d_/.test(k)):[];
-    if(ds.length){S.kOut={t:now+(kind==='look'?.15:.45),bi:S.bi,clip:ds[(Math.random()*ds.length)|0]};afterPA(DEFEAT+.75);}else afterPA(1.5);}
+    if(ds.length){const ts=MX.pit?Object.keys(MX.pit.taunts):[];S.kOut={t:now+(kind==='look'?.15:.45),bi:S.bi,clip:ds[(Math.random()*ds.length)|0],taunt:ts[(Math.random()*ts.length)|0]};afterPA(DEFEAT+.75);}else afterPA(1.5);}
   else{pop(kind==='look'?'STRIKE':'WHIFF!','','plain');samePA(kind==='look'?1.05:1.3);}}
 function finishPlay(){
   const f=flight,pl=f.play;f.done=true;
@@ -1370,7 +1370,7 @@ function setupPitcher(obj,custom){
   clip.tracks=clip.tracks.filter(t=>/quaternion$/.test(t.name)||/Hips\.position$/.test(t.name));
   paintAtlas({name:'STORM',num:99,skin:0xc98f62},Object.assign({},AWAY,{glove:'#c98f62',stripe:'#0e7c86'}),pitC,pitT,'#f0f0ec');
   scene.add(obj);obj.scale.multiplyScalar(FSCALE.p);obj.position.set(0,.25,-18.4);
-  const mixer=new T.AnimationMixer(obj);mixer.clipAction(clip).play();
+  const mixer=new T.AnimationMixer(obj),pact=mixer.clipAction(clip);pact.play();
   const hand=B('RightHand'),lh=B('LeftHand'),v0=new V3(),v1=new V3();
   // release = the frame the throwing hand is moving fastest toward the plate
   let tRel=1,best=0,th=hand;
@@ -1380,7 +1380,8 @@ function setupPitcher(obj,custom){
   // glove on the non-throwing hand
   {const gl=new T.Mesh(GEO.glove,pitcher.mats.glove);gl.scale.set(75,100,50);gl.position.set(0,9,0);(th===hand?lh:hand).add(gl);gl.castShadow=true;}
   mixer.setTime(0);
-  MX.pit={obj,mixer,hand:th,tRel,dur:clip.duration};
+  const taunts={};obj.animations.filter(c=>/^p_/.test(c.name)).forEach(c=>{c.tracks=c.tracks.filter(t=>/quaternion$/.test(t.name)||/Hips\.position$/.test(t.name));const a=mixer.clipAction(c);a.play();a.setEffectiveWeight(0);taunts[c.name]={a,dur:c.duration};});
+  MX.pit={obj,mixer,pact,taunts,hand:th,tRel,dur:clip.duration};
   showChunky(pitcher,false);
 }
 // A code-built figure can "drive" a rigged model: its joints are fitted to the model's proportions once,
@@ -1530,7 +1531,7 @@ function loadPlayers(kind){ // body file = character mesh; clips.json = motion-c
     const skins=im?makeSkins(im):null,make=names=>{const o=new T.FBXLoader().parse(bb,'');o.animations=names.map(n=>mkClip(cj[n],n));return o;};
     try{setupModel(make(['hit','idle','strike',...Object.keys(cj).filter(k=>/^[wd]_/.test(k))]),skins&&skins.home);}catch(e){console.warn('batter model failed, using built-in figure',e);fallback(batter);}
     playersDone();
-    try{setupPitcher(make(['pitch']),skins&&skins.away);}catch(e){console.warn('pitcher model failed, using built-in figure',e);fallback(pitcher);}
+    try{setupPitcher(make(['pitch',...Object.keys(cj).filter(k=>/^p_/.test(k))]),skins&&skins.away);}catch(e){console.warn('pitcher model failed, using built-in figure',e);fallback(pitcher);}
     // fielders are built one at a time so the page doesn't freeze while seven more models are prepared
     fielders.filter(f=>!f.isP).forEach((f,i)=>setTimeout(()=>{if(my!==MX.token)return;
       try{setupFielder(f,make(['catch','run'].filter(k=>cj[k])),skins&&skins.away);}catch(e){console.warn('fielder model failed, using built-in figure',e);fallback(f.fig);}},400+i*220));
@@ -1595,7 +1596,11 @@ function batAura(){
 }
 function updatePitcher(){
   if(MX.pit&&MX.on){const P=MX.pit,act=S.state==='windup'||((S.state==='pitch'||S.state==='flight'||S.state==='result')&&pitch);
-    const e=act?now-windupT0:0;P.mixer.setTime(act?Math.min(P.dur-.01,e<1?e*P.tRel:P.tRel+(e-1)):0);return;}
+    const e=act?now-windupT0:0;let k=0;
+    for(const n in P.taunts)P.taunts[n].a.setEffectiveWeight(0);
+    if(S.kOut&&S.kOut.taunt&&now>S.kOut.t&&now<S.kOut.t+DEFEAT){const tn=P.taunts[S.kOut.taunt],te=now-S.kOut.t; // struck him out: rub it in
+      k=ease(clamp(te/.35,0,1))*ease(clamp((DEFEAT-te)/.35,0,1));tn.a.time=Math.min(tn.dur-.01,te);tn.a.setEffectiveWeight(k);}
+    P.pact.time=k>.5?0:act?Math.min(P.dur-.01,e<1?e*P.tRel:P.tRel+(e-1)):0;P.pact.setEffectiveWeight(1-k);P.mixer.update(0);return;}
   let P;
   if(S.state==='windup'||(S.state==='pitch'&&now-windupT0<1.7)||(S.state==='flight'&&now-windupT0<1.7)){
     const p=(now-windupT0)/1.25;
@@ -1733,6 +1738,8 @@ function updateCamera(rdt){
   if(!DBG.cam)applyCam();
   if(S.state==='flight'&&flight&&!flight.done&&now-flight.t0>.02)camMode='chase';
   if(DBG.cam){camPos.copy(CAM_HOME);camLook.copy(CAM_LOOK);}
+  else if(S.kOut&&S.kOut.taunt&&MX.pit&&now>S.kOut.t+DEF_CUT&&now<S.kOut.t+DEFEAT&&S.state==='result'){ // ...then the pitcher, from the plate side
+    const e=clamp((now-S.kOut.t-DEF_CUT)/(DEFEAT-DEF_CUT),0,1);camLook.set(0,1.45,-18.4);camPos.set(lerp(1.6,1.1,e),1.35,-18.4+lerp(4.6,3.8,ease(e)));}
   else if(S.kOut&&MX.clip&&MX.clip.bi===S.kOut.bi&&now>S.kOut.t&&now<S.kOut.t+DEFEAT&&S.state==='result'){ // strikeout: close on the hitter from the pitcher's side
     const e=clamp((now-S.kOut.t)/DEFEAT,0,1);MX.clip.hips.getWorldPosition(_a);const sd=_a.x<0?1:-1;
     camLook.set(_a.x,1.2,_a.z);camPos.set(_a.x+sd*lerp(1.5,1.0,ease(e)),1.25,_a.z-lerp(3.2,2.5,ease(e)));}
