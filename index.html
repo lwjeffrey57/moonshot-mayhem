@@ -896,10 +896,12 @@ function setupRunners(make,skins){
   syncRunners();
 }
 // ── Home-run trot, shown as a highlight cut on no-doubters: rounding second, then touching home and a fist pump on the plate.
-const TROT={dur:4.3,R:null,cam:new V3(),segs:[[0,1.7,1.7,2.36],[1.7,2.6,3.68,3.999]]}; // rounding second, then the last steps home; the fist pump fills the rest
+const TROT={dur:6.7,celT:3.9,cele:false,clip:'',R:null,cam:new V3(),segs:[[0,3.9,1.7,3.999]]}; // one continuous run: round second, round third, home // rounding second, then the last steps home; the fist pump fills the rest
 function startTrot(){const R=RUN.list.find(R=>!R.active)||null;if(!R||!R.jogAct)return false;
-  R.active=true;R.trot=true;R.delay=0;R.s=0;R.target=4;TROT.R=R;S.state='trot';S.t=now;return true;}
-function endTrot(){const R=TROT.R;if(R){R.trot=false;R.active=false;R.fig.root.visible=false;R.obj.scale.x=R.sx;}TROT.R=null;}
+  R.active=true;R.trot=true;R.delay=0;R.s=0;R.target=4;TROT.R=R;TROT.cele=false;R.fig.root.scale.setScalar(1);
+  {const C=MX.clip,own=WALK.by[curBatter().name];TROT.clip=C&&C.intros.c_fist&&(DBG.fist||Math.random()<.35)?'c_fist':C&&C.intros[own]?own:'';} // his own routine, or sometimes a plain fist pump
+ S.state='trot';S.t=now;return true;}
+function endTrot(){const R=TROT.R;if(R){R.trot=false;R.active=false;R.fig.root.visible=false;R.obj.scale.x=R.sx;R.fig.root.scale.setScalar(1.25);}TROT.R=null;TROT.cele=false;}
 function updateTrot(dt){
   const R=TROT.R;if(!R||S.state!=='trot')return;const e=now-S.t,root=R.fig.root,seg=TROT.segs.find(g=>e>=g[0]&&e<g[1]);let mode='fist',mir=false;
   root.visible=true;
@@ -907,12 +909,13 @@ function updateTrot(dt){
     basePos(Math.min(3.999,sv+.04),_a);basePos(Math.max(0,sv-.04),_b);root.rotation.y=Math.atan2(_a.x-_b.x,_a.z-_b.z);   // heading follows the path, so it swings round at the bag
     const near=Math.abs(sv-Math.round(sv))<.17&&Math.round(sv)>0&&Math.round(sv)<4;mode=near&&R.turnAct?'turn':'jog';mir=mode==='turn';
     basePos(Math.min(3.999,sv+.3),_a);_b.set(_a.x,0,_a.z+19.4).normalize();TROT.cam.set(_a.x+_b.x*3.5,1.5,_a.z+_b.z*3.5);}
-  else{root.position.set(0,0,0);TROT.cam.set(1.2,1.25,-4.2);root.rotation.y=Math.atan2(1.2,-4.2);if(!R.fistAct)mode='jog';}
+  else{root.position.set(0,0,0);root.rotation.y=PI/4;TROT.cam.set(2.5,1.3,3.1); // camera ahead of him, looking back up the third-base line
+    TROT.cele=!!(TROT.clip&&MX.clip&&MX.clip.intros[TROT.clip]);root.visible=!TROT.cele;if(!R.fistAct)mode='jog';} // the batter's own model takes over for the celebration
   if(mode!==R.mode){R.mode=mode;R.mixer.stopAllAction();(mode==='turn'?R.turnAct:mode==='fist'?R.fistAct:R.jogAct).reset().play();}
   R.obj.scale.x=R.sx*(mir?-1:1); // the clip turns right; runners turn left
   const a=mode==='turn'?R.turnAct:mode==='fist'?R.fistAct:R.jogAct,d=mode==='jog'?R.jogDur:a.dur;R.runT=(R.runT+dt*(mode==='jog'?1.25:1))%d;a.time=R.runT;R.mixer.update(0);
 }
-function syncRunners(){const L=RUN.list;TROT.R=null;L.forEach(R=>{R.keep=false;R.trot=false;if(R.obj)R.obj.scale.x=R.sx;});
+function syncRunners(){const L=RUN.list;TROT.R=null;TROT.cele=false;L.forEach(R=>{R.keep=false;R.trot=false;R.fig.root.scale.setScalar(1.25);if(R.obj)R.obj.scale.x=R.sx;});
   for(let b=0;b<3;b++)if(S.bases[b]){const R=L.find(R=>R.active&&!R.keep&&Math.round(R.target)===b+1)||L.find(R=>!R.keep&&!R.active)||L.find(R=>!R.keep);
     if(R){R.keep=true;R.active=true;R.s=R.target=b+1;R.delay=0;R.jog=false;}}
   L.forEach(R=>{if(!R.keep)R.active=false;});}
@@ -943,11 +946,13 @@ function updateRunners(dt){
 // ── The throw back in after a hit is fielded (visual only): the fielder winds up and the ball flies to the base ahead of the lead runner.
 const THROW_REL=.77;
 function updateThrow(){
-  if(!(flight&&flight.thr))return;const Th=flight.thr,e=now-Th.t0-THROW_REL;if(e<0)return;
-  if(!Th.from){const f=flight.play.f,r=f.fig.root;Th.from=new V3(r.position.x,1.75*(f.scale||1),r.position.z);Th.len=Th.from.distanceTo(Th.to);Th.dur=clamp(Th.len/42,.35,1.3);SND.whoosh();}
+  if(!(flight&&flight.thr))return;const Th=flight.thr;if(Th.bt===undefined)Th.bt=Th.t0+THROW_REL;const e=now-Th.bt;if(e<0)return;
+  if(!Th.from){const f=flight.play.f,r=f.fig.root;Th.from=new V3(r.position.x,1.75*(f.scale||1),r.position.z);Th.len=Th.from.distanceTo(Th.to);Th.dur=clamp(Th.len/42,.3,1.3);SND.whoosh();}
   const u=e/Th.dur;
-  if(u<=1&&e<.45){ball.visible=true;ball.position.lerpVectors(Th.from,Th.to,u);ball.position.y+=Math.sin(u*PI)*Th.len*.07;ball.scale.setScalar(Math.max(1,camera.position.distanceTo(ball.position)*.05));}
-  else if(!Th.done){Th.done=true;ball.visible=false;} // we only show the release and the first part of the throw
+  // outfield throws show only the release and the first part of the flight; infield throws (full) are followed all the way to the bag
+  if(u<=1&&(Th.full||e<.45)){ball.visible=true;ball.position.lerpVectors(Th.from,Th.to,u);ball.position.y+=Math.sin(u*PI)*Th.len*.05;ball.scale.setScalar(Math.max(1,camera.position.distanceTo(ball.position)*.05));}
+  else if(Th.next&&u>1){SND.mitt();Th.from=Th.to.clone();Th.to=Th.next;Th.next=null;Th.len=Th.from.distanceTo(Th.to);Th.dur=clamp(Th.len/42,.3,1.3);Th.bt=now+.22;SND.whoosh();} // the pivot: on to first
+  else if(!Th.done){Th.done=true;ball.visible=false;if(Th.full)SND.mitt();}
 }
 function toReady(d){$('hitinfo').hidden=true;S.state='ready';S.t=now;if(d)readyDur=d;swing=null;pitch=null;flight=null;ball.visible=false;ballShadow.visible=false;pring.visible=false;ballGlow.material.opacity=0;
   fielders.forEach(f=>{if(!f.isP){f.fig.root.position.copy(f.home);f.fig.root.rotation.y=Math.atan2(-f.home.x,-f.home.z);}f.run=null;});
@@ -1123,13 +1128,18 @@ function tryContact(){flight_pop=false;
   // No-doubters: sometimes stay on the hitter instead of the ball. 'admire' = he holds his finish, watches it and drops the bat;
   // 'show' = the same, then his own walk-up routine as a celebration. Decided here because we already know where the ball lands.
   if(play.type==='hr'&&MX.clip){const ft=play.dist*3.281,big=tb||ft>=500,r=Math.random(),kind=DBG.admire||(big?(r<.6?'show':r<.85?'admire':''):ft>=440?(r<.5?'admire':''):'');
-    if(kind){flight.admire=kind;flight.A=Math.max(1.2,Math.min(kind==='show'?3.9:2.5,play.endT-1.3));pop(['NO DOUBT!','SEE YA!','FORGET IT!'][(Math.random()*3)|0],'',tb?'hot':'');}}
+    if(kind){flight.admire=kind;flight.trot=WALK.on&&RUN.list.length>0;flight.A=Math.max(1.2,Math.min(kind==='show'&&!flight.trot?3.9:2.5,play.endT-1.3));pop(['NO DOUBT!','SEE YA!','FORGET IT!'][(Math.random()*3)|0],'',tb?'hot':'');}}
   if(!flight.admire&&q>.82&&pw&&play.type!=='foul')pop(['CRUSHED!','SMOKED!','TATTOOED!','OBLITERATED!'][(Math.random()*4)|0],'',tb?'hot':'');
   cheer(play.type==='hr'?.42:.12+.2*q,play.type==='hr'?5:1.6);
   if(play.f){play.from=play.f.fig.root.position.clone();}
   if(play.type==='hit')sendRunners(play.bases,{batter:play.bases});
   else if(play.type==='hr')sendRunners(4,{batter:flight.admire?0:4,jog:true});
-  else if(play.type==='out')sendRunners(0,{batter:1,jog:!!play.air});
+  else if(play.type==='out'){
+    // a ground ball with a man on first and fewer than two out: is there time to go to second and back to first?
+    if(play.label==='GROUND OUT'&&S.bases[0]&&S.outs<2){const p=play.p,t=p.t+.8+rand(0,.55)+Math.hypot(p.x,p.z+38.8)/36+.7+27.4/36; // a clean feed and pivot is not guaranteed
+      play.dp=t<4.4/(1+(b.spd-1)*.9);
+      if(play.dp)RUN.list.forEach(R=>{if(R.active&&R.s===1&&R.target===1)R.target=2;});}
+    sendRunners(0,{batter:1,jog:!!play.air});}
 }
 
 function addRuns(n){if(!n)return;S.runs+=n;}
@@ -1155,7 +1165,11 @@ function strike(kind){S.heat=Math.min(1,S.heat+.09);S.strikes++;SND.call(false);
 function finishPlay(){
   const f=flight,pl=f.play;f.done=true;
   if(pl.type==='foul'){if(S.strikes<2)S.strikes++;if(!f.tb)S.juice=Math.min(1,S.juice+.03);pop('FOUL','','plain');samePA(1);return;}
-  if(pl.type==='out'){recordOut();pop(pl.air&&f.q>.7?'ROBBED!':'OUT!',pl.label,'cool');SND.mitt();cheer(.04,1);afterPA(1.5);return;}
+  if(pl.type==='out'){const dp=!!pl.dp&&S.bases[0]&&S.outs<2;recordOut();
+    if(dp){recordOut();S.bases[0]=0;} // the man on first is forced at second, then the relay gets the hitter
+    const B=(i)=>new V3(BASES[i][0],1.2,BASES[i][1]);
+    if(pl.label==='GROUND OUT'&&pl.f&&pl.f.thrAct)f.thr={t0:now+.05,to:dp?B(2):B(1),next:dp?B(1):null,full:true};
+    pop(dp?'DOUBLE PLAY!':pl.air&&f.q>.7?'ROBBED!':'OUT!',dp?'TWO FOR ONE':pl.label,'cool');SND.mitt();cheer(.04,1);afterPA(dp?2.7:f.thr?2.1:1.5);return;}
   S.heat=Math.max(0,S.heat-.12);S.hits++;S.streak++;S.bestStreak=Math.max(S.bestStreak,S.streak);if(!f.tb)S.juice=Math.min(1,S.juice+.14+.16*f.q); // a Juice hit doesn't refill the bar it just spent
   if(pl.type==='hr'){
     const ft=Math.round(pl.dist*3.281);S.hrs++;S.longest=Math.max(S.longest,ft);const r=advance(4);
@@ -1342,6 +1356,7 @@ function clipBat(){const C=MX.clip;C.hL.getWorldPosition(_pl);C.mL.getWorldPosit
   _bd.copy(C.dl).applyQuaternion(_hq).normalize();
   if(C.upW>0){_t1.copy(_bd).multiplyScalar(.3).add(_t2.set(0,.7,0)).normalize();_bd.lerp(_t1,C.upW).normalize();} // carried upright on the walk to the plate
   if(C.dnW>0){C.hips.getWorldQuaternion(_q3);_t1.set(0,0,-1).applyQuaternion(_q3);_t1.y=0;_t1.normalize().multiplyScalar(.5).add(_t2.set(0,-.86,0)).normalize();_bd.lerp(_t1,C.dnW).normalize();} // sad walk: barrel down and trailing behind him, dragging
+  if(C.flatW>0){C.hips.getWorldQuaternion(_q3);_t1.set(1,0,0).applyQuaternion(_q3);_t1.y=0;_t1.normalize();_bd.lerp(_t1,C.flatW).normalize();_pl.y=Math.max(_pl.y,.07);} // push-ups: bat lies flat under his hand, across his body
   if(C.crW>0&&C.hR){ // crouched stance: the hands sit differently, so run the bat through both hands and stand it up more
     C.hR.getWorldPosition(_t1);C.mR.getWorldPosition(_t2);_t1.lerp(_t2,.55).sub(_pl);
     if(_t1.lengthSq()>1e-4){_t1.normalize().multiplyScalar(.55).add(_t2.set(0,.45,0)).normalize();_bd.lerp(_t1,C.crW).normalize();}}
@@ -1378,14 +1393,14 @@ function setupClip(obj,clip,B,sk){
   // intros stay in the batter's box: work out how far each clip sits (or finishes) from where he stands in his stance
   const hipsAt=(c,ts)=>{const v=new V3(),sum=new V3();probe(c,at=>ts.forEach(t=>{at(t);C.hips.getWorldPosition(v);sum.add(v);}));return sum.multiplyScalar(1/ts.length);},home=hipsAt(ic||clip,[0]);
   C.intros={};obj.animations.filter(c=>/^[wdc]_/.test(c.name)).forEach(c=>{keep(c);const loop=c.duration<2.5,ref=hipsAt(c,loop?[0,1,2,3,4,5,6,7].map(k=>k/8*c.duration):[c.duration-.02]);
-    const a=mixer.clipAction(c);a.play();a.setEffectiveWeight(0);C.intros[c.name]={a,dur:c.duration,loop,off:{x:home.x-ref.x,z:home.z-ref.z}};});
+    const a=mixer.clipAction(c);a.play();a.setEffectiveWeight(0);C.intros[c.name]={a,dur:c.duration,loop,off:{x:home.x-ref.x,z:home.z-ref.z},loc:{x:-(ref.x-obj.position.x),z:-(ref.z-obj.position.z)}};}); // loc: where the routine sits relative to the model's own origin
 }
 const WHIFF_HOLD=1.15; // seconds of the swing-and-miss clip shown after the miss before he resets
 function batterOpacity(k){const set=m=>{if(m){m.transparent=k<1;m.opacity=k;}};
   if(MX.obj)MX.obj.traverse(n=>{if(n.isMesh)[].concat(n.material).forEach(set);});set(bat.userData.wood);}
 function updateClip(dt){
   const C=MX.clip,o=MX.obj;let w=0,want=0,rate=.55,skT=0;
-  o.scale.x=Math.abs(o.scale.x);o.position.x=C.baseX;o.position.z=C.baseZ; // everything below is worked out right-handed; a lefty is mirrored at the end
+  o.rotation.y=PI;o.scale.x=Math.abs(o.scale.x);o.position.x=C.baseX;o.position.z=C.baseZ; // everything below is worked out right-handed; a lefty is mirrored at the end
   // The next hitter is announced as soon as a play ends, but the man on screen is still the one who just swung.
   // Keep showing him (and his side of the plate) until he is back in his stance, then fade to the new batter.
   if(S.bi>=0&&C.bi!==S.bi){
@@ -1416,11 +1431,13 @@ function updateClip(dt){
   const hw=C.idle?ease(C.h):1;
   // walk-up: his intro clip takes over; he stays facing the pitcher, so it plays as a taunt
   const intro=S.state==='walkup'&&C.bi===S.bi?C.intros[S.walkClip||WALK.by[curBatter().name]]:null;let base=intro?0:1;
-  C.upW=intro&&S.walkClip==='w_walkin'?1:0;C.dnW=intro&&S.walkClip==='w_sad'?1:0;
+  C.upW=intro&&S.walkClip==='w_walkin'?1:0;C.dnW=intro&&S.walkClip==='w_sad'?1:0;C.flatW=intro&&S.walkClip==='w_pushup'?1:0;
   for(const k in C.intros)C.intros[k].a.setEffectiveWeight(0);
   if(S.kOut&&C.bi===S.kOut.bi){const e=now-S.kOut.t,ci=C.intros[S.kOut.clip],k=ci&&e<DEFEAT?ease(clamp(e/.3,0,1))*ease(clamp((DEFEAT-e)/.3,0,1)):0;
     if(k>0){ci.a.time=Math.min(ci.dur-.01,e);ci.a.setEffectiveWeight(k);base=1-k;o.position.x+=ci.off.x*k;o.position.z+=ci.off.z*k;}}
-  if(flight&&flight.admire==='show'&&!flight.done&&C.bi===S.bi){if(!flight.cel)flight.cel=C.intros.c_fist&&(DBG.fist||Math.random()<.4)?'c_fist':WALK.by[curBatter().name]; // sometimes a plain fist pump instead of his routine
+  if(S.state==='trot'&&TROT.cele&&C.intros[TROT.clip]){const ci=C.intros[TROT.clip],e=now-S.t-TROT.celT; // he has touched home: his celebration, on the plate
+    ci.a.time=ci.loop?e%ci.dur:Math.min(ci.dur-.01,Math.max(0,e));ci.a.setEffectiveWeight(1);base=0;}
+  if(flight&&flight.admire==='show'&&!flight.trot&&!flight.done&&C.bi===S.bi){if(!flight.cel)flight.cel=C.intros.c_fist&&(DBG.fist||Math.random()<.4)?'c_fist':WALK.by[curBatter().name]; // sometimes a plain fist pump instead of his routine
     const ci=C.intros[flight.cel],tf=now-flight.t0,k=ci?ease(clamp((tf-1.25)/.3,0,1))*ease(clamp((flight.A+.35-tf)/.3,0,1)):0;
     if(k>0){const e=tf-1.25;ci.a.time=ci.loop?e%ci.dur:Math.min(ci.dur-.01,e);ci.a.setEffectiveWeight(k);base=1-k;if(flight.cel==='c_fist'){o.position.x+=ci.off.x*k;o.position.z+=ci.off.z*k;}}}
   if(intro){const e=now-S.t;intro.a.time=intro.loop?e%intro.dur:clamp(intro.dur-(WALK.dur-.25-e),0,intro.dur-.01);intro.a.setEffectiveWeight(1); // a walk-in is timed to arrive in the box as the intro ends
@@ -1439,6 +1456,9 @@ function updateClip(dt){
   if(MX.lefty){ // mirror the batter and his bat across the plate
     bat.position.x*=-1;_bd.x*=-1;bat.quaternion.setFromUnitVectors(UP,_bd);bat.updateMatrixWorld(true);
     o.scale.x=-o.scale.x;o.position.x=-o.position.x;o.updateMatrixWorld(true);}
+  if(S.state==='trot'&&TROT.cele&&C.intros[TROT.clip]){ // stand him on the plate facing the way he came in, up the third-base line toward home
+    const L=C.intros[TROT.clip].loc,th=PI/4,cs=Math.cos(th),sn=Math.sin(th);
+    o.scale.x=Math.abs(o.scale.x);o.rotation.y=th;o.position.set(-(L.x*cs+L.z*sn),0,-(-L.x*sn+L.z*cs));o.updateMatrixWorld(true);}
   if(flight&&flight.admire){const F=flight,tf=now-F.t0;
     if(!F.done&&!MX.lefty&&tf>.35&&tf<F.A+.4){ // watch it go: turn the head toward the ball
       const hd=C.head||(C.head=o.getObjectByName(C.hips.name.replace('Hips','Head')));
@@ -1847,7 +1867,7 @@ function step(dt){
   if(shock.userData.t!==undefined&&shock.userData.t<.3){shock.userData.t+=dt;const k=shock.userData.t/.3;shock.scale.setScalar(.06+k*shock.userData.s*.9);shock.material.opacity=(1-k)*.9;}else shock.material.opacity=0;
 
   updateBatter(dt);updatePitcher();updateFielders(dt);updatePlateCrew();updateRunners(dt);updateTrot(dt);updateThrow();
-  if(MX.ready&&MX.clip&&MX.obj){const v=S.state!=='trot';MX.obj.visible=v;bat.visible=v;} // the man at the plate is the one trotting
+  if(MX.ready&&MX.clip&&MX.obj){const v=S.state!=='trot';MX.obj.visible=v||TROT.cele;bat.visible=v;} // the man at the plate is the one trotting
   fxS.update(dt);fxL.update(dt);fxT.update(dt);
 
   // reticle
