@@ -1512,7 +1512,8 @@ function setupPitcher(obj,custom){
   {const gl=new T.Mesh(GEO.glove,pitcher.mats.glove);gl.scale.set(75,100,50);gl.position.set(0,9,0);(th===hand?lh:hand).add(gl);gl.castShadow=true;}
   mixer.setTime(0);
   const taunts={};obj.animations.filter(c=>/^p_/.test(c.name)).forEach(c=>{c.tracks=c.tracks.filter(t=>/quaternion$/.test(t.name)||/Hips\.position$/.test(t.name));const a=mixer.clipAction(c);a.play();a.setEffectiveWeight(0);taunts[c.name]={a,dur:c.duration};});
-  MX.pit={obj,mixer,pact,taunts,hand:th,tRel,dur:clip.duration};
+  const defs=obj.animations.filter(c=>/^d_/.test(c.name)).map(c=>{c.tracks=c.tracks.filter(t=>/quaternion$/.test(t.name)||/Hips\.position$/.test(t.name));const a=mixer.clipAction(c);a.play();a.setEffectiveWeight(0);a.dur=c.duration;return a;});
+  MX.pit={obj,mixer,pact,taunts,defs,hand:th,tRel,dur:clip.duration};
   showChunky(pitcher,false);
 }
 // A code-built figure can "drive" a rigged model: its joints are fitted to the model's proportions once,
@@ -1676,7 +1677,7 @@ function loadPlayers(kind){ // body file = character mesh; clips.json = motion-c
     const skins=im?makeSkins(im):null,make=names=>{const o=new T.FBXLoader().parse(bb,'');o.animations=names.map(n=>mkClip(cj[n],n));return o;};
     try{setupModel(make(['hit','idle','idle2','strike'].filter(k=>cj[k]).concat(Object.keys(cj).filter(k=>/^[wdc]_/.test(k)))),skins&&skins.home);}catch(e){console.warn('batter model failed, using built-in figure',e);fallback(batter);}
     playersDone();
-    try{setupPitcher(make(['pitch',...Object.keys(cj).filter(k=>/^p_/.test(k))]),skins&&skins.away);}catch(e){console.warn('pitcher model failed, using built-in figure',e);fallback(pitcher);}
+    try{setupPitcher(make(['pitch',...Object.keys(cj).filter(k=>/^[pd]_/.test(k))]),skins&&skins.away);}catch(e){console.warn('pitcher model failed, using built-in figure',e);fallback(pitcher);}
     // fielders are built one at a time so the page doesn't freeze while seven more models are prepared
     fielders.filter(f=>!f.isP).forEach((f,i)=>setTimeout(()=>{if(my!==MX.token)return;
       try{setupFielder(f,make(['catch','run','strafe','throw','d_1','d_2','d_3'].filter(k=>cj[k])),skins&&skins.away);}catch(e){console.warn('fielder model failed, using built-in figure',e);fallback(f.fig);}},400+i*220));
@@ -1746,6 +1747,9 @@ function updatePitcher(){
     for(const n in P.taunts)P.taunts[n].a.setEffectiveWeight(0);
     if(S.kOut&&S.kOut.taunt&&now>S.kOut.t&&now<S.kOut.t+DEFEAT){const tn=P.taunts[S.kOut.taunt],te=now-S.kOut.t; // struck him out: rub it in
       k=ease(clamp(te/.35,0,1))*ease(clamp((DEFEAT-te)/.35,0,1));tn.a.time=tn.dur<2.5?te%tn.dur:Math.min(tn.dur-.01,te);tn.a.setEffectiveWeight(k);}
+    P.defs.forEach(a=>a.setEffectiveWeight(0));
+    if(P.defs.length&&flight&&flight.play.type==='hr'&&flight.admire){const de=now-flight.t0-1.3; // he just gave up a no-doubter: head down on the mound
+      if(de>=0){if(P.defF!==flight){P.defF=flight;P.defA=P.defs[(Math.random()*P.defs.length)|0];}const kd=ease(clamp(de/.4,0,1));P.defA.time=Math.min(P.defA.dur-.02,de);P.defA.setEffectiveWeight(kd);k=Math.max(k,kd);}}
     P.pact.time=k>.5?0:act?Math.min(P.dur-.01,e<1?e*P.tRel:P.tRel+(e-1)):0;P.pact.setEffectiveWeight(1-k);P.mixer.update(0);return;}
   let P;
   if(S.state==='windup'||(S.state==='pitch'&&now-windupT0<1.7)||(S.state==='flight'&&now-windupT0<1.7)){
