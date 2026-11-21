@@ -22,3 +22,4 @@ if d>ln+.25:
     a=out
 b[name]=a;json.dump(b,open('/home/user/moonshot-mayhem/ely_clips.json','w'),separators=(',',':'));print('added',name,'src',round(d,2),'s ->',a['duration'],'s')
 P
+python3 /home/user/moonshot-mayhem/tools/packclips.py

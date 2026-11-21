@@ -290,6 +290,7 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/libs/fflate.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/FBXLoader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/utils/SkeletonUtils.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/FXAAShader.js"></script>
@@ -1282,7 +1283,7 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden&&inPlay())s
 // ───────────────────────── rigged batter mesh (Mixamo skeleton), dressed in code and driven by the rig above
 const MX={ready:false,map:[],on:true,token:0,kind:'ely'};
 // player looks you can switch between on the title screen
-const MODELS={ely:{label:'armoured',body:'ely.txt',clips:'ely_clips.json',tex:{d:'ely_d.jpg',n:'ely_n.jpg',s:'ely_s.jpg',g:'ely_g.jpg'}}},ORDER=['ely']; // one look for now; add entries here to offer more on the title screen
+const MODELS={ely:{label:'armoured',body:'ely.txt',clips:'ely_clips.min.json',tex:{d:'ely_d.jpg',n:'ely_n.jpg',s:'ely_s.jpg',g:'ely_g.jpg'}}},ORDER=['ely']; // one look for now; add entries here to offer more on the title screen
 try{const k=localStorage.getItem('mm_kind');if(MODELS[k])MX.kind=k;}catch(e){}
 const atlasC=document.createElement('canvas');atlasC.width=atlasC.height=1024;const atlasT=new T.CanvasTexture(atlasC);
 const SW={skin:[800,544],sleeve:[864,544],trim:[928,544],glove:[992,544],shoe:[800,608],sole:[864,608],band:[928,608],hair:[992,608],belt:[800,672]};
@@ -1686,13 +1687,15 @@ function loadPlayers(kind){ // body file = character mesh; clips.json = motion-c
   // the simple built-in figures are only a fallback: keep them out of sight while the models load
   const figs=[batter,pitcher,...fielders.filter(f=>!f.isP).map(f=>f.fig)],fallback=fig=>{showChunky(fig,true);if(fig===batter)bat.visible=true;};
   figs.forEach(f=>showChunky(f,false));bat.visible=false;
-  const mkClip=(c,name)=>new T.AnimationClip(name,c.duration,c.tracks.map(t=>/position$/.test(t.n)?new T.VectorKeyframeTrack('mixamorig'+t.n,t.t,t.v):new T.QuaternionKeyframeTrack('mixamorig'+t.n,t.t,t.v)));
+  const mkClip=(c,name)=>new T.AnimationClip(name,c.duration,c.tracks.map(t=>{const ts=typeof t.t==='number'?Array.from({length:t.t},(_,i)=>i/30):t.t; // evenly spaced keys are stored as a count
+    return /position$/.test(t.n)?new T.VectorKeyframeTrack('mixamorig'+t.n,ts,t.v):new T.QuaternionKeyframeTrack('mixamorig'+t.n,ts,t.v);}));
   clipsP=clipsP||fetch('clips.json').then(r=>r.ok?r.json():Promise.reject(new Error('clips')));
   const own=cfg.clips?fetch(cfg.clips).then(r=>r.ok?r.json():null).catch(()=>null):Promise.resolve(null); // clips made for this body, where we have them
   const imgs=cfg.tex?Promise.all(['d','n','s','g'].map(k=>loadImg(cfg.tex[k]))):Promise.resolve(null);
   Promise.all([loadBuf(cfg.body),clipsP,imgs,own]).then(([bb,cj0,im,oc])=>{const cj=Object.assign({},cj0,oc||{});
     if(my!==MX.token)return;                                   // switched again while loading
-    const skins=im?makeSkins(im):null,make=names=>{const o=new T.FBXLoader().parse(bb,'');o.animations=names.map(n=>mkClip(cj[n],n));return o;};
+    const skins=im?makeSkins(im):null,base=new T.FBXLoader().parse(bb,''),canClone=!!(T.SkeletonUtils&&T.SkeletonUtils.clone); // the character file is read once; every other player is a copy of it
+    const make=names=>{const o=canClone?T.SkeletonUtils.clone(base):new T.FBXLoader().parse(bb,'');o.animations=names.map(n=>mkClip(cj[n],n));return o;};
     try{setupModel(make(['hit','idle','idle2','strike'].filter(k=>cj[k]).concat(Object.keys(cj).filter(k=>/^[wdc]_/.test(k)))),skins&&skins.home);}catch(e){console.warn('batter model failed, using built-in figure',e);fallback(batter);}
     playersDone();
     try{setupPitcher(make(['pitch',...Object.keys(cj).filter(k=>/^[pd]_/.test(k))]),skins&&skins.away);}catch(e){console.warn('pitcher model failed, using built-in figure',e);fallback(pitcher);}
