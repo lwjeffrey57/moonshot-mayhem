@@ -236,16 +236,21 @@ body.mob #tip{display:block}body.mob .how{display:none}
 /* one step at a time: a spotlight (the hole in the dimming) over the control, one short caption beside it */
 #tut .spot{position:absolute;z-index:1;border:4px solid var(--volt);box-shadow:0 0 0 200vmax rgba(6,7,20,.8),0 0 24px 4px var(--volt);animation:jring 1s ease-in-out infinite}
 #tut.s1 .spot{left:calc(max(18px,env(safe-area-inset-left,0px)) - 9px);bottom:calc(var(--tbb) - 9px);width:calc(min(120px,100vw - 300px) + 18px);aspect-ratio:1;border-radius:50%}
-#tut.s2 .spot{right:calc(max(14px,env(safe-area-inset-right,0px)) - 9px);bottom:calc(var(--tbb) - 9px);width:calc(min(112px,28vw) + min(128px,32vw) + 30px);height:calc(min(128px,32vw) + 18px);border-radius:80px;animation:none}
-#tut.s3 .spot,#tut.j .spot{right:calc(max(14px,env(safe-area-inset-right,0px)) - 10px);bottom:calc(var(--tbb) + min(128px,32vw) + 4px);width:calc(min(76px,19vw) + 20px);aspect-ratio:1;border-radius:50%}
+#tut.s4 .spot{right:calc(max(14px,env(safe-area-inset-right,0px)) - 9px);bottom:calc(var(--tbb) - 9px);width:calc(min(112px,28vw) + min(128px,32vw) + 30px);height:calc(min(128px,32vw) + 18px);border-radius:80px;animation:none}
+#tut.s5 .spot,#tut.j .spot{right:calc(max(14px,env(safe-area-inset-right,0px)) - 10px);bottom:calc(var(--tbb) + min(128px,32vw) + 4px);width:calc(min(76px,19vw) + 20px);aspect-ratio:1;border-radius:50%}
 #tut.s1 .aimz{display:block;left:12px;right:30%;text-align:left;bottom:calc(var(--tbb) + min(120px,100vw - 300px) + 30px)}
-#tut.s2 .swz{display:block;left:12px;right:12px;text-align:right;bottom:calc(var(--tbb) + min(128px,32vw) + min(76px,19vw) + 44px)}
-#tut.s3 .jcz,#tut.j .jz{display:block;left:12px;right:12px;text-align:right;bottom:calc(var(--tbb) + min(128px,32vw) + min(76px,19vw) + 44px)}
-#tut .go{display:block;left:50%;top:30%;transform:translateX(-50%);white-space:nowrap;padding:12px 28px;font-size:20px;color:var(--ink);text-shadow:none;background:var(--volt);border:3px solid #000;border-radius:28px;box-shadow:0 4px 0 #000}
-#tut .stp{display:block;left:0;right:0;top:calc(30% - 30px);font-family:var(--hud);font-style:normal;font-weight:800;font-size:13px;letter-spacing:.2em;color:var(--chrome)}#tut.j .stp{display:none}
+#tut.s4 .swz{display:block;left:12px;right:12px;text-align:right;bottom:calc(var(--tbb) + min(128px,32vw) + min(76px,19vw) + 44px)}
+#tut.s2 .spot,#tut.s3 .spot{border-radius:16px;animation:none}
+#tut.s2 .pcz,#tut.s3 .tmz{display:block;left:12px;right:12px}
+#tut .pcz i,#tut .tmz i{font-style:normal;display:inline-block;width:.8em;height:.8em;border-radius:50%;border:3px solid;vertical-align:-.08em;margin-right:.15em}
+#tut.s3 .spot::after{content:'';position:absolute;left:50%;top:50%;width:54px;height:54px;margin:-27px;border:4px solid var(--volt);border-radius:50%;animation:tutring 1.6s linear infinite}
+@keyframes tutring{0%{transform:scale(2.3);opacity:0}12%{opacity:1}78%{transform:scale(.42);border-color:var(--volt)}80%,100%{transform:scale(.36);border-color:var(--heat);opacity:1}}
+#tut.s5 .jcz,#tut.j .jz{display:block;left:12px;right:12px;text-align:right;bottom:calc(var(--tbb) + min(128px,32vw) + min(76px,19vw) + 44px)}
+#tut .go{display:block;left:50%;top:186px;transform:translateX(-50%);white-space:nowrap;padding:12px 28px;font-size:20px;color:var(--ink);text-shadow:none;background:var(--volt);border:3px solid #000;border-radius:28px;box-shadow:0 4px 0 #000}
+#tut .stp{display:none;left:0;right:0;top:calc(30% - 30px);font-family:var(--hud);font-style:normal;font-weight:800;font-size:13px;letter-spacing:.2em;color:var(--chrome)}
 #tut .skip,#tut .off{display:block;left:max(12px,env(safe-area-inset-left,0px));white-space:nowrap;font-family:var(--hud);font-style:normal;font-weight:800;letter-spacing:.1em;text-transform:uppercase;text-shadow:none;border-radius:22px}
 #tut .skip{top:96px;padding:11px 20px;font-size:16px;color:var(--ink);background:var(--chrome);border:2px solid #000;box-shadow:0 3px 0 #000}
-#tut .off{top:150px;padding:7px 14px;font-size:12px;color:var(--chrome);border:1px solid rgba(242,245,255,.45);background:rgba(8,9,26,.6)}
+#tut .off{top:146px;padding:7px 14px;font-size:12px;color:var(--chrome);border:1px solid rgba(242,245,255,.45);background:rgba(8,9,26,.6)}
 @keyframes jring{50%{transform:scale(1.1)}}
 #ldtxt{font-family:var(--hud);font-weight:800;font-size:11px;letter-spacing:.14em;color:var(--dim);min-height:14px;text-align:center}
 .cta{pointer-events:auto;font-family:var(--display);font-size:clamp(20px,3vw,30px);color:var(--ink);background:var(--volt);border:3px solid #000;
@@ -320,6 +325,8 @@ body.mob #tip{display:block}body.mob .how{display:none}
       <div class="tz skip" id="tutskip">Skip ▶▶</div>
       <div class="tz off" id="tutoff">Don't show tutorials again</div>
       <div class="tz aimz"><b>LEFT THUMB: AIM</b>Drag here (or anywhere) to move the ring onto the pitch</div>
+      <div class="tz pcz"><b>THE RINGS ARE YOUR BAT</b><small><i style="color:#3ddc6a"></i>Green ring: CONTACT sweet spot (bigger). <i style="color:#ff4d2e"></i>Red ring: POWER sweet spot (smaller). Get the white dot on the ball.</small></div>
+      <div class="tz tmz"><b>YELLOW RING = TIMING</b>It closes on where the pitch will cross<small>Move your rings onto it. Swing the moment it finishes closing and turns red.</small></div>
       <div class="tz swz"><b>RIGHT THUMB: SWING</b>Tap as the yellow ring closes on the ball<small>CONTACT is easier and hits line drives. POWER is harder and hits moonshots.</small></div>
       <div class="tz jcz"><b>JUICE: MONSTER SWING</b>Tap JUICE, then swing. Costs one bar<small>Hits and taking balls refill it. Save it for a pitch you can drive.</small></div>
       <div class="tz jz"><b>YOUR JUICE IS FULL</b>Tap JUICE, then swing for a monster hit<small>Each Juice swing burns one of your three bars.</small></div>
@@ -834,7 +841,7 @@ const zone=new T.Group(); // drawn as thin bars: WebGL lines are always one pixe
  [[cx,ZONE.y0,W+w,w],[cx,ZONE.y1,W+w,w],[ZONE.x0,cy,w,H-w],[ZONE.x1,cy,w,H-w]].forEach(q=>{const b=new T.Mesh(new T.PlaneGeometry(q[2],q[3]),m);b.position.set(q[0],q[1],0);b.renderOrder=8;zone.add(b);});}
 zone.renderOrder=8;scene.add(zone);
 const reticle=new T.Group();reticle.renderOrder=9;scene.add(reticle);
-const retC=new T.Mesh(new T.RingGeometry(.93,1,28),overlayMat(0x3ad6ff,.9));retC.renderOrder=9;reticle.add(retC);
+const retC=new T.Mesh(new T.RingGeometry(.93,1,28),overlayMat(0x3ddc6a,.95));retC.renderOrder=9;reticle.add(retC);
 const retP=new T.Mesh(new T.RingGeometry(.9,1,24),overlayMat(0xff4d2e,.95));retP.renderOrder=9;reticle.add(retP);
 const retDot=new T.Mesh(new T.CircleGeometry(.014,8),overlayMat(0xffffff,.9));retDot.renderOrder=9;reticle.add(retDot);
 // where a ball hit in the air is going to come down
@@ -946,15 +953,20 @@ const TUT_EVERY_LAUNCH=true; // testing: show the guide on every launch; set fal
 let tutFirst=false,tutHold=false,tutSeen=!MOB;try{if(!TUT_EVERY_LAUNCH&&localStorage.getItem('mm_tut')==='1')tutSeen=true;}catch(e){}
 let tutOff=false,jtutSeen=!MOB;try{tutOff=localStorage.getItem('mm_tutoff')==='1';if(!TUT_EVERY_LAUNCH&&localStorage.getItem('mm_jtut')==='1')jtutSeen=true;}catch(e){}
 // the first time the Juice meter is full: point at the JUICE button
-let tutStep=0;
-function tutShow(mode){const T=$('tut');T.className=mode;T.hidden=false;tutHold=true;const n=mode==='j'?0:+mode.slice(1);tutStep=n;$('tutstp').textContent=n?n+' / 3':'';$('tutgo').textContent=n&&n<3?'NEXT ▶':'GOT IT — PLAY ▶';}
+let tutStep=0;const TUT_N=5;
+function tutShow(mode){const T=$('tut');T.className=mode;T.hidden=false;tutHold=true;const n=mode==='j'?0:+mode.slice(1);tutStep=n;$('tutstp').textContent=n?n+' / '+TUT_N:'';$('tutgo').textContent=n&&n<TUT_N?'NEXT ▶  '+n+'/'+TUT_N:'GOT IT — PLAY ▶';
+  const sp=T.querySelector('.spot');sp.style.cssText='';T.querySelectorAll('.pcz,.tmz').forEach(c=>c.style.bottom='');
+  if(n===2||n===3){ // spotlight the strike zone itself: project its corners to the screen
+    const H=canvas.clientHeight,W=canvas.clientWidth,a=new V3(ZONE.x0,ZONE.y1,0).project(camera),b=new V3(ZONE.x1,ZONE.y0,0).project(camera),pad=16;
+    const l=(a.x+1)/2*W-pad,t=(1-a.y)/2*H-pad,r=(b.x+1)/2*W+pad,bt=(1-b.y)/2*H+pad;
+    sp.style.cssText='left:'+l+'px;top:'+t+'px;width:'+(r-l)+'px;height:'+(bt-t)+'px';T.querySelector(n===2?'.pcz':'.tmz').style.bottom=(H-t+16)+'px';}}
 function tutClose(){$('tut').hidden=true;tutHold=false;if(tutFirst){tutFirst=false;S.t=now-readyDur+.7;}}
 function jtutNeed(){if(tutOff||jtutSeen||window.__mmManual&&!window.__mmTut)return false;jtutSeen=true;tutFirst=true;tutShow('j');try{localStorage.setItem('mm_jtut','1');}catch(e){}return true;}
 function tutNeed(){if(tutOff||tutSeen||window.__mmManual&&!window.__mmTut)return false;tutSeen=true;tutFirst=true;tutShow('s1');try{localStorage.setItem('mm_tut','1');}catch(e){}return true;}
 $('tut').addEventListener('pointerdown',e=>{e.preventDefault();const id=e.target.id;
   if(id==='tutoff'){tutOff=true;try{localStorage.setItem('mm_tutoff','1');}catch(x){}tutClose();return;} // no more guides on this device (HOW TO PLAY in the pause menu still works)
   if(id==='tutskip'){tutClose();return;}
-  if(tutStep&&tutStep<3){tutShow('s'+(tutStep+1));return;}                                            // a tap anywhere moves to the next step
+  if(tutStep&&tutStep<TUT_N){tutShow('s'+(tutStep+1));return;}                                            // a tap anywhere moves to the next step
   if($('tut').className==='j'&&e.target.classList.contains('spot')&&S.juice>=.333){juiceArmed=true;hud();}
   tutClose();});
 function timing(t,c,l){const e=$('tim');e.className='';e.textContent=t;e.style.color=c;e.dataset.l=l||2;void e.offsetWidth;e.className='go';}
@@ -1335,6 +1347,8 @@ function doSwing(type){
   if(S.state==='walkup'){S.t=Math.min(S.t,now-WALK.dur+.22);return;} // skip the intro
   if(flight&&flight.admire&&!flight.done){flight.A=Math.min(flight.A,now-flight.t0);return;} // cut to the ball
   if(swing)return;
+  // between pitches the buttons still swing the bat: a practice cut, no cost, so the first tap always teaches what the button does
+  if(S.state==='ready'||(S.state==='windup'&&now-windupT0<=.55)){swing={t0:now,type,turbo:false,done:false,miss:false,practice:true};SND.whoosh();return;}
   if(!(S.state==='pitch'||(S.state==='windup'&&now-windupT0>.55)))return;
   const turbo=juiceOn()&&S.juice>=.333;
   swing={t0:now,type,turbo,done:false,miss:false};SND.whoosh();
@@ -1972,7 +1986,7 @@ function step(dt){
   const st=S.state,el=now-S.t;
   if(st==='ready'&&el>=.25&&S.pitches===0&&tutNeed())return;   // guides come up as soon as he is set in the box
   if(st==='ready'&&el>=.25&&S.juice>=.999&&jtutNeed())return;
-  if(st==='ready'&&el>=readyDur){S.state='windup';windupT0=now;released=false;S.fresh=false;pitch=choosePitch();S.pitches++;readyDur=1.15;$('pitchinfo').classList.remove('on'),$('plast').classList.remove('on');}
+  if(st==='ready'&&el>=readyDur&&!swing){S.state='windup'; /* the pitcher waits for a practice cut to finish: no quick pitches */windupT0=now;released=false;S.fresh=false;pitch=choosePitch();S.pitches++;readyDur=1.15;$('pitchinfo').classList.remove('on'),$('plast').classList.remove('on');}
   else if(st==='windup'&&now-windupT0>=1.0){
     if(MX.pit&&MX.on){MX.pit.obj.updateMatrixWorld(true);MX.pit.hand.getWorldPosition(pitch.rel);}else{pitcher.root.updateMatrixWorld(true);pitcher.handR.getWorldPosition(pitch.rel);}pitch.t0=now;S.state='pitch';SND.pitch();ball.visible=true;ballShadow.visible=true;
   }
@@ -1984,8 +1998,9 @@ function step(dt){
   else if(st==='end'&&el>=readyDur){endGame();}
 
   if(swing&&!swing.done&&now>=swing.t0+SW_T){
-    if(S.state==='pitch'&&pitch&&!pitch.hit)tryContact();else{swing.done=true;swing.miss=true;}
+    if(swing.practice)swing.done=true;else if(S.state==='pitch'&&pitch&&!pitch.hit)tryContact();else{swing.done=true;swing.miss=true;}
   }
+  if(swing&&swing.practice&&now-swing.t0>.55)swing=null; // practice cut finished: bat is back, he can swing for real
   if(S.state==='pitch'&&pitch){
     const u=(now-pitch.t0)/pitch.dur;pitchPos(pitch,u,ball.position);
     ball.scale.setScalar(1);ballShadow.position.set(ball.position.x,.03,ball.position.z);ballShadow.scale.setScalar(.16);
