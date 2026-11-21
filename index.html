@@ -927,7 +927,7 @@ const keys={};
 const PACE={samePitch:2.1,newBatter:2.9}; // seconds the pitcher waits before starting his windup
 let swing=null,pitch=null,flight=null,juiceArmed=false,windupT0=0,released=false,readyDur=1.2;
 const batS={b:0,h:new V3(-.36,1.36,.36),d:new V3(-.25,1,-.15).normalize(),pose:lerpPose(POSE.bStance,POSE.bStance,0)};
-const SW_T=.13;
+const SW_T=.07; // tap-to-contact time. Short on purpose: the swing has to feel instant
 const curBatter=()=>LINEUP[S.bi%LINEUP.length];
 
 function pop(t,s='',cls='',long=false){const e=$('pop');e.className='';e.querySelector('.t').textContent=t;e.querySelector('.s').textContent=s;void e.offsetWidth;e.className='go '+cls+(long?' long':'');}
@@ -1990,7 +1990,8 @@ function step(dt){
     const u=(now-pitch.t0)/pitch.dur;pitchPos(pitch,u,ball.position);
     ball.scale.setScalar(1);ballShadow.position.set(ball.position.x,.03,ball.position.z);ballShadow.scale.setScalar(.16);
     const show=u>(pitch.P.sp?.42:.22)&&u<1;pring.visible=show;
-    if(show){pring.position.set(pitch.tx,pitch.ty,0);const r=lerp(.42,.055,ease(clamp((u-.22)/.78,0,1)));pring.scale.setScalar(r);pring.material.color.setHex(u>.86?0xff4d2e:0xffe53b);}
+    if(show){pring.position.set(pitch.tx,pitch.ty,0);const uT=u+SW_T/pitch.dur, // the ring runs ahead by the swing time, so 'tap when it finishes closing' is exactly on time
+      r=lerp(.42,.055,ease(clamp((uT-.22)/.78,0,1)));pring.scale.setScalar(r);pring.material.color.setHex(uT>.9?0xff4d2e:0xffe53b);}
     if(pitch.P.col&&u<1)trail(pitch,pitch.P.col,u<.75,true);
     if(u>=1&&!pitch.called){pitch.called=true;
       payHeat();$('mph').textContent=pitchMph(pitch.dur);$('plast').textContent=pitch.P.n+' · '+pitchMph(pitch.dur)+' MPH';
