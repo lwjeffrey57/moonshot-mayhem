@@ -192,8 +192,10 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 #tbar{left:50%;top:calc(60% + 36px);margin-left:-150px;width:300px;display:flex;align-items:center;gap:8px;opacity:0;font-family:var(--hud);font-weight:800;font-size:12px;letter-spacing:.12em;color:var(--chrome);text-shadow:0 1px 0 #000}
 #tbar .trk{position:relative;flex:1;height:10px;border-radius:5px;background:rgba(8,9,26,.8);border:2px solid rgba(242,245,255,.55)}
 #tbar .trk i{position:absolute;top:0;bottom:0;border-radius:3px}
-#tbar .gc{background:#3ddc6a}#tbar .gp{background:var(--heat)}#tbar .jx{background:#ffd23b;box-shadow:0 0 8px 1px rgba(255,210,59,.8)} /* same colours as the bat: green = CONTACT window, red core = POWER window, gold ends = Juice */
-#tbar .dim{opacity:.3}
+#tbar .gc{background:linear-gradient(90deg,rgba(61,220,106,.28),rgba(61,220,106,.75) 36%,#7dffa0 42%,#7dffa0 58%,rgba(61,220,106,.75) 64%,rgba(61,220,106,.28))}
+#tbar .gp{background:linear-gradient(90deg,rgba(255,77,46,.3),rgba(255,77,46,.8) 36%,#ff8a70 42%,#ff8a70 58%,rgba(255,77,46,.8) 64%,rgba(255,77,46,.3))}
+#tbar .jx{background:#ffd23b;box-shadow:0 0 8px 1px rgba(255,210,59,.8)} /* same colours as the bat: green = CONTACT window, red core = POWER window, gold ends = Juice */
+#tbar .dim{opacity:.22}
 #tbar .trk i.mk{top:-4px;bottom:-4px;width:5px;margin-left:-2.5px;border-radius:2.5px;background:#fff;border:1.5px solid #000;box-sizing:content-box}
 #tbar.go{animation:tim 1.7s ease-out both}#hud.mob #tbar{top:calc(41% + 32px);margin-left:-130px;width:260px}#hud.wk #tbar{visibility:hidden}
 @keyframes tim{0%{opacity:0;transform:translateY(8px)}15%,70%{opacity:1;transform:none}100%{opacity:0}}
@@ -1054,11 +1056,12 @@ $('tut').addEventListener('pointerdown',e=>{e.preventDefault();const id=e.target
   if(tutStep&&tutStep<TUT_N){tutShow('s'+(tutStep+1));return;}                                            // a tap anywhere moves to the next step
   if($('tut').className==='j'&&e.target.classList.contains('spot')&&S.juice>=.333){juiceArmed=true;hud();}
   tutClose();});
-// Timing meter. x is real time, so the windows are to scale: the green band is the PERFECT window for a CONTACT swing, the narrower red core
-// is the PERFECT window for a POWER swing, and a Juice swing adds gold to both ends of whichever one you used.
-function timeBar(x,pw,jt,perfect){const e=$('tbar');e.className='';const band=(el,half)=>{el.style.left=(50-half)+'%';el.style.width=(half*2)+'%';},hc=.22/.8*50,hp=hc*.85/1.2,used=pw?hp:hc;
-  band($('tgc'),hc);band($('tgp'),hp);band($('tjx'),jt>1?used*jt:0);$('tgc').classList.toggle('dim',!!pw);$('tgp').classList.toggle('dim',!pw);
-  $('tmk').style.left=(50+clamp(x/.8,-1,1)*50)+'%';$('tmk').style.background=perfect?'#ffe53b':Math.abs(x)<.7?'#fff':'#ff4d2e';void e.offsetWidth;e.className='go';}
+// Timing meter. x is real time and everything is to scale. A coloured band is the whole window in which that swing can touch the ball
+// (green = CONTACT, the narrower red = POWER), brightest in the middle where timing is best and fading toward the edges; a Juice swing adds
+// gold to both ends of the one you used. A marker in the black means the swing was too early or too late to make contact at all.
+function timeBar(x,pw,jt,perfect){const e=$('tbar');e.className='';const SPAN=2.05,band=(el,half)=>{el.style.left=(50-half)+'%';el.style.width=(half*2)+'%';},hc=1.4/SPAN*50,hp=hc*.85/1.2,used=(pw?hp:hc)*jt;
+  band($('tgc'),hc);band($('tgp'),hp);band($('tjx'),jt>1?used:0);$('tgc').classList.toggle('dim',!!pw);$('tgp').classList.toggle('dim',!pw);
+  const mx=clamp(x/SPAN,-1,1)*50,miss=Math.abs(mx)>used;$('tmk').style.left=(50+mx)+'%';$('tmk').style.background=perfect?'#ffe53b':miss?'#ff4d2e':'#fff';void e.offsetWidth;e.className='go';}
 function timing(t,c,l){const e=$('tim');e.className='';e.textContent=t;e.style.color=c;e.dataset.l=l||2;void e.offsetWidth;e.className='go';}
 function flash(a){const e=$('flash');e.style.transition='none';e.style.opacity=a*FX;void e.offsetWidth;e.style.transition='opacity .35s';e.style.opacity=0;}
 function hud(){
