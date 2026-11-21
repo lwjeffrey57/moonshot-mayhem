@@ -500,10 +500,10 @@ function ik(sh,el,target,L1,L2,poleV){
 const HOME={base:'#1b2a6b',trim:'#f26a1b',ink:'#f4f4f0',word:'Comets'};
 const AWAY={base:'#f4f4f0',trim:'#0e7c86',ink:'#0e3c46',pin:'rgba(14,60,70,.35)',word:'Krakens'};
 const LINEUP=[
-  {name:'VASQUEZ',num:27,pwr:1.0,con:1.05,skin:0xb9794f},{name:'OKAFOR',num:8,pwr:.96,con:1.12,skin:0x6b4226},
+  {name:'VASQUEZ',num:27,pwr:1.0,con:1.05,skin:0xb9794f},{name:'OKAFOR',lh:true,num:8,pwr:.96,con:1.12,skin:0x6b4226},
   {name:'DELACROIX',num:3,pwr:1.06,con:1.0,skin:0xe2b08a},{name:'BRICKHOUSE',num:44,pwr:1.16,con:.9,skin:0xd9a47c},
-  {name:'TANAKA',num:51,pwr:1.02,con:1.08,skin:0xe6bd94},{name:'MONTOYA',num:19,pwr:1.1,con:.95,skin:0xa8683e},
-  {name:'ABERNATHY',num:12,pwr:.94,con:1.1,skin:0xf0c4a0},{name:'JACKSON-BELL',num:35,pwr:1.12,con:.93,skin:0x5a3820},
+  {name:'TANAKA',lh:true,num:51,pwr:1.02,con:1.08,skin:0xe6bd94},{name:'MONTOYA',num:19,pwr:1.1,con:.95,skin:0xa8683e},
+  {name:'ABERNATHY',lh:true,num:12,pwr:.94,con:1.1,skin:0xf0c4a0},{name:'JACKSON-BELL',num:35,pwr:1.12,con:.93,skin:0x5a3820},
   {name:'KOWALSKI',num:6,pwr:.98,con:1.04,skin:0xe8b690},
 ];
 const batter=makeFigure({skin:0xb9794f,pants:0xb9bcc8,stripe:0x1b2a6b,trimC:0xf26a1b,sleeve:0x1b2a6b,cap:0x14204a,helmet:true,bglove:0xf26a1b,jersey:Object.assign({name:'VASQUEZ',num:27},HOME)});
@@ -631,7 +631,7 @@ const juiceOn=()=>juiceArmed||keys.ShiftLeft||keys.ShiftRight;
 function setBatter(){
   S.bi++;const b=curBatter();S.balls=0;S.strikes=0;
   paintJersey(batter,Object.assign({name:b.name,num:b.num},HOME));paintSkin(batter,b.skin);if(MX.ready)paintAtlas(b);
-  $('cnum').textContent=b.num;$('cname').textContent=b.name;$('spw').style.width=((b.pwr-.85)/.35*100)+'%';$('sco').style.width=((b.con-.85)/.3*100)+'%';
+  $('cnum').textContent=b.num;$('cname').textContent=b.name+(b.lh?' · L':' · R');$('spw').style.width=((b.pwr-.85)/.35*100)+'%';$('sco').style.width=((b.con-.85)/.3*100)+'%';
   readyDur=1.7;S.fresh=true;
 }
 function toReady(d){S.state='ready';S.t=now;if(d)readyDur=d;swing=null;pitch=null;flight=null;ball.visible=false;ballShadow.visible=false;pring.visible=false;ballGlow.material.opacity=0;
@@ -729,7 +729,7 @@ function tryContact(){
   // launch: where the barrel met the ball, pitch height, and how square it was
   let la=(pw?25:11)+clamp((pitch.ty-aim.y)/R,-1.3,1.3)*28+(pitch.ty-.82)/.33*5+gs()*(pw?16:12);la=clamp(la,-20,62);
   // spray: timing first, then pitch location (inside pulls, outside goes the other way) and bat-path scatter
-  let phi=n*36+pitch.tx/.28*11+(pitch.tx-aim.x)/R*8+gs()*20;if(tipped)phi+=rand(-1,1)*50;
+  let phi=(MX.lefty?-1:1)*n*36+pitch.tx/.28*11+(pitch.tx-aim.x)/R*8+gs()*20;if(tipped)phi+=rand(-1,1)*50;
   let v=(pw?47:37)*(.5+.5*q)*b.pwr*(tb?1.22:1)*(S.over?1.14:1)*rand(.9,1.07);
   if(chase>0){ // off the end, off the handle, beaten into the ground or popped up
     v*=1-.45*chase;la+=(pitch.ty<ZONE.y0?-16:pitch.ty>ZONE.y1?20:0)*chase;phi+=(pitch.tx<ZONE.x0?-1:pitch.tx>ZONE.x1?1:0)*14*chase;la=clamp(la,-25,70);}
@@ -974,7 +974,7 @@ function setupClip(obj,clip,B,sk){
   // keep him in the batter's box: measure where his feet are in the stance and at contact, and back him off the plate if needed
   {const v=new V3();let fx=-1e9;const feet=['LeftFoot','RightFoot','LeftToeBase','RightToeBase'].map(B).filter(Boolean),far=()=>feet.forEach(f=>{fx=Math.max(fx,f.getWorldPosition(v).x);});
     probe(ic||clip,at=>{at(0);far();});probe(clip,at=>{at(tC);far();});
-    C.backOff=Math.min(0,BOX_EDGE-fx);obj.position.x+=C.backOff;}
+    C.backOff=Math.min(0,BOX_EDGE-fx);obj.position.x+=C.backOff;C.baseX=obj.position.x;}
   if(sc){C.tCs=contact(sc,.4,1.8,1.1);C.sDur=sc.duration;}
   const mixer=C.mixer=new T.AnimationMixer(obj);
   C.hit=mixer.clipAction(clip);C.hit.play();
@@ -983,7 +983,10 @@ function setupClip(obj,clip,B,sk){
 }
 const WHIFF_HOLD=1.15; // seconds of the swing-and-miss clip shown after the miss before he resets
 function updateClip(dt){
-  const C=MX.clip;let w=0,want=0,rate=.55,skT=0;
+  const C=MX.clip,o=MX.obj;let w=0,want=0,rate=.55,skT=0;
+  o.scale.x=Math.abs(o.scale.x);o.position.x=C.baseX; // everything below is worked out right-handed; a lefty is mirrored at the end
+  MX.lefty=S.bi>=0&&!!curBatter().lh;
+  if(!DBG.cam){CAM_HOME.x=MX.lefty?.15:-.15;CAM_LOOK.x=MX.lefty?-.3:.3;} // lefties stand in the other box, so the camera moves to their side
   const incoming=S.state==='pitch'||(S.state==='windup'&&now-windupT0>C.loadAt);
   if(swing&&C.sw!==swing){C.sw=swing;C.c0=C.t;C.mode='swing';}
   if(C.mode==='swing'){const ts=now-C.sw.t0;
@@ -1008,7 +1011,10 @@ function updateClip(dt){
   if(w>0){ // lean the upper body so the barrel meets the height you aimed at
     const th=clamp((aim.y-C.y0)/.9,-.45,.45)*w*(MX.leanSign||1);
     C.spine.parent.getWorldQuaternion(_qp);C.spine.getWorldQuaternion(_qd);_q2.setFromAxisAngle(ZAX,th);_qd.premultiply(_q2);C.spine.quaternion.copy(_qp.invert()).multiply(_qd);}
-  MX.obj.updateMatrixWorld(true);clipBat();
+  o.updateMatrixWorld(true);clipBat();
+  if(MX.lefty){ // mirror the batter and his bat across the plate
+    bat.position.x*=-1;_bd.x*=-1;bat.quaternion.setFromUnitVectors(UP,_bd);bat.updateMatrixWorld(true);
+    o.scale.x=-o.scale.x;o.position.x=-C.baseX;o.updateMatrixWorld(true);}
 }
 function prepModel(obj,tx,custom){ // dress + bulk a Mixamo mannequin; returns its skeleton helpers and measurements
   const s=.87/88.9;
@@ -1108,7 +1114,7 @@ function showChunky(fig,on,keep){fig.root.children.forEach(ch=>{if(ch!==bat&&ch!
 function unloadPlayers(){
   if(MX.obj){if(MX.obj.parent)MX.obj.parent.remove(MX.obj);MX.obj=null;}
   if(MX.pit){scene.remove(MX.pit.obj);MX.pit=null;}
-  MX.ready=false;MX.clip=null;batter.root.add(bat);showChunky(batter,true);showChunky(pitcher,true);unfitDriver(batter);
+  MX.ready=false;MX.clip=null;MX.lefty=false;CAM_HOME.x=-.15;CAM_LOOK.x=.3;batter.root.add(bat);showChunky(batter,true);showChunky(pitcher,true);unfitDriver(batter);
   fielders.forEach(f=>{if(f.obj){f.fig.root.remove(f.obj);f.obj=f.rt=f.mixer=f.act=null;f.catching=false;unfitDriver(f.fig);showChunky(f.fig,true);}});
 }
 function retarget(){retargetFig(batter,MX);}
