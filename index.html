@@ -20,48 +20,62 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 #hud > *{position:absolute}
 .slab{background:var(--panel);border:2px solid rgba(242,245,255,.16);transform:skewX(-8deg);padding:6px 12px}
 .slab > *{transform:skewX(8deg)}
-/* score bug */
-#bug{top:10px;left:max(16px,env(safe-area-inset-left,0px));display:flex;gap:6px;align-items:stretch}
-#bug .slab{display:flex;flex-direction:column;justify-content:center;line-height:1}
+/* ── HUD: arcade broadcast style. Score box top-left, juice meter top-centre, field map top-right, chrome pills at the bottom corners. */
+:root{--navy:#10122a;--pillhi:#fdfdff;--pilllo:#8e97b0}
 .lbl{font-size:11px;letter-spacing:.14em;color:var(--dim);font-weight:700;text-transform:uppercase}
 .big{font-family:var(--display);font-size:26px;color:var(--volt);font-variant-numeric:tabular-nums}
-.mid{font-family:var(--display);font-size:18px;font-variant-numeric:tabular-nums}
-#outs{display:flex;gap:4px;margin-top:4px}
-#outs i{width:10px;height:10px;border-radius:50%;background:rgba(242,245,255,.18)}
-#outs i.on{background:var(--heat);box-shadow:0 0 8px var(--heat)}
-/* diamond */
-#diamond{top:12px;right:max(16px,env(safe-area-inset-right,0px));width:64px;height:64px}
-#diamond i{position:absolute;width:18px;height:18px;transform:rotate(45deg);background:rgba(11,10,26,.7);border:2px solid rgba(242,245,255,.5)}
-#diamond i.on{background:var(--volt);box-shadow:0 0 12px var(--volt);border-color:#fff}
-#b2{left:23px;top:4px} #b1{left:44px;top:25px} #b3{left:2px;top:25px}
-/* juice */
-#juice{top:10px;left:50%;transform:translateX(-50%);width:min(300px,38vw);text-align:center}
-#jbar{height:14px;background:rgba(11,10,26,.8);border:2px solid rgba(242,245,255,.35);transform:skewX(-18deg);overflow:hidden;position:relative}
-#jfill{position:absolute;inset:0;width:0%;background:linear-gradient(90deg,var(--ice),#fff 60%,var(--volt));transition:width .25s}
-#jbar::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 32.3%,rgba(11,10,26,.9) 32.3% 33.33%)}
-#jtxt{font-size:12px;letter-spacing:.16em;font-weight:800;margin-top:3px;color:var(--dim)}
-#juice.ready #jtxt{color:var(--volt)}
-#juice.armed #jbar{border-color:var(--volt);box-shadow:0 0 14px var(--volt)}
-#juice.over #jtxt{color:var(--ice);text-shadow:0 0 10px var(--ice)}
-/* batter card */
-#card{left:max(16px,env(safe-area-inset-left,0px));bottom:12px;display:flex;gap:10px;align-items:center}
-#cnum{font-family:var(--display);font-size:34px;color:var(--volt);line-height:1}
-#cname{font-family:var(--display);font-size:17px;line-height:1.1}
-.stat{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:800;letter-spacing:.1em;color:var(--dim)}
-.stat b{display:block;width:64px;height:5px;background:rgba(242,245,255,.15)}
-.stat b i{display:block;height:100%;background:var(--ice)}
-#rep{top:134px;right:max(16px,env(safe-area-inset-right,0px));padding:6px 10px 7px;min-width:150px}
-#rep .lbl{display:block;margin-bottom:3px}
-#rep .row{display:grid;grid-template-columns:16px 1fr auto;gap:6px;align-items:baseline;font-size:13px;font-weight:700;letter-spacing:.06em;line-height:1.45;color:var(--chrome);font-variant-numeric:tabular-nums}
-#rep .row i{font-style:normal;color:var(--ice);text-align:center}
-#rep .row b{font-weight:800;color:var(--dim)}
-#rep .row.sp{color:var(--heat)}#rep .row.sp i{color:var(--heat)}
-#rep .row.last{color:var(--volt)}#rep .row.last b,#rep .row.last i{color:var(--volt)}
-@media (max-width:760px),(max-height:520px){#rep{display:none}}
-#pitchinfo{bottom:14px;left:50%;transform:translateX(-50%);font-weight:800;letter-spacing:.14em;font-size:14px;color:var(--chrome);text-shadow:0 2px 0 #000;opacity:0;transition:opacity .2s;white-space:nowrap}
+/* score box */
+#bug{top:10px;left:max(16px,env(safe-area-inset-left,0px));width:128px;background:linear-gradient(#1b1f4a,#0b0c22);border:2px solid var(--pilllo);border-radius:6px;box-shadow:0 3px 0 #000;
+  font-family:var(--display);font-style:italic;line-height:1;overflow:hidden;font-variant-numeric:tabular-nums}
+#bug .inn{display:flex;align-items:center;gap:6px;justify-content:center;padding:4px 0;font-size:15px;color:var(--chrome);background:linear-gradient(#3a4190,#1b1f4a)}
+#bug .inn i{font-style:normal;font-size:11px;color:var(--turf)}
+#bug .tm{display:flex;justify-content:space-between;padding:4px 10px;font-size:17px;color:var(--volt);border-top:1px solid rgba(255,255,255,.12)}
+#bug .tm.alt{color:var(--chrome);font-size:15px}
+#bug .cnt{display:flex;justify-content:space-between;padding:4px 10px;font-size:16px;color:var(--chrome);background:#000;border-top:1px solid rgba(255,255,255,.2)}
+#bug .cnt #outs{color:var(--volt)}
+/* radar-gun readout */
+#pitchinfo{top:122px;left:max(16px,env(safe-area-inset-left,0px));width:74px;text-align:center;background:#06140a;border:2px solid var(--pilllo);border-radius:5px;padding:3px 0 2px;box-shadow:0 3px 0 #000;opacity:.0;transition:opacity .2s}
 #pitchinfo.on{opacity:1}
-#keys{right:max(16px,env(safe-area-inset-right,0px));bottom:12px;font-size:12px;font-weight:700;letter-spacing:.08em;color:var(--dim);text-align:right;line-height:1.5;text-shadow:0 1px 0 #000}
-#keys kbd{font-family:var(--hud);font-weight:800;color:var(--ink);background:var(--chrome);padding:0 5px;border-radius:3px}
+#pitchinfo b{display:block;font-family:var(--display);font-size:24px;line-height:1;color:var(--volt);text-shadow:0 0 8px rgba(255,229,59,.6);font-variant-numeric:tabular-nums}
+#pitchinfo span{font-size:11px;font-weight:800;letter-spacing:.12em;color:var(--chrome)}
+/* juice meter + batter plate */
+#juice{top:10px;left:50%;transform:translateX(-50%);width:min(280px,40vw);text-align:center}
+#jbar{height:22px;border-radius:12px;background:linear-gradient(#05060f,#1a1d3a);border:2px solid var(--pillhi);box-shadow:0 0 0 2px var(--navy),0 3px 0 2px #000;overflow:hidden;position:relative}
+#jfill{position:absolute;inset:0;width:0%;background:linear-gradient(#8fd0ff,#2f7dff 45%,#1647c4 55%,#3f8dff);transition:width .25s}
+#jbar::before{content:"";position:absolute;inset:0;z-index:1;background:repeating-linear-gradient(90deg,transparent 0 32.6%,rgba(5,6,15,.85) 32.6% 33.33%)}
+#jbar::after{content:"";position:absolute;left:6px;right:6px;top:2px;height:6px;border-radius:6px;background:rgba(255,255,255,.28);z-index:2}
+#jtxt{position:absolute;inset:0;z-index:3;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-style:italic;font-size:13px;letter-spacing:.08em;color:#fff;text-shadow:0 1px 0 #000,0 0 4px #000}
+#juice.ready #jtxt{color:var(--volt)}
+#juice.armed #jbar{border-color:var(--volt);box-shadow:0 0 0 2px var(--navy),0 0 16px var(--volt)}
+#juice.over #jfill{background:linear-gradient(#e8fbff,#3ad6ff 45%,#12a6d8 55%,#7fe6ff)}
+#juice.over #jtxt{color:#fff;text-shadow:0 0 8px var(--ice),0 1px 0 #000}
+#card{margin-top:6px;display:flex;gap:8px;align-items:center;justify-content:center;font-family:var(--display);font-style:italic;text-shadow:0 2px 0 #000;white-space:nowrap}
+#cnum{font-size:18px;color:var(--volt)}#cname{font-size:16px;color:var(--volt)}
+.stats{display:flex;gap:7px;font-family:var(--hud);font-style:normal}
+.stat{display:flex;align-items:center;gap:3px;font-size:10px;font-weight:800;letter-spacing:.08em;color:var(--chrome)}
+.stat b{display:block;width:26px;height:5px;background:rgba(5,6,15,.75);border:1px solid rgba(255,255,255,.35)}
+.stat b i{display:block;height:100%;background:var(--ice)}
+/* field map */
+#diamond{top:8px;right:max(16px,env(safe-area-inset-right,0px));width:104px;height:86px;filter:drop-shadow(0 3px 0 #000)}
+#diamond .base{fill:#f2f5ff;stroke:var(--navy);stroke-width:1.5}
+#diamond .base.on{fill:#2f7dff;stroke:#fff;stroke-width:2;filter:drop-shadow(0 0 4px #7fb4ff)}
+/* chrome pills */
+.pills{display:flex;flex-direction:column;gap:5px}
+.pill{display:flex;align-items:center;gap:7px;height:24px;padding:0 12px 0 3px;border-radius:13px;border:2px solid var(--navy);box-shadow:0 2px 0 #000;
+  background:linear-gradient(var(--pillhi),#cfd5e6 45%,var(--pilllo) 55%,#dfe4f2);font-family:var(--display);font-style:italic;font-size:13px;color:var(--navy);white-space:nowrap;font-variant-numeric:tabular-nums}
+.pill .k{flex:none;display:flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 4px;border-radius:9px;background:var(--navy);color:var(--ice);font-family:var(--hud);font-style:normal;font-weight:800;font-size:11px;letter-spacing:.04em}
+.pill b{margin-left:auto;padding-left:8px;font-weight:400;font-size:12px;opacity:.8}
+#keys{left:max(16px,env(safe-area-inset-left,0px));bottom:12px}
+#keys .pill{width:max-content}
+#rep{right:max(16px,env(safe-area-inset-right,0px));bottom:12px;width:152px}
+#rep .cap{font-family:var(--display);font-style:italic;font-size:13px;color:var(--volt);text-shadow:0 2px 0 #000;text-align:right;margin-bottom:4px}
+#rep .pills{gap:3px}
+#rep .pill{height:20px;font-size:11.5px;padding-right:9px}
+#rep .pill .k{min-width:15px;height:15px;font-size:11px}
+#rep .pill.sp{background:linear-gradient(#ff9a86,#e23a22 45%,#a81c0c 55%,#ff6a50);color:#fff}
+#rep .pill.sp .k{color:var(--volt)}
+#rep .pill.last{border-color:var(--volt);box-shadow:0 0 10px var(--volt),0 2px 0 #000}
+@media (max-width:760px),(max-height:520px),(pointer:coarse){#rep{display:none}}
 /* centre calls */
 #pop{left:0;right:0;top:26%;text-align:center;opacity:0}
 #pop .t{font-family:var(--display);font-size:clamp(40px,10vw,120px);line-height:.95;font-style:italic;letter-spacing:.01em;
@@ -97,7 +111,7 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 .cta{pointer-events:auto;font-family:var(--display);font-size:clamp(20px,3vw,30px);color:var(--ink);background:var(--volt);border:3px solid #000;
   padding:10px 34px;transform:skewX(-10deg);cursor:pointer;box-shadow:0 6px 0 #000}
 .cta.alt{background:var(--chrome);font-size:clamp(15px,2.2vw,22px);padding:8px 26px}
-#pausebtn{top:86px;right:max(16px,env(safe-area-inset-right,0px));pointer-events:auto;width:44px;height:38px;font-size:14px;color:var(--chrome);background:var(--panel);border:2px solid rgba(242,245,255,.3);transform:skewX(-8deg);cursor:pointer}
+#pausebtn{top:100px;right:max(16px,env(safe-area-inset-right,0px));pointer-events:auto;width:44px;height:38px;font-size:14px;color:var(--chrome);background:var(--panel);border:2px solid rgba(242,245,255,.3);transform:skewX(-8deg);cursor:pointer}
 #pausebtn:hover{border-color:var(--volt);color:var(--volt)}
 #pausebtn:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
 .cta:hover{background:#fff}.cta:active{transform:skewX(-10deg) translateY(4px);box-shadow:0 2px 0 #000}
@@ -106,7 +120,7 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 .final{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
 .final .slab{min-width:92px}
 @media (max-height:520px){.how{display:none}}
-@media (max-width:560px){#juice{top:78px;width:62vw}#card .stats{display:none}#cname{font-size:14px}.big{font-size:20px}}
+@media (max-width:560px){#juice{width:34vw}#card .stats{display:none}#cname{font-size:13px}#bug{width:104px}#diamond{width:80px;height:66px}.big{font-size:20px}}
 @media (prefers-reduced-motion:reduce){#pop.go{animation-timing-function:ease-out}}
 </style>
 
@@ -115,17 +129,25 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
   <div id="hud">
     <div id="flash"></div>
     <div id="bug">
-      <div class="slab"><span class="lbl">Comets</span><span class="big" id="runs">0</span></div>
-      <div class="slab"><span class="lbl">Inning</span><span class="mid" id="inn">1/3</span></div>
-      <div class="slab"><span class="lbl">B–S</span><span class="mid" id="count">0–0</span><div id="outs"><i></i><i></i><i></i></div></div>
+      <div class="inn"><i>▲</i><span id="inn">1ST</span></div>
+      <div class="tm"><span>COMETS</span><b id="runs">0</b></div>
+      <div class="tm alt"><span>HITS</span><b id="hits">0</b></div>
+      <div class="cnt"><span id="count">0-0</span><span id="outs">O: 0</span></div>
     </div>
-    <div id="juice"><div id="jbar"><div id="jfill"></div></div><div id="jtxt">JUICE</div></div>
-    <div id="diamond"><i id="b2"></i><i id="b3"></i><i id="b1"></i></div>
-    <div id="card" class="slab"><span id="cnum">27</span><div><div id="cname">VASQUEZ</div>
-      <div class="stats"><div class="stat">PWR <b><i id="spw"></i></b></div><div class="stat">CON <b><i id="sco"></i></b></div><div class="stat">SPD <b><i id="ssp"></i></b></div></div></div></div>
-    <div id="rep" class="slab" hidden><span class="lbl">Pitcher · Storm #99</span><div id="replist"></div></div>
-    <div id="pitchinfo"></div>
-    <div id="keys"><kbd>Mouse</kbd> aim &nbsp; <kbd>Click</kbd>/<kbd>Z</kbd> contact<br><kbd>Right-click</kbd>/<kbd>X</kbd> power &nbsp; <kbd>Shift</kbd> juice</div>
+    <div id="pitchinfo"><b id="mph">--</b><span>MPH</span></div>
+    <div id="juice"><div id="jbar"><div id="jfill"></div><span id="jtxt">JUICE</span></div>
+      <div id="card"><span id="cnum">27</span><span id="cname">VASQUEZ</span>
+        <span class="stats"><span class="stat">P <b><i id="spw"></i></b></span><span class="stat">C <b><i id="sco"></i></b></span><span class="stat">S <b><i id="ssp"></i></b></span></span></div></div>
+    <svg id="diamond" viewBox="0 0 104 86" aria-hidden="true">
+      <path d="M52 82 L4 34 A68 68 0 0 1 100 34 Z" fill="#2f8a3c" stroke="#f2f5ff" stroke-width="2.5" stroke-linejoin="round"/>
+      <path d="M52 82 L24 54 A40 40 0 0 1 80 54 Z" fill="#a8683e"/>
+      <path d="M52 76 L68 60 L52 44 L36 60 Z" fill="#2f8a3c"/>
+      <circle cx="52" cy="62" r="3.5" fill="#a8683e"/>
+      <circle class="base" id="b1" cx="70" cy="60" r="5.5"/><circle class="base" id="b2" cx="52" cy="42" r="5.5"/><circle class="base" id="b3" cx="34" cy="60" r="5.5"/>
+      <circle cx="52" cy="78" r="5" fill="#e23a22" stroke="#fff" stroke-width="1.5"/>
+    </svg>
+    <div id="rep" hidden><div class="cap">PITCHER</div><div id="replist" class="pills"></div></div>
+    <div id="keys" class="pills"><div class="pill"><span class="k">CLICK</span>CONTACT</div><div class="pill"><span class="k">R-CLICK</span>POWER</div><div class="pill"><span class="k">SHIFT</span>JUICE</div></div>
     <button id="pausebtn" type="button" aria-label="Pause game" hidden>❚❚</button>
     <div id="touch">
       <button class="tb jc" id="tj" type="button">JUICE</button>
@@ -678,19 +700,19 @@ function pop(t,s='',cls='',long=false){const e=$('pop');e.className='';e.querySe
 function timing(t,c){const e=$('tim');e.className='';e.textContent=t;e.style.color=c;void e.offsetWidth;e.className='go';}
 function flash(a){const e=$('flash');e.style.transition='none';e.style.opacity=a*FX;void e.offsetWidth;e.style.transition='opacity .35s';e.style.opacity=0;}
 function hud(){
-  $('runs').textContent=S.runs;$('inn').textContent=Math.min(S.inning,3)+'/3';$('count').textContent=S.balls+'–'+S.strikes;
-  [...$('outs').children].forEach((e,i)=>e.classList.toggle('on',i<S.outs));
+  $('runs').textContent=S.runs;$('hits').textContent=S.hits;$('inn').textContent=['1ST','2ND','3RD'][Math.min(S.inning,3)-1];$('count').textContent=S.balls+'-'+S.strikes;
+  $('outs').textContent='O: '+S.outs;
   ['b1','b2','b3'].forEach((id,i)=>$(id).classList.toggle('on',!!S.bases[i]));
   $('jfill').style.width=(S.juice*100)+'%';
   const j=$('juice');j.classList.toggle('ready',S.juice>=.333);j.classList.toggle('armed',juiceOn()&&S.juice>=.333);j.classList.toggle('over',S.over);
-  $('jtxt').textContent=S.over?'⚡ OVERDRIVE ⚡':(S.juice>=.333?'JUICE READY':'JUICE');
+  $('jtxt').textContent=S.over?'OVERDRIVE':(S.juice>=.333?'JUICE READY':'JUICE');
   $('tj').classList.toggle('on',juiceArmed);
 }
 const juiceOn=()=>juiceArmed||keys.ShiftLeft||keys.ShiftRight;
 function setBatter(){
   S.bi++;const b=curBatter();S.balls=0;S.strikes=0;
   paintJersey(batter,Object.assign({name:b.name,num:b.num},HOME));paintSkin(batter,b.skin);if(MX.ready)paintAtlas(b);
-  $('cnum').textContent=b.num;$('cname').textContent=b.name+(b.lh?' · L':' · R');$('spw').style.width=((b.pwr-.85)/.35*100)+'%';$('sco').style.width=((b.con-.85)/.3*100)+'%';$('ssp').style.width=((b.spd-.85)/.3*100)+'%';
+  $('cnum').textContent=b.num;$('cname').textContent=b.name+(b.lh?' (L)':' (R)');$('spw').style.width=((b.pwr-.85)/.35*100)+'%';$('sco').style.width=((b.con-.85)/.3*100)+'%';$('ssp').style.width=((b.spd-.85)/.3*100)+'%';
   readyDur=1.7;S.fresh=true;
 }
 function toReady(d){S.state='ready';S.t=now;if(d)readyDur=d;swing=null;pitch=null;flight=null;ball.visible=false;ballShadow.visible=false;pring.visible=false;ballGlow.material.opacity=0;
@@ -712,7 +734,7 @@ const pitchMph=dur=>Math.round(18.4/dur*2.237*1.52),inningSp=()=>[1,.93,.86][S.i
 function renderRep(last){ // the pitcher's repertoire: movement, name, typical speed this inning; the pitch just thrown is highlighted
   const arrows=['→','↗','↑','↖','←','↙','↓','↘'];
   $('replist').innerHTML=PITCHES.map(P=>{const m=Math.hypot(P.brk[0],P.brk[1]),a=m<.1?'•':arrows[((Math.round(Math.atan2(P.brk[1],P.brk[0])/(PI/4))%8)+8)%8];
-    return `<div class="row${P.sp?' sp':''}${P===last?' last':''}"><i>${P.wob?'~':a}</i><span>${P.n}</span><b>${pitchMph(P.dur*inningSp())}</b></div>`;}).join('');
+    return `<div class="pill${P.sp?' sp':''}${P===last?' last':''}"><span class="k">${P.wob?'~':a}</span>${P.n}<b>${pitchMph(P.dur*inningSp())}</b></div>`;}).join('');
   $('rep').hidden=false;
 }
 function choosePitch(){
@@ -1396,7 +1418,7 @@ function step(dt){
     if(show){pring.position.set(pitch.tx,pitch.ty,0);const r=lerp(.42,.055,ease(clamp((u-.22)/.78,0,1)));pring.scale.setScalar(r);pring.material.color.setHex(u>.86?0xff4d2e:0xffe53b);}
     if(pitch.P.col&&u<1)trail(pitch,pitch.P.col,u<.75,true);
     if(u>=1&&!pitch.called){pitch.called=true;
-      $('pitchinfo').textContent=`${pitch.P.n} · ${pitchMph(pitch.dur)} MPH`;$('pitchinfo').classList.add('on');renderRep(pitch.P);}
+      $('mph').textContent=pitchMph(pitch.dur);$('pitchinfo').classList.add('on');renderRep(pitch.P);}
     if(u>=1.07){ball.visible=false;ballShadow.visible=false;SND.mitt();
       _p.copy(ball.position);burst(fxS,_p,8,2,.3,[.8,.7,.5],3);
       if(swing){strike('swing');}
