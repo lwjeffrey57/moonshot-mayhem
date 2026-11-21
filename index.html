@@ -76,6 +76,48 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 #rep .pill.sp .k{color:var(--volt)}
 #rep .pill.last{border-color:var(--volt);box-shadow:0 0 10px var(--volt),0 2px 0 #000}
 @media (max-width:760px),(max-height:520px),(pointer:coarse){#rep{display:none}}
+/* ── closer to the classic arcade layout: twin meters across the top, pills running in from the screen edges ── */
+#bug{width:auto;display:flex;align-items:stretch}
+#bug .badge{display:flex;align-items:center;justify-content:center;width:44px;background:linear-gradient(135deg,#e23a22,#7a1208);border-right:2px solid var(--pilllo)}
+#bug .badge span{font-size:20px;color:#fff;transform:rotate(-12deg);text-shadow:0 2px 0 #000;letter-spacing:-.04em}
+#bug .rows{width:112px}
+#bug .tm.alt{color:#ff8a70;font-size:17px}
+#pitchinfo{top:126px;width:84px;background:linear-gradient(#0a2010,#04100a);border-color:#9aa86a}
+#pitchinfo b{font-size:28px;letter-spacing:.04em}
+#meters{top:8px;left:50%;transform:translateX(-50%);display:flex;gap:10px;align-items:flex-start}
+#juice{position:static;transform:none;top:auto;left:auto;width:min(240px,25vw)}
+.meter{width:min(240px,25vw);text-align:center}
+.mbar{height:24px;border-radius:13px;background:linear-gradient(#05060f,#1a1d3a);border:2px solid var(--pillhi);box-shadow:0 0 0 2px var(--navy),0 3px 0 2px #000;overflow:hidden;position:relative}
+.mbar::before{content:"";position:absolute;inset:0;z-index:1;background:repeating-linear-gradient(90deg,transparent 0 32.6%,rgba(5,6,15,.85) 32.6% 33.33%)}
+.mbar::after{content:"";position:absolute;left:6px;right:6px;top:2px;height:6px;border-radius:6px;background:rgba(255,255,255,.28);z-index:2}
+.mfill{position:absolute;inset:0;width:0%;transition:width .25s}
+#hfill{left:auto;right:0;background:linear-gradient(#ffb09c,#ff4d2e 45%,#b81d08 55%,#ff6a4a)}
+.mtxt{position:absolute;inset:0;z-index:3;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-style:italic;font-size:14px;letter-spacing:.08em;color:#fff;text-shadow:0 1px 0 #000,0 0 4px #000}
+#heat.ready .mtxt{color:var(--volt)}
+.mcap{margin-top:5px;display:flex;gap:7px;align-items:center;justify-content:center;font-family:var(--display);font-style:italic;font-size:17px;color:var(--volt);text-shadow:0 2px 0 #000,0 0 6px rgba(0,0,0,.6);white-space:nowrap}
+#cnum,#cname{font-size:17px}
+#zmini{position:relative;flex:none;width:30px;height:34px;margin-top:-3px;border:2px solid var(--pillhi);box-shadow:0 0 0 2px var(--navy),0 3px 0 2px #000;
+  background:linear-gradient(#0f3a1c,#0f3a1c) padding-box,repeating-linear-gradient(90deg,transparent 0 32%,rgba(140,255,160,.5) 32% 34.5%),repeating-linear-gradient(0deg,transparent 0 32%,rgba(140,255,160,.5) 32% 34.5%);
+  background-color:#0f3a1c;background-image:repeating-linear-gradient(90deg,transparent 0 31.5%,rgba(140,255,160,.55) 31.5% 34%),repeating-linear-gradient(0deg,transparent 0 31.5%,rgba(140,255,160,.55) 31.5% 34%)}
+#zdot{position:absolute;width:9px;height:9px;margin:-4.5px 0 0 -4.5px;border-radius:50%;background:#fff;box-shadow:0 0 6px #fff}
+#zdot.out{background:var(--heat);box-shadow:0 0 6px var(--heat)}
+#diamond{width:138px;height:114px}
+#pausebtn{top:128px}
+.pill{height:30px;font-size:16px;gap:9px}
+.pill .k{height:22px;min-width:22px;font-size:12px;padding:0 7px;border-radius:11px}
+.pill.dk{background:linear-gradient(#3a3d52,#0b0c1a 50%,#000 55%,#2a2d40);color:var(--volt)}
+.pill.dk .k{background:var(--pillhi);color:var(--navy)}
+#keys{left:0;bottom:14px;gap:7px}
+#keys .pill{border-left:0;border-radius:0 16px 16px 0;padding:0 5px 0 max(18px,env(safe-area-inset-left,0px));min-width:150px;justify-content:space-between}
+#rep{right:0;bottom:14px;width:auto}
+#rep .cap{font-size:15px;padding-right:max(14px,env(safe-area-inset-right,0px))}
+#rep .pills{gap:4px;align-items:flex-end}
+#rep .pill{height:24px;font-size:13px;width:176px;border-right:0;border-radius:13px 0 0 13px;padding:0 max(14px,env(safe-area-inset-right,0px)) 0 4px}
+#rep .pill .k{height:17px;min-width:17px;font-size:12px;padding:0 3px}
+/* phones and small windows: one meter, no extras */
+@media (max-height:520px){#keys{display:none}}
+@media (max-width:900px){#heat,#zmini{display:none}.meter,#juice{width:min(240px,38vw)}#bug .badge{display:none}#bug .rows{width:98px}#diamond{width:92px;height:76px}#pausebtn{top:92px}.mcap,#cnum,#cname{font-size:14px}}
+@media (max-width:560px){.stats{display:none}}
 /* centre calls */
 #pop{left:0;right:0;top:26%;text-align:center;opacity:0}
 #pop .t{font-family:var(--display);font-size:clamp(40px,10vw,120px);line-height:.95;font-style:italic;letter-spacing:.01em;
@@ -120,7 +162,7 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 .final{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
 .final .slab{min-width:92px}
 @media (max-height:520px){.how{display:none}}
-@media (max-width:560px){#juice{width:34vw}#card .stats{display:none}#cname{font-size:13px}#bug{width:104px}#diamond{width:80px;height:66px}.big{font-size:20px}}
+@media (max-width:560px){.big{font-size:20px}}
 @media (prefers-reduced-motion:reduce){#pop.go{animation-timing-function:ease-out}}
 </style>
 
@@ -129,15 +171,23 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
   <div id="hud">
     <div id="flash"></div>
     <div id="bug">
-      <div class="inn"><i>▲</i><span id="inn">1ST</span></div>
-      <div class="tm"><span>COMETS</span><b id="runs">0</b></div>
-      <div class="tm alt"><span>HITS</span><b id="hits">0</b></div>
-      <div class="cnt"><span id="count">0-0</span><span id="outs">O: 0</span></div>
+      <div class="badge" aria-hidden="true"><span>MM</span></div>
+      <div class="rows">
+        <div class="inn"><i>▲</i><span id="inn">1ST</span></div>
+        <div class="tm"><span>COM</span><b id="runs">0</b></div>
+        <div class="tm alt"><span>KRA</span><b>0</b></div>
+        <div class="cnt"><span id="count">0-0</span><span id="outs">O: 0</span></div>
+      </div>
     </div>
     <div id="pitchinfo"><b id="mph">--</b><span>MPH</span></div>
-    <div id="juice"><div id="jbar"><div id="jfill"></div><span id="jtxt">JUICE</span></div>
-      <div id="card"><span id="cnum">27</span><span id="cname">VASQUEZ</span>
-        <span class="stats"><span class="stat">P <b><i id="spw"></i></b></span><span class="stat">C <b><i id="sco"></i></b></span><span class="stat">S <b><i id="ssp"></i></b></span></span></div></div>
+    <div id="meters">
+      <div id="juice" class="meter"><div id="jbar" class="mbar"><div id="jfill" class="mfill"></div><span id="jtxt" class="mtxt">JUICE</span></div>
+        <div id="card" class="mcap"><span id="cnum">27</span><span id="cname">VASQUEZ</span>
+          <span class="stats"><span class="stat">P <b><i id="spw"></i></b></span><span class="stat">C <b><i id="sco"></i></b></span><span class="stat">S <b><i id="ssp"></i></b></span></span></div></div>
+      <div id="zmini" title="Last pitch location"><i id="zdot" hidden></i></div>
+      <div id="heat" class="meter"><div class="mbar"><div id="hfill" class="mfill"></div><span class="mtxt">HEAT</span></div>
+        <div class="mcap"><span>99</span><span>STORM</span></div></div>
+    </div>
     <svg id="diamond" viewBox="0 0 104 86" aria-hidden="true">
       <path d="M52 82 L4 34 A68 68 0 0 1 100 34 Z" fill="#2f8a3c" stroke="#f2f5ff" stroke-width="2.5" stroke-linejoin="round"/>
       <path d="M52 82 L24 54 A40 40 0 0 1 80 54 Z" fill="#a8683e"/>
@@ -146,8 +196,8 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
       <circle class="base" id="b1" cx="70" cy="60" r="5.5"/><circle class="base" id="b2" cx="52" cy="42" r="5.5"/><circle class="base" id="b3" cx="34" cy="60" r="5.5"/>
       <circle cx="52" cy="78" r="5" fill="#e23a22" stroke="#fff" stroke-width="1.5"/>
     </svg>
-    <div id="rep" hidden><div class="cap">PITCHER</div><div id="replist" class="pills"></div></div>
-    <div id="keys" class="pills"><div class="pill"><span class="k">CLICK</span>CONTACT</div><div class="pill"><span class="k">R-CLICK</span>POWER</div><div class="pill"><span class="k">SHIFT</span>JUICE</div></div>
+    <div id="rep" hidden><div class="cap">PITCHES</div><div id="replist" class="pills"></div></div>
+    <div id="keys" class="pills"><div class="pill">CONTACT<span class="k">CLICK</span></div><div class="pill">POWER<span class="k">R-CLICK</span></div><div class="pill dk">JUICE<span class="k">SHIFT</span></div><div class="pill dk">PAUSE<span class="k">ESC</span></div></div>
     <button id="pausebtn" type="button" aria-label="Pause game" hidden>❚❚</button>
     <div id="touch">
       <button class="tb jc" id="tj" type="button">JUICE</button>
@@ -686,7 +736,7 @@ const SND={
 };
 
 // ───────────────────────── game state
-const S={state:'title',t:0,inning:1,outs:0,balls:0,strikes:0,runs:0,bases:[0,0,0],hits:0,hrs:0,longest:0,streak:0,bestStreak:0,juice:.34,over:false,bi:-1,pitches:0};
+const S={state:'title',t:0,inning:1,outs:0,balls:0,strikes:0,runs:0,bases:[0,0,0],hits:0,hrs:0,longest:0,streak:0,bestStreak:0,juice:.34,heat:.2,over:false,bi:-1,pitches:0};
 let now=0,hitstop=0,timeScale=1,slowT=0,shake=0,fovKick=0;
 const aim={x:0,y:.82};
 const keys={};
@@ -700,10 +750,10 @@ function pop(t,s='',cls='',long=false){const e=$('pop');e.className='';e.querySe
 function timing(t,c){const e=$('tim');e.className='';e.textContent=t;e.style.color=c;void e.offsetWidth;e.className='go';}
 function flash(a){const e=$('flash');e.style.transition='none';e.style.opacity=a*FX;void e.offsetWidth;e.style.transition='opacity .35s';e.style.opacity=0;}
 function hud(){
-  $('runs').textContent=S.runs;$('hits').textContent=S.hits;$('inn').textContent=['1ST','2ND','3RD'][Math.min(S.inning,3)-1];$('count').textContent=S.balls+'-'+S.strikes;
+  $('runs').textContent=S.runs;$('inn').textContent=['1ST','2ND','3RD'][Math.min(S.inning,3)-1];$('count').textContent=S.balls+'-'+S.strikes;
   $('outs').textContent='O: '+S.outs;
   ['b1','b2','b3'].forEach((id,i)=>$(id).classList.toggle('on',!!S.bases[i]));
-  $('jfill').style.width=(S.juice*100)+'%';
+  $('jfill').style.width=(S.juice*100)+'%';$('hfill').style.width=(S.heat*100)+'%';$('heat').classList.toggle('ready',S.heat>=.333);
   const j=$('juice');j.classList.toggle('ready',S.juice>=.333);j.classList.toggle('armed',juiceOn()&&S.juice>=.333);j.classList.toggle('over',S.over);
   $('jtxt').textContent=S.over?'OVERDRIVE':(S.juice>=.333?'JUICE READY':'JUICE');
   $('tj').classList.toggle('on',juiceArmed);
@@ -718,7 +768,7 @@ function setBatter(){
 function toReady(d){S.state='ready';S.t=now;if(d)readyDur=d;swing=null;pitch=null;flight=null;ball.visible=false;ballShadow.visible=false;pring.visible=false;ballGlow.material.opacity=0;
   fielders.forEach(f=>{if(!f.isP){f.fig.root.position.copy(f.home);f.fig.root.rotation.y=Math.atan2(-f.home.x,-f.home.z);}f.run=null;});
   camMode='bat';hud();}
-function newGame(){Object.assign(S,{inning:1,outs:0,balls:0,strikes:0,runs:0,bases:[0,0,0],hits:0,hrs:0,longest:0,streak:0,bestStreak:0,juice:.34,over:false,bi:-1,pitches:0});
+function newGame(){Object.assign(S,{inning:1,outs:0,balls:0,strikes:0,runs:0,bases:[0,0,0],hits:0,hrs:0,longest:0,streak:0,bestStreak:0,juice:.34,heat:.2,over:false,bi:-1,pitches:0});
   $('title').hidden=true;$('over').hidden=true;$('pausebtn').hidden=false;setBatter();renderRep();scoreboard('PLAY BALL','INNING 1');toReady(2);pop('PLAY BALL!','INNING 1','plain');SND.organ();cheer(.14,1.5);}
 
 // ───────────────────────── pitching
@@ -738,7 +788,8 @@ function renderRep(last){ // the pitcher's repertoire: movement, name, typical s
   $('rep').hidden=false;
 }
 function choosePitch(){
-  const special=S.pitches>2&&Math.random()<.1+.05*S.inning;
+  // the pitcher has a meter too: strikes and outs build Heat, and he spends a bar of it to throw a special pitch
+  const special=S.heat>=.333&&Math.random()<.5;if(special)S.heat-=.3334;
   const pool=PITCHES.filter(p=>special?p.sp:!p.sp);let tw=0;pool.forEach(p=>tw+=p.w||1);let r=Math.random()*tw,P=pool[0];
   for(const p of pool){r-=p.w||1;if(r<=0){P=p;break;}}
   const inZone=Math.random()<.64;let tx,ty;
@@ -857,7 +908,7 @@ function advance(n,walk){let r=0;const b=S.bases;
   if(walk){if(b[0]){if(b[1]){if(b[2])r++;b[2]=1;}b[1]=1;}b[0]=1;}
   else{for(let i=2;i>=0;i--)if(b[i]){b[i]=0;if(i+n>=3)r++;else b[i+n]=1;}if(n>=4)r++;else b[n-1]=1;}
   addRuns(r);return r;}
-function recordOut(){S.outs++;S.streak=0;if(S.over){S.over=false;}}
+function recordOut(){S.heat=Math.min(1,S.heat+.14);S.outs++;S.streak=0;if(S.over){S.over=false;}}
 function afterPA(delay){ // plate appearance over
   if(S.outs>=3){S.inning++;S.outs=0;S.bases=[0,0,0];
     if(S.inning>3){S.state='end';S.t=now;readyDur=delay+.4;hud();return;}
@@ -865,14 +916,14 @@ function afterPA(delay){ // plate appearance over
   setBatter();S.state='result';S.t=now;S.next=null;readyDur=delay;hud();
 }
 function samePA(delay){S.state='result';S.t=now;S.next=null;readyDur=delay;hud();}
-function strike(kind){S.strikes++;SND.call(false);
+function strike(kind){S.heat=Math.min(1,S.heat+.09);S.strikes++;SND.call(false);
   if(S.strikes>=3){recordOut();pop('STRUCK OUT',kind==='look'?'CAUGHT LOOKING':'SWINGING','cool');cheer(.03,1);afterPA(1.5);}
   else{pop(kind==='look'?'STRIKE':'WHIFF!','','plain');samePA(kind==='look'?1.05:1.3);}}
 function finishPlay(){
   const f=flight,pl=f.play;f.done=true;
   if(pl.type==='foul'){if(S.strikes<2)S.strikes++;S.juice=Math.min(1,S.juice+.03);pop('FOUL','','plain');samePA(1);return;}
   if(pl.type==='out'){recordOut();pop(pl.air&&f.q>.7?'ROBBED!':'OUT!',pl.label,'cool');SND.mitt();cheer(.04,1);afterPA(1.5);return;}
-  S.hits++;S.streak++;S.bestStreak=Math.max(S.bestStreak,S.streak);S.juice=Math.min(1,S.juice+.14+.16*f.q);
+  S.heat=Math.max(0,S.heat-.12);S.hits++;S.streak++;S.bestStreak=Math.max(S.bestStreak,S.streak);S.juice=Math.min(1,S.juice+.14+.16*f.q);
   if(pl.type==='hr'){
     const ft=Math.round(pl.dist*3.281);S.hrs++;S.longest=Math.max(S.longest,ft);const r=advance(4);
     pop(r===4?'GRAND SLAM!':'GONE!',`${ft} FT · +${r} RUN${r>1?'S':''}`,'hot',true);scoreboard('HOME RUN',ft+' FT');
@@ -1418,7 +1469,8 @@ function step(dt){
     if(show){pring.position.set(pitch.tx,pitch.ty,0);const r=lerp(.42,.055,ease(clamp((u-.22)/.78,0,1)));pring.scale.setScalar(r);pring.material.color.setHex(u>.86?0xff4d2e:0xffe53b);}
     if(pitch.P.col&&u<1)trail(pitch,pitch.P.col,u<.75,true);
     if(u>=1&&!pitch.called){pitch.called=true;
-      $('mph').textContent=pitchMph(pitch.dur);$('pitchinfo').classList.add('on');renderRep(pitch.P);}
+      $('mph').textContent=pitchMph(pitch.dur);
+      {const d=$('zdot');d.hidden=false;d.style.left=clamp(50+pitch.tx/.28*33,4,96)+'%';d.style.top=clamp(50-(pitch.ty-.825)/.325*33,4,96)+'%';d.className=pitch.inZone?'':'out';}$('pitchinfo').classList.add('on');renderRep(pitch.P);}
     if(u>=1.07){ball.visible=false;ballShadow.visible=false;SND.mitt();
       _p.copy(ball.position);burst(fxS,_p,8,2,.3,[.8,.7,.5],3);
       if(swing){strike('swing');}
