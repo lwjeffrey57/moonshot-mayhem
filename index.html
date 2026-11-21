@@ -894,6 +894,9 @@ function pitchPos(pt,u,out){
 
 // ───────────────────────── batted-ball physics + fielding
 const G=9.8,DRAG=.0042;
+// The line is fair. A ball counts as fair if any part of it touches the chalk: half the line's width plus the ball's radius,
+// measured across to x, and a little grace because the ball is drawn larger than life at distance.
+const LINE_TOL=.3;
 function simulate(p0,v0,spin){spin=spin||{side:0,lift:0};
   const p=p0.clone(),v=v0.clone(),pts=[];let t=0,land=null,hr=false,hrT=0,wall=false,wallT=0,foul=false,dist=0,grd=false,eyeT=0;const dt=1/120;
   while(t<9){
@@ -904,7 +907,7 @@ function simulate(p0,v0,spin){spin=spin||{side:0,lift:0};
     p.addScaledVector(v,dt);t+=dt;
     const r=Math.hypot(p.x,p.z),phi=Math.atan2(p.x,-p.z),fr=fenceR(phi);
     if(!hr&&!grd&&r>=fr){
-      if(Math.abs(phi)>PI/4){if(!land)foul=true;else wall=true;pts.push({x:p.x,y:p.y,z:p.z,t});break;} // out of play down the line: foul only if it never came down fair
+      if(Math.abs(p.x)>.216-p.z+LINE_TOL){if(!land)foul=true;else wall=true;pts.push({x:p.x,y:p.y,z:p.z,t});break;} // out of play down the line: foul only if it never came down fair
       if(p.y>WALL_H&&!land){hr=true;hrT=t;}
       else if(p.y>WALL_H&&!wall){grd=true;} // bounced in play and hopped the wall: ground-rule double
       else{const nx=p.x/r,nz=p.z/r,vn=v.x*nx+v.z*nz;if(vn>0){v.x-=1.35*vn*nx;v.z-=1.35*vn*nz;v.multiplyScalar(.7);}p.x=nx*(fr-.15);p.z=nz*(fr-.15);if(!wall)wallT=t;wall=true;}
@@ -917,7 +920,7 @@ function simulate(p0,v0,spin){spin=spin||{side:0,lift:0};
     if(hr||grd){const sy=r>fr+1.5?WALL_H+.3+(r-fr-1.5)*.667:0;
       if(p.y<=sy||r>fr+58){pts.push({x:p.x,y:p.y,z:p.z,t});break;}}
     else if(p.y<=0){
-      if(!land){land={x:p.x,z:p.z,t};if(Math.abs(p.x)>.216-p.z)foul=true;} // fair or foul is settled by where it first lands, measured from the chalked lines
+      if(!land){land={x:p.x,z:p.z,t};if(Math.abs(p.x)>.216-p.z+LINE_TOL)foul=true;} // fair or foul is settled by where it first lands, measured from the chalked lines
       p.y=0;if(v.y<-1.6){v.y*=-.42;v.x*=.8;v.z*=.8;}else{v.y=0;const h=Math.hypot(v.x,v.z);if(h<.6){pts.push({x:p.x,y:0,z:p.z,t});break;}const k=Math.max(0,h-5.5*dt)/h;v.x*=k;v.z*=k;}
     }
     pts.push({x:p.x,y:p.y,z:p.z,t});
