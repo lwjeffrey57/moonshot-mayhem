@@ -857,7 +857,7 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden&&inPlay())s
 // ───────────────────────── rigged batter mesh (Mixamo skeleton), dressed in code and driven by the rig above
 const MX={ready:false,map:[],on:true,token:0,kind:'ely'};
 // player looks you can switch between on the title screen
-const MODELS={ely:{label:'armoured',body:'ely.txt',tex:{d:'ely_d.jpg',n:'ely_n.jpg',s:'ely_s.jpg',g:'ely_g.jpg'}},mann:{label:'mannequin',body:'body.txt'},chunky:{label:'chunky'}},ORDER=['ely','mann','chunky'];
+const MODELS={ely:{label:'armoured',body:'ely.txt',clips:'ely_clips.json',tex:{d:'ely_d.jpg',n:'ely_n.jpg',s:'ely_s.jpg',g:'ely_g.jpg'}},mann:{label:'mannequin',body:'body.txt'},chunky:{label:'chunky'}},ORDER=['ely','mann','chunky'];
 try{const k=localStorage.getItem('mm_kind');if(MODELS[k])MX.kind=k;}catch(e){}
 const atlasC=document.createElement('canvas');atlasC.width=atlasC.height=1024;const atlasT=new T.CanvasTexture(atlasC);
 const SW={skin:[800,544],sleeve:[864,544],trim:[928,544],glove:[992,544],shoe:[800,608],sole:[864,608],band:[928,608],hair:[992,608],belt:[800,672]};
@@ -946,6 +946,7 @@ Object.assign(MX,{arm:0,chestZ:0,chestX:0,waist:0,leg:0,hip:0,spineK:1,bulk:fals
 const ZAX=new V3(0,0,1),_pl=new V3(),_bd=new V3(),_hq=new T.Quaternion();
 function clipBat(){const C=MX.clip;C.hL.getWorldPosition(_pl);C.mL.getWorldPosition(_b);_pl.lerp(_b,.55);C.hL.getWorldQuaternion(_hq);
   _bd.copy(C.dl).applyQuaternion(_hq).normalize();bat.position.copy(_pl).addScaledVector(_bd,-.07);bat.quaternion.setFromUnitVectors(UP,_bd);bat.updateMatrixWorld(true);}
+const BOX_EDGE=-.52; // nearest a foot bone may get to the middle of the plate (the box's inside line is at 0.35 m)
 function setupClip(obj,clip,B,sk){
   const keep=c=>{if(c)c.tracks=c.tracks.filter(t=>/quaternion$/.test(t.name)||/Hips\.position$/.test(t.name));return c;};
   keep(clip);const ic=keep(obj.animations.find(c=>c.name==='idle')),sc=keep(obj.animations.find(c=>c.name==='strike'));
@@ -959,11 +960,16 @@ function setupClip(obj,clip,B,sk){
   probe(ic||clip,at=>{const n=ic?ic.duration:.5;for(let t=.05;t<n;t+=n/10){at(t);hL.getWorldPosition(pa).lerp(mL.getWorldPosition(_b),.55);hR.getWorldPosition(pb).lerp(mR.getWorldPosition(_b),.55);
     hL.getWorldQuaternion(q);C.dl.add(pb.sub(pa).normalize().applyQuaternion(q.invert()));}});
   C.dl.normalize();
-  // contact = the frame the barrel squares up to the pitch (stops pointing back at the catcher)
-  const contact=(c,t0,t1,fb)=>{let r=fb;probe(c,at=>{for(let t=t0;t<Math.min(t1,c.duration);t+=1/120){at(t);clipBat();if(_bd.z<0&&_bd.x>.2){r=t;break;}}});return r;};
-  const tC=contact(clip,.5,1,.69);C.tC=tC;C.tL=Math.max(.1,tC-.22);C.tE=Math.min(clip.duration,tC+.6);
-  probe(clip,at=>{at(tC);clipBat();const sw=bat.localToWorld(new V3(0,.62,0));obj.position.set(clamp(-sw.x,-1.5,-.5),0,clamp(-sw.z,-.6,.8));C.y0=sw.y;});
-  if(sc){C.tCs=contact(sc,.6,1.6,1.1);C.sDur=sc.duration;}
+  // contact = the frame the bat is square to the pitch: pointing straight out over the plate, at hitting height
+  const sp=new V3(),contact=(c,t0,t1,fb)=>{let r=fb,best=-1e9;probe(c,at=>{for(let t=t0;t<Math.min(t1,c.duration);t+=1/120){at(t);clipBat();sp.set(0,.62,0);bat.localToWorld(sp);if(sp.y<1.25&&_bd.x>best){best=_bd.x;r=t;}}});return r;};
+  const tC=contact(clip,.3,1.8,.69);C.tC=tC;C.tL=Math.max(.1,tC-.22);C.tE=Math.min(clip.duration,tC+.6);
+  C.loadAt=clamp(1.2-C.tL/1.25,.3,.85); // when in the windup to start loading, so he is set just after release
+  probe(clip,at=>{at(tC);clipBat();const sw=bat.localToWorld(new V3(0,.62,0));obj.position.set(clamp(-sw.x,-1.5,-.5),0,clamp(-sw.z,-.1,.4));C.y0=sw.y;});
+  // keep him in the batter's box: measure where his feet are in the stance and at contact, and back him off the plate if needed
+  {const v=new V3();let fx=-1e9;const feet=['LeftFoot','RightFoot','LeftToeBase','RightToeBase'].map(B).filter(Boolean),far=()=>feet.forEach(f=>{fx=Math.max(fx,f.getWorldPosition(v).x);});
+    probe(ic||clip,at=>{at(0);far();});probe(clip,at=>{at(tC);far();});
+    C.backOff=Math.min(0,BOX_EDGE-fx);obj.position.x+=C.backOff;}
+  if(sc){C.tCs=contact(sc,.4,1.8,1.1);C.sDur=sc.duration;}
   const mixer=C.mixer=new T.AnimationMixer(obj);
   C.hit=mixer.clipAction(clip);C.hit.play();
   if(ic){C.idle=mixer.clipAction(ic);C.idle.play();C.idleDur=ic.duration;}
@@ -972,7 +978,7 @@ function setupClip(obj,clip,B,sk){
 const WHIFF_HOLD=1.15; // seconds of the swing-and-miss clip shown after the miss before he resets
 function updateClip(dt){
   const C=MX.clip;let w=0,want=0,rate=.55,skT=0;
-  const incoming=S.state==='pitch'||(S.state==='windup'&&now-windupT0>.75);
+  const incoming=S.state==='pitch'||(S.state==='windup'&&now-windupT0>C.loadAt);
   if(swing&&C.sw!==swing){C.sw=swing;C.c0=C.t;C.mode='swing';}
   if(C.mode==='swing'){const ts=now-C.sw.t0;
     w=ts<SW_T?ease(ts/SW_T):clamp(1-(ts-SW_T-.1)/.3,0,1);
@@ -1128,8 +1134,9 @@ function loadPlayers(kind){ // body file = character mesh; clips.json = motion-c
   if(!cfg.body||!T.FBXLoader)return;
   const mkClip=(c,name)=>new T.AnimationClip(name,c.duration,c.tracks.map(t=>/position$/.test(t.n)?new T.VectorKeyframeTrack('mixamorig'+t.n,t.t,t.v):new T.QuaternionKeyframeTrack('mixamorig'+t.n,t.t,t.v)));
   clipsP=clipsP||fetch('clips.json').then(r=>r.ok?r.json():Promise.reject(new Error('clips')));
+  const own=cfg.clips?fetch(cfg.clips).then(r=>r.ok?r.json():null).catch(()=>null):Promise.resolve(null); // clips made for this body, where we have them
   const imgs=cfg.tex?Promise.all(['d','n','s','g'].map(k=>loadImg(cfg.tex[k]))):Promise.resolve(null);
-  Promise.all([loadBuf(cfg.body),clipsP,imgs]).then(([bb,cj,im])=>{
+  Promise.all([loadBuf(cfg.body),clipsP,imgs,own]).then(([bb,cj0,im,oc])=>{const cj=Object.assign({},cj0,oc||{});
     if(my!==MX.token)return;                                   // switched again while loading
     const skins=im?makeSkins(im):null,make=names=>{const o=new T.FBXLoader().parse(bb,'');o.animations=names.map(n=>mkClip(cj[n],n));return o;};
     try{setupModel(make(['hit','idle','strike']),skins&&skins.home);}catch(e){console.warn('batter model failed, using built-in figure',e);}
