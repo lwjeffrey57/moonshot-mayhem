@@ -1581,6 +1581,9 @@ function setupFielder(f,obj,custom,noGlove){
   if(tc){tc.tracks=tc.tracks.filter(t=>/quaternion$/.test(t.name)||/Hips\.position$/.test(t.name));
     const ht=tc.tracks.find(t=>/Hips\.position$/.test(t.name));if(ht){const v=ht.values;for(let i=3;i<v.length;i+=3){v[i]=v[0];v[i+2]=v[2];}}
     f.mixer=f.mixer||new T.AnimationMixer(obj);f.thrAct=f.mixer.clipAction(tc);f.thrDur=tc.duration;}
+  // the hang-dog reactions (the hitters' strikeout clips) for when a no-doubter leaves the park
+  f.defActs=obj.animations.filter(c=>/^d_/.test(c.name)).map(c=>{c.tracks=c.tracks.filter(t=>/quaternion$/.test(t.name)||/Hips\.position$/.test(t.name));
+    f.mixer=f.mixer||new T.AnimationMixer(obj);const a=f.mixer.clipAction(c);a.dur=c.duration;return a;});
   f.sx=Math.abs(obj.scale.x);
   f.mode='pose';
   showChunky(d,false,obj);
@@ -1606,7 +1609,7 @@ function unloadPlayers(){
   RUN.list.forEach(R=>scene.remove(R.fig.root));RUN.list=[];
   if(MX.crew){scene.remove(MX.crew.cat);scene.remove(MX.crew.uf.fig.root);MX.crew=null;}
   batterOpacity(1);MX.ready=false;MX.clip=null;MX.lefty=false;CAM_HOME.x=-.15;CAM_LOOK.x=.3;batter.root.add(bat);showChunky(batter,true);showChunky(pitcher,true);unfitDriver(batter);
-  fielders.forEach(f=>{if(f.obj){f.fig.root.remove(f.obj);f.obj=f.rt=f.mixer=f.act=f.runAct=f.strAct=f.thrAct=null;f.mode='pose';unfitDriver(f.fig);showChunky(f.fig,true);}});
+  fielders.forEach(f=>{if(f.obj){f.fig.root.remove(f.obj);f.obj=f.rt=f.mixer=f.act=f.runAct=f.strAct=f.thrAct=f.defActs=null;f.mode='pose';unfitDriver(f.fig);showChunky(f.fig,true);}});
 }
 function retarget(){retargetFig(batter,MX);}
 const loadBuf=url=>fetch(url).then(r=>r.ok?r.text():Promise.reject(new Error(url))).then(b64=>{ // models ship as base64 text
@@ -1676,7 +1679,7 @@ function loadPlayers(kind){ // body file = character mesh; clips.json = motion-c
     try{setupPitcher(make(['pitch',...Object.keys(cj).filter(k=>/^p_/.test(k))]),skins&&skins.away);}catch(e){console.warn('pitcher model failed, using built-in figure',e);fallback(pitcher);}
     // fielders are built one at a time so the page doesn't freeze while seven more models are prepared
     fielders.filter(f=>!f.isP).forEach((f,i)=>setTimeout(()=>{if(my!==MX.token)return;
-      try{setupFielder(f,make(['catch','run','strafe','throw'].filter(k=>cj[k])),skins&&skins.away);}catch(e){console.warn('fielder model failed, using built-in figure',e);fallback(f.fig);}},400+i*220));
+      try{setupFielder(f,make(['catch','run','strafe','throw','d_1','d_2','d_3'].filter(k=>cj[k])),skins&&skins.away);}catch(e){console.warn('fielder model failed, using built-in figure',e);fallback(f.fig);}},400+i*220));
     if(skins&&cj.run)setTimeout(()=>{if(my!==MX.token)return;try{setupRunners(make,skins);}catch(e){console.warn('baserunners failed',e);}},2300);
     if(skins&&cj.catch)setTimeout(()=>{if(my!==MX.token)return;try{setupPlateCrew(make,skins);}catch(e){console.warn('catcher/umpire failed',e);}},250);
   }).catch(e=>{console.warn('player models unavailable, using built-in figures',e);if(my===MX.token){figs.forEach(fallback);playersDone();}});
@@ -1779,11 +1782,15 @@ function updateFielders(dt){
     if(f.rt){
       let thrT=-1;if(flight&&flight.thr&&flight.play.f===f&&f.thrAct){const e=(now-flight.thr.t0)*1.3;if(e>=0){thrT=Math.min(e,f.thrDur-.02); // hold the follow-through until the play is over
         r.rotation.y=Math.atan2(flight.thr.to.x-r.position.x,flight.thr.to.z-r.position.z);}}
-      const mode=thrT>=0?'throw':clipT>=0?'catch':running&&strafe?'strafe':running&&f.runAct?'run':'pose';
+      // a no-doubter: the outfielders sag as it goes over; during the trot everyone does
+      let defT=-1;if(f.defActs&&f.defActs.length&&flight&&flight.play.type==='hr'&&flight.admire&&(f.of||S.state==='trot')){const e=now-flight.t0-1.1-(f.ph%1)*.5;if(e>=0)defT=e;}
+      const mode=defT>=0?'defeat':thrT>=0?'throw':clipT>=0?'catch':running&&strafe?'strafe':running&&f.runAct?'run':'pose';
       if(mode!==f.mode){f.mode=mode;if(f.mixer)f.mixer.stopAllAction();f.obj.position.set(0,0,0);
-        if(mode==='catch')f.act.reset().play();else if(mode==='run')f.runAct.reset().play();else if(mode==='strafe')f.strAct.reset().play();else if(mode==='throw')f.thrAct.reset().play();}
+        if(mode==='catch')f.act.reset().play();else if(mode==='run')f.runAct.reset().play();else if(mode==='strafe')f.strAct.reset().play();else if(mode==='throw')f.thrAct.reset().play();
+        else if(mode==='defeat'){f.defAct=f.defActs[(Math.random()*f.defActs.length)|0];f.defAct.reset().play();}}
       f.obj.scale.x=f.sx*(mode==='strafe'&&strafe<0?-1:1);
       if(mode==='catch'){f.act.time=clipT;f.mixer.update(0);f.obj.position.set(-f.startOff.x,0,-f.startOff.z);}
+      else if(mode==='defeat'){f.defAct.time=Math.min(f.defAct.dur-.02,defT);f.mixer.update(0);}
       else if(mode==='throw'){f.thrAct.time=thrT;f.mixer.update(0);}
       else if(mode==='strafe'){f.runT=(f.runT+dt*f.speed/4.2)%f.strDur;f.strAct.time=f.runT;f.mixer.update(0);}
       else if(mode==='run'){f.runT%=f.runDur;f.runT=(f.runT+dt*f.speed/4.4)%f.runDur;f.runAct.time=f.runT;f.mixer.update(0);} // stride rate follows how fast he is covering ground
