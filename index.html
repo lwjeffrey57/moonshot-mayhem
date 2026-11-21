@@ -188,17 +188,25 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 #hud{--tbb:max(calc(env(safe-area-inset-bottom,0px) + 70px),13vh)} /* how far the swing buttons sit above the bottom edge: thumb height, not the screen edge */
 @media (max-height:520px){#hud{--tbb:20px}}
 #touch{right:max(14px,env(safe-area-inset-right,0px));bottom:var(--tbb);display:none;gap:12px;align-items:flex-end;pointer-events:auto}
-.tb{font-family:var(--display);font-size:13px;padding:0;color:var(--ink);border:3px solid #000;border-radius:50%;width:96px;height:96px;background:var(--ice);touch-action:none;position:relative;font-size:15px}
-.tb::before{content:'';position:absolute;inset:-16px -6px -22px -6px;border-radius:30px} /* the touch target is bigger than the button you see */
-.tb.pw{background:var(--heat);width:110px;height:110px;color:#fff;font-size:17px}
-.tb.jc{background:var(--chrome);width:70px;height:70px;font-size:13px}
-@media (max-width:359px){.tb{width:84px;height:84px}.tb.pw{width:96px;height:96px}.tb.jc{width:62px;height:62px}}
-.tb.jc.on{background:var(--volt);box-shadow:0 0 18px var(--volt)}
+.tb{font-family:var(--display);font-weight:900;font-size:clamp(15px,4.6vw,19px);letter-spacing:.02em;padding:0;color:#04140a;border:4px solid #000;border-radius:50%;width:min(112px,28vw);height:min(112px,28vw);background:var(--turf);box-shadow:0 4px 0 #000;touch-action:none;position:relative;isolation:isolate}
+.tb::before{content:'';position:absolute;inset:-24px -6px -32px -6px;border-radius:36px} /* the touch target is bigger than the button you see */
+.tb.pw{background:var(--heat);width:min(128px,32vw);height:min(128px,32vw);color:#fff;font-size:clamp(17px,5.4vw,22px);text-shadow:0 2px 0 #000,0 0 3px #000,1px 1px 0 #000,-1px -1px 0 #000}
+.tb.jc{background:var(--chrome);width:min(76px,19vw);height:min(76px,19vw);font-size:clamp(12px,3.6vw,15px)}
+.tb.jc.on{background:var(--volt);box-shadow:0 4px 0 #000,0 0 18px var(--volt)}
+/* POWER on fire: Juice armed, or Overdrive */
+.tb.pw.fire{background:radial-gradient(circle at 50% 115%,#fff6b0 0%,#ffc21e 26%,#ff5a1e 56%,#b3140a 84%);border-color:#2a0500;animation:fireglow .45s ease-in-out infinite alternate}
+.tb.pw.fire::after{content:'';position:absolute;z-index:-1;left:-8%;right:-8%;top:-46%;bottom:38%;pointer-events:none;filter:blur(1.5px);transform-origin:50% 100%;
+  background:radial-gradient(ellipse 15% 62% at 16% 100%,#ffd84a 0,#ff7a1e 45%,transparent 72%),radial-gradient(ellipse 17% 88% at 36% 100%,#fff2a0 0,#ff8a1e 42%,transparent 72%),radial-gradient(ellipse 18% 100% at 56% 100%,#ffe066 0,#ff5a1e 46%,transparent 72%),radial-gradient(ellipse 16% 74% at 76% 100%,#ffd84a 0,#ff7a1e 44%,transparent 72%),radial-gradient(ellipse 12% 50% at 91% 100%,#ffb21e 0,#ff5a1e 45%,transparent 72%);
+  animation:flames .38s ease-in-out infinite alternate}
+@keyframes fireglow{from{box-shadow:0 4px 0 #000,0 0 16px 3px rgba(255,130,30,.75),0 0 36px 8px rgba(255,60,20,.4)}to{box-shadow:0 4px 0 #000,0 0 24px 7px rgba(255,170,40,.9),0 0 52px 14px rgba(255,60,20,.55)}}
+@keyframes flames{0%{transform:scale(1,.86) skewX(-4deg);opacity:.85}50%{transform:scale(1.03,1.06) skewX(3deg)}100%{transform:scale(.98,.94) skewX(-2deg);opacity:1}}
+@media (prefers-reduced-motion:reduce){.tb.pw.fire,.tb.pw.fire::after{animation:none}}
 .tb:active{transform:scale(.93)}
 .tb:focus-visible,.cta:focus-visible{outline:3px solid var(--ice);outline-offset:3px}
 @media (pointer:coarse){#touch{display:flex}#keys{display:none}
   /* the swing buttons own the bottom edge: batter card and pitch readout stack above them, on the left */
-  #hud>#card,#hud.kr #card{left:max(12px,env(safe-area-inset-left,0px));right:auto;bottom:calc(var(--tbb) + 122px)}
+  #hud>#card,#hud.kr #card{left:max(12px,env(safe-area-inset-left,0px));right:auto;top:166px;bottom:auto;padding:4px 10px}
+  #hud>#card #cnum{font-size:24px}
   #plast{left:max(14px,env(safe-area-inset-left,0px));transform:none;bottom:170px;font-size:15px}}
 /* overlays */
 .overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;
@@ -919,7 +927,7 @@ function hud(){
   $('jfill').style.width=(S.juice*100)+'%';$('hfill').style.width=(S.heat*100)+'%';$('heat').classList.toggle('ready',S.heat>=.333);
   const j=$('juice');j.classList.toggle('ready',S.juice>=.333);j.classList.toggle('armed',juiceOn()&&S.juice>=.333);j.classList.toggle('over',S.over);
   $('jtxt').textContent=S.over?'OVERDRIVE':(S.juice>=.333?'JUICE READY':'JUICE');
-  $('tj').classList.toggle('on',juiceArmed);
+  $('tj').classList.toggle('on',juiceArmed);$('tp').classList.toggle('fire',!!S.over||(juiceArmed&&S.juice>=.333));
 }
 const juiceOn=()=>juiceArmed||keys.ShiftLeft||keys.ShiftRight;
 function setBatter(){
