@@ -196,6 +196,7 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 #tbar .gp{background:linear-gradient(90deg,rgba(255,77,46,.3),rgba(255,77,46,.8) 36%,#ff8a70 42%,#ff8a70 58%,rgba(255,77,46,.8) 64%,rgba(255,77,46,.3))}
 #tbar .jx{background:#ffd23b;box-shadow:0 0 8px 1px rgba(255,210,59,.8)} /* same colours as the bat: green = CONTACT window, red core = POWER window, gold ends = Juice */
 #tbar .dim{opacity:.22}
+#tbar em{position:absolute;left:0;right:0;top:calc(100% + 5px);text-align:center;font-family:var(--display);font-style:italic;font-weight:400;font-size:14px;letter-spacing:.05em;color:var(--volt);text-shadow:0 2px 0 #000,0 0 5px #000;white-space:nowrap} /* the pitch this timing was against */
 #tbar .trk i.mk{top:-4px;bottom:-4px;width:5px;margin-left:-2.5px;border-radius:2.5px;background:#fff;border:1.5px solid #000;box-sizing:content-box}
 #tbar.go{animation:tim 1.7s ease-out both}#hud.mob #tbar{top:calc(41% + 32px);margin-left:-130px;width:260px}#hud.wk #tbar{visibility:hidden}
 @keyframes tim{0%{opacity:0;transform:translateY(8px)}15%,70%{opacity:1;transform:none}100%{opacity:0}}
@@ -375,7 +376,7 @@ body.mob #tip{display:block}body.mob .how{display:none}
     </div>
     <div id="pop"><div class="t"></div><div class="s"></div></div>
     <div id="tim"></div>
-    <div id="tbar" aria-hidden="true"><span>EARLY</span><div class="trk"><i class="jx" id="tjx"></i><i class="gc" id="tgc"></i><i class="gp" id="tgp"></i><i class="mk" id="tmk"></i></div><span>LATE</span></div>
+    <div id="tbar" aria-hidden="true"><span>EARLY</span><div class="trk"><i class="jx" id="tjx"></i><i class="gc" id="tgc"></i><i class="gp" id="tgp"></i><i class="mk" id="tmk"></i></div><span>LATE</span><em id="tpt"></em></div>
     <div id="fps" hidden></div>
     <div id="goal" hidden></div>
   </div>
@@ -1059,7 +1060,7 @@ $('tut').addEventListener('pointerdown',e=>{e.preventDefault();const id=e.target
 // Timing meter. x is real time and everything is to scale. A coloured band is the whole window in which that swing can touch the ball
 // (green = CONTACT, the narrower red = POWER), brightest in the middle where timing is best and fading toward the edges; a Juice swing adds
 // gold to both ends of the one you used. A marker in the black means the swing was too early or too late to make contact at all.
-function timeBar(x,pw,jt,perfect){const e=$('tbar');e.className='';const SPAN=2.05,band=(el,half)=>{el.style.left=(50-half)+'%';el.style.width=(half*2)+'%';},hc=1.4/SPAN*50,hp=hc*.85/1.2,used=(pw?hp:hc)*jt;
+function timeBar(x,pw,jt,perfect){const e=$('tbar');e.className='';$('tpt').textContent=pitch?pitch.P.n+' · '+pitchMph(pitch.dur)+' MPH':'';const SPAN=2.05,band=(el,half)=>{el.style.left=(50-half)+'%';el.style.width=(half*2)+'%';},hc=1.4/SPAN*50,hp=hc*.85/1.2,used=(pw?hp:hc)*jt;
   band($('tgc'),hc);band($('tgp'),hp);band($('tjx'),jt>1?used:0);$('tgc').classList.toggle('dim',!!pw);$('tgp').classList.toggle('dim',!pw);
   const mx=clamp(x/SPAN,-1,1)*50,miss=Math.abs(mx)>used;$('tmk').style.left=(50+mx)+'%';$('tmk').style.background=perfect?'#ffe53b':miss?'#ff4d2e':'#fff';void e.offsetWidth;e.className='go';}
 function timing(t,c,l){const e=$('tim');e.className='';e.textContent=t;e.style.color=c;e.dataset.l=l||2;void e.offsetWidth;e.className='go';}
