@@ -1040,7 +1040,7 @@ function setupPitcher(obj,custom){
   let tRel=1,best=0,th=hand;
   [hand,lh].forEach(h=>{for(let t=.2;t<clip.duration-.1;t+=1/60){mixer.setTime(t);obj.updateMatrixWorld(true);h.getWorldPosition(v0);mixer.setTime(t+1/60);obj.updateMatrixWorld(true);h.getWorldPosition(v1);
     const sp=v1.z-v0.z;if(sp>best){best=sp;tRel=t;th=h;}}});
-  addHat(B,D,pitcher.mats.cap,false);
+  if(!custom)addHat(B,D,pitcher.mats.cap,false);   // textured characters go bare-headed for now
   // glove on the non-throwing hand
   {const gl=new T.Mesh(GEO.glove,pitcher.mats.glove);gl.scale.set(75,100,50);gl.position.set(0,9,0);(th===hand?lh:hand).add(gl);gl.castShadow=true;}
   mixer.setTime(0);
@@ -1070,7 +1070,7 @@ function setupModel(obj,custom){
   MX.map=pairs.map(([n,drv])=>{const bone=B(n);drv.getWorldQuaternion(qd);bone.getWorldQuaternion(qb);return {bone,drv,off:qd.invert().multiply(qb).clone()};});
   }
   MX.obj=obj;
-  MX.helmet=addHat(B,D,d.mats.cap,true);
+  MX.helmet=custom?null:addHat(B,D,d.mats.cap,true);
   paintAtlas(S.bi>=0?curBatter():LINEUP[0]);MX.ready=true;
   showChunky(batter,false);
 }
