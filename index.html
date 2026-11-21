@@ -714,10 +714,12 @@ batGlow.position.y=.6;batGlow.scale.set(.5,.5,1);bat.add(batGlow);
 
 const mkFielder=(name,num)=>makeFigure({skin:[0xe2b08a,0x8a5a3a,0xc98f62,0x6b4226][(Math.random()*4)|0],pants:0xf0f0ec,stripe:0x0e7c86,trimC:0x0e7c86,sleeve:0xf4f4f0,cap:0x0e7c86,glove:true,jersey:Object.assign({name,num},AWAY)});
 const pitcher=mkFielder('STORM',99);pitcher.root.position.set(0,.25,-18.4);scene.add(pitcher.root);
+// Fielders are drawn larger than life so they read at distance (taller, not bulkier): outfielders most, since they are furthest away.
+const FSCALE={inf:1.22,of:1.55,p:1.1};
 const FIELD=[['1B',16,-23,0],['2B',9,-34,0],['SS',-10,-34,0],['3B',-16,-23,0],['LF',-36,-71,1],['CF',0,-90,1],['RF',36,-71,1]];
 const fielders=FIELD.map((d,i)=>{const fig=mkFielder(['REEF','SQUALL','TIDE','FATHOM','BRINE','MAELSTROM','ANCHOR'][i],[11,2,7,23,31,5,40][i]);
-  const home=new V3(d[1],0,d[2]);fig.root.position.copy(home);fig.root.rotation.y=Math.atan2(-home.x,-home.z);scene.add(fig.root);
-  return {fig,home,of:!!d[3],speed:d[3]?5.6:5.2,react:d[3]?.6:.32,reach:d[3]?1.2:1.0,ph:Math.random()*6};});
+  const home=new V3(d[1],0,d[2]);fig.root.scale.setScalar(d[3]?FSCALE.of:FSCALE.inf);fig.root.position.copy(home);fig.root.rotation.y=Math.atan2(-home.x,-home.z);scene.add(fig.root);
+  return {fig,home,of:!!d[3],scale:d[3]?FSCALE.of:FSCALE.inf,speed:d[3]?5.6:5.2,react:d[3]?.6:.32,reach:d[3]?1.2:1.0,ph:Math.random()*6};});
 fielders.push({fig:pitcher,home:new V3(0,0,-17.2),of:false,speed:3.5,react:.55,reach:.6,isP:true,ph:0});
 
 const POSE={
@@ -963,8 +965,8 @@ function judge(tr,bt){const spd=bt&&bt.spd||1; // batter's speed: 0.85 (plodder)
   if(tr.grd&&!tr.foul)return {type:'hit',bases:2,endT:tr.endT,grd:true};
   if(tr.foul)return {type:'foul',endT:tr.land?Math.min(tr.land.t+.55,tr.endT):tr.endT}; // let it come down (or reach the seats) before the call
   let f=null,p=null;
-  outer:for(const q of tr.pts){if(q.y>2.2)continue;
-    for(const c of fielders){const d=Math.hypot(c.home.x-q.x,c.home.z-q.z);if(d<=c.reach+c.speed*Math.max(0,q.t-c.react)){f=c;p=q;break outer;}}}
+  outer:for(const q of tr.pts){if(q.y>3.5)continue;
+    for(const c of fielders){if(q.y>2.2*(c.scale||1))continue;const d=Math.hypot(c.home.x-q.x,c.home.z-q.z);if(d<=c.reach+c.speed*Math.max(0,q.t-c.react)){f=c;p=q;break outer;}}}
   if(!f){p=tr.pts[tr.pts.length-1];let bd=1e9;for(const c of fielders){const d=Math.hypot(c.home.x-p.x,c.home.z-p.z);if(d<bd){bd=d;f=c;}}p={x:p.x,y:0,z:p.z,t:p.t};}
   const air=!tr.land||p.t<tr.land.t;
   if(air)return {type:'out',label:f.of?'FLY OUT':(p.t<1.2?'LINE OUT':'POP OUT'),endT:p.t,f,p,air:true};
@@ -1361,7 +1363,7 @@ function setupPitcher(obj,custom){
   const {sk,B,D}=prepModel(obj,pitT,custom),clip=obj.animations&&obj.animations.find(c=>c.duration>.5);if(!clip)return;
   clip.tracks=clip.tracks.filter(t=>/quaternion$/.test(t.name)||/Hips\.position$/.test(t.name));
   paintAtlas({name:'STORM',num:99,skin:0xc98f62},Object.assign({},AWAY,{glove:'#c98f62',stripe:'#0e7c86'}),pitC,pitT,'#f0f0ec');
-  scene.add(obj);obj.position.set(0,.25,-18.4);
+  scene.add(obj);obj.scale.multiplyScalar(FSCALE.p);obj.position.set(0,.25,-18.4);
   const mixer=new T.AnimationMixer(obj);mixer.clipAction(clip).play();
   const hand=B('RightHand'),lh=B('LeftHand'),v0=new V3(),v1=new V3();
   // release = the frame the throwing hand is moving fastest toward the plate
@@ -1605,7 +1607,7 @@ function updateFielders(dt){
       if(!pl.tgt){pl.tgt={x:pl.p.x,z:pl.p.z,face:Math.atan2(-pl.p.x,-pl.p.z),lead:0};
         if(mocap){ // stop where the clip starts him, so its own drift carries the glove to the ball
           const dx=f.startOff.x-f.catchOff.x,dz=f.startOff.z-f.catchOff.z,c=Math.cos(pl.tgt.face),sn=Math.sin(pl.tgt.face);
-          pl.tgt.x+=dx*c+dz*sn;pl.tgt.z+=-dx*sn+dz*c;pl.tgt.lead=Math.min(CATCH.t-CATCH.start,pl.endT*.5);}}
+          const k=f.scale||1;pl.tgt.x+=(dx*c+dz*sn)*k;pl.tgt.z+=(-dx*sn+dz*c)*k;pl.tgt.lead=Math.min(CATCH.t-CATCH.start,pl.endT*.5);}}
       const g=pl.tgt,u=clamp(tf/Math.max(.2,(pl.tField||pl.endT)-g.lead),0,1);
       const px=lerp(pl.from.x,g.x,ease(u)),pz=lerp(pl.from.z,g.z,ease(u));
       const moving=Math.hypot(g.x-pl.from.x,g.z-pl.from.z)>1.2&&u<.97;
