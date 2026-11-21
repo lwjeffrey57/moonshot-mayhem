@@ -2135,7 +2135,7 @@ function updateCamera(rdt){
 let last=performance.now();
 // Keeps the game responsive on slower phones: if frames are slow for a while, drop a quality level (never goes back up).
 let qN=0,qT=0,qLvl=0;function qualityWatch(dt){qN++;qT+=dt;if(qN<90)return;const avg=qT/qN;qN=0;qT=0;if(avg<1/42||qLvl>=2)return;qLvl++;
-  if(qLvl===1){QS=.78;rim.castShadow=false;}else{QS=.62;composer=null;fxaa=null;}resize();}
+  if(qLvl===1){QS*=.84;rim.castShadow=false;}else{QS*=.8;composer=null;fxaa=null;}resize();}
 // optional on-screen readout (pause menu): frames per second, the slowest frame in the last half second, and the current quality level
 let fpsOn=false,fN=0,fT=0,fMax=0,fWork=0;
 $('fpsbtn').addEventListener('click',()=>{fpsOn=!fpsOn;$('fps').hidden=!fpsOn;$('fpsbtn').textContent='SHOW SPEED: '+(fpsOn?'ON':'OFF');});
@@ -2158,7 +2158,10 @@ function frame(t){
   requestAnimationFrame(frame);
 }
 try{const b=+localStorage.getItem('mm_best')||0;if(b)$('best').textContent='Best game: '+b+' runs';}catch(e){}
-initPost();resize();hud();
+// Phones start on a lighter setup so the controls stay snappy: no bloom/edge-smoothing pass, a smaller and harder-edged shadow, slightly lower resolution.
+const LITE=matchMedia('(pointer:coarse)').matches;
+if(LITE){QS=.85;rim.shadow.mapSize.set(512,512);renderer.shadowMap.type=T.PCFShadowMap;}else initPost();
+resize();hud();
 const DBG={cam:false,admire:'',trip:false,fist:false,pop:false,loser:false}; // test hook: pin the camera to CAM_HOME/CAM_LOOK
 window.__mm={S,aim,MX,DBG,SFX,RUN,ballPos:()=>ball.position,fielders,toReady,CAM_HOME,CAM_LOOK,now:()=>now,simulate,judge,get pitch(){return pitch;},get flight(){return flight;},lastSwing:()=>{const t=swing&&swing.type;swing=null;return t;},doSwing,newGame,V3,
   sim:(dt)=>{hitstop=0;now+=dt;step(dt);},
