@@ -766,27 +766,39 @@ function burst(fx,p,n,sp,life,col,gr=0,up=0){for(let i=0;i<n;i++){_v.set(rand(-1
 const fireworks=[];
 
 // ───────────────────────── audio (all synthesized)
-let AC=null,master=null,crowdGain=null,noiseBuf=null;
+let AC=null,master=null,crowdGain=null,noiseBuf=null,crowdBase=.05,crowdReal=false;
+// Recorded sounds (sfx/*.mp3). Each one replaces a synthesized sound once it has loaded; if a file is missing the synth version plays.
+const SFX={},SFX_FILES=['crowd','cheer','cheer_big','strike','ball','swing1','swing2','swing3','swing4'];
+function loadSfx(noiseSrc){SFX_FILES.forEach(n=>fetch('sfx/'+n+'.mp3').then(r=>r.ok?r.arrayBuffer():Promise.reject()).then(b=>new Promise((res,rej)=>AC.decodeAudioData(b,res,rej))).then(buf=>{SFX[n]=buf;
+  if(n==='crowd'){ // real stadium ambience takes over from the filtered noise
+    const s=AC.createBufferSource();s.buffer=buf;s.loop=true;s.loopStart=.06;s.loopEnd=buf.duration-.06;s.connect(crowdGain);
+    const t=AC.currentTime;crowdReal=true;crowdBase=.3;crowdGain.gain.cancelScheduledValues(t);crowdGain.gain.setValueAtTime(crowdBase,t);s.start(t,.06);try{noiseSrc.stop();}catch(e){}}
+}).catch(()=>{}));}
+function sfx(name,vol=1,rate=1){const b=SFX[name];if(!AC||!b)return false;const s=AC.createBufferSource(),g=AC.createGain();s.buffer=b;s.playbackRate.value=rate;g.gain.value=vol;s.connect(g);g.connect(master);s.start();return true;}
 function audioInit(){
   if(AC)return;try{AC=new (window.AudioContext||window.webkitAudioContext)();}catch(e){return;}
   master=AC.createGain();master.gain.value=.8;master.connect(AC.destination);
   noiseBuf=AC.createBuffer(1,AC.sampleRate*2,AC.sampleRate);const d=noiseBuf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;
   const src=AC.createBufferSource();src.buffer=noiseBuf;src.loop=true;
   const bp=AC.createBiquadFilter();bp.type='bandpass';bp.frequency.value=850;bp.Q.value=.45;
-  crowdGain=AC.createGain();crowdGain.gain.value=.05;src.connect(bp);bp.connect(crowdGain);crowdGain.connect(master);src.start();
+  crowdGain=AC.createGain();crowdGain.gain.value=.05;src.connect(bp);bp.connect(crowdGain);crowdGain.connect(master);src.start();loadSfx(src);
 }
 function noise(dur,type,f0,f1,vol,q=1,delay=0){if(!AC)return;const t=AC.currentTime+delay,s=AC.createBufferSource();s.buffer=noiseBuf;
   const f=AC.createBiquadFilter();f.type=type;f.Q.value=q;f.frequency.setValueAtTime(f0,t);f.frequency.exponentialRampToValueAtTime(f1,t+dur);
   const g=AC.createGain();g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(.001,t+dur);s.connect(f);f.connect(g);g.connect(master);s.start(t,Math.random());s.stop(t+dur+.02);}
 function tone(type,f0,f1,dur,vol,delay=0){if(!AC)return;const t=AC.currentTime+delay,o=AC.createOscillator();o.type=type;o.frequency.setValueAtTime(f0,t);o.frequency.exponentialRampToValueAtTime(Math.max(20,f1),t+dur);
   const g=AC.createGain();g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(.001,t+dur);o.connect(g);g.connect(master);o.start(t);o.stop(t+dur+.02);}
-function cheer(level,dur){if(!AC)return;const t=AC.currentTime,g=crowdGain.gain;g.cancelScheduledValues(t);g.setValueAtTime(g.value,t);g.linearRampToValueAtTime(level,t+.25);g.setTargetAtTime(.05,t+dur,.9);}
+function cheer(level,dur){if(!AC)return;const t=AC.currentTime,g=crowdGain.gain;
+  if(crowdReal){ // the ambience swells a little; the reaction itself is a recorded cheer on top
+    if(level>=.4)sfx('cheer_big',.95);else if(level>=.2)sfx('cheer',.5+level);
+    level=crowdBase*clamp(Math.sqrt(level/.05),.6,2.2);}
+  g.cancelScheduledValues(t);g.setValueAtTime(g.value,t);g.linearRampToValueAtTime(level,t+.25);g.setTargetAtTime(crowdBase,t+dur,.9);}
 const SND={
   crack(q,power){noise(.07,'bandpass',2400,900,.9*q+.3,1.2);tone('triangle',1100,260,.06,.5*q+.2);tone('square',520,140,.04,.12);
     if(power&&q>.6){tone('sine',150,38,.5,.9*q);noise(.35,'lowpass',900,120,.5*q);}},
-  whoosh(){noise(.2,'bandpass',300,1900,.35,1.5);},
+  whoosh(){if(!sfx('swing'+(1+(Math.random()*4|0)),.8,rand(.94,1.08)))noise(.2,'bandpass',300,1900,.35,1.5);},
   mitt(){noise(.06,'lowpass',1400,300,.7);tone('sine',190,90,.09,.5);},
-  call(hi){tone('square',hi?620:300,hi?620:240,.09,.12);tone('square',hi?830:220,hi?830:180,.14,.12,.1);},
+  call(hi){if(sfx(hi?'ball':'strike',.9))return;tone('square',hi?620:300,hi?620:240,.09,.12);tone('square',hi?830:220,hi?830:180,.14,.12,.1);},
   boom(){tone('sine',90,30,.6,.6);noise(.5,'bandpass',2400,5000,.18,.6,.05);},
   zap(){noise(.25,'highpass',2500,6000,.25,3);tone('sawtooth',1400,200,.2,.12);},
   organ(){[392,523,659,784,659,784].forEach((f,i)=>tone('square',f,f,i===5?.4:.13,.07,i*.14));},
@@ -883,7 +895,7 @@ function pitchPos(pt,u,out){
 // ───────────────────────── batted-ball physics + fielding
 const G=9.8,DRAG=.0042;
 function simulate(p0,v0,spin){spin=spin||{side:0,lift:0};
-  const p=p0.clone(),v=v0.clone(),pts=[];let t=0,land=null,hr=false,hrT=0,wall=false,wallT=0,foul=false,dist=0,grd=false;const dt=1/120;
+  const p=p0.clone(),v=v0.clone(),pts=[];let t=0,land=null,hr=false,hrT=0,wall=false,wallT=0,foul=false,dist=0,grd=false,eyeT=0;const dt=1/120;
   while(t<9){
     const sp=v.length();v.multiplyScalar(1-DRAG*sp*dt);
     if(p.y>0||v.y>0)v.y-=G*dt;
@@ -897,6 +909,11 @@ function simulate(p0,v0,spin){spin=spin||{side:0,lift:0};
       else if(p.y>WALL_H&&!wall){grd=true;} // bounced in play and hopped the wall: ground-rule double
       else{const nx=p.x/r,nz=p.z/r,vn=v.x*nx+v.z*nz;if(vn>0){v.x-=1.35*vn*nx;v.z-=1.35*vn*nz;v.multiplyScalar(.7);}p.x=nx*(fr-.15);p.z=nz*(fr-.15);if(!wall)wallT=t;wall=true;}
     }
+    if(hr&&Math.abs(phi)<8*DEG){ // the batter's eye is a solid slanted wall behind the centre-field fence: the ball caroms off it
+      const d=r-fr,hy=WALL_H+(d-1.3)*2.026;
+      if(d>1.3&&d<9&&p.y<hy){const nx=p.x/r,nz=p.z/r,n3x=-.897*nx,n3y=.443,n3z=-.897*nz,vn=v.x*n3x+v.y*n3y+v.z*n3z;
+        if(vn<0){if(!eyeT){eyeT=t;const q=p.clone(),w=v.clone();let n=0;while(q.y>0&&n++<2000){const sp2=w.length();w.multiplyScalar(1-DRAG*sp2*dt);w.y-=G*dt;q.addScaledVector(w,dt);}dist=Math.hypot(q.x,q.z);} // distance is where it would have come down
+          v.x-=1.35*vn*n3x;v.y-=1.35*vn*n3y;v.z-=1.35*vn*n3z;v.multiplyScalar(.8);p.y=hy+.03;}}}
     if(hr||grd){const sy=r>fr+1.5?WALL_H+.3+(r-fr-1.5)*.667:0;
       if(p.y<=sy||r>fr+58){pts.push({x:p.x,y:p.y,z:p.z,t});break;}}
     else if(p.y<=0){
@@ -905,8 +922,8 @@ function simulate(p0,v0,spin){spin=spin||{side:0,lift:0};
     }
     pts.push({x:p.x,y:p.y,z:p.z,t});
   }
-  if(hr){const q=p.clone(),w=v.clone();let n=0;while(q.y>0&&n++<2000){const sp=w.length();w.multiplyScalar(1-DRAG*sp*dt);w.y-=G*dt;q.addScaledVector(w,dt);}dist=Math.hypot(q.x,q.z);}
-  return {pts,land,hr,hrT,wall,wallT,foul,dist,grd,endT:t};
+  if(hr&&!eyeT){const q=p.clone(),w=v.clone();let n=0;while(q.y>0&&n++<2000){const sp=w.length();w.multiplyScalar(1-DRAG*sp*dt);w.y-=G*dt;q.addScaledVector(w,dt);}dist=Math.hypot(q.x,q.z);}
+  return {pts,land,hr,hrT,wall,wallT,foul,dist,grd,eyeT,endT:t};
 }
 function judge(tr,bt){const spd=bt&&bt.spd||1; // batter's speed: 0.85 (plodder) to 1.15 (burner)
   if(tr.hr)return {type:'hr',endT:tr.endT,dist:tr.dist};
@@ -1624,6 +1641,7 @@ function step(dt){
   if(flight&&!flight.done&&(S.state==='flight')){
     const tf=now-flight.t0,tr=flight.tr,i=Math.min(tr.pts.length-1,Math.floor(tf*120)),p=tr.pts[i];
     ball.visible=true;ball.position.set(p.x,p.y,p.z);
+    if(tr.eyeT&&!flight.eyeHit&&tf>=tr.eyeT){flight.eyeHit=true;burst(fxL,ball.position,14,6,.5,[.6,.9,.6],5,1);SND.mitt();tone('sine',120,50,.25,.5);} // thud off the batter's eye
     if(tr.land&&!flight.landed&&tf>=tr.land.t){flight.landed=true;_p.set(tr.land.x,.05,tr.land.z);burst(fxL,_p,10,3,.5,[.75,.6,.42],4,2);} // dust where it comes down, so fair or foul is clear
     const dc=camera.position.distanceTo(ball.position);ball.scale.setScalar(Math.max(1,dc*.05));
     ballShadow.visible=true;ballShadow.position.set(p.x,.03,p.z);ballShadow.scale.setScalar(.2+Math.min(1.2,p.y*.03));
@@ -1693,7 +1711,7 @@ function frame(t){
 try{const b=+localStorage.getItem('mm_best')||0;if(b)$('best').textContent='Best game: '+b+' runs';}catch(e){}
 initPost();resize();hud();
 const DBG={cam:false,admire:''}; // test hook: pin the camera to CAM_HOME/CAM_LOOK
-window.__mm={S,aim,MX,DBG,fielders,toReady,CAM_HOME,CAM_LOOK,now:()=>now,simulate,judge,get pitch(){return pitch;},get flight(){return flight;},doSwing,newGame,V3,
+window.__mm={S,aim,MX,DBG,SFX,fielders,toReady,CAM_HOME,CAM_LOOK,now:()=>now,simulate,judge,get pitch(){return pitch;},get flight(){return flight;},doSwing,newGame,V3,
   sim:(dt)=>{hitstop=0;now+=dt;step(dt);},
   step:(n,dt=1/60)=>{for(let i=0;i<n;i++){if(hitstop>0)hitstop=0;now+=dt;step(dt);}updateCamera(dt);draw();}};
 if(!window.__mmManual)requestAnimationFrame(frame);
