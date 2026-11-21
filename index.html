@@ -50,6 +50,14 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 .stat{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:800;letter-spacing:.1em;color:var(--dim)}
 .stat b{display:block;width:64px;height:5px;background:rgba(242,245,255,.15)}
 .stat b i{display:block;height:100%;background:var(--ice)}
+#rep{top:134px;right:max(16px,env(safe-area-inset-right,0px));padding:6px 10px 7px;min-width:150px}
+#rep .lbl{display:block;margin-bottom:3px}
+#rep .row{display:grid;grid-template-columns:16px 1fr auto;gap:6px;align-items:baseline;font-size:13px;font-weight:700;letter-spacing:.06em;line-height:1.45;color:var(--chrome);font-variant-numeric:tabular-nums}
+#rep .row i{font-style:normal;color:var(--ice);text-align:center}
+#rep .row b{font-weight:800;color:var(--dim)}
+#rep .row.sp{color:var(--heat)}#rep .row.sp i{color:var(--heat)}
+#rep .row.last{color:var(--volt)}#rep .row.last b,#rep .row.last i{color:var(--volt)}
+@media (max-width:760px),(max-height:520px){#rep{display:none}}
 #pitchinfo{bottom:14px;left:50%;transform:translateX(-50%);font-weight:800;letter-spacing:.14em;font-size:14px;color:var(--chrome);text-shadow:0 2px 0 #000;opacity:0;transition:opacity .2s;white-space:nowrap}
 #pitchinfo.on{opacity:1}
 #keys{right:max(16px,env(safe-area-inset-right,0px));bottom:12px;font-size:12px;font-weight:700;letter-spacing:.08em;color:var(--dim);text-align:right;line-height:1.5;text-shadow:0 1px 0 #000}
@@ -115,6 +123,7 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
     <div id="diamond"><i id="b2"></i><i id="b3"></i><i id="b1"></i></div>
     <div id="card" class="slab"><span id="cnum">27</span><div><div id="cname">VASQUEZ</div>
       <div class="stats"><div class="stat">PWR <b><i id="spw"></i></b></div><div class="stat">CON <b><i id="sco"></i></b></div><div class="stat">SPD <b><i id="ssp"></i></b></div></div></div></div>
+    <div id="rep" class="slab" hidden><span class="lbl">Pitcher · Storm #99</span><div id="replist"></div></div>
     <div id="pitchinfo"></div>
     <div id="keys"><kbd>Mouse</kbd> aim &nbsp; <kbd>Click</kbd>/<kbd>Z</kbd> contact<br><kbd>Right-click</kbd>/<kbd>X</kbd> power &nbsp; <kbd>Shift</kbd> juice</div>
     <button id="pausebtn" type="button" aria-label="Pause game" hidden>❚❚</button>
@@ -688,7 +697,7 @@ function toReady(d){S.state='ready';S.t=now;if(d)readyDur=d;swing=null;pitch=nul
   fielders.forEach(f=>{if(!f.isP){f.fig.root.position.copy(f.home);f.fig.root.rotation.y=Math.atan2(-f.home.x,-f.home.z);}f.run=null;});
   camMode='bat';hud();}
 function newGame(){Object.assign(S,{inning:1,outs:0,balls:0,strikes:0,runs:0,bases:[0,0,0],hits:0,hrs:0,longest:0,streak:0,bestStreak:0,juice:.34,over:false,bi:-1,pitches:0});
-  $('title').hidden=true;$('over').hidden=true;$('pausebtn').hidden=false;setBatter();scoreboard('PLAY BALL','INNING 1');toReady(2);pop('PLAY BALL!','INNING 1','plain');SND.organ();cheer(.14,1.5);}
+  $('title').hidden=true;$('over').hidden=true;$('pausebtn').hidden=false;setBatter();renderRep();scoreboard('PLAY BALL','INNING 1');toReady(2);pop('PLAY BALL!','INNING 1','plain');SND.organ();cheer(.14,1.5);}
 
 // ───────────────────────── pitching
 const PITCHES=[
@@ -699,6 +708,13 @@ const PITCHES=[
   {n:'ZIG-ZAG',dur:.92,brk:[0,-.1],arc:.25,w:0,sp:1,wob:.3,wobF:22,col:[.3,1,.5]},
   {n:'CORKSCREW',dur:.9,brk:[0,-.1],arc:.25,w:0,sp:1,wob:.26,wobF:20,cork:1,col:[.8,.4,1]},
 ];
+const pitchMph=dur=>Math.round(18.4/dur*2.237*1.52),inningSp=()=>[1,.93,.86][S.inning-1]||.86;
+function renderRep(last){ // the pitcher's repertoire: movement, name, typical speed this inning; the pitch just thrown is highlighted
+  const arrows=['→','↗','↑','↖','←','↙','↓','↘'];
+  $('replist').innerHTML=PITCHES.map(P=>{const m=Math.hypot(P.brk[0],P.brk[1]),a=m<.1?'•':arrows[((Math.round(Math.atan2(P.brk[1],P.brk[0])/(PI/4))%8)+8)%8];
+    return `<div class="row${P.sp?' sp':''}${P===last?' last':''}"><i>${P.wob?'~':a}</i><span>${P.n}</span><b>${pitchMph(P.dur*inningSp())}</b></div>`;}).join('');
+  $('rep').hidden=false;
+}
 function choosePitch(){
   const special=S.pitches>2&&Math.random()<.1+.05*S.inning;
   const pool=PITCHES.filter(p=>special?p.sp:!p.sp);let tw=0;pool.forEach(p=>tw+=p.w||1);let r=Math.random()*tw,P=pool[0];
@@ -707,7 +723,7 @@ function choosePitch(){
   if(inZone){tx=rand(ZONE.x0+.03,ZONE.x1-.03);ty=rand(ZONE.y0+.04,ZONE.y1-.04);}
   else{const side=(Math.random()*4)|0,o=rand(.1,.26);tx=rand(ZONE.x0,ZONE.x1);ty=rand(ZONE.y0,ZONE.y1);
     if(side===0)tx=ZONE.x0-o;else if(side===1)tx=ZONE.x1+o;else if(side===2)ty=ZONE.y0-o;else ty=ZONE.y1+o;}
-  const sp=[1,.93,.86][S.inning-1]||.86;
+  const sp=inningSp();
   return {P,tx,ty,dur:P.dur*sp*rand(.97,1.03),brk:new V3(P.brk[0]*rand(.8,1.15),P.brk[1]*rand(.8,1.15),0),arc:P.arc,rel:new V3(),t0:0,
     inZone:tx>=ZONE.x0&&tx<=ZONE.x1&&ty>=ZONE.y0&&ty<=ZONE.y1};
 }
@@ -823,7 +839,7 @@ function recordOut(){S.outs++;S.streak=0;if(S.over){S.over=false;}}
 function afterPA(delay){ // plate appearance over
   if(S.outs>=3){S.inning++;S.outs=0;S.bases=[0,0,0];
     if(S.inning>3){S.state='end';S.t=now;readyDur=delay+.4;hud();return;}
-    setBatter();S.state='result';S.t=now;S.next=()=>{pop('INNING '+S.inning,'PITCHER IS DEALING HEAT','plain');scoreboard('INNING '+S.inning,S.runs+' RUNS');SND.organ();toReady(2);};readyDur=delay;hud();return;}
+    setBatter();S.state='result';S.t=now;S.next=()=>{renderRep();pop('INNING '+S.inning,'PITCHER IS DEALING HEAT','plain');scoreboard('INNING '+S.inning,S.runs+' RUNS');SND.organ();toReady(2);};readyDur=delay;hud();return;}
   setBatter();S.state='result';S.t=now;S.next=null;readyDur=delay;hud();
 }
 function samePA(delay){S.state='result';S.t=now;S.next=null;readyDur=delay;hud();}
@@ -853,7 +869,7 @@ function endGame(){
   S.state='over';let best=0;try{best=+localStorage.getItem('mm_best')||0;if(S.runs>best)localStorage.setItem('mm_best',S.runs);}catch(e){}
   const rows=[['RUNS',S.runs],['HITS',S.hits],['HOMERS',S.hrs],['LONGEST',S.longest?S.longest+' FT':'—'],['BEST STREAK',S.bestStreak],['BEST GAME',Math.max(best,S.runs)]];
   $('final').innerHTML=rows.map(r=>`<div class="slab"><span class="lbl">${r[0]}</span><div class="big">${r[1]}</div></div>`).join('');
-  $('over').hidden=false;$('pausebtn').hidden=true;scoreboard('FINAL',S.runs+' RUNS');
+  $('over').hidden=false;$('pausebtn').hidden=true;$('rep').hidden=true;scoreboard('FINAL',S.runs+' RUNS');
 }
 
 // ───────────────────────── input
@@ -907,7 +923,7 @@ function setPaused(on){
 }
 function toMenu(){
   setPaused(false);fireworks.length=0;toReady();S.state='title';
-  $('over').hidden=true;$('title').hidden=false;$('pausebtn').hidden=true;$('pop').className='';$('tim').className='';$('pitchinfo').classList.remove('on');
+  $('over').hidden=true;$('title').hidden=false;$('pausebtn').hidden=true;$('rep').hidden=true;$('pop').className='';$('tim').className='';$('pitchinfo').classList.remove('on');
   scoreboard('MOONSHOT','MAYHEM');
   try{const b=+localStorage.getItem('mm_best')||0;if(b)$('best').textContent='Best game: '+b+' runs';}catch(e){}
 }
@@ -1380,7 +1396,7 @@ function step(dt){
     if(show){pring.position.set(pitch.tx,pitch.ty,0);const r=lerp(.42,.055,ease(clamp((u-.22)/.78,0,1)));pring.scale.setScalar(r);pring.material.color.setHex(u>.86?0xff4d2e:0xffe53b);}
     if(pitch.P.col&&u<1)trail(pitch,pitch.P.col,u<.75,true);
     if(u>=1&&!pitch.called){pitch.called=true;
-      $('pitchinfo').textContent=`${pitch.P.n} · ${Math.round(18.4/pitch.dur*2.237*1.52)} MPH`;$('pitchinfo').classList.add('on');}
+      $('pitchinfo').textContent=`${pitch.P.n} · ${pitchMph(pitch.dur)} MPH`;$('pitchinfo').classList.add('on');renderRep(pitch.P);}
     if(u>=1.07){ball.visible=false;ballShadow.visible=false;SND.mitt();
       _p.copy(ball.position);burst(fxS,_p,8,2,.3,[.8,.7,.5],3);
       if(swing){strike('swing');}
