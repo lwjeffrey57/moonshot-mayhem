@@ -386,9 +386,9 @@ body.mob #tip{display:block}body.mob .how{display:none}
     <div id="walk" hidden><div class="wn" id="wnum"></div><div class="wb"><div class="wname" id="wname"></div><div class="wrow" id="wrat"></div><div class="wrow sub"><span id="wspot"></span><span id="wskip"></span></div></div></div>
     <svg id="diamond" viewBox="0 0 104 86" aria-hidden="true">
       <path d="M52 82 L4 34 A68 68 0 0 1 100 34 Z" fill="#2f8a3c" stroke="#f2f5ff" stroke-width="2.5" stroke-linejoin="round"/>
-      <path d="M52 82 L24 54 A40 40 0 0 1 80 54 Z" fill="#a8683e"/>
+      <path d="M52 82 L24 54 A40 40 0 0 1 80 54 Z" fill="#9a9ba3"/>
       <path d="M52 76 L68 60 L52 44 L36 60 Z" fill="#2f8a3c"/>
-      <circle cx="52" cy="62" r="3.5" fill="#a8683e"/>
+      <circle cx="52" cy="62" r="3.5" fill="#9a9ba3"/>
       <circle class="base" id="b1" cx="70" cy="60" r="5.5"/><circle class="base" id="b2" cx="52" cy="42" r="5.5"/><circle class="base" id="b3" cx="34" cy="60" r="5.5"/>
       <circle cx="52" cy="78" r="5" fill="#e23a22" stroke="#fff" stroke-width="1.5"/>
     </svg>
@@ -576,7 +576,7 @@ const basic=(o)=>new T.MeshBasicMaterial(Object.assign({side:T.DoubleSide},o));
   // mask: where it is dirt) multiplied by tiling close-up detail, so it holds up at the plate and from the upper deck.
   const GM=Math.min(2048,renderer.capabilities.maxTextureSize),GW=260,GX0=-130,GZ0=-240,GS=GM/GW,gx=x=>(x-GX0)*GS,gz=z=>(z-GZ0)*GS;
   const paintField=(g,mask)=>{
-    const dirt=c=>{g.fillStyle=mask?'#fff':c||'#9a6037';g.fill();};
+    const dirt=c=>{g.fillStyle=mask?'#fff':c||'#8f9098';g.fill();}; // moon dust, not clay
     const arc=(dr,rev)=>{for(let k=0;k<=60;k++){const i=rev?60-k:k,phi=lerp(-PI/4,PI/4,i/60),r=fenceR(phi)+dr;g.lineTo(gx(r*Math.sin(phi)),gz(-r*Math.cos(phi)));}};
     const playable=()=>{g.beginPath();arc(0);[[70,-70],[30,-4],[13,13],[-13,13],[-30,-4],[-70,-70]].forEach(q=>g.lineTo(gx(q[0]),gz(q[1])));g.closePath();};
     const grass=path=>{g.save();path();g.clip();
@@ -586,21 +586,27 @@ const basic=(o)=>new T.MeshBasicMaterial(Object.assign({side:T.DoubleSide},o));
       g.restore();};
     g.fillStyle=mask?'#000':'#24242a';g.fillRect(0,0,GM,GM);
     grass(playable);
-    g.save();playable();g.clip();g.beginPath();arc(3);arc(-4.6,true);g.closePath();dirt('#8d5a35');g.restore();                    // warning track
+    g.save();playable();g.clip();g.beginPath();arc(3);arc(-4.6,true);g.closePath();dirt('#7c7d86');g.restore();                    // warning track
     g.save();g.beginPath();g.moveTo(gx(0),gz(4.5));g.lineTo(gx(-62),gz(-57.5));g.lineTo(gx(62),gz(-57.5));g.closePath();g.clip();
     g.beginPath();g.arc(gx(0),gz(-18.4),29*GS,0,7);dirt();g.restore();                                                             // infield skin
     g.beginPath();g.arc(gx(0),gz(0),3.96*GS,0,7);dirt();
     grass(()=>{g.beginPath();g.moveTo(gx(0),gz(-2.6));g.lineTo(gx(16.8),gz(-19.4));g.lineTo(gx(0),gz(-36.2));g.lineTo(gx(-16.8),gz(-19.4));g.closePath();});
     g.beginPath();g.arc(gx(0),gz(0),3.96*GS,0,7);dirt();
-    g.beginPath();g.arc(gx(0),gz(-18.4),2.74*GS,0,7);dirt('#a56a3e');                                                              // mound
+    g.beginPath();g.arc(gx(0),gz(-18.4),2.74*GS,0,7);dirt('#a3a4ac');                                                              // mound
     if(mask)return;
     const blot=(x,z,rx,rz,c,rot=0)=>{g.save();g.translate(gx(x),gz(z));g.rotate(rot);g.scale(rx*GS,rz*GS);const gr=g.createRadialGradient(0,0,0,0,0,1);gr.addColorStop(0,c);gr.addColorStop(1,c.replace(/[\d.]+\)$/,'0)'));g.fillStyle=gr;g.fillRect(-1,-1,2,2);g.restore();};
     for(let i=0;i<340;i++)blot(rand(-110,110),rand(-130,10),rand(4,15),rand(4,15),Math.random()<.5?'rgba(0,18,0,.07)':'rgba(240,255,170,.05)');   // uneven turf
-    [[19.4,-19.4],[0,-38.8],[-19.4,-19.4]].forEach(q=>{blot(q[0],q[1],3.2,3.2,'rgba(60,30,12,.28)');blot(q[0],q[1],1.2,1.2,'rgba(255,225,185,.16)');});
-    [[16,-23],[9,-34],[-10,-34],[-16,-23]].forEach(q=>blot(q[0],q[1],2.6,2,'rgba(55,28,10,.22)',rand(0,3)));                      // where the infielders stand
+    [[19.4,-19.4],[0,-38.8],[-19.4,-19.4]].forEach(q=>{blot(q[0],q[1],3.2,3.2,'rgba(20,20,28,.28)');blot(q[0],q[1],1.2,1.2,'rgba(245,245,250,.16)');});
+    [[16,-23],[9,-34],[-10,-34],[-16,-23]].forEach(q=>blot(q[0],q[1],2.6,2,'rgba(20,20,28,.22)',rand(0,3)));                      // where the infielders stand
     [[-36,-71],[0,-90],[36,-71]].forEach(q=>blot(q[0],q[1],3,2.4,'rgba(20,30,5,.2)',rand(0,3)));                                   // worn spots in the outfield
-    blot(0,0,3.4,3.4,'rgba(60,30,12,.2)');blot(0,-17,1.6,1.1,'rgba(60,30,12,.3)');
-    for(let i=0;i<70;i++){const an=rand(-1.9,1.9),r=rand(9,28);blot(Math.sin(an)*r,-18.4-Math.cos(an)*r,rand(.6,1.8),rand(.3,.8),'rgba(255,228,190,.07)',rand(0,3));} // rake marks on the skin
+    blot(0,0,3.4,3.4,'rgba(20,20,28,.2)');blot(0,-17,1.6,1.1,'rgba(20,20,28,.3)');
+    for(let i=0;i<70;i++){const an=rand(-1.9,1.9),r=rand(9,28);blot(Math.sin(an)*r,-18.4-Math.cos(an)*r,rand(.6,1.8),rand(.3,.8),'rgba(245,245,250,.07)',rand(0,3));} // rake marks on the skin
+    // craters and boot prints in the dust: small on the infield skin, a few bigger ones on the warning track
+    const crater=(x,z,r)=>{g.save();g.translate(gx(x),gz(z));g.scale(r*GS,r*GS);g.fillStyle='rgba(18,18,26,.42)';g.beginPath();g.arc(0,0,1,0,7);g.fill();g.fillStyle='rgba(30,30,40,.3)';g.beginPath();g.arc(.12,-.12,.72,0,7);g.fill();
+      g.strokeStyle='rgba(240,240,248,.6)';g.lineWidth=.16;g.beginPath();g.arc(0,0,1,.5,3.5);g.stroke();g.restore();};
+    for(let i=0;i<16;i++){const an=rand(-1,1),r=rand(21.5,27);crater(Math.sin(an)*r,-18.4-Math.cos(an)*r,rand(.35,.95));}
+    for(let i=0;i<14;i++){const phi=rand(-.74,.74),r=fenceR(phi)-rand(1.2,3.6);crater(r*Math.sin(phi),-r*Math.cos(phi),rand(.5,1.3));}
+    for(let i=0;i<60;i++){const an=rand(-1,1),r=rand(21,27.5),x=Math.sin(an)*r,z=-18.4-Math.cos(an)*r,ro=rand(0,3);for(let k=0;k<2;k++)blot(x+Math.cos(ro)*.34*k,z+Math.sin(ro)*.34*k+k*.5,.16,.3,'rgba(15,15,22,.3)',ro);}
     g.save();playable();g.clip();g.lineJoin='round';[[9,.10],[5,.12],[2.4,.14]].forEach(([w,al])=>{playable();g.strokeStyle=`rgba(0,0,10,${al})`;g.lineWidth=w*GS;g.stroke();});g.restore(); // shade at the foot of the walls
     const lg=g.createLinearGradient(gx(-115),0,gx(115),0);lg.addColorStop(0,'rgba(12,10,44,.26)');lg.addColorStop(.62,'rgba(12,10,44,0)');g.fillStyle=lg;g.fillRect(0,0,GM,GM);             // long evening shadow from the third-base stands
   };
@@ -611,8 +617,8 @@ const basic=(o)=>new T.MeshBasicMaterial(Object.assign({side:T.DoubleSide},o));
     for(let i=0;i<34000;i++){const x=rand(0,512),y=rand(0,512),an=rand(-.75,.75),l=rand(3,10);g.strokeStyle=Math.random()<.5?`rgba(250,255,205,${rand(.1,.26)})`:`rgba(0,26,0,${rand(.12,.3)})`;
       wrap(x,y,(px,py)=>{g.beginPath();g.moveTo(px,py);g.lineTo(px+Math.sin(an)*l,py-Math.cos(an)*l);g.stroke();});}});
   const dirtD=tile(g=>{
-    for(let i=0;i<120;i++){const x=rand(0,512),y=rand(0,512),r=rand(14,46),c=Math.random()<.5?'60,30,10':'255,228,190';wrap(x,y,(px,py)=>{const gr=g.createRadialGradient(px,py,0,px,py,r);gr.addColorStop(0,`rgba(${c},.14)`);gr.addColorStop(1,`rgba(${c},0)`);g.fillStyle=gr;g.fillRect(px-r,py-r,r*2,r*2);});}
-    for(let i=0;i<16000;i++){const x=rand(0,512),y=rand(0,512),r=rand(.5,1.9);g.fillStyle=Math.random()<.5?`rgba(255,232,200,${rand(.1,.3)})`:`rgba(50,24,8,${rand(.12,.34)})`;wrap(x,y,(px,py)=>{g.beginPath();g.arc(px,py,r,0,7);g.fill();});}});
+    for(let i=0;i<120;i++){const x=rand(0,512),y=rand(0,512),r=rand(14,46),c=Math.random()<.5?'20,20,30':'245,245,252';wrap(x,y,(px,py)=>{const gr=g.createRadialGradient(px,py,0,px,py,r);gr.addColorStop(0,`rgba(${c},.14)`);gr.addColorStop(1,`rgba(${c},0)`);g.fillStyle=gr;g.fillRect(px-r,py-r,r*2,r*2);});}
+    for(let i=0;i<16000;i++){const x=rand(0,512),y=rand(0,512),r=rand(.5,1.9);g.fillStyle=Math.random()<.5?`rgba(245,245,252,${rand(.1,.3)})`:`rgba(16,16,26,${rand(.12,.34)})`;wrap(x,y,(px,py)=>{g.beginPath();g.arc(px,py,r,0,7);g.fill();});}});
   const groundMat=new T.ShaderMaterial({fog:true,side:T.DoubleSide,uniforms:T.UniformsUtils.merge([T.UniformsLib.fog,{macro:{value:null},maskT:{value:null},gD:{value:null},dD:{value:null}}]),
     vertexShader:`varying vec2 vW;varying float vL;
 #include <fog_pars_vertex>
@@ -665,10 +671,13 @@ gl_FragColor=vec4(col*mix(dg,dd,m)*vL,1.0);
   const AW=Math.min(4096,renderer.capabilities.maxTextureSize),ads=tex(AW,128,(g,w,h)=>{
     const X=m=>m/WL*w,k=(w/WL)/(h/WALL_H); // k: horizontal squash so lettering keeps its proportions on the wall
     const text=(str,cx,cy,font,col,maxM)=>{g.save();g.translate(X(cx),cy);g.scale(k,1);g.font=font;g.fillStyle=col;g.textAlign='center';g.textBaseline='middle';g.fillText(str,0,0,X(maxM)/k);g.restore();};
-    const bg=g.createLinearGradient(0,0,0,h);bg.addColorStop(0,'#1c4a36');bg.addColorStop(1,'#0f2c20');g.fillStyle=bg;g.fillRect(0,0,w,h);
-    for(let m=0;m<WL;m+=2.4){g.fillStyle='rgba(0,0,0,.3)';g.fillRect(X(m),0,2,h);g.fillStyle='rgba(255,255,255,.05)';g.fillRect(X(m)+2,0,2,h);}   // padding seams
+    const bg=g.createLinearGradient(0,0,0,h);bg.addColorStop(0,'#aab0bd');bg.addColorStop(.5,'#7e8492');bg.addColorStop(1,'#4c515e');g.fillStyle=bg;g.fillRect(0,0,w,h);   // moon-base hull panels
+    for(let m=0;m<WL;m+=2.4){g.fillStyle='rgba(0,0,0,.4)';g.fillRect(X(m),0,2,h);g.fillStyle='rgba(255,255,255,.22)';g.fillRect(X(m)+2,0,2,h);
+      g.fillStyle='rgba(20,22,30,.7)';for(const yy of [h*.2,h*.5,h*.8])for(const dx of [7,X(2.4)-7]){g.beginPath();g.arc(X(m)+dx,yy,2.2,0,7);g.fill();}}                     // seams and rivets
+    {const sw=X(1.1);for(let x=-h;x<w+h;x+=sw*2){g.fillStyle='#f2c81e';g.beginPath();g.moveTo(x,0);g.lineTo(x+sw,0);g.lineTo(x+sw-14,14);g.lineTo(x-14,14);g.closePath();g.fill();}
+      g.fillStyle='#16181f';for(let x=-h+sw;x<w+h;x+=sw*2){g.beginPath();g.moveTo(x,0);g.lineTo(x+sw,0);g.lineTo(x+sw-14,14);g.lineTo(x-14,14);g.closePath();g.fill();}} // hazard stripe along the top
     const marks=[-43,-22,0,22,43].map(d=>({u:uAt(d),ft:Math.round(fenceR(d*DEG)*3.281)})),MW=5.2;
-    marks.forEach(mk=>text(String(mk.ft),mk.u,h*.52,'900 76px Arial Black,Arial','#ffe53b',MW));
+    marks.forEach(mk=>{text(String(mk.ft),mk.u+.06,h*.54,'900 76px Arial Black,Arial','rgba(0,0,0,.6)',MW);text(String(mk.ft),mk.u,h*.52,'900 76px Arial Black,Arial','#ffe53b',MW);});
     const names=[['ZAPP COLA','#c91f29','#fff'],['TURBO TIRE','#e0b400','#141414'],['BURGER BARN','#124a9c','#fff'],['ROCKET FUEL','#101014','#3ad6ff'],['DINO MART','#1b7a3a','#ffe53b'],['KABOOM GUM','#c9408f','#fff'],['NITRO SHOES','#de5f16','#141414'],['MEGA ARCADE','#4b2a9c','#ffe53b']];
     let ni=0;
     for(let i=0;i<marks.length-1;i++){const g0=marks[i].u+MW/2+1.6,g1=marks[i+1].u-MW/2-1.6,pw=Math.min(13.5,(g1-g0-2.4)/2),gap=(g1-g0-2*pw)/3;
@@ -704,7 +713,9 @@ gl_FragColor=vec4(col*mix(dg,dd,m)*vL,1.0);
       const fl=new T.Mesh(new T.PlaneGeometry(6,3.4),basic({color:[0xff4d2e,0xffe53b,0x3ad6ff,0xffffff][(i/6|0)%4]}));fl.position.copy(fp).add(new V3(3.2,2.2,0));scene.add(fl);}}
   scene.add(new T.Mesh(ribbon(bw,ra),basic({color:0x1a1838})));scene.add(new T.Mesh(ribbon(ra,rb),basic({color:0x2a2848})));scene.add(new T.Mesh(ribbon(rc,rb),basic({color:0xe8e8f0})));
   // batter's eye in dead centre
-  {const a=[],b=[];for(let i=0;i<=8;i++){const phi=lerp(-8,8,i/8)*DEG,r=fenceR(phi);a.push(pol(r+1.3,phi,WALL_H));b.push(pol(r+9,phi,19));}scene.add(new T.Mesh(ribbon(a,b),basic({color:0x0e3322})));}
+  {const a=[],b=[];for(let i=0;i<=8;i++){const phi=lerp(-8,8,i/8)*DEG,r=fenceR(phi);a.push(pol(r+1.3,phi,WALL_H));b.push(pol(r+9,phi,19));}const sol=tex(256,128,(g,w,h)=>{g.fillStyle='#070b1c';g.fillRect(0,0,w,h);g.strokeStyle='rgba(70,110,190,.38)';g.lineWidth=1.5;for(let x=0;x<=w;x+=32){g.beginPath();g.moveTo(x,0);g.lineTo(x,h);g.stroke();}for(let y=0;y<=h;y+=32){g.beginPath();g.moveTo(0,y);g.lineTo(w,y);g.stroke();}
+      g.strokeStyle='rgba(180,190,210,.5)';g.lineWidth=4;g.strokeRect(2,2,w-4,h-4);});
+    scene.add(new T.Mesh(ribbon(a,b,.03),basic({map:sol})));} // the batter's eye is a dark solar array: still a clean backdrop to pick the ball up against
   // beyond the park: the lunar surface, crater-rim ridges on the horizon, and a small moon base with a rocket on the pad
   {const fb=x=>Math.sin(x*1.7)*.5+Math.sin(x*4.3+1.3)*.27+Math.sin(x*9.1+.4)*.14+Math.sin(x*19.7+2.2)*.09;
     const rock=tex(256,128,(g,w,h)=>{const gr=g.createLinearGradient(0,0,0,h);gr.addColorStop(0,'#d9d9de');gr.addColorStop(.35,'#9a9aa2');gr.addColorStop(1,'#3c3c44');g.fillStyle=gr;g.fillRect(0,0,w,h);
@@ -729,7 +740,7 @@ gl_FragColor=vec4(col*mix(dg,dd,m)*vL,1.0);
   [-1,1].forEach(s=>{
     const line=[[70,-70],[30,-4],[13,13]].map(p=>new V3(p[0]*s,0,p[1]));
     const n=new V3(.866*s,0,.5);
-    scene.add(new T.Mesh(ribbon(line,line.map(p=>p.clone().setY(1.6))),basic({color:0x143a2a})));
+    scene.add(new T.Mesh(ribbon(line,line.map(p=>p.clone().setY(1.6))),basic({color:0x6a707d})));
     scene.add(new T.Mesh(ribbon(line.map(p=>p.clone().addScaledVector(n,1).setY(1.9)),line.map(p=>p.clone().addScaledVector(n,34).setY(23)),1),cm));
     scene.add(new T.Mesh(ribbon(line.map(p=>p.clone().addScaledVector(n,30).setY(23)),line.map(p=>p.clone().addScaledVector(n,30).setY(30))),basic({color:0x1a1838})));
     scene.add(new T.Mesh(ribbon(line.map(p=>p.clone().addScaledVector(n,30).setY(30)),line.map(p=>p.clone().addScaledVector(n,58).setY(52)),1),cm));
@@ -742,7 +753,7 @@ gl_FragColor=vec4(col*mix(dg,dd,m)*vL,1.0);
   });
   // backstop behind home plate: padded wall, netting on posts, and the seats behind it (closes the gap between the two foul-side stands)
   {const P=(x,y,z)=>new V3(x,y,z),quad=(a,b,c,d,mat)=>scene.add(new T.Mesh(ribbon([a,b],[c,d],1),mat));
-    const pad=tex(256,64,(g,w,h)=>{const bg=g.createLinearGradient(0,0,0,h);bg.addColorStop(0,'#1c4a36');bg.addColorStop(1,'#0f2c20');g.fillStyle=bg;g.fillRect(0,0,w,h);
+    const pad=tex(256,64,(g,w,h)=>{const bg=g.createLinearGradient(0,0,0,h);bg.addColorStop(0,'#8e94a1');bg.addColorStop(1,'#4c515e');g.fillStyle=bg;g.fillRect(0,0,w,h);
       for(let x=0;x<w;x+=32){g.fillStyle='rgba(0,0,0,.35)';g.fillRect(x,0,2,h);g.fillStyle='rgba(255,255,255,.06)';g.fillRect(x+2,0,2,h);}g.fillStyle='#e8c92a';g.fillRect(0,0,w,6);});
     pad.wrapS=T.RepeatWrapping;pad.repeat.set(1/6,1);pad.anisotropy=ANISO;
     quad(P(-13,0,13),P(13,0,13),P(-13,1.9,13),P(13,1.9,13),basic({map:pad}));
