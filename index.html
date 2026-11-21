@@ -1042,7 +1042,7 @@ const TIPS=[['AIM','Drag your left thumb anywhere on the screen to move the bat 
   ['LAY OFF','Pitches outside the white box are balls. Chase them and you get weak contact.'],
   ['READ THE SWING','After every swing, the line under the zone tells you your timing and where the barrel missed.'],
   ['OVERDRIVE','Get three hits in a row and the next batter goes into Overdrive: every swing is a free Juice swing for that whole at-bat.'],
-  ['RECHARGE','Overdrive lasts one at-bat. String together three more hits in a row to charge it again.']];
+  ['RECHARGE','Overdrive lasts one at-bat (a walk doesn\'t use it up). String together three more hits in a row to charge it again.']];
 let tipI=(Math.random()*3)|0;function nextTip(){const t=TIPS[tipI++%TIPS.length];$('tiph').textContent=t[0];$('tipb').textContent=t[1];}nextTip();setInterval(()=>{if(!$('title').hidden)nextTip();},4500);
 // thumb guide before the very first pitch on a phone
 const TUT_EVERY_LAUNCH=true; // testing: show the guide on every launch; set false to go back to once per device
@@ -1078,9 +1078,10 @@ function hud(){
   $('runs').textContent=S.runs;$('inn').textContent=['1ST','2ND','3RD'][Math.min(S.inning,3)-1];$('count').textContent=S.balls+'-'+S.strikes;
   $('outs').textContent='O: '+S.outs;
   ['b1','b2','b3'].forEach((id,i)=>$(id).classList.toggle('on',!!S.bases[i]));
-  $('jfill').style.width=(S.juice*100)+'%';$('hfill').style.width=(S.heat*100)+'%';$('heat').classList.toggle('ready',S.heat>=.333);
+  $('jfill').style.width=(S.over?100:S.juice*100)+'%'; // Overdrive is all or nothing: the bar is simply full while it is live
+  $('hfill').style.width=(S.heat*100)+'%';$('heat').classList.toggle('ready',S.heat>=.333);
   const j=$('juice');j.classList.toggle('ready',S.juice>=.333);j.classList.toggle('armed',juiceOn()&&S.juice>=.333);j.classList.toggle('over',S.over);
-  $('jtxt').textContent=S.over?(S.bi===S.overBi?'OVERDRIVE · FREE JUICE':'OVERDRIVE NEXT'):(S.juice>=.333?'JUICE READY':'JUICE');
+  $('jtxt').textContent=S.over?'OVERDRIVE':(S.juice>=.333?'JUICE READY':'JUICE');
   {const bars=S.juice>=.333?1+Math.floor((S.juice-.333)/.3334+.001):0,tj=$('tj'); // counted exactly the way a Juice swing is paid for, so the badge never promises a bar that isn't there
    tj.classList.toggle('has',bars>0);tj.classList.toggle('none',bars===0);$('tjn').textContent=S.over&&S.bi===S.overBi?'FREE':bars?'×'+bars:'';if(S.over&&S.bi===S.overBi){tj.classList.add('has');tj.classList.remove('none');}$('kj').classList.toggle('has',bars>0);
     if(bars>hudBars&&S.state!=='title'&&S.state!=='over'){ // a new bar just filled: say so, loudly
@@ -1102,8 +1103,9 @@ const juiceOn=()=>juiceArmed||keys.ShiftLeft||keys.ShiftRight;
 const GRADE_COL={S:'#ffd23b',A:'#3ddc6a',B:'#3ad6ff',C:'#f2f5ff',D:'#ff9a3b',F:'#ff4d2e'};
 function statGrade(v){const t=(v-.85)/.32;return t>=.9?'S':t>=.72?'A':t>=.52?'B':t>=.36?'C':t>=.2?'D':'F';}
 function setBatter(){
-  if(S.over&&S.bi>=S.overBi){S.over=false;S.streak=0;setTimeout(()=>timing('OVERDRIVE SPENT · 3 HITS IN A ROW TO RECHARGE','#3ad6ff',2),700);}
-  S.bi++;const b=curBatter();S.balls=0;S.strikes=0;
+  if(S.over&&S.bi>=S.overBi&&S.walked){S.overBi=S.bi+1;} // a walk doesn't use it up: it carries to the next hitter
+  else if(S.over&&S.bi>=S.overBi){S.over=false;S.streak=0;setTimeout(()=>timing('OVERDRIVE SPENT · 3 HITS IN A ROW TO RECHARGE','#3ad6ff',2),700);}
+  S.walked=false;S.bi++;const b=curBatter();S.balls=0;S.strikes=0;
   if(S.over&&S.bi===S.overBi)setTimeout(()=>{if(S.over)timing('⚡ OVERDRIVE: FREE JUICE THIS AT-BAT ⚡','#3ad6ff',4);},1500);aim.x=0;aim.y=.825; // every hitter starts with the ring in the middle of the zone
  
   paintJersey(batter,Object.assign({name:b.name,num:b.num},HOME));paintSkin(batter,b.skin);if(MX.ready)paintAtlas(b);
@@ -2207,7 +2209,7 @@ function step(dt){
       if(swing){strike('swing');}
       else if(pitch.inZone){strike('look');}
       else{S.balls++;S.juice=Math.min(1,S.juice+.07);{const n=S.balls;setTimeout(()=>SND.call(true,n),240);}
-        if(S.balls>=4){walkRunners();const r=advance(1,true);pop('WALK',r?'+1 RUN':'TAKE YOUR BASE','plain');afterPA(1.3);}
+        if(S.balls>=4){S.walked=true;walkRunners();const r=advance(1,true);pop('WALK',r?'+1 RUN':'TAKE YOUR BASE','plain');afterPA(1.3);}
         else{pop('BALL','','plain');samePA(.95);}}
     }
   }
