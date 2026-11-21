@@ -905,8 +905,9 @@ const TIPS=[['AIM','Drag your left thumb anywhere on the screen to move the bat 
   ['READ THE SWING','After every swing, the line under the zone tells you your timing and where the barrel missed.'],
   ['OVERDRIVE','Three hits in a row electrifies the bat until you make an out.']];
 let tipI=(Math.random()*3)|0;function nextTip(){const t=TIPS[tipI++%TIPS.length];$('tiph').textContent=t[0];$('tipb').textContent=t[1];}nextTip();setInterval(()=>{if(!$('title').hidden)nextTip();},4500);
-// thumb guide before the very first pitch on a phone, once per device
-let tutFirst=false,tutHold=false,tutSeen=!MOB;try{if(localStorage.getItem('mm_tut')==='1')tutSeen=true;}catch(e){}
+// thumb guide before the very first pitch on a phone
+const TUT_EVERY_LAUNCH=true; // testing: show the guide on every launch; set false to go back to once per device
+let tutFirst=false,tutHold=false,tutSeen=!MOB;try{if(!TUT_EVERY_LAUNCH&&localStorage.getItem('mm_tut')==='1')tutSeen=true;}catch(e){}
 function tutNeed(){if(tutSeen||window.__mmManual&&!window.__mmTut)return false;tutSeen=true;tutHold=true;tutFirst=true;$('tut').hidden=false;try{localStorage.setItem('mm_tut','1');}catch(e){}return true;}
 $('tut').addEventListener('pointerdown',e=>{e.preventDefault();$('tut').hidden=true;tutHold=false;if(tutFirst){tutFirst=false;S.t=now-readyDur+.7;}});
 function timing(t,c,l){const e=$('tim');e.className='';e.textContent=t;e.style.color=c;e.dataset.l=l||2;void e.offsetWidth;e.className='go';}
