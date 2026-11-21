@@ -865,7 +865,8 @@ function startWalkup(){
   // now and then a surprise replaces his usual routine: he eats dirt on the way in, chips a golf shot with the bat,
   // gives the pitcher a friendly wave, drops and does push-ups, or squares up like he wants a fight. Each has the same small chance.
   {const rare=['w_trip','w_golf','w_wave','w_pushup','w_fight','w_threat','w_bboy','w_backflip','w_lift'].filter(k=>MX.clip.intros[k]),r=Math.random()/.031|0,forced=DBG.trip===true?'w_trip':DBG.trip;
-    S.walkClip=forced&&MX.clip.intros[forced]?forced:r<rare.length?rare[r]:WALK.by[b.name];}
+    const first=Object.keys(S.seen).length===1&&MX.clip.intros.w_walkin; // the game always opens with a plain walk to the plate; the silliness starts with the second hitter
+    S.walkClip=forced&&MX.clip.intros[forced]?forced:first?'w_walkin':r<rare.length?rare[r]:WALK.by[b.name];}
   $('wnum').textContent=b.num;$('wname').textContent=b.name;
   $('wrat').innerHTML=`<span>POWER <b>${r(b.pwr)}</b></span><span>CONTACT <b>${r(b.con)}</b></span><span>SPEED <b>${r(b.spd)}</b></span><span>BATS <b>${b.lh?'L':'R'}</b></span>`;
   $('wspot').textContent='BATTING '+['1ST','2ND','3RD','4TH','5TH','6TH','7TH','8TH','9TH'][i];$('wskip').textContent='SWING TO SKIP';
