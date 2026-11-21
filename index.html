@@ -745,7 +745,9 @@ const ballShadow=new T.Mesh(GEO.blob,blobMat);ballShadow.rotation.x=-PI/2;ballSh
 const ballGlow=new T.Sprite(new T.SpriteMaterial({map:glowTex,color:0xffe53b,blending:T.AdditiveBlending,depthWrite:false,transparent:true,opacity:0}));scene.add(ballGlow);
 const overlayMat=(c,o)=>new T.MeshBasicMaterial({color:c,transparent:true,opacity:o,depthTest:false,depthWrite:false,side:T.DoubleSide});
 const ZONE={x0:-.28,x1:.28,y0:.5,y1:1.15};
-const zone=new T.LineLoop(new T.BufferGeometry().setFromPoints([new V3(ZONE.x0,ZONE.y0,0),new V3(ZONE.x1,ZONE.y0,0),new V3(ZONE.x1,ZONE.y1,0),new V3(ZONE.x0,ZONE.y1,0)]),new T.LineBasicMaterial({color:0xffffff,transparent:true,opacity:.4,depthTest:false}));
+const zone=new T.Group(); // drawn as thin bars: WebGL lines are always one pixel wide
+{const m=new T.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.55,depthTest:false}),w=.011,W=ZONE.x1-ZONE.x0,H=ZONE.y1-ZONE.y0,cx=(ZONE.x0+ZONE.x1)/2,cy=(ZONE.y0+ZONE.y1)/2;
+ [[cx,ZONE.y0,W+w,w],[cx,ZONE.y1,W+w,w],[ZONE.x0,cy,w,H-w],[ZONE.x1,cy,w,H-w]].forEach(q=>{const b=new T.Mesh(new T.PlaneGeometry(q[2],q[3]),m);b.position.set(q[0],q[1],0);b.renderOrder=8;zone.add(b);});}
 zone.renderOrder=8;scene.add(zone);
 const reticle=new T.Group();reticle.renderOrder=9;scene.add(reticle);
 const retC=new T.Mesh(new T.RingGeometry(.93,1,28),overlayMat(0x3ad6ff,.9));retC.renderOrder=9;reticle.add(retC);
