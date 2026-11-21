@@ -1170,7 +1170,7 @@ function flash(a){const e=$('flash');e.style.transition='none';e.style.opacity=a
 // ends (a walk aside) the meter is emptied and has to be filled again.
 // OVERDRIVE DUEL: batter and pitcher both in Overdrive for the same at-bat. If the hitter switches his on while the pitcher's Heat is at least
 // half full, the pitcher answers on the spot; if the pitcher is already in Overdrive, tapping makes it a duel. Winner is decided by the at-bat.
-function duelCheck(){if(S.duel||!(S.over&&S.overOn&&S.pOver))return;S.duel=true;S.duelHits=S.hits;$('hud').classList.add('duel');
+function duelCheck(){if(S.duel||!(S.over&&S.overOn&&S.pOver))return;if((S.odUses||0)<2){S.pOver=false;return;}S.duel=true;S.duelHits=S.hits;$('hud').classList.add('duel');
   const d=$('duel');d.classList.remove('go');void d.offsetWidth;d.classList.add('go');SND.zap();setTimeout(()=>SND.zap(),180);buzz([60,40,60,40,140]);shake=Math.max(shake,.35*FX);flash(.5);cheer(.45,4);
   if(S.state==='ready'){S.t=now;readyDur=Math.max(readyDur,2.3);}} // the pitch waits for the banner
 function duelEnd(){if(!S.duel)return;S.duel=false;$('hud').classList.remove('duel');const won=S.hits>S.duelHits||S.walked;
@@ -1357,7 +1357,7 @@ function gameRating(){const G=S.goal,pts=S.runs*10+S.hits*4+S.hrs*8+(S.longest>=
   const T=[[0,'D','BENCH WARMER'],[20,'C','ROOKIE'],[45,'B','EVERYDAY STARTER'],[75,'A','ALL-STAR'],[110,'S','MOONSHOT LEGEND']];let i=0;T.forEach((t,j)=>{if(pts>=t[0])i=j;});
   return {pts,stars:i+1,grade:T[i][1],title:T[i][2],next:T[i+1]?T[i+1][0]-pts:0,nextTitle:T[i+1]?T[i+1][2]:''};}
 function newGame(){gamesPlayed++;try{localStorage.setItem('mm_games',gamesPlayed);}catch(e){}
-  Object.assign(S,{inning:1,outs:0,balls:0,strikes:0,runs:0,bases:[0,0,0],hits:0,hrs:0,longest:0,streak:0,bestStreak:0,juice:.25,heat:.2,over:false,bi:-1,pitches:0,seen:{},kOut:null});S.goal=pickGoal();S.ks=0;S.d2=0;S.duel=false;$('hud').classList.remove('duel');S.pdLast=false;S.pOver=false;S.jSaid=false;S.overOn=false;S.spSeen=false;lastWalk='';
+  Object.assign(S,{inning:1,outs:0,balls:0,strikes:0,runs:0,bases:[0,0,0],hits:0,hrs:0,longest:0,streak:0,bestStreak:0,juice:.25,heat:.2,over:false,bi:-1,pitches:0,seen:{},kOut:null});S.goal=pickGoal();S.ks=0;S.d2=0;S.odUses=0;S.duel=false;$('hud').classList.remove('duel');S.pdLast=false;S.pOver=false;S.jSaid=false;S.overOn=false;S.spSeen=false;lastWalk='';
   $('title').hidden=true;$('over').hidden=true;$('pausebtn').hidden=false;$('mutebtn').hidden=false;setBatter();renderRep();scoreboard('PLAY BALL','INNING 1');toReady(2);pop('PLAY BALL!','GOAL: '+S.goal.label,'plain',true);SND.playball();cheer(.14,1.5);}
 
 // ───────────────────────── pitching
@@ -1638,7 +1638,9 @@ function endGame(){
 let jTapT=0;
 function juiceTap(){const t=performance.now();if(t-jTapT<250)return;jTapT=t; // one press, one toggle, even if the browser reports the touch twice
   if(S.over){if(!S.overOn){S.overOn=true;SND.zap();buzz([20,30,60]);timing('⚡ OVERDRIVE ON: FREE JUICE SWINGS THIS AT-BAT ⚡','#3ad6ff',4);
-    if(!S.pOver&&S.heat>=.5&&S.bi>=3)S.pOver=true; // the pitcher answers
+    S.odUses=(S.odUses||0)+1;
+    if(S.odUses===1)S.pOver=false;                         // the first Overdrive of a game is always yours alone: he can't answer it, and if he was in his own he backs off
+    else if(!S.pOver&&S.heat>=.5&&S.bi>=3)S.pOver=true;   // after that, the pitcher answers
     duelCheck();}}else juiceArmed=!juiceArmed;hud();}
 function doSwing(type){
   if(paused||S.state==='title'||S.state==='over')return;
