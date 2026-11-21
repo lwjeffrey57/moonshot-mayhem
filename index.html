@@ -185,16 +185,18 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 @keyframes tim{0%{opacity:0;transform:translateY(8px)}15%,70%{opacity:1;transform:none}100%{opacity:0}}
 #flash{inset:0;background:radial-gradient(circle at 50% 55%,#fff,rgba(255,240,180,.7) 40%,transparent 75%);opacity:0}
 /* touch */
-#touch{right:max(16px,env(safe-area-inset-right,0px));bottom:14px;display:none;gap:10px;align-items:flex-end;pointer-events:auto}
-.tb{font-family:var(--display);font-size:13px;padding:0;color:var(--ink);border:3px solid #000;border-radius:50%;width:78px;height:78px;background:var(--ice);touch-action:none}
-.tb.pw{background:var(--heat);width:92px;height:92px;color:#fff}
-.tb.jc{background:var(--chrome);width:62px;height:62px;font-size:12px}
+#touch{right:max(14px,env(safe-area-inset-right,0px));bottom:max(34px,calc(env(safe-area-inset-bottom,0px) + 18px));display:none;gap:12px;align-items:flex-end;pointer-events:auto}
+.tb{font-family:var(--display);font-size:13px;padding:0;color:var(--ink);border:3px solid #000;border-radius:50%;width:96px;height:96px;background:var(--ice);touch-action:none;position:relative;font-size:15px}
+.tb::before{content:'';position:absolute;inset:-16px -6px -22px -6px;border-radius:30px} /* the touch target is bigger than the button you see */
+.tb.pw{background:var(--heat);width:110px;height:110px;color:#fff;font-size:17px}
+.tb.jc{background:var(--chrome);width:70px;height:70px;font-size:13px}
+@media (max-width:359px){.tb{width:84px;height:84px}.tb.pw{width:96px;height:96px}.tb.jc{width:62px;height:62px}}
 .tb.jc.on{background:var(--volt);box-shadow:0 0 18px var(--volt)}
 .tb:active{transform:scale(.93)}
 .tb:focus-visible,.cta:focus-visible{outline:3px solid var(--ice);outline-offset:3px}
 @media (pointer:coarse){#touch{display:flex}#keys{display:none}
   /* the swing buttons own the bottom edge: batter card and pitch readout stack above them, on the left */
-  #hud>#card,#hud.kr #card{left:max(12px,env(safe-area-inset-left,0px));right:auto;bottom:118px}
+  #hud>#card,#hud.kr #card{left:max(12px,env(safe-area-inset-left,0px));right:auto;bottom:calc(max(34px,env(safe-area-inset-bottom,0px) + 18px) + 122px)}
   #plast{left:max(14px,env(safe-area-inset-left,0px));transform:none;bottom:170px;font-size:15px}}
 /* overlays */
 .overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;
