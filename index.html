@@ -899,7 +899,7 @@ function setupRunners(make,skins){
 const TROT={dur:6.7,celT:3.9,cele:false,clip:'',R:null,cam:new V3(),segs:[[0,3.9,1.7,3.999]]}; // one continuous run: round second, round third, home // rounding second, then the last steps home; the fist pump fills the rest
 function startTrot(){const R=RUN.list.find(R=>!R.active)||null;if(!R||!R.jogAct)return false;
   R.active=true;R.trot=true;R.delay=0;R.s=0;R.target=4;TROT.R=R;TROT.cele=false;R.fig.root.scale.setScalar(1);
-  {const C=MX.clip,own=WALK.by[curBatter().name];TROT.clip=C&&C.intros.c_fist&&(DBG.fist||Math.random()<.35)?'c_fist':C&&C.intros[own]?own:'';} // his own routine, or sometimes a plain fist pump
+  {const C=MX.clip,own=WALK.by[curBatter().name];TROT.clip=C&&C.intros[own]?own:'';} // his own routine once he has touched home
  S.state='trot';S.t=now;return true;}
 function endTrot(){const R=TROT.R;if(R){R.trot=false;R.active=false;R.fig.root.visible=false;R.obj.scale.x=R.sx;R.fig.root.scale.setScalar(1.25);}TROT.R=null;TROT.cele=false;}
 function updateTrot(dt){
@@ -1437,9 +1437,10 @@ function updateClip(dt){
     if(k>0){ci.a.time=Math.min(ci.dur-.01,e);ci.a.setEffectiveWeight(k);base=1-k;o.position.x+=ci.off.x*k;o.position.z+=ci.off.z*k;}}
   if(S.state==='trot'&&TROT.cele&&C.intros[TROT.clip]){const ci=C.intros[TROT.clip],e=now-S.t-TROT.celT; // he has touched home: his celebration, on the plate
     ci.a.time=ci.loop?e%ci.dur:Math.min(ci.dur-.01,Math.max(0,e));ci.a.setEffectiveWeight(1);base=0;}
-  if(flight&&flight.admire==='show'&&!flight.trot&&!flight.done&&C.bi===S.bi){if(!flight.cel)flight.cel=C.intros.c_fist&&(DBG.fist||Math.random()<.4)?'c_fist':WALK.by[curBatter().name]; // sometimes a plain fist pump instead of his routine
+  if(flight&&flight.admire&&!flight.done&&C.bi===S.bi){if(flight.cel===undefined){flight.cel=C.intros.c_fist&&(DBG.fist||Math.random()<.4)?'c_fist':flight.admire==='show'&&!flight.trot?WALK.by[curBatter().name]:''; // a single fist pump straight out of the swing, or his routine
+      if(flight.cel==='c_fist')flight.A=Math.max(flight.A,1.25+C.intros.c_fist.dur+.1);}
     const ci=C.intros[flight.cel],tf=now-flight.t0,k=ci?ease(clamp((tf-1.25)/.3,0,1))*ease(clamp((flight.A+.35-tf)/.3,0,1)):0;
-    if(k>0){const e=tf-1.25;ci.a.time=ci.loop?e%ci.dur:Math.min(ci.dur-.01,e);ci.a.setEffectiveWeight(k);base=1-k;if(flight.cel==='c_fist'){o.position.x+=ci.off.x*k;o.position.z+=ci.off.z*k;}}}
+    if(k>0){const e=tf-1.25;ci.a.time=ci.loop&&flight.cel!=='c_fist'?e%ci.dur:Math.min(ci.dur-.01,e);ci.a.setEffectiveWeight(k);base=1-k;if(flight.cel==='c_fist'){o.position.x+=ci.off.x*k;o.position.z+=ci.off.z*k;}}}
   if(intro){const e=now-S.t;intro.a.time=intro.loop?e%intro.dur:clamp(intro.dur-(WALK.dur-.25-e),0,intro.dur-.01);intro.a.setEffectiveWeight(1); // a walk-in is timed to arrive in the box as the intro ends
     o.position.x+=intro.off.x;o.position.z+=intro.off.z;
     const rem=WALK.dur-e;if(rem<.2&&C.swap==null)batterOpacity(Math.max(0,rem/.2));}
