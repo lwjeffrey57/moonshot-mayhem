@@ -192,6 +192,7 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 .tb::before{content:'';position:absolute;inset:-24px -6px -32px -6px;border-radius:36px} /* the touch target is bigger than the button you see */
 .tb.pw{background:var(--heat);width:min(128px,32vw);height:min(128px,32vw);color:#fff;font-size:clamp(17px,5.4vw,22px);text-shadow:0 2px 0 #000,0 0 3px #000,1px 1px 0 #000,-1px -1px 0 #000}
 .tb.jc{background:var(--chrome);width:min(76px,19vw);height:min(76px,19vw);font-size:clamp(12px,3.6vw,15px)}
+.tb.jc{position:absolute;right:0;bottom:calc(100% + 14px);z-index:2}.tb.jc::before{inset:-14px} /* JUICE sits above POWER, leaving the bottom-left for the aim thumb */
 .tb.jc.on{background:var(--volt);box-shadow:0 4px 0 #000,0 0 18px var(--volt)}
 /* POWER on fire: Juice armed, or Overdrive */
 .tb.pw.fire{background:radial-gradient(circle at 50% 115%,#fff6b0 0%,#ffc21e 26%,#ff5a1e 56%,#b3140a 84%);border-color:#2a0500;animation:fireglow .45s ease-in-out infinite alternate}
@@ -204,6 +205,12 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 .tb:active{transform:scale(.93)}
 .tb:focus-visible,.cta:focus-visible{outline:3px solid var(--ice);outline-offset:3px}
 /* phone layout (touch device, or any window 560px wide or less) */
+/* aim pad: shows where the left thumb goes; dragging anywhere still aims, the knob just mirrors the drag */
+#apad{display:none;left:max(18px,env(safe-area-inset-left,0px));bottom:var(--tbb);width:min(120px,calc(100vw - 300px));aspect-ratio:1;border:3px solid rgba(58,214,255,.55);border-radius:50%;background:rgba(8,9,26,.28)}
+#apad i{position:absolute;left:50%;top:50%;width:52px;height:52px;margin:-26px;border-radius:50%;background:rgba(58,214,255,.6);border:2px solid rgba(0,0,0,.6);transition:transform .12s ease-out}
+#apad.drag i{transition:none;background:rgba(58,214,255,.9)}
+#apad span{position:absolute;left:0;right:0;top:-20px;text-align:center;font-family:var(--display);font-style:italic;font-size:12px;letter-spacing:.1em;color:rgba(242,245,255,.75);text-shadow:0 1px 0 #000}
+#hud.mob #apad{display:block}#hud.wk #apad{visibility:hidden}
 #hud.mob #touch{display:flex}#hud.mob #keys{display:none}#hud.mob #rep{display:none}
 /* the swing buttons own the bottom edge: the batter card moves up under the scoreboard */
 #hud.mob>#card,#hud.mob.kr #card{left:max(12px,env(safe-area-inset-left,0px));right:auto;top:166px;bottom:auto;padding:4px 10px}
@@ -223,10 +230,10 @@ body.mob #tip{display:block}body.mob .how{display:none}
 /* first-game thumb guide */
 #tut{position:absolute;inset:0;z-index:30;background:rgba(6,7,20,.76);pointer-events:auto;font-family:var(--display);font-style:italic;color:#fff;text-shadow:0 2px 0 #000}#tut[hidden]{display:none}
 #tut .tz{position:absolute;text-align:center;font-size:17px;line-height:1.15}#tut .tz b{display:block;color:var(--volt);font-size:21px;font-weight:400}#tut .tz small{display:block;font-family:var(--hud);font-style:normal;font-weight:600;font-size:13px;color:var(--chrome);margin-top:4px;text-shadow:none}
-#tut .aimz{left:5%;bottom:calc(var(--tbb) + 150px);width:44%}#tut .pad{width:110px;height:110px;margin:10px auto 0;border:3px dashed var(--ice);border-radius:50%;position:relative}#tut .pad i{position:absolute;left:50%;top:50%;width:46px;height:46px;margin:-23px;border-radius:50%;background:var(--ice);opacity:.85;animation:tutdrag 2.2s ease-in-out infinite}
+#tut .aimz{left:8px;bottom:var(--tbb);width:46%}#tut .pad{width:min(120px,calc(100vw - 300px));aspect-ratio:1;margin:12px 0 0 max(10px,calc(env(safe-area-inset-left,0px) - 8px));border:3px dashed var(--ice);border-radius:50%;position:relative}#tut .pad i{position:absolute;left:50%;top:50%;width:46px;height:46px;margin:-23px;border-radius:50%;background:var(--ice);opacity:.85;animation:tutdrag 2.2s ease-in-out infinite}
 @keyframes tutdrag{0%,100%{transform:translate(-22px,14px)}35%{transform:translate(20px,-18px)}70%{transform:translate(18px,16px)}}
-#tut .swz{right:4%;bottom:calc(var(--tbb) + 124px);width:50%}#tut .swz::after{content:'▼';display:block;color:var(--heat);font-size:22px;margin-top:4px;animation:tutbob 1s ease-in-out infinite}@keyframes tutbob{50%{transform:translateY(6px)}}
-#tut .jcz{left:6%;right:6%;top:150px}#tut .go{left:0;right:0;top:35%;font-size:15px;color:var(--chrome);animation:tutbob 1.4s ease-in-out infinite}
+#tut .swz{right:8px;bottom:calc(var(--tbb) + min(128px,32vw) + 108px);width:62%}#tut .swz::after{content:'▼';display:block;color:var(--heat);font-size:22px;margin-top:4px;animation:tutbob 1s ease-in-out infinite}@keyframes tutbob{50%{transform:translateY(6px)}}
+#tut .jcz{left:6%;right:6%;top:150px}#tut .go{left:50%;top:34%;transform:translateX(-50%);white-space:nowrap;padding:12px 26px;font-size:20px;color:var(--ink);text-shadow:none;background:var(--volt);border:3px solid #000;border-radius:28px;box-shadow:0 4px 0 #000}
 #ldtxt{font-family:var(--hud);font-weight:800;font-size:11px;letter-spacing:.14em;color:var(--dim);min-height:14px;text-align:center}
 .cta{pointer-events:auto;font-family:var(--display);font-size:clamp(20px,3vw,30px);color:var(--ink);background:var(--volt);border:3px solid #000;
   padding:10px 34px;transform:skewX(-10deg);cursor:pointer;box-shadow:0 6px 0 #000}
@@ -287,6 +294,7 @@ body.mob #tip{display:block}body.mob .how{display:none}
     <div id="rep" hidden><div class="cap">PITCHES</div><div id="replist" class="pills"></div></div>
     <div id="keys" class="pills"><div class="pill">CONTACT<span class="k">CLICK</span></div><div class="pill">POWER<span class="k">R-CLICK</span></div><div class="pill dk">JUICE<span class="k">SHIFT</span></div><div class="pill dk">CAMERA<span class="k">C</span></div><div class="pill dk">PAUSE<span class="k">ESC</span></div></div>
     <button id="pausebtn" type="button" aria-label="Pause game" hidden>❚❚</button>
+    <div id="apad" aria-hidden="true"><i></i><span>AIM</span></div>
     <div id="touch">
       <button class="tb jc" id="tj" type="button">JUICE</button>
       <button class="tb" id="tc" type="button">CONTACT</button>
@@ -294,7 +302,7 @@ body.mob #tip{display:block}body.mob .how{display:none}
     </div>
     <div id="tut" hidden>
       <div class="tz jcz"><b>JUICE = MONSTER SWING</b>Tap JUICE, then swing. Costs one bar.<small>The ball comes off about 20% harder and the sweet spot grows. Hits and taking balls refill it — save it for a pitch you can drive.</small></div>
-      <div class="tz go">TAP ANYWHERE TO SKIP</div>
+      <div class="tz go">GOT IT — PLAY ▶</div>
       <div class="tz aimz"><b>LEFT THUMB</b>Drag anywhere to aim the ring<div class="pad"><i></i></div></div>
       <div class="tz swz"><b>RIGHT THUMB</b>Tap as the yellow ring closes on the ball<small>CONTACT: easier, line drives. POWER: harder, moonshots.</small></div>
     </div>
@@ -1305,12 +1313,14 @@ function setAim(x,y){aim.x=clamp(x,-.62,.62);aim.y=clamp(y,.22,1.5);}
 let touchLast=null;
 canvas.addEventListener('pointermove',e=>{
   if(e.pointerType==='touch'){if(touchLast&&touchLast.id===e.pointerId){const m=2*CAM_HOME.z*Math.tan(camera.userData.baseFov*DEG/2)/viewH*1.6;
-      setAim(aim.x+(e.clientX-touchLast.x)*m,aim.y-(e.clientY-touchLast.y)*m);touchLast.x=e.clientX;touchLast.y=e.clientY;}}
+      setAim(aim.x+(e.clientX-touchLast.x)*m,aim.y-(e.clientY-touchLast.y)*m);touchLast.x=e.clientX;touchLast.y=e.clientY;
+      {let dx=e.clientX-touchLast.x0,dy=e.clientY-touchLast.y0;const L=Math.hypot(dx,dy),R=34;if(L>R){dx*=R/L;dy*=R/L;}padKnob.style.transform='translate('+dx+'px,'+dy+'px)';}}}
   else pointerAim(e);});
 canvas.addEventListener('pointerdown',e=>{audioInit();
-  if(e.pointerType==='touch'){touchLast={id:e.pointerId,x:e.clientX,y:e.clientY};return;}
+  if(e.pointerType==='touch'){touchLast={id:e.pointerId,x:e.clientX,y:e.clientY,x0:e.clientX,y0:e.clientY};$('apad').classList.add('drag');return;}
   pointerAim(e);doSwing(e.button===2?'power':'contact');e.preventDefault();});
-canvas.addEventListener('pointerup',e=>{if(touchLast&&touchLast.id===e.pointerId)touchLast=null;});
+const padKnob=$('apad').firstElementChild,padEnd=e=>{if(touchLast&&touchLast.id===e.pointerId){touchLast=null;$('apad').classList.remove('drag');padKnob.style.transform='';}};
+canvas.addEventListener('pointerup',padEnd);canvas.addEventListener('pointercancel',padEnd);
 canvas.addEventListener('contextmenu',e=>e.preventDefault());
 addEventListener('keydown',e=>{keys[e.code]=true;if(e.repeat)return;
   if(e.code==='Space'||e.code==='KeyZ'||e.code==='KeyJ'){doSwing('contact');e.preventDefault();}
