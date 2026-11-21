@@ -114,7 +114,7 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
     <div id="juice"><div id="jbar"><div id="jfill"></div></div><div id="jtxt">JUICE</div></div>
     <div id="diamond"><i id="b2"></i><i id="b3"></i><i id="b1"></i></div>
     <div id="card" class="slab"><span id="cnum">27</span><div><div id="cname">VASQUEZ</div>
-      <div class="stats"><div class="stat">PWR <b><i id="spw"></i></b></div><div class="stat">CON <b><i id="sco"></i></b></div></div></div></div>
+      <div class="stats"><div class="stat">PWR <b><i id="spw"></i></b></div><div class="stat">CON <b><i id="sco"></i></b></div><div class="stat">SPD <b><i id="ssp"></i></b></div></div></div></div>
     <div id="pitchinfo"></div>
     <div id="keys"><kbd>Mouse</kbd> aim &nbsp; <kbd>Click</kbd>/<kbd>Z</kbd> contact<br><kbd>Right-click</kbd>/<kbd>X</kbd> power &nbsp; <kbd>Shift</kbd> juice</div>
     <button id="pausebtn" type="button" aria-label="Pause game" hidden>❚❚</button>
@@ -551,11 +551,11 @@ function ik(sh,el,target,L1,L2,poleV){
 const HOME={base:'#1b2a6b',trim:'#f26a1b',ink:'#f4f4f0',word:'Comets'};
 const AWAY={base:'#f4f4f0',trim:'#0e7c86',ink:'#0e3c46',pin:'rgba(14,60,70,.35)',word:'Krakens'};
 const LINEUP=[
-  {name:'VASQUEZ',num:27,pwr:1.0,con:1.05,skin:0xb9794f},{name:'OKAFOR',lh:true,num:8,pwr:.96,con:1.12,skin:0x6b4226},
-  {name:'DELACROIX',num:3,pwr:1.06,con:1.0,skin:0xe2b08a},{name:'BRICKHOUSE',num:44,pwr:1.16,con:.9,skin:0xd9a47c},
-  {name:'TANAKA',lh:true,num:51,pwr:1.02,con:1.08,skin:0xe6bd94},{name:'MONTOYA',num:19,pwr:1.1,con:.95,skin:0xa8683e},
-  {name:'ABERNATHY',lh:true,num:12,pwr:.94,con:1.1,skin:0xf0c4a0},{name:'JACKSON-BELL',num:35,pwr:1.12,con:.93,skin:0x5a3820},
-  {name:'KOWALSKI',num:6,pwr:.98,con:1.04,skin:0xe8b690},
+  {name:'VASQUEZ',num:27,spd:1.0,pwr:1.0,con:1.05,skin:0xb9794f},{name:'OKAFOR',lh:true,num:8,spd:1.14,pwr:.96,con:1.12,skin:0x6b4226},
+  {name:'DELACROIX',num:3,spd:1.02,pwr:1.06,con:1.0,skin:0xe2b08a},{name:'BRICKHOUSE',num:44,spd:0.86,pwr:1.16,con:.9,skin:0xd9a47c},
+  {name:'TANAKA',lh:true,num:51,spd:1.1,pwr:1.02,con:1.08,skin:0xe6bd94},{name:'MONTOYA',num:19,spd:0.95,pwr:1.1,con:.95,skin:0xa8683e},
+  {name:'ABERNATHY',lh:true,num:12,spd:1.15,pwr:.94,con:1.1,skin:0xf0c4a0},{name:'JACKSON-BELL',num:35,spd:0.9,pwr:1.12,con:.93,skin:0x5a3820},
+  {name:'KOWALSKI',num:6,spd:1.04,pwr:.98,con:1.04,skin:0xe8b690},
 ];
 const batter=makeFigure({skin:0xb9794f,pants:0xb9bcc8,stripe:0x1b2a6b,trimC:0xf26a1b,sleeve:0x1b2a6b,cap:0x14204a,helmet:true,bglove:0xf26a1b,jersey:Object.assign({name:'VASQUEZ',num:27},HOME)});
 batter.root.position.set(-.97,0,.12);batter.root.rotation.y=PI/2;scene.add(batter.root);
@@ -681,7 +681,7 @@ const juiceOn=()=>juiceArmed||keys.ShiftLeft||keys.ShiftRight;
 function setBatter(){
   S.bi++;const b=curBatter();S.balls=0;S.strikes=0;
   paintJersey(batter,Object.assign({name:b.name,num:b.num},HOME));paintSkin(batter,b.skin);if(MX.ready)paintAtlas(b);
-  $('cnum').textContent=b.num;$('cname').textContent=b.name+(b.lh?' · L':' · R');$('spw').style.width=((b.pwr-.85)/.35*100)+'%';$('sco').style.width=((b.con-.85)/.3*100)+'%';
+  $('cnum').textContent=b.num;$('cname').textContent=b.name+(b.lh?' · L':' · R');$('spw').style.width=((b.pwr-.85)/.35*100)+'%';$('sco').style.width=((b.con-.85)/.3*100)+'%';$('ssp').style.width=((b.spd-.85)/.3*100)+'%';
   readyDur=1.7;S.fresh=true;
 }
 function toReady(d){S.state='ready';S.t=now;if(d)readyDur=d;swing=null;pitch=null;flight=null;ball.visible=false;ballShadow.visible=false;pring.visible=false;ballGlow.material.opacity=0;
@@ -747,7 +747,7 @@ function simulate(p0,v0,spin){spin=spin||{side:0,lift:0};
   if(hr){const q=p.clone(),w=v.clone();let n=0;while(q.y>0&&n++<2000){const sp=w.length();w.multiplyScalar(1-DRAG*sp*dt);w.y-=G*dt;q.addScaledVector(w,dt);}dist=Math.hypot(q.x,q.z);}
   return {pts,land,hr,hrT,wall,wallT,foul,dist,endT:t};
 }
-function judge(tr){
+function judge(tr,bt){const spd=bt&&bt.spd||1; // batter's speed: 0.85 (plodder) to 1.15 (burner)
   if(tr.hr)return {type:'hr',endT:tr.endT,dist:tr.dist};
   if(tr.foul)return {type:'foul',endT:tr.land?Math.min(tr.land.t+.55,tr.endT):tr.endT}; // let it come down (or reach the seats) before the call
   let f=null,p=null;
@@ -756,10 +756,11 @@ function judge(tr){
   if(!f){p=tr.pts[tr.pts.length-1];let bd=1e9;for(const c of fielders){const d=Math.hypot(c.home.x-p.x,c.home.z-p.z);if(d<bd){bd=d;f=c;}}p={x:p.x,y:0,z:p.z,t:p.t};}
   const air=!tr.land||p.t<tr.land.t;
   if(air)return {type:'out',label:f.of?'FLY OUT':(p.t<1.2?'LINE OUT':'POP OUT'),endT:p.t,f,p,air:true};
-  if(!f.of){const tt=p.t+.6+Math.hypot(p.x-19.4,p.z+19.4)/40;
-    if(tt<4.15)return {type:'out',label:'GROUND OUT',endT:p.t,f,p};
-    return {type:'hit',bases:1,endT:p.t,f,p};}
-  let bases=p.t<3.4?1:p.t<6.2?2:3;if(tr.wall)bases=Math.max(2,bases);
+  if(!f.of){const tt=p.t+1.0+Math.hypot(p.x-19.4,p.z+19.4)/36; // field it, a second to set and release, then the throw to first
+    // the throw has to beat the runner to first: quicker men (and lefties, a step closer) get there sooner
+    if(tt<3.35-(spd-1)*1.8-(bt&&bt.lh?.08:0))return {type:'out',label:'GROUND OUT',endT:p.t,f,p};
+    return {type:'hit',bases:1,endT:p.t,f,p,infield:tt<4.2};}
+  const k=1+(spd-1)*1.5;let bases=p.t<3.4/k?1:p.t<6.2/k?2:3;if(tr.wall)bases=Math.max(2,bases); // the longer the ball takes to run down, the more bases; fast runners need less time
   // show the ball come down (and carom off the wall) before the call; long flies used to be cut off in mid-air
   const shown=Math.max(4.4,tr.land?tr.land.t+.7:0,tr.wall?tr.wallT+.6:0);
   return {type:'hit',bases,endT:Math.min(p.t,shown),tField:p.t,f,p};
@@ -788,7 +789,7 @@ function tryContact(){
   const spin={side:phi/40*3.2+gs()*4,lift:rand(-2.5,2.6)+(la>18?.5:0)};
   const p0=new V3(pitch.tx,pitch.ty,clamp(-dt*6,-.7,.7));
   const v0=new V3(Math.sin(phi*DEG)*Math.cos(la*DEG),Math.sin(la*DEG),-Math.cos(phi*DEG)*Math.cos(la*DEG)).multiplyScalar(v);
-  const tr=simulate(p0,v0,spin),play=judge(tr);
+  const tr=simulate(p0,v0,spin),play=judge(tr,b);
   flight={tr,play,t0:now,q,pw,tb,v,done:false,called:false,trailC:tb?[1,.45,.1]:S.over?[.25,.8,1]:pw&&q>.75?[1,.85,.25]:[.5,.5,.55]};
   pitch.hit=true;pring.visible=false;S.state='flight';
   if(tb){S.juice=Math.max(0,S.juice-.3334);juiceArmed=false;}
@@ -838,7 +839,7 @@ function finishPlay(){
     cheer(.5,3.5);
   }else{
     const r=advance(pl.bases);
-    pop(['SINGLE!','DOUBLE!','TRIPLE!'][pl.bases-1],r?`+${r} RUN${r>1?'S':''}`:(flight.tr.wall?'OFF THE WALL':''),'');cheer(.25,2);
+    pop(['SINGLE!','DOUBLE!','TRIPLE!'][pl.bases-1],r?`+${r} RUN${r>1?'S':''}`:(pl.infield?'BEAT THE THROW':flight.tr.wall?'OFF THE WALL':''),'');cheer(.25,2);
     S.state='result';S.t=now;readyDur=1.5;
   }
   if(S.streak>=3&&!S.over){S.over=true;SND.zap();setTimeout(()=>{if(S.over)timing('⚡ OVERDRIVE — BAT IS LIVE ⚡','#3ad6ff');},900);}
