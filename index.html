@@ -221,13 +221,14 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 #jtoast{display:none;right:max(10px,env(safe-area-inset-right,0px));bottom:calc(var(--tbb) + min(128px,32vw) + min(76px,19vw) + 34px);padding:7px 14px;text-align:center;font-family:var(--display);font-style:italic;font-size:19px;color:var(--ink);background:#ffd23b;border:3px solid #000;border-radius:14px;box-shadow:0 4px 0 #000;opacity:0}
 #jtoast small{display:block;font-family:var(--hud);font-style:normal;font-weight:800;font-size:12px;letter-spacing:.08em;text-transform:uppercase}
 #jtoast::after{content:'';position:absolute;right:34px;bottom:-13px;border:7px solid transparent;border-top-color:#000}
+#jtoast.odt{background:#58d6ff;bottom:calc(var(--tbb) + min(128px,32vw) + min(100px,25vw) + 66px)}
 #hud.mob #jtoast{display:block}#jtoast.go{animation:jtoast 2.2s ease-out both}
 @keyframes jtoast{0%{opacity:0;transform:translateY(10px) scale(.8)}10%{opacity:1;transform:none}80%{opacity:1}100%{opacity:0}}
 #kj.has{box-shadow:0 0 14px 3px rgba(255,210,59,.9);border-color:#ffd23b;animation:kjp .7s ease-in-out infinite alternate}@keyframes kjp{to{box-shadow:0 0 22px 7px rgba(255,210,59,1)}}
 @media (prefers-reduced-motion:reduce){.tb.jc.has,#kj.has{animation:none}}
 /* Overdrive charged: the JUICE button becomes a blue OVERDRIVE button wreathed in blue flame */
-.tb.jc.od{white-space:normal;line-height:.95;font-size:clamp(11px,3.3vw,14px);background:radial-gradient(circle at 50% 115%,#e6fbff 0%,#58d6ff 26%,#1e7bff 58%,#0a2a9a 86%);border-color:#020a2a;animation:odglow .45s ease-in-out infinite alternate}
-.tb.jc.od::after{content:'';position:absolute;z-index:-1;left:-12%;right:-12%;top:-50%;bottom:36%;pointer-events:none;filter:blur(1.5px);transform-origin:50% 100%;
+.tb.jc.od{width:min(100px,25vw);height:min(100px,25vw);white-space:normal;line-height:.95;font-size:clamp(14px,4.2vw,18px);background:radial-gradient(circle at 50% 115%,#e6fbff 0%,#58d6ff 26%,#1e7bff 58%,#0a2a9a 86%);border-color:#020a2a;animation:odglow .45s ease-in-out infinite alternate}
+.tb.jc.od::after{content:'';position:absolute;z-index:-1;left:-16%;right:-16%;top:-78%;bottom:30%;pointer-events:none;filter:blur(1px) drop-shadow(0 0 6px rgba(80,180,255,.9));transform-origin:50% 100%;
   background:radial-gradient(ellipse 16% 62% at 16% 100%,#9fe8ff 0,#2e9bff 45%,transparent 72%),radial-gradient(ellipse 18% 88% at 38% 100%,#e6fbff 0,#3aa8ff 42%,transparent 72%),radial-gradient(ellipse 19% 100% at 60% 100%,#b8f0ff 0,#1e7bff 46%,transparent 72%),radial-gradient(ellipse 16% 72% at 82% 100%,#9fe8ff 0,#2e9bff 44%,transparent 72%);animation:flames .38s ease-in-out infinite alternate}
 @keyframes odglow{from{box-shadow:0 4px 0 #000,0 0 14px 3px rgba(58,170,255,.8),0 0 30px 8px rgba(30,100,255,.45)}to{box-shadow:0 4px 0 #000,0 0 22px 7px rgba(120,220,255,.95),0 0 46px 14px rgba(30,100,255,.6)}}
 .tb.jc.odon{transform:scale(1.06)}.tb.jc.od b{display:none}
@@ -1119,7 +1120,8 @@ function hud(){
   $('jtxt').textContent=S.over?(S.overOn?'OVERDRIVE ON':'OVERDRIVE READY'):(S.juice>=.333?'JUICE READY':'JUICE');
   {const bars=S.juice>=.333?1+Math.floor((S.juice-.333)/.3334+.001):0,tj=$('tj'); // counted exactly the way a Juice swing is paid for, so the badge never promises a bar that isn't there
    tj.classList.toggle('has',bars>0);tj.classList.toggle('none',bars===0);$('tjn').textContent=S.over?'':bars?'×'+bars:'';tj.firstChild.nodeValue=S.over?'OVER DRIVE':'JUICE';tj.classList.toggle('od',!!S.over);tj.classList.toggle('odon',!!(S.over&&S.overOn));if(S.over){tj.classList.remove('none','has');}$('tp').classList.toggle('blue',!!(S.over&&S.overOn));$('kj').classList.toggle('has',bars>0);
-    if(bars>hudBars&&S.state!=='title'&&S.state!=='over'){ // a new bar just filled: say so, loudly
+    {const jt=$('jtoast'),o=!!(S.over&&!S.overOn);if(o&&!hudOver){jt.innerHTML='OVERDRIVE READY!<small>tap it for free juice swings</small>';jt.classList.add('odt');jt.classList.remove('go');void jt.offsetWidth;jt.classList.add('go');}hudOver=o;}
+    if(bars>hudBars&&!S.over&&S.state!=='title'&&S.state!=='over'){$('jtoast').classList.remove('odt');$('jtoast').innerHTML='JUICE READY!<small>tap it, then swing</small>'; // a new bar just filled: say so, loudly
       tj.classList.remove('gain');void tj.offsetWidth;tj.classList.add('gain');const jt=$('jtoast');jt.classList.remove('go');void jt.offsetWidth;jt.classList.add('go');
       buzz(25);try{tone('triangle',660,990,.12,.25);tone('triangle',990,1320,.14,.22,.1);}catch(e){}
       if(!MOB)setTimeout(()=>timing('JUICE READY — HOLD SHIFT AND SWING','#ffd23b',3),300);}
@@ -1127,7 +1129,7 @@ function hud(){
   goalHud();
   $('tj').classList.toggle('on',juiceArmed);$('tp').classList.toggle('fire',!!(S.over&&S.overOn)||(juiceArmed&&S.juice>=.333));
 }
-let hudBars=0,ringEcho=null,lastWalk='';
+let hudOver=false,hudBars=0,ringEcho=null,lastWalk='';
 // Flavour first: the first home run and the first strikeout of every game always get the full, ridiculous treatment
 // (the first two of each for a player's first three games), so nobody plays a whole game without seeing what this game is.
 const celClip=own=>{if(own!=='w_milling')return own;const C=MX.clip,w=C?WILD_CEL.filter(k=>C.intros[k]):[];return w.length?w[(Math.random()*w.length)|0]:own;}; // the milling routine is a walk-up only
