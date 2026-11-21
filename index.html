@@ -212,6 +212,9 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
   padding:10px 34px;transform:skewX(-10deg);cursor:pointer;box-shadow:0 6px 0 #000}
 .cta.alt{background:var(--chrome);font-size:clamp(15px,2.2vw,22px);padding:8px 26px}
 #pausebtn{top:100px;right:max(16px,env(safe-area-inset-right,0px));pointer-events:auto;width:44px;height:38px;font-size:14px;color:var(--chrome);background:var(--panel);border:2px solid rgba(242,245,255,.3);transform:skewX(-8deg);cursor:pointer}
+#hud.mob #pausebtn{top:96px;width:auto;height:44px;padding:0 14px;font-size:13px;color:var(--ink);background:var(--volt);border:2px solid #000;border-radius:22px;transform:none;box-shadow:0 3px 0 #000;display:flex;align-items:center;gap:7px}
+#hud.mob #pausebtn[hidden]{display:none}
+#hud.mob #pausebtn::after{content:'PAUSE';font-family:var(--display);font-style:italic;font-size:15px;letter-spacing:.04em}
 #pausebtn:hover{border-color:var(--volt);color:var(--volt)}
 #pausebtn:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
 .cta:hover{background:#fff}.cta:active{transform:skewX(-10deg) translateY(4px);box-shadow:0 2px 0 #000}
