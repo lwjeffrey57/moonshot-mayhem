@@ -1315,10 +1315,27 @@ function retargetFig(d,rt){
 }
 // fly-ball catch clip (a catcher's pop-up): we only use the part where he is already standing under the ball
 const CATCH={start:2.2,t:3.5,end:5.9};
-function setupFielder(f,obj,custom){
+// Catcher and plate umpire. They only appear in the walk-up shot: from the batting camera a catcher would sit right in front of the strike zone.
+function setupPlateCrew(make,skins){
+  const cat=make(['catch']),{B}=prepModel(cat,pitT,skins.away),clip=cat.animations[0];
+  clip.tracks=clip.tracks.filter(t=>/quaternion$/.test(t.name)||/Hips\.position$/.test(t.name));
+  const mixer=new T.AnimationMixer(cat),act=mixer.clipAction(clip);act.play();act.time=.4;mixer.update(0); // the clip opens in a catcher's crouch
+  const gl=new T.Mesh(GEO.glove,pitcher.mats.glove);gl.scale.set(85,110,55);gl.position.set(0,9,0);gl.castShadow=true;B('LeftHand').add(gl);
+  cat.position.set(0,0,1.45);cat.rotation.y=PI;scene.add(cat);
+  const uf={fig:mkFielder('UMP',0)};uf.fig.root.position.set(.12,0,2.45);uf.fig.root.rotation.y=PI;scene.add(uf.fig.root);
+  setupFielder(uf,make([]),skins.ump,true);
+  const up=pose({y:.84,lean:.42,hL:[-.5,0,.34],kL:.85,hR:[-.5,0,-.34],kR:.85,sL:[-.35,0,.22],eL:-.5,sR:[-.35,0,-.22],eR:-.5,head:0}); // hands on knees, peering over the catcher
+  MX.crew={cat,mixer,act,uf,up,show:null};
+}
+function updatePlateCrew(){
+  const c=MX.crew;if(!c)return;const on=S.state==='walkup';
+  if(on!==c.show){c.show=on;c.cat.visible=on;c.uf.fig.root.visible=on;}
+  if(on){c.act.time=.45+.3*Math.sin(now*1.4);c.mixer.update(0);const P=lerpPose(c.up,c.up,0,tmpPose);P.y+=Math.sin(now*1.7)*.008;applyPose(c.uf.fig,P);retargetFig(c.uf.fig,c.uf.rt);}
+}
+function setupFielder(f,obj,custom,noGlove){
   const d=f.fig,{s,B,D,K}=prepModel(obj,pitT,custom);d.root.add(obj);
   f.rt=fitDriver(d,B,D,s,K);f.obj=obj;f.catching=false;
-  const gl=new T.Mesh(GEO.glove,pitcher.mats.glove);gl.scale.set(75,100,50);gl.position.set(0,9,0);gl.castShadow=true;B('LeftHand').add(gl);
+  if(!noGlove){const gl=new T.Mesh(GEO.glove,pitcher.mats.glove);gl.scale.set(75,100,50);gl.position.set(0,9,0);gl.castShadow=true;B('LeftHand').add(gl);}
   const clip=obj.animations.find(c=>c.name==='catch');
   if(clip&&clip.duration>CATCH.end){clip.tracks=clip.tracks.filter(t=>/quaternion$/.test(t.name)||/Hips\.position$/.test(t.name));
     f.mixer=new T.AnimationMixer(obj);f.act=f.mixer.clipAction(clip);f.act.play();
@@ -1345,6 +1362,7 @@ function showChunky(fig,on,keep){fig.root.children.forEach(ch=>{if(ch!==bat&&ch!
 function unloadPlayers(){
   if(MX.obj){if(MX.obj.parent)MX.obj.parent.remove(MX.obj);MX.obj=null;}
   if(MX.pit){scene.remove(MX.pit.obj);MX.pit=null;}
+  if(MX.crew){scene.remove(MX.crew.cat);scene.remove(MX.crew.uf.fig.root);MX.crew=null;}
   batterOpacity(1);MX.ready=false;MX.clip=null;MX.lefty=false;CAM_HOME.x=-.15;CAM_LOOK.x=.3;batter.root.add(bat);showChunky(batter,true);showChunky(pitcher,true);unfitDriver(batter);
   fielders.forEach(f=>{if(f.obj){f.fig.root.remove(f.obj);f.obj=f.rt=f.mixer=f.act=null;f.catching=false;unfitDriver(f.fig);showChunky(f.fig,true);}});
 }
@@ -1378,6 +1396,10 @@ function makeSkins(im){ // a textured character: its own colour, normal, specula
   for(let i=0;i<px.length;i+=4){const r=px[i],gg=px[i+1],b=px[i+2];
     if(r>45&&r>gg*1.75&&r>b*1.75){o[i]=gg*.8;o[i+1]=Math.min(255,r*1.25);o[i+2]=Math.min(255,r*1.4);}else{o[i]=r;o[i+1]=gg;o[i+2]=b;}o[i+3]=255;}
   const cv2=document.createElement('canvas');cv2.width=w;cv2.height=h;cv2.getContext('2d').putImageData(out,0,0);const away=new T.CanvasTexture(cv2);away.anisotropy=ANISO;
+  const uo=cx.createImageData(w,h),u=uo.data; // umpire: the same armour in dark navy, face left alone
+  for(let i=0;i<px.length;i+=4){const r=px[i],gg=px[i+1],b=px[i+2],skin=r>90&&r>b*1.25&&gg>r*.55&&gg<r*.92&&!(r>gg*1.75);
+    if(skin){u[i]=r;u[i+1]=gg;u[i+2]=b;}else{const l=(r+gg+b)/3;u[i]=l*.2;u[i+1]=l*.24;u[i+2]=l*.38;}u[i+3]=255;}
+  const cv3=document.createElement('canvas');cv3.width=w;cv3.height=h;cv3.getContext('2d').putImageData(uo,0,0);const umpT=new T.CanvasTexture(cv3);umpT.anisotropy=ANISO;
   const common={normalMap:mk(n),specularMap:mk(sp),emissiveMap:mk(g),emissive:new T.Color(0xffffff),specular:0x777777,shininess:32,skinning:true};
   // drop the forearm energy blades: their texture island is a thin diagonal strip in the top-left of the sheet
   const trim=(geo,D)=>{const P=geo.attributes.position,U=geo.attributes.uv,keep=[],ax=80,ay=5,dx=170,dy=190,L2=dx*dx+dy*dy,L=Math.sqrt(L2);
@@ -1389,7 +1411,8 @@ function makeSkins(im){ // a textured character: its own colour, normal, specula
     for(const name in geo.attributes){const a=geo.attributes[name],arr=new a.array.constructor(keep.length*a.itemSize);
       keep.forEach((src,j)=>{for(let c=0;c<a.itemSize;c++)arr[j*a.itemSize+c]=a.array[src*a.itemSize+c];});ng.setAttribute(name,new T.BufferAttribute(arr,a.itemSize));}
     return ng;};
-  return {home:{mat:new T.MeshPhongMaterial(Object.assign({map:mk(d)},common)),trim},away:{mat:new T.MeshPhongMaterial(Object.assign({map:away},common)),trim}};
+  return {home:{mat:new T.MeshPhongMaterial(Object.assign({map:mk(d)},common)),trim},away:{mat:new T.MeshPhongMaterial(Object.assign({map:away},common)),trim},
+    ump:{mat:new T.MeshPhongMaterial(Object.assign({map:umpT},common,{emissive:new T.Color(0x222222)})),trim}};
 }
 function loadPlayers(kind){ // body file = character mesh; clips.json = motion-capture clips (swing, stance idle, miss, pitch)
   const cfg=MODELS[kind],my=++MX.token;MX.kind=kind;try{localStorage.setItem('mm_kind',kind);}catch(e){}
@@ -1410,6 +1433,7 @@ function loadPlayers(kind){ // body file = character mesh; clips.json = motion-c
     // fielders are built one at a time so the page doesn't freeze while seven more models are prepared
     fielders.filter(f=>!f.isP).forEach((f,i)=>setTimeout(()=>{if(my!==MX.token)return;
       try{setupFielder(f,make(cj.catch?['catch']:[]),skins&&skins.away);}catch(e){console.warn('fielder model failed, using built-in figure',e);fallback(f.fig);}},400+i*220));
+    if(skins&&cj.catch)setTimeout(()=>{if(my!==MX.token)return;try{setupPlateCrew(make,skins);}catch(e){console.warn('catcher/umpire failed',e);}},250);
   }).catch(e=>{console.warn('player models unavailable, using built-in figures',e);if(my===MX.token)figs.forEach(fallback);});
 }
 loadPlayers(MX.kind);
@@ -1576,7 +1600,7 @@ function step(dt){
   // shock ring
   if(shock.userData.t!==undefined&&shock.userData.t<.3){shock.userData.t+=dt;const k=shock.userData.t/.3;shock.scale.setScalar(.06+k*shock.userData.s*.9);shock.material.opacity=(1-k)*.9;}else shock.material.opacity=0;
 
-  updateBatter(dt);updatePitcher();updateFielders(dt);
+  updateBatter(dt);updatePitcher();updateFielders(dt);updatePlateCrew();
   fxS.update(dt);fxL.update(dt);fxT.update(dt);
 
   // reticle
