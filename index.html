@@ -332,6 +332,7 @@ body.mob #tip{display:block}body.mob .how{display:none}
 #tut .off{top:146px;padding:7px 14px;font-size:12px;color:var(--chrome);border:1px solid rgba(242,245,255,.45);background:rgba(8,9,26,.6)}
 @keyframes jring{50%{transform:scale(1.1)}}
 #ldtxt{font-family:var(--hud);font-weight:800;font-size:11px;letter-spacing:.14em;color:var(--dim);min-height:14px;text-align:center}
+.cta.ldg{background:#8a8fa8;color:#1a1c2c;animation:ldg 1s ease-in-out infinite alternate}@keyframes ldg{to{opacity:.6}}
 .cta{pointer-events:auto;font-family:var(--display);font-size:clamp(20px,3vw,30px);color:var(--ink);background:var(--volt);border:3px solid #000;
   padding:10px 34px;transform:skewX(-10deg);cursor:pointer;box-shadow:0 6px 0 #000}
 .cta.alt{background:var(--chrome);font-size:clamp(15px,2.2vw,22px);padding:8px 26px}
@@ -459,7 +460,7 @@ body.mob #tip{display:block}body.mob .how{display:none}
       <div><b>Timing</b>Swing as the yellow ring closes. Early pulls, late slices.</div>
       <div><b>Overdrive</b>A full Juice meter charges it. Hold Shift and swing to switch it on: free Juice on every swing that at-bat.</div>
     </div>
-    <button class="cta" id="start" type="button">PLAY BALL</button>
+    <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
     <button class="tag wkopt" id="wk" type="button"></button>
@@ -1340,8 +1341,9 @@ function startGame(){
   newGame();
 }
 // loading bar on the title screen: one step per file fetched, the last for building the hitter
-let ldN=0;const LD_TOTAL=8;function loadStep(done){ldN=done?LD_TOTAL:Math.min(LD_TOTAL-1,ldN+1);const b=$('ldbar');if(!b)return;b.firstElementChild.style.width=(ldN/LD_TOTAL*100)+'%';b.classList.toggle('done',ldN>=LD_TOTAL);$('ldtxt').textContent=ldN>=LD_TOTAL?'':'LOADING PLAYERS '+Math.round(ldN/LD_TOTAL*100)+'%';}
-function playersDone(){MX.loading=false;loadStep(1);if(MX.pendingStart){MX.pendingStart=false;$('start').textContent='PLAY BALL';newGame();}}
+let ldN=0;const LD_TOTAL=8;function loadStep(done){ldN=done?LD_TOTAL:Math.min(LD_TOTAL-1,ldN+1);if(!MX.pendingStart){const st=$('start');st.textContent=ldN>=LD_TOTAL?'PLAY BALL':'LOADING…';st.classList.toggle('ldg',ldN<LD_TOTAL);}
+  const b=$('ldbar');if(!b)return;b.firstElementChild.style.width=(ldN/LD_TOTAL*100)+'%';b.classList.toggle('done',ldN>=LD_TOTAL);$('ldtxt').textContent=ldN>=LD_TOTAL?'':'LOADING PLAYERS '+Math.round(ldN/LD_TOTAL*100)+'%';}
+function playersDone(){MX.loading=false;loadStep(1);if(MX.pendingStart){MX.pendingStart=false;$('start').textContent='PLAY BALL';$('start').classList.remove('ldg');newGame();}}
 // ── A goal for every game, set from how this player has been doing, and a grade when the ninth out is made.
 let STATS={g:0,runs:0,hits:0,hrs:0,longest:0};try{STATS=Object.assign(STATS,JSON.parse(localStorage.getItem('mm_stats')||'{}'));}catch(e){}
 function pickGoal(){const g=STATS.g,avg=k=>g?STATS[k]/g:0,plural=(n,w)=>n+' '+w+(n===1?'':'S');
