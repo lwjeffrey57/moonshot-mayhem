@@ -189,7 +189,7 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 #walk .wrow.sub{background:#000;font-size:13px;color:var(--dim);justify-content:space-between}
 @media (max-width:560px){#walk{min-width:0;width:94vw}#walk .wn{min-width:56px;font-size:30px}#walk .wname{font-size:24px;padding:7px 12px 5px}#walk .wrow{gap:7px;padding:6px 10px;font-size:12px}#walk .wrow.sub{font-size:11px}}
 @media (min-width:900px) and (min-height:560px){#walk{min-width:640px;bottom:9vh}#walk .wn{min-width:112px;font-size:62px}#walk .wname{font-size:46px;padding:10px 22px 7px}#walk .wrow{gap:26px;padding:9px 22px;font-size:23px}#walk .wrow.sub{font-size:16px}}
-#hud.wk #rep,#hud.wk #keys,#hud.wk #pitchinfo,#hud.wk #touch{visibility:hidden}
+#hud.wk #rep,#hud.wk #keys,#hud.wk #pitchinfo,#hud.wk #touch,#hud.mob.wk #pausebtn,#hud.mob.wk #mutebtn{visibility:hidden}
 .wkopt{pointer-events:auto;background:none;border:1px solid var(--dim);padding:6px 12px;cursor:pointer;font-family:var(--hud)}
 /* centre calls */
 #pop{left:0;right:0;top:26%;text-align:center;opacity:0}
@@ -1215,7 +1215,7 @@ function startWalkup(){
   {const I=MX.clip.intros,forcedWalk=DBG.trip===true?'w_trip':DBG.trip;if(S.walkClip===lastWalk&&!(forcedWalk&&I[forcedWalk])){const alt=Object.keys(I).filter(k=>/^w_/.test(k)&&k!==lastWalk&&k!=='w_walkin');if(alt.length)S.walkClip=alt[(Math.random()*alt.length)|0];}lastWalk=S.walkClip;} // never the same walk-up twice in a row
   $('wnum').textContent=b.num;$('wname').textContent=b.name;
   {const gb=v=>{const g=statGrade(v);return `<b class="gr g${g}"><u>${g}</u></b>`;};$('wrat').innerHTML=`<span>POWER ${gb(b.pwr)}</span><span>CONTACT ${gb(b.con)}</span><span>SPEED ${gb(b.spd)}</span><span>BATS <b>${b.lh?'L':'R'}</b></span>`;}
-  $('wspot').textContent='BATTING '+['1ST','2ND','3RD','4TH','5TH','6TH','7TH','8TH','9TH'][i];$('wskip').textContent='SWING TO SKIP';
+  $('wspot').textContent='BATTING '+['1ST','2ND','3RD','4TH','5TH','6TH','7TH','8TH','9TH'][i];$('wskip').textContent=MOB?'TAP TO SKIP':'SWING TO SKIP';
   $('walk').hidden=false;$('hud').classList.add('wk');cheer(.16,2);
 }
 function endWalkup(){$('walk').hidden=true;$('hud').classList.remove('wk');S.state='ready';S.t=now;readyDur=1.5;if(MX.clip)MX.clip.swap=.2;}
@@ -1619,7 +1619,7 @@ function doSwing(type){
   if(S.state==='trot'){S.t=now-TROT.dur;return;} // skip the trot
   if(S.state==='celly2'){S.t=now-D2.dur;return;}
   if(S.state==='pdef'){S.t=now-PDEF;return;}
-  if(S.state==='walkup'){S.t=Math.min(S.t,now-WALK.dur+.22);return;} // skip the intro
+  if(S.state==='walkup'){S.t=Math.min(S.t,now-WALK.dur);return;} // skip the intro, at once
   if(flight&&flight.admire&&!flight.done){flight.A=Math.min(flight.A,now-flight.t0);return;} // cut to the ball
   if(swing)return;
   // between pitches the buttons still swing the bat: a practice cut, no cost, so the first tap always teaches what the button does
@@ -1675,6 +1675,7 @@ const press=id=>{const e=$(id);e.classList.remove('dn');void e.offsetWidth;e.cla
 let lastTapT=0,lastTapX=0,lastTapY=0;
 function cornerTap(x,y){
   if(!MOB||paused||tutHold||!$('title').hidden||!$('over').hidden)return false;
+  if(S.state==='walkup'){doSwing('contact');return true;} // during a walk-up nothing is a button: a touch anywhere on the screen skips it, and that is all it does
   const c=id=>{const r=$(id).getBoundingClientRect();return {x:r.left+r.width/2,y:r.top+r.height/2,r:r.width/2,l:r.left,t:r.top};},d=o=>Math.hypot(x-o.x,y-o.y);
   const J=c('tj'),C=c('tc'),P=c('tp');if(!C.r)return false;
   if(!((x>=C.l-5&&y>=Math.min(C.t,P.t)-24)||(x>=J.l-16&&y>=J.t-22)))return false; // the button rows and everything under them, plus the JUICE column
