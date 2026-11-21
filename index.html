@@ -231,17 +231,21 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 #howbtn{display:none}body.mob #howbtn{display:revert}
 body.mob #tip{display:block}body.mob .how{display:none}
 /* first-game thumb guide */
-#tut{position:absolute;inset:0;z-index:30;background:rgba(6,7,20,.76);pointer-events:auto;font-family:var(--display);font-style:italic;color:#fff;text-shadow:0 2px 0 #000}#tut[hidden]{display:none}
-#tut .tz{position:absolute;text-align:center;font-size:17px;line-height:1.15}#tut .tz b{display:block;color:var(--volt);font-size:21px;font-weight:400}#tut .tz small{display:block;font-family:var(--hud);font-style:normal;font-weight:600;font-size:13px;color:var(--chrome);margin-top:4px;text-shadow:none}
-#tut .aimz{left:8px;bottom:var(--tbb);width:46%}#tut .pad{width:min(120px,calc(100vw - 300px));aspect-ratio:1;margin:12px 0 0 max(10px,calc(env(safe-area-inset-left,0px) - 8px));border:3px dashed var(--ice);border-radius:50%;position:relative}#tut .pad i{position:absolute;left:50%;top:50%;width:46px;height:46px;margin:-23px;border-radius:50%;background:var(--ice);opacity:.85;animation:tutdrag 2.2s ease-in-out infinite}
-@keyframes tutdrag{0%,100%{transform:translate(-22px,14px)}35%{transform:translate(20px,-18px)}70%{transform:translate(18px,16px)}}
-#tut .swz{right:8px;bottom:calc(var(--tbb) + min(128px,32vw) + 108px);width:62%}#tut .swz::after{content:'▼';display:block;color:var(--heat);font-size:22px;margin-top:4px;animation:tutbob 1s ease-in-out infinite}@keyframes tutbob{50%{transform:translateY(6px)}}
-#tut .jcz{left:6%;right:6%;top:150px}#tut .go{left:50%;top:34%;transform:translateX(-50%);white-space:nowrap;padding:12px 26px;font-size:20px;color:var(--ink);text-shadow:none;background:var(--volt);border:3px solid #000;border-radius:28px;box-shadow:0 4px 0 #000}
-#tut .off{left:max(12px,env(safe-area-inset-left,0px));top:100px;white-space:nowrap;padding:9px 18px;font-family:var(--hud);font-style:normal;font-weight:700;font-size:14px;letter-spacing:.1em;text-transform:uppercase;color:var(--chrome);text-shadow:none;border:1px solid rgba(242,245,255,.5);border-radius:20px;background:rgba(8,9,26,.6)}
-#tut .jz,#tut .jring{display:none}#tut.j{background:none;overflow:hidden}#tut.j .aimz,#tut.j .swz,#tut.j .jcz{display:none}
-#tut.j .tz{z-index:2}#tut.j .jring{z-index:1}
-#tut.j .jz{display:block;right:10px;left:10px;text-align:right;bottom:calc(var(--tbb) + min(128px,32vw) + min(76px,19vw) + 44px)}
-#tut.j .jring{display:block;position:absolute;right:calc(max(14px,env(safe-area-inset-right,0px)) - 10px);bottom:calc(var(--tbb) + min(128px,32vw) + 4px);width:calc(min(76px,19vw) + 20px);aspect-ratio:1;border:4px solid var(--volt);border-radius:50%;box-shadow:0 0 0 200vmax rgba(6,7,20,.76),0 0 24px 4px var(--volt);animation:jring 1s ease-in-out infinite}
+#tut{position:absolute;inset:0;z-index:30;overflow:hidden;pointer-events:auto;font-family:var(--display);font-style:italic;color:#fff;text-shadow:0 2px 0 #000}#tut[hidden]{display:none}
+#tut .tz{position:absolute;z-index:2;display:none;text-align:center;font-size:18px;line-height:1.15}#tut .tz b{display:block;color:var(--volt);font-size:23px;font-weight:400}#tut .tz small{display:block;font-family:var(--hud);font-style:normal;font-weight:600;font-size:14px;color:var(--chrome);margin-top:5px;text-shadow:none}
+/* one step at a time: a spotlight (the hole in the dimming) over the control, one short caption beside it */
+#tut .spot{position:absolute;z-index:1;border:4px solid var(--volt);box-shadow:0 0 0 200vmax rgba(6,7,20,.8),0 0 24px 4px var(--volt);animation:jring 1s ease-in-out infinite}
+#tut.s1 .spot{left:calc(max(18px,env(safe-area-inset-left,0px)) - 9px);bottom:calc(var(--tbb) - 9px);width:calc(min(120px,100vw - 300px) + 18px);aspect-ratio:1;border-radius:50%}
+#tut.s2 .spot{right:calc(max(14px,env(safe-area-inset-right,0px)) - 9px);bottom:calc(var(--tbb) - 9px);width:calc(min(112px,28vw) + min(128px,32vw) + 30px);height:calc(min(128px,32vw) + 18px);border-radius:80px;animation:none}
+#tut.s3 .spot,#tut.j .spot{right:calc(max(14px,env(safe-area-inset-right,0px)) - 10px);bottom:calc(var(--tbb) + min(128px,32vw) + 4px);width:calc(min(76px,19vw) + 20px);aspect-ratio:1;border-radius:50%}
+#tut.s1 .aimz{display:block;left:12px;right:30%;text-align:left;bottom:calc(var(--tbb) + min(120px,100vw - 300px) + 30px)}
+#tut.s2 .swz{display:block;left:12px;right:12px;text-align:right;bottom:calc(var(--tbb) + min(128px,32vw) + min(76px,19vw) + 44px)}
+#tut.s3 .jcz,#tut.j .jz{display:block;left:12px;right:12px;text-align:right;bottom:calc(var(--tbb) + min(128px,32vw) + min(76px,19vw) + 44px)}
+#tut .go{display:block;left:50%;top:30%;transform:translateX(-50%);white-space:nowrap;padding:12px 28px;font-size:20px;color:var(--ink);text-shadow:none;background:var(--volt);border:3px solid #000;border-radius:28px;box-shadow:0 4px 0 #000}
+#tut .stp{display:block;left:0;right:0;top:calc(30% - 30px);font-family:var(--hud);font-style:normal;font-weight:800;font-size:13px;letter-spacing:.2em;color:var(--chrome)}#tut.j .stp{display:none}
+#tut .skip,#tut .off{display:block;left:max(12px,env(safe-area-inset-left,0px));white-space:nowrap;font-family:var(--hud);font-style:normal;font-weight:800;letter-spacing:.1em;text-transform:uppercase;text-shadow:none;border-radius:22px}
+#tut .skip{top:96px;padding:11px 20px;font-size:16px;color:var(--ink);background:var(--chrome);border:2px solid #000;box-shadow:0 3px 0 #000}
+#tut .off{top:150px;padding:7px 14px;font-size:12px;color:var(--chrome);border:1px solid rgba(242,245,255,.45);background:rgba(8,9,26,.6)}
 @keyframes jring{50%{transform:scale(1.1)}}
 #ldtxt{font-family:var(--hud);font-weight:800;font-size:11px;letter-spacing:.14em;color:var(--dim);min-height:14px;text-align:center}
 .cta{pointer-events:auto;font-family:var(--display);font-size:clamp(20px,3vw,30px);color:var(--ink);background:var(--volt);border:3px solid #000;
@@ -310,13 +314,15 @@ body.mob #tip{display:block}body.mob .how{display:none}
       <button class="tb pw" id="tp" type="button">POWER</button>
     </div>
     <div id="tut" hidden>
-      <div class="tz jcz"><b>JUICE = MONSTER SWING</b>Tap JUICE, then swing. Costs one bar.<small>The ball comes off about 20% harder and the sweet spot grows. Hits and taking balls refill it — save it for a pitch you can drive.</small></div>
-      <div class="tz go">GOT IT — PLAY ▶</div>
-      <div class="tz off" id="tutoff">Skip all tutorials</div>
-      <div class="tz jz"><b>YOUR JUICE IS FULL</b>Tap JUICE, then swing for a monster hit<small>Each swing with Juice burns one of your three bars. Use one now, or bank them for a pitch you can drive.</small></div>
-      <div class="jring"></div>
-      <div class="tz aimz"><b>LEFT THUMB</b>Drag anywhere to aim the ring<div class="pad"><i></i></div></div>
-      <div class="tz swz"><b>RIGHT THUMB</b>Tap as the yellow ring closes on the ball<small>CONTACT: easier, line drives. POWER: harder, moonshots.</small></div>
+      <div class="spot"></div>
+      <div class="tz stp" id="tutstp"></div>
+      <div class="tz go" id="tutgo">NEXT ▶</div>
+      <div class="tz skip" id="tutskip">Skip ▶▶</div>
+      <div class="tz off" id="tutoff">Don't show tutorials again</div>
+      <div class="tz aimz"><b>LEFT THUMB: AIM</b>Drag here (or anywhere) to move the ring onto the pitch</div>
+      <div class="tz swz"><b>RIGHT THUMB: SWING</b>Tap as the yellow ring closes on the ball<small>CONTACT is easier and hits line drives. POWER is harder and hits moonshots.</small></div>
+      <div class="tz jcz"><b>JUICE: MONSTER SWING</b>Tap JUICE, then swing. Costs one bar<small>Hits and taking balls refill it. Save it for a pitch you can drive.</small></div>
+      <div class="tz jz"><b>YOUR JUICE IS FULL</b>Tap JUICE, then swing for a monster hit<small>Each Juice swing burns one of your three bars.</small></div>
     </div>
     <div id="pop"><div class="t"></div><div class="s"></div></div>
     <div id="tim"></div>
@@ -940,12 +946,17 @@ const TUT_EVERY_LAUNCH=true; // testing: show the guide on every launch; set fal
 let tutFirst=false,tutHold=false,tutSeen=!MOB;try{if(!TUT_EVERY_LAUNCH&&localStorage.getItem('mm_tut')==='1')tutSeen=true;}catch(e){}
 let tutOff=false,jtutSeen=!MOB;try{tutOff=localStorage.getItem('mm_tutoff')==='1';if(!TUT_EVERY_LAUNCH&&localStorage.getItem('mm_jtut')==='1')jtutSeen=true;}catch(e){}
 // the first time the Juice meter is full: point at the JUICE button
-function jtutNeed(){if(tutOff||jtutSeen||window.__mmManual&&!window.__mmTut)return false;jtutSeen=true;tutHold=true;tutFirst=true;$('tut').className='j';$('tut').hidden=false;try{localStorage.setItem('mm_jtut','1');}catch(e){}return true;}
-function tutNeed(){if(tutOff||tutSeen||window.__mmManual&&!window.__mmTut)return false;tutSeen=true;tutHold=true;tutFirst=true;$('tut').className='';$('tut').hidden=false;try{localStorage.setItem('mm_tut','1');}catch(e){}return true;}
-$('tut').addEventListener('pointerdown',e=>{e.preventDefault();
-  if(e.target.id==='tutoff'){tutOff=true;try{localStorage.setItem('mm_tutoff','1');}catch(x){}} // no more guides on this device (HOW TO PLAY in the pause menu still works)
-  if(e.target.classList.contains('jring')&&S.juice>=.333){juiceArmed=true;hud();}
-  $('tut').hidden=true;tutHold=false;if(tutFirst){tutFirst=false;S.t=now-readyDur+.7;}});
+let tutStep=0;
+function tutShow(mode){const T=$('tut');T.className=mode;T.hidden=false;tutHold=true;const n=mode==='j'?0:+mode.slice(1);tutStep=n;$('tutstp').textContent=n?n+' / 3':'';$('tutgo').textContent=n&&n<3?'NEXT ▶':'GOT IT — PLAY ▶';}
+function tutClose(){$('tut').hidden=true;tutHold=false;if(tutFirst){tutFirst=false;S.t=now-readyDur+.7;}}
+function jtutNeed(){if(tutOff||jtutSeen||window.__mmManual&&!window.__mmTut)return false;jtutSeen=true;tutFirst=true;tutShow('j');try{localStorage.setItem('mm_jtut','1');}catch(e){}return true;}
+function tutNeed(){if(tutOff||tutSeen||window.__mmManual&&!window.__mmTut)return false;tutSeen=true;tutFirst=true;tutShow('s1');try{localStorage.setItem('mm_tut','1');}catch(e){}return true;}
+$('tut').addEventListener('pointerdown',e=>{e.preventDefault();const id=e.target.id;
+  if(id==='tutoff'){tutOff=true;try{localStorage.setItem('mm_tutoff','1');}catch(x){}tutClose();return;} // no more guides on this device (HOW TO PLAY in the pause menu still works)
+  if(id==='tutskip'){tutClose();return;}
+  if(tutStep&&tutStep<3){tutShow('s'+(tutStep+1));return;}                                            // a tap anywhere moves to the next step
+  if($('tut').className==='j'&&e.target.classList.contains('spot')&&S.juice>=.333){juiceArmed=true;hud();}
+  tutClose();});
 function timing(t,c,l){const e=$('tim');e.className='';e.textContent=t;e.style.color=c;e.dataset.l=l||2;void e.offsetWidth;e.className='go';}
 function flash(a){const e=$('flash');e.style.transition='none';e.style.opacity=a*FX;void e.offsetWidth;e.style.transition='opacity .35s';e.style.opacity=0;}
 function hud(){
@@ -1388,7 +1399,7 @@ function toMenu(){
 }
 $('pausebtn').addEventListener('click',()=>setPaused(true));
 $('resume').addEventListener('click',()=>setPaused(false));
-$('howbtn').addEventListener('click',()=>{setPaused(false);tutHold=true;$('tut').className='';$('tut').hidden=false;}); // the thumb guide again, on demand
+$('howbtn').addEventListener('click',()=>{setPaused(false);tutShow('s1');}); // the thumb guide again, on demand
 $('cambtn').addEventListener('click',()=>{nextCam();draw();});
 $('restart').addEventListener('click',()=>{setPaused(false);fireworks.length=0;newGame();});
 $('quit').addEventListener('click',toMenu);$('overmenu').addEventListener('click',toMenu);
