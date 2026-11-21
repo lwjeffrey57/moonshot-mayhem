@@ -760,7 +760,11 @@ function judge(tr,bt){const spd=bt&&bt.spd||1; // batter's speed: 0.85 (plodder)
     // the throw has to beat the runner to first: quicker men (and lefties, a step closer) get there sooner
     if(tt<3.35-(spd-1)*1.8-(bt&&bt.lh?.08:0))return {type:'out',label:'GROUND OUT',endT:p.t,f,p};
     return {type:'hit',bases:1,endT:p.t,f,p,infield:tt<4.2};}
-  const k=1+(spd-1)*1.5;let bases=p.t<3.4/k?1:p.t<6.2/k?2:3;if(tr.wall)bases=Math.max(2,bases); // the longer the ball takes to run down, the more bases; fast runners need less time
+  // Extra bases are a race: the runner against the fielder picking the ball up, setting, and throwing to the bag.
+  // An average runner needs about 8.2 s to reach second and 11.6 s to reach third; a ball fielded cleanly in front of an outfielder is a single.
+  const run=1+(spd-1)*.9,wallBall=tr.wall&&tr.wallT<p.t,relay=(bx,bz)=>p.t+.9+(wallBall?1:0)+Math.hypot(p.x-bx,p.z-bz)/38; // a carom takes longer to pick up and turn with
+  let bases=11.6/run<relay(-19.4,-19.4)?3:8.2/run<relay(0,-38.8)?2:1;
+  if(wallBall)bases=Math.max(2,bases); // off the wall is at least a double
   // show the ball come down (and carom off the wall) before the call; long flies used to be cut off in mid-air
   const shown=Math.max(4.4,tr.land?tr.land.t+.7:0,tr.wall?tr.wallT+.6:0);
   return {type:'hit',bases,endT:Math.min(p.t,shown),tField:p.t,f,p};
