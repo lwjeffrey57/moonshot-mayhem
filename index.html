@@ -2553,9 +2553,9 @@ function step(dt){
       if(!flight.orb&&tf>=1.1&&!(flight.admire&&tf<flight.A)){flight.orb=now;flight.orbFrom=bez(.22,new V3());flight.play.endT=tf+3.1;pop('LEFT ORBIT!','NEXT STOP: EARTH','cool',true);SND.boom();SND.zap();buzz([40,40,40,40,120]);}
       bez(flight.orb?.22+.78*Math.pow(clamp((now-flight.orb)/3.1,0,1),1.5):.22*ease(Math.min(1,tf/1.1)),ball.position);}
     if(flight.dShow){const ft=Math.round(flight.dFt*Math.min(1,Math.hypot(p.x,p.z)/(flight.dEnd||1)));if(ft!==flight.dLast){flight.dLast=ft;$('hds').textContent=ft+' FT';}}
-    if(flight.play.rob&&tf<flight.play.endT){const pl=flight.play,k=1-tf/pl.endT; // a ball that is going to be brought back gets the same yellow ring as any catchable fly
+    if(flight.play.type==='out'&&flight.play.air&&tf<flight.play.endT){const pl=flight.play,k=1-tf/pl.endT; // every ball that is going to be caught in the air gets the ring, under the spot where it will be caught: liners, pop-ups, foul outs, robberies
       landRing.visible=true;landRing.position.set(pl.p.x,.07,pl.p.z);landRing.scale.setScalar(lerp(1.4,5,k));landRing.material.opacity=.55+.4*(1-k);}
-    else if(!tr.hr&&tr.land&&tr.land.t>1.1&&tf<tr.land.t){ // fly balls and liners (not home runs): a ring on the grass that tightens as the ball comes down
+    else if(!tr.hr&&tr.land&&tr.land.t>.45&&tf<tr.land.t){ // fly balls and liners (not home runs): a ring on the grass that tightens as the ball comes down
       const k=1-tf/tr.land.t;landRing.visible=true;landRing.position.set(tr.land.x,.07,tr.land.z);landRing.scale.setScalar(lerp(1.4,5,k));landRing.material.opacity=.55+.4*(1-k);}
     if(tr.poleT&&!flight.poleHit&&tf>=tr.poleT){flight.poleHit=true;burst(fxL,ball.position,16,7,.5,[1,.9,.3],5,1);tone('sine',1250,900,.5,.6);tone('triangle',2500,1800,.4,.3);pop('OFF THE POLE!','FAIR BALL','hot');} // doink
     if(tr.eyeT&&!flight.orbit&&!flight.eyeHit&&tf>=tr.eyeT){flight.eyeHit=true;burst(fxL,ball.position,14,6,.5,[.6,.9,.6],5,1);SND.mitt();tone('sine',120,50,.25,.5);} // thud off the batter's eye
