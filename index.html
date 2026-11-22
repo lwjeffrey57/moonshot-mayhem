@@ -220,6 +220,8 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 #pop.hot .t{color:var(--heat);text-shadow:0 5px 0 #000,0 0 50px rgba(255,77,46,.8)}
 #pop.cool .t{color:var(--ice);text-shadow:0 5px 0 #000,0 0 40px rgba(58,214,255,.6)}
 #pop.plain .t{color:var(--chrome);text-shadow:0 5px 0 #000}
+#pop.logo .t{color:var(--volt);font-size:clamp(52px,14vw,140px);-webkit-text-stroke:3px #000;text-shadow:0 6px 0 #000,0 0 18px #000,0 0 60px rgba(255,229,59,.55);transform:rotate(-4deg)}
+#pop.logo .s{color:var(--heat);font-size:clamp(22px,5.6vw,44px);-webkit-text-stroke:1.5px #000;text-shadow:0 4px 0 #000,0 0 14px #000;transform:rotate(-4deg);margin-top:10px}
 #pop.go{animation:slam 1.5s cubic-bezier(.2,1.4,.3,1) both}
 #pop.go.long{animation-duration:3.2s}
 @keyframes slam{0%{opacity:0;transform:scale(2.6) rotate(-4deg)}9%{opacity:1;transform:scale(.94) rotate(-2deg)}14%{transform:scale(1.04) rotate(-2deg)}20%,80%{opacity:1;transform:scale(1) rotate(-2deg)}100%{opacity:0;transform:scale(1.08) rotate(-2deg)}}
@@ -1803,7 +1805,7 @@ function gameRating(){const G=S.goal,pts=S.runs*10+S.hits*4+S.hrs*8+(S.longest>=
   return {pts,stars:i+1,grade:T[i][1],title:T[i][2],next:T[i+1]?T[i+1][0]-pts:0,nextTitle:T[i+1]?T[i+1][2]:''};}
 function newGame(){gamesPlayed++;try{localStorage.setItem('mm_games',gamesPlayed);}catch(e){}
   Object.assign(S,{inning:1,outs:0,balls:0,strikes:0,runs:0,bases:[0,0,0],hits:0,hrs:0,longest:0,streak:0,bestStreak:0,juice:.25,heat:.2,over:false,stk:false,bi:-1,pitches:0,seen:{},kOut:null});S.goal=null; /* per-game goals are switched off for now: pickGoal() is still here to bring them back */S.ks=0;S.d2=0;S.cardBi=-1;S.pChanges=0;S.pRuns0=0;S.pc3=false;S.pcPending=false;S.pName=BULLPEN[0];$('pcap').textContent='PITCHER';S.sTaunt=null;S.stLast=false;jPend=false;S.orbN=0;S.odUses=0;S.duel=false;$('hud').classList.remove('duel');S.pdLast=false;S.pOver=false;S.jSaid=false;S.overOn=false;S.spSeen=false;lastWalk='';
-  $('title').hidden=true;$('over').hidden=true;$('pausebtn').hidden=false;$('mutebtn').hidden=false;setBatter();renderRep();scoreboard('PLAY BALL','INNING 1');toReady(2);pop('PLAY BALL!','INNING 1','plain');SND.playball();cheer(.14,1.5);}
+  $('title').hidden=true;$('over').hidden=true;$('pausebtn').hidden=false;$('mutebtn').hidden=false;setBatter();renderRep();scoreboard('PLAY BALL','INNING 1');toReady(2);pop('PLAY BALL!','INNING 1','logo',true);SND.playball();cheer(.14,1.5);}
 
 // ───────────────────────── pitching
 // brk = how far the pitch moves off a straight line (sideways, vertical) by the time it reaches the plate; k = how late that
