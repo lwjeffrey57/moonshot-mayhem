@@ -598,7 +598,7 @@ const ANISO=renderer.capabilities.getMaxAnisotropy();
 // Frame-rate savers for the character model, with nothing taken out of the game:
 // weld(): corners that are exactly identical become one shared vertex (same picture, about a quarter of the vertices to animate).
 // liteGeo(): a low-detail copy, used only while a player is small on screen or out of view; close-ups always get the full model.
-const LODM=[],LOD_CELL=2.6;
+const LODM=[],LOD_CELL=2.6,EYE={};
 function weld(geo){
   const A=geo.attributes,names=Object.keys(A),n=A.position.count,map=new Map(),idx=new Uint32Array(n),src=[],q={position:1e3,normal:1e2,uv:1e4,skinIndex:1,skinWeight:1e3};
   for(let i=0;i<n;i++){let k='';
@@ -863,7 +863,7 @@ gl_FragColor=vec4(col*mix(dg,dd,m)*vL,1.0);
   // batter's eye in dead centre
   {const a=[],b=[];for(let i=0;i<=8;i++){const phi=lerp(-8,8,i/8)*DEG,r=fenceR(phi);a.push(pol(r+1.3,phi,WALL_H));b.push(pol(r+9,phi,19));}const sol=tex(256,128,(g,w,h)=>{g.fillStyle='#070b1c';g.fillRect(0,0,w,h);g.strokeStyle='rgba(70,110,190,.38)';g.lineWidth=1.5;for(let x=0;x<=w;x+=32){g.beginPath();g.moveTo(x,0);g.lineTo(x,h);g.stroke();}for(let y=0;y<=h;y+=32){g.beginPath();g.moveTo(0,y);g.lineTo(w,y);g.stroke();}
       g.strokeStyle='rgba(180,190,210,.5)';g.lineWidth=4;g.strokeRect(2,2,w-4,h-4);});
-    scene.add(new T.Mesh(ribbon(a,b,.03),basic({map:sol})));} // the batter's eye is a dark solar array: still a clean backdrop to pick the ball up against
+    EYE.mat=basic({map:sol});scene.add(new T.Mesh(ribbon(a,b,.03),EYE.mat));} // the batter's eye is a dark solar array: still a clean backdrop to pick the ball up against
   // beyond the park: the lunar surface, crater-rim ridges on the horizon, and a small moon base with a rocket on the pad
   {const fb=x=>Math.sin(x*1.7)*.5+Math.sin(x*4.3+1.3)*.27+Math.sin(x*9.1+.4)*.14+Math.sin(x*19.7+2.2)*.09;
     const rock=tex(256,128,(g,w,h)=>{const gr=g.createLinearGradient(0,0,0,h);gr.addColorStop(0,'#d9d9de');gr.addColorStop(.35,'#9a9aa2');gr.addColorStop(1,'#3c3c44');g.fillStyle=gr;g.fillRect(0,0,w,h);
@@ -1002,18 +1002,64 @@ const towerGlows=[];
   const pole=new T.Mesh(new T.CylinderGeometry(1,1.6,84,6),new T.MeshBasicMaterial({color:0x22203a}));pole.position.set(p.x,42,p.z);scene.add(pole);
   const bank=new T.Mesh(new T.BoxGeometry(22,10,2),new T.MeshBasicMaterial({color:0xfffbe0,fog:false}));bank.position.set(p.x,86,p.z);bank.lookAt(0,20,0);scene.add(bank);
   const sp=new T.Sprite(new T.SpriteMaterial({map:glowTex,color:0xcfe0ff,blending:T.AdditiveBlending,depthWrite:false,fog:false,transparent:true,opacity:.9}));sp.position.set(p.x*.98,86,p.z*.98);sp.scale.set(80,80,1);scene.add(sp);towerGlows.push(sp);});
-const sbCanvas=document.createElement('canvas');sbCanvas.width=512;sbCanvas.height=192;
-const sbTex=new T.CanvasTexture(sbCanvas);
-function scoreboard(big,small){const g=sbCanvas.getContext('2d');g.fillStyle='#0a0916';g.fillRect(0,0,512,192);
-  g.strokeStyle='#ffe53b';g.lineWidth=6;g.strokeRect(5,5,502,182);
-  g.textAlign='center';g.textBaseline='middle';g.fillStyle='#ffb21e';g.font='italic 900 78px Arial Black,Arial';g.fillText(big,256,78,470);
-  g.fillStyle='#3ad6ff';g.font='900 34px Arial Black,Arial';g.fillText(small,256,148,470);sbTex.needsUpdate=true;}
+// The scoreboard: a big LED board above the batter's eye in centre field. Normally the line score (runs, inning, outs, count, who is up);
+// big moments take it over for a few seconds ('HOME RUN / 455 FT'), then the score comes back.
+const sbCanvas=document.createElement('canvas');sbCanvas.width=1024;sbCanvas.height=384;
+const sbTex=new T.CanvasTexture(sbCanvas),sbMat=new T.MeshBasicMaterial({map:sbTex,fog:false});
+let sbMsgT=0,sbSig='';
+function sbFrame(g){g.setTransform(1,0,0,1,0,0);g.fillStyle='#070916';g.fillRect(0,0,1024,384);
+  g.fillStyle='rgba(58,214,255,.05)';for(let y=0;y<384;y+=6)g.fillRect(0,y,1024,2);
+  g.strokeStyle='#ffe53b';g.lineWidth=8;g.strokeRect(6,6,1012,372);g.textBaseline='middle';}
+function scoreboard(big,small){const g=sbCanvas.getContext('2d');sbFrame(g);sbMsgT=-1;sbSig='';
+  g.textAlign='center';g.fillStyle='#ffb21e';g.font='italic 900 150px Arial Black,Arial';g.fillText(big,512,158,940);
+  g.fillStyle='#3ad6ff';g.font='900 70px Arial Black,Arial';g.fillText(small,512,296,940);sbTex.needsUpdate=true;}
+function sbDraw(force){
+  if(sbMsgT&&!force)return;
+  if(S.state==='title'||S.state==='over'||S.bi<0)return;
+  const b=curBatter(),sig=[S.runs,S.inning,S.outs,S.balls,S.strikes,b.name].join('|');
+  if(sig===sbSig&&!force)return;
+  sbSig=sig;const g=sbCanvas.getContext('2d');sbFrame(g);
+  g.textAlign='left';g.font='italic 900 96px Arial Black,Arial';g.fillStyle='#ffb21e';g.fillText('COMETS',44,92,430);
+  g.fillStyle='#8fa0c8';g.fillText('KRAKENS',44,200,430);
+  g.textAlign='right';g.fillStyle='#fff';g.font='900 110px Arial Black,Arial';g.fillText(String(S.runs),620,92);g.fillStyle='#8fa0c8';g.fillText('0',620,200);
+  g.fillStyle='#22284a';g.fillRect(660,34,4,220);
+  g.textAlign='center';g.fillStyle='#3ad6ff';g.font='900 44px Arial Black,Arial';g.fillText('INNING',840,62);
+  g.fillStyle='#fff';g.font='900 104px Arial Black,Arial';g.fillText(String(S.inning),840,140);
+  g.fillStyle='#3ad6ff';g.font='900 36px Arial Black,Arial';g.fillText('OUT',760,226);
+  for(let i=0;i<3;i++){g.beginPath();g.arc(830+i*48,226,17,0,7);g.fillStyle=i<S.outs?'#ff4d2e':'#22284a';g.fill();}
+  g.fillStyle='#22284a';g.fillRect(34,262,956,4);
+  g.textAlign='left';g.fillStyle='#ffe53b';g.font='italic 900 62px Arial Black,Arial';g.fillText('#'+b.num+' '+b.name,44,322,600);
+  g.textAlign='right';g.fillStyle='#fff';g.font='900 62px Arial Black,Arial';g.fillText(S.balls+' - '+S.strikes,980,322);
+  sbTex.needsUpdate=true;}
+function sbTick(){if(sbMsgT<0)sbMsgT=now+4.5;else if(sbMsgT&&now>sbMsgT&&S.state!=='title'&&S.state!=='over'){sbMsgT=0;sbDraw(true);}}
 {
-  const sb=new T.Mesh(new T.BoxGeometry(64,24,3),[0,1,2,3,4,5].map(i=>new T.MeshBasicMaterial(i===4?{map:sbTex,fog:false}:{color:0x15132a})));
-  sb.position.set(72,76,-196);sb.lookAt(0,30,0);scene.add(sb);
+  const sb=new T.Mesh(new T.BoxGeometry(48,18,2.5),[0,1,2,3,4,5].map(i=>i===4?sbMat:new T.MeshBasicMaterial({color:0x15132a})));
+  sb.position.set(0,31,-(fenceR(0)+17));sb.lookAt(0,14,0);scene.add(sb);
   const leg=new T.MeshBasicMaterial({color:0x15132a});
+  [-19,19].forEach(x=>{const m=new T.Mesh(new T.BoxGeometry(1.6,14,1.6),leg);m.position.set(x,16,-(fenceR(0)+18));scene.add(m);});
   scoreboard('MOONSHOT','MAYHEM');
 }
+// A ball off the batter's eye (a solar array) or the scoreboard shorts it out: the panel flickers, arcs crawl over it, sparks rain down.
+const ZAP={t:-9,p:new V3(),sb:false,bolts:[],glow:null,nb:0};
+{
+  const bm=new T.LineBasicMaterial({color:0xbfeaff,transparent:true,opacity:.95,fog:false,blending:T.AdditiveBlending,depthWrite:false});
+  for(let i=0;i<5;i++){const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(new Float32Array(9*3),3));const l=new T.Line(g,bm);l.visible=false;l.frustumCulled=false;scene.add(l);ZAP.bolts.push(l);}
+  ZAP.glow=new T.Sprite(new T.SpriteMaterial({map:glowTex,color:0x6fd0ff,blending:T.AdditiveBlending,depthWrite:false,transparent:true,fog:false}));ZAP.glow.visible=false;scene.add(ZAP.glow);
+}
+function zapStart(p,sb){ZAP.t=now;ZAP.p.copy(p);ZAP.sb=sb;ZAP.nb=0;SND.zap();setTimeout(()=>SND.zap(),160);setTimeout(()=>SND.zap(),420);}
+function zapTick(){
+  const e=now-ZAP.t,on=e>=0&&e<1.7;
+  if(!on){if(ZAP.glow.visible){ZAP.glow.visible=false;ZAP.bolts.forEach(l=>{l.visible=false;});if(EYE.mat)EYE.mat.color.setScalar(1);sbMat.color.setScalar(1);}return;}
+  const k=1-e/1.7,fl=Math.random();
+  if(EYE.mat&&!ZAP.sb)EYE.mat.color.setScalar(fl<.35*k?9:fl<.6?.25:1);
+  if(ZAP.sb||e<.9)sbMat.color.setScalar(fl<.3?.12:fl<.45*k?1.8:1);
+  ZAP.glow.visible=true;ZAP.glow.position.copy(ZAP.p);ZAP.glow.position.z+=.6;ZAP.glow.scale.setScalar((6+Math.random()*16)*k+2);
+  if(now>ZAP.nb){ZAP.nb=now+.05;
+    ZAP.bolts.forEach(l=>{l.visible=Math.random()<.5+.5*k;const a=l.geometry.attributes.position,an=Math.random()*PI*2,len=(4+Math.random()*10)*(.4+k);
+      for(let i=0;i<9;i++){const u=i/8,j=i&&i<8?1.1:0;a.setXYZ(i,ZAP.p.x+Math.cos(an)*len*u+rand(-j,j),ZAP.p.y+Math.sin(an)*len*u*.7+rand(-j,j),ZAP.p.z+.5+u*.4);}
+      a.needsUpdate=true;});
+    _p.copy(ZAP.p);_p.x+=rand(-6,6)*(1-k*.5);_p.y+=rand(-3,3);_p.z+=.6;burst(fxL,_p,5,7,.6,[.6,.85,1],9,1);}}
+
 
 // ───────────────────────── ballplayers (sculpted lathe limbs, painted textures)
 const lathe=(pts,seg=12)=>new T.LatheGeometry(pts.map(p=>new T.Vector2(p[0],p[1])),seg);
@@ -1248,7 +1294,7 @@ const SFX={},SFX_FILES=['crowd','cheer','cheer_big','strike','ball','swing1','sw
 function loadSfx(noiseSrc){SFX_FILES.forEach(n=>fetch('sfx/'+n+'.mp3').then(r=>r.ok?r.arrayBuffer():Promise.reject()).then(b=>new Promise((res,rej)=>AC.decodeAudioData(b,res,rej))).then(buf=>{SFX[n]=buf;
   if(n==='crowd'){ // real stadium ambience takes over from the filtered noise
     const s=AC.createBufferSource();s.buffer=buf;s.loop=true;s.loopStart=.06;s.loopEnd=buf.duration-.06;s.connect(crowdGain);
-    const t=AC.currentTime;crowdReal=true;crowdBase=.3;crowdGain.gain.cancelScheduledValues(t);crowdGain.gain.setValueAtTime(crowdBase,t);s.start(t,.06);try{noiseSrc.stop();}catch(e){}}
+    const t=AC.currentTime;crowdReal=true;crowdBase=.4;crowdGain.gain.cancelScheduledValues(t);crowdGain.gain.setValueAtTime(crowdBase,t);s.start(t,.06);try{noiseSrc.stop();}catch(e){}}
 }).catch(()=>{}));}
 function sfx(name,vol=1,rate=1){const b=SFX[name];if(!AC||!b)return false;const s=AC.createBufferSource(),g=AC.createGain();s.buffer=b;s.playbackRate.value=rate;g.gain.value=vol;s.connect(g);g.connect(master);s.start();return true;}
 // Phones: sound may only start from a tap, the context can be suspended or interrupted (calls, switching apps), and on iPhone
@@ -1294,9 +1340,23 @@ function roarOff(){
   if(!roarG)return;
   const t=AC.currentTime,g=roarG.gain,ss=roarS;roarG=null;roarS=[];
   g.cancelScheduledValues(t);g.setValueAtTime(g.value,t);g.linearRampToValueAtTime(0,t+1.8);ss.forEach(x=>{try{x.stop(t+1.9);}catch(e){}});}
+// a piece of a recording: random start point and speed, faded in and out, so the same cheer never sounds the same twice
+function sfxSlice(name,vol,rate,off,dur){const b=SFX[name];if(!AC||!b)return false;
+  const t=AC.currentTime,src=AC.createBufferSource(),g=AC.createGain();src.buffer=b;src.playbackRate.value=rate;off=Math.min(off,Math.max(0,b.duration-dur*rate-.05));
+  g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol,t+.12);g.gain.setValueAtTime(vol,t+Math.max(.15,dur-.7));g.gain.linearRampToValueAtTime(0,t+dur);
+  src.connect(g);g.connect(master);src.start(t,off,dur*rate+.05);return true;}
+// the crowd never sits still: the bed swells and settles on its own, with the odd whoop, between everything else
+let cheerBusy=0,crowdNext=0;
+function crowdTick(dt){
+  if(!AC||!crowdReal||roarG||S.state==='title'||S.state==='over')return;
+  const t=AC.currentTime;if(t<crowdNext)return;
+  crowdNext=t+rand(2.2,5);
+  if(t>cheerBusy){const g=crowdGain.gain;g.cancelScheduledValues(t);g.setTargetAtTime(crowdBase*rand(.9,1.45),t,.5);g.setTargetAtTime(crowdBase,t+1.4,.8);
+    if(Math.random()<.4)sfxSlice(Math.random()<.7?'cheer':'cheer_big',rand(.1,.2),rand(.88,1.14),rand(.3,2.4),rand(1.3,2.2));}}
 function cheer(level,dur){if(!AC)return;const t=AC.currentTime,g=crowdGain.gain;
   if(crowdReal){ // the ambience swells a little; the reaction itself is a recorded cheer on top
-    if(roarG){}else if(level>=.4)sfx('cheer_big',.95);else if(level>=.2)sfx('cheer',.5+level);
+    if(roarG){}else if(level>=.4){sfxSlice('cheer_big',.95,rand(.95,1.06),rand(0,.4),3.4);cheerBusy=t+3;}
+    else if(level>=.2&&t>cheerBusy-1.2){sfxSlice('cheer',.45+level,rand(.9,1.12),rand(0,1.6),rand(2.4,3.2));cheerBusy=t+2.6;}
     level=crowdBase*clamp(Math.sqrt(level/.05),.6,2.2);}
   g.cancelScheduledValues(t);g.setValueAtTime(g.value,t);g.linearRampToValueAtTime(level,t+.25);g.setTargetAtTime(crowdBase,t+dur,.9);}
 const SND={
@@ -1444,7 +1504,7 @@ function overCheck(){if(S.over||S.juice<.95||S.state==='title'||S.state==='over'
  SND.zap();buzz([30,40,30,40,80]);
   setTimeout(()=>{if(S.over&&!S.overOn)pop('OVERDRIVE READY!','','cool',true);},900);}
 let hudLater=false,ctlHidden=false,jPend=false;
-function hud(){overCheck();hudLater=false;if(S.cardBi>=0)cardStats(LINEUP[S.cardBi%LINEUP.length]);
+function hud(){sbDraw();overCheck();hudLater=false;if(S.cardBi>=0)cardStats(LINEUP[S.cardBi%LINEUP.length]);
   $('runs').textContent=S.runs;$('inn').textContent=['1ST','2ND','3RD'][Math.min(S.inning,3)-1];$('count').textContent=S.balls+'-'+S.strikes;
   $('outs').textContent='O: '+S.outs;
   ['b1','b2','b3'].forEach((id,i)=>$(id).classList.toggle('on',!!S.bases[i]));
@@ -2731,7 +2791,7 @@ function step(dt){
     else if(!tr.hr&&tr.land&&tr.land.t>.45&&tf<tr.land.t){ // fly balls and liners (not home runs): a ring on the grass that tightens as the ball comes down
       const k=1-tf/tr.land.t;landRing.visible=true;landRing.position.set(tr.land.x,.07,tr.land.z);landRing.scale.setScalar(lerp(1.4,5,k));landRing.material.opacity=.55+.4*(1-k);}
     if(tr.poleT&&!flight.poleHit&&tf>=tr.poleT){flight.poleHit=true;burst(fxL,ball.position,16,7,.5,[1,.9,.3],5,1);tone('sine',1250,900,.5,.6);tone('triangle',2500,1800,.4,.3);pop('OFF THE POLE!','FAIR BALL','hot');} // doink
-    if(tr.eyeT&&!flight.orbit&&!flight.eyeHit&&tf>=tr.eyeT){flight.eyeHit=true;burst(fxL,ball.position,14,6,.5,[.6,.9,.6],5,1);SND.mitt();tone('sine',120,50,.25,.5);} // thud off the batter's eye
+    if(tr.eyeT&&!flight.orbit&&!flight.eyeHit&&tf>=tr.eyeT){flight.eyeHit=true;zapStart(ball.position,false);burst(fxL,ball.position,26,9,.7,[.6,.85,1],7,1);SND.mitt();tone('sine',120,50,.25,.5);} // thud off the batter's eye
     if(tr.land&&!flight.orbit&&!flight.landed&&tf>=tr.land.t){flight.landed=true;_p.set(tr.land.x,.05,tr.land.z);burst(fxL,_p,10,3,.5,[.75,.6,.42],4,2);} // dust where it comes down, so fair or foul is clear
     const dc=camera.position.distanceTo(ball.position);ball.scale.setScalar(Math.max(1,dc*.05));
     ballShadow.visible=!flight.orbit;ballShadow.position.set(p.x,.03,p.z);ballShadow.scale.setScalar(.2+Math.min(1.2,p.y*.03));
@@ -2757,7 +2817,8 @@ function step(dt){
   ptarget.visible=pring.visible;if(pring.visible)ptarget.position.copy(pring.position);
   // reticle
   const b=S.bi>=0?curBatter():LINEUP[0],tb=(S.over&&S.overOn)||(!S.over&&juiceOn()&&S.juice>=.25);
-  stickHint();
+  stickHint();sbTick();zapTick();crowdTick(dt);
+  if(flight&&flight.play.type==='hr'&&!flight.sbHit&&!flight.orbit&&ball.visible&&Math.abs(ball.position.x)<24&&ball.position.y>22&&ball.position.y<40&&ball.position.z<-(fenceR(0)+15)&&ball.position.z>-(fenceR(0)+24)){flight.sbHit=true;zapStart(ball.position,true);burst(fxL,ball.position,26,9,.7,[.6,.85,1],7,1);}
   reticle.position.set(aim.x,aim.y,0);
   {const ez=easyAB()?1.3:1;retC.scale.setScalar(.17*b.con*1.25*(tb?1.2:1)*ez);retP.scale.setScalar(.17*b.con*(tb?.8:.63)*(tb?1.2:1)*ez);}
   let showRet=(S.state==='ready'||S.state==='windup'||S.state==='pitch')&&!(swing&&swing.done);
@@ -2856,7 +2917,7 @@ const LITE=matchMedia('(pointer:coarse)').matches;
 if(LITE){QS=.85;rim.shadow.mapSize.set(512,512);renderer.shadowMap.type=T.PCFShadowMap;}else initPost();
 resize();hud();
 const DBG={pcut:false,fl:'',rob:false,pc:false,staunt:false,pod:false,trail:false,orbit:false,pdef:false,dbl:false,cam:false,admire:'',trip:false,fist:false,pop:false,loser:false}; // test hook: pin the camera to CAM_HOME/CAM_LOOK
-window.__mm={renderer,scene,LODM,camera,S,aim,MX,DBG,landRingOn:()=>landRing.visible,hud,tutAnim,draw:()=>draw(),endGame,TROT,SFX,RUN,ballPos:()=>ball.position,ballVisible:()=>ball.visible,fielders,toReady,CAM_HOME,CAM_LOOK,now:()=>now,simulate,judge,get pitch(){return pitch;},get flight(){return flight;},lastSwing:()=>{const t=swing&&swing.type;swing=null;return t;},lastSwingTurbo:()=>!!(swing&&swing.turbo),doSwing,newGame,V3,
+window.__mm={renderer,scene,LODM,camera,zapStart,S,aim,MX,DBG,landRingOn:()=>landRing.visible,hud,tutAnim,draw:()=>draw(),endGame,TROT,SFX,RUN,ballPos:()=>ball.position,ballVisible:()=>ball.visible,fielders,toReady,CAM_HOME,CAM_LOOK,now:()=>now,simulate,judge,get pitch(){return pitch;},get flight(){return flight;},lastSwing:()=>{const t=swing&&swing.type;swing=null;return t;},lastSwingTurbo:()=>!!(swing&&swing.turbo),doSwing,newGame,V3,
   sim:(dt)=>{hitstop=0;now+=dt;step(dt);},
   step:(n,dt=1/60)=>{for(let i=0;i<n;i++){if(hitstop>0)hitstop=0;now+=dt;step(dt);}updateCamera(dt);draw();}};
 if(!window.__mmManual)requestAnimationFrame(frame);
