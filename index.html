@@ -238,9 +238,17 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 #tbar .dim{opacity:.22}
 #tbar em{position:absolute;left:0;right:0;top:calc(100% + 5px);text-align:center;font-family:var(--display);font-style:italic;font-weight:400;font-size:14px;letter-spacing:.05em;color:var(--volt);text-shadow:0 2px 0 #000,0 0 5px #000;white-space:nowrap} /* the pitch this timing was against */
 #tbar .trk i.mk{top:-4px;bottom:-4px;width:5px;margin-left:-2.5px;border-radius:2.5px;background:#fff;border:1.5px solid #000;box-sizing:content-box}
+/* the target: a fixed green hash at dead centre. Line your marker up with it for PERFECT. */
+#tbar .trk i.tg,#tut .tgz .trk i.tg{left:50%;top:-7px;bottom:-7px;width:3px;margin-left:-1.5px;border-radius:1.5px;background:#39ff6a;box-shadow:0 0 6px 1px rgba(57,255,106,.9),0 0 0 1px rgba(0,0,0,.7)}
+#tbar .trk i.tg::before,#tut .tgz .trk i.tg::before{content:'';position:absolute;left:50%;top:-6px;margin-left:-5px;border:5px solid transparent;border-top-color:#39ff6a;filter:drop-shadow(0 1px 0 #000)}
 /* PERFECT: the marker is a rocket lifting off the bar */
 #tbar .trk i.mk.pf{background:none!important;border-color:transparent}
 #tbar .trk i.mk.pf::after{content:'🚀';position:absolute;left:50%;top:50%;font-size:26px;line-height:1;font-style:normal;filter:drop-shadow(0 2px 0 rgba(0,0,0,.8)) drop-shadow(0 0 8px rgba(255,229,59,.9));animation:mkRocket 1.5s cubic-bezier(.2,1.5,.4,1) both}
+/* an Overdrive home run: the rocket burns blue */
+#tbar .trk i.mk.pf.od::after{filter:drop-shadow(0 2px 0 rgba(0,0,0,.8)) drop-shadow(0 0 10px #3ad6ff) drop-shadow(0 0 4px #9be8ff);font-size:30px}
+#tbar .trk i.mk.pf.od::before{content:'';position:absolute;left:50%;top:50%;width:16px;height:34px;margin-left:-8px;border-radius:50% 50% 50% 50%/30% 30% 70% 70%;background:radial-gradient(ellipse at 50% 20%,#f2fdff 0,#7fe0ff 30%,#1e7bff 62%,rgba(30,90,255,0) 80%);filter:blur(1px);animation:mkFlame 1.5s cubic-bezier(.2,1.5,.4,1) both,mkFlick .12s steps(2) infinite}
+@keyframes mkFlame{0%{transform:translateY(0) scale(.2);opacity:0}18%{opacity:1;transform:translateY(2px) scale(1.2)}100%{transform:translateY(-12px) scale(1);opacity:.95}}
+@keyframes mkFlick{from{width:16px}to{width:12px;margin-left:-6px}}
 @keyframes mkRocket{0%{transform:translate(-50%,-30%) rotate(-45deg) scale(.2)}18%{transform:translate(-50%,-55%) rotate(-45deg) scale(1.45)}32%{transform:translate(-50%,-55%) rotate(-45deg) scale(1)}100%{transform:translate(-50%,-110%) rotate(-45deg) scale(1.05)}}
 #tbar.go{animation:tim 1.7s ease-out both}#hud.mob #tbar{top:calc(41% + 32px);margin-left:-130px;width:260px}#hud.wk #tbar{visibility:hidden}
 @keyframes tim{0%{opacity:0;transform:translateY(8px)}15%,70%{opacity:1;transform:none}100%{opacity:0}}
@@ -543,7 +551,7 @@ body.mob #tip{display:block}body.mob .how{display:none}
       <div class="tz pcz"><b><span style="color:#3ddc6a">GREEN = CONTACT</span> · <span style="color:#ff6a4a">RED = POWER</span></b>Each swing has its own contact zone<small>Move your ring onto the ball. Ball in the green: CONTACT. Ball in the red core: POWER. Closer to the middle = better contact.</small></div>
       <div class="tz lbl lc" id="tlc">CONTACT ZONE<span>▼</span></div><div class="tz lbl lp" id="tlp">POWER ZONE<span>▼</span></div>
       <div class="tz tmz"><b>YELLOW RING = TIMING</b>It shrinks onto a white circle the size of the ball<small>Ring still bigger than the ball: too early. Ring meets the circle and turns <span style="color:#39ff6a">green</span>: swing!</small></div>
-      <div class="tz tgz" id="tutg"><span>EARLY</span><div class="trk"><i class="gc"></i><i class="gp"></i><i class="mk"></i></div><span>LATE</span><em>PERFECT!</em></div>
+      <div class="tz tgz" id="tutg"><span>EARLY</span><div class="trk"><i class="gc"></i><i class="gp"></i><i class="tg"></i><i class="mk"></i></div><span>LATE</span><em>PERFECT!</em></div>
       <div class="tz swz"><b>RIGHT THUMB: SWING</b>Tap a button the moment the ring turns green<small>CONTACT is easier and hits line drives. POWER is harder and hits moonshots.</small></div>
       <div class="tz jcz"><b>JUICE: MONSTER SWING</b>Tap JUICE and POWER catches fire. Costs one quarter<small>Every hit and every walk adds a quarter back. Fill all four for Overdrive.</small></div>
       <div class="tz ovz"><b>SAVE YOUR JUICE = OVERDRIVE</b>Don't spend it and the bar keeps building<small>Every hit adds a quarter. Fill all four and the bar catches fire: Overdrive is ready.</small></div>
@@ -555,7 +563,7 @@ body.mob #tip{display:block}body.mob .how{display:none}
     <div id="shout" aria-hidden="true"></div>
     <div id="surge" aria-hidden="true"></div>
     <div id="tim"></div>
-    <div id="tbar" aria-hidden="true"><span>EARLY</span><div class="trk"><i class="jx" id="tjx"></i><i class="gc" id="tgc"></i><i class="gp" id="tgp"></i><i class="mk" id="tmk"></i></div><span>LATE</span><em id="tpt"></em></div>
+    <div id="tbar" aria-hidden="true"><span>EARLY</span><div class="trk"><i class="jx" id="tjx"></i><i class="gc" id="tgc"></i><i class="gp" id="tgp"></i><i class="tg"></i><i class="mk" id="tmk"></i></div><span>LATE</span><em id="tpt"></em></div>
     <div id="fps" hidden></div>
     <div id="duelv" aria-hidden="true"></div>
     <div id="odv" aria-hidden="true"><i class="b"></i><i class="t"></i><i class="l"></i><i class="r"></i></div>
@@ -1490,7 +1498,7 @@ const SND={
   crack(q,power){noise(.07,'bandpass',2400,900,.9*q+.3,1.2);tone('triangle',1100,260,.06,.5*q+.2);tone('square',520,140,.04,.12);
     if(power&&q>.6){tone('sine',150,38,.5,.9*q);noise(.35,'lowpass',900,120,.5*q);}},
   whoosh(){if(!sfx('swing'+(1+(Math.random()*4|0)),.8,rand(.94,1.08)))noise(.2,'bandpass',300,1900,.35,1.5);},
-  pitch(){if(!sfx('swing'+(1+(Math.random()*4|0)),.5,rand(1.15,1.35)))noise(.16,'bandpass',500,2400,.22,1.5);}, // the ball leaving the pitcher's hand: same whoosh for every pitch, so it gives nothing away
+  pitch(){noise(.06,'bandpass',800,2600,.3,1.4);tone('triangle',420,300,.04,.08);}, // the ball leaving the hand: one short snap, identical for every pitch. It used to be a long whoosh, and on slow pitches the whoosh ended well before the ball arrived, which read as 'it's there' too early
   playball(n=6){if(sfx('playball',.95))return;if(n>0)setTimeout(()=>SND.playball(n-1),250);else SND.organ();}, // the umpire's call; waits briefly for the file on the first game, falls back to the jingle
   mitt(k){if(sfx('catch',k==null?.85:lerp(.6,1,k),k==null?rand(.95,1.05):lerp(.86,1.08,k)))return; // recorded glove pop; pitches play it louder and brighter the faster they are
     if(k==null){noise(.06,'lowpass',1400,300,.7);tone('sine',190,90,.09,.5);return;}
@@ -2086,6 +2094,7 @@ function tryContact(){flight_pop=false;
     if(kind){flight.admire=kind;flight.trot=WALK.on&&RUN.list.length>0;flight.A=Math.max(1.2,Math.min(kind==='show'&&!flight.trot?3.9:2.5,play.endT-1.3));pop(['NO DOUBT!','SEE YA!','FORGET IT!'][(Math.random()*3)|0],'',tb?'hot':'');}}
   if(!flight.admire&&q>.82&&pw&&play.type!=='foul')pop(['CRUSHED!','SMOKED!','TATTOOED!','OBLITERATED!'][(Math.random()*4)|0],'',tb?'hot':'');
   if(play.type!=='foul'&&(tb||(S.over&&S.overOn)||(play.type==='hr'&&play.dist*3.281>=420)))sfx('crush',1);
+  if(play.type==='hr'&&S.over&&S.overOn){const k=$('tmk');k.classList.add('pf','od');}else $('tmk').classList.remove('od'); // an Overdrive homer always gets the rocket, burning blue
   {const od=tb||(S.over&&S.overOn),ft=play.dist*3.281,on=S.bases.filter(Boolean).length,top=play.type==='hr'&&(flight.orbit||on===3||ft>=500||(S.over&&S.overOn&&ft>=450)||(S.inning===3&&S.runs<=S.opp&&S.runs+on+1>S.opp));
     if(play.type==='hr'){const runs=1+S.bases.filter(Boolean).length; // how hard the place erupts once it clears the fence: more for every run it drives in, for Overdrive, and for the long ones
       flight.roarL=Math.min(1.5,.9+.14*(runs-1)+(od?.2:0)+(play.dist*3.281>=480?.1:0));}
