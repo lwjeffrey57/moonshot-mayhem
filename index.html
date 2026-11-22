@@ -1365,10 +1365,10 @@ let AC=null,master=null,crowdGain=null,noiseBuf=null,crowdBase=.05,crowdReal=fal
 const SFX={},SFX_FILES=['crowd','cheer','cheer_big','strike','ball','swing1','swing2','swing3','swing4','playball','ball2','ball3','ball4','strike2','out','catch','crush','boo1','boo2','boo3','pop_max'];
 function loadSfx(noiseSrc){SFX_FILES.forEach(n=>fetch('sfx/'+n+'.mp3').then(r=>r.ok?r.arrayBuffer():Promise.reject()).then(b=>new Promise((res,rej)=>AC.decodeAudioData(b,res,rej))).then(buf=>{SFX[n]=buf;
   if(n==='crowd'){ // real stadium ambience takes over from the filtered noise
-    // the bed is a short, even stretch of crowd with nothing in it you could pick out (no single voices), looped seamlessly; two copies at
-    // slightly different speeds overlap so the pattern never audibly comes round again
+    // the bed is 65 seconds of even ballpark crowd with the identifiable moments (claps, cracks, surges, single voices) cut out, looped
+    // seamlessly; two copies at slightly different speeds overlap so the pattern never audibly comes round again
     const t=AC.currentTime,mix=AC.createGain();mix.gain.value=.78;mix.connect(crowdGain);
-    [[1,.3],[.93,3.3]].forEach(o=>{const src=AC.createBufferSource();src.buffer=buf;src.loop=true;src.loopStart=.3;src.loopEnd=6.4;src.playbackRate.value=o[0];src.connect(mix);src.start(t,o[1]);});
+    [[1,.3],[.93,33]].forEach(o=>{const src=AC.createBufferSource();src.buffer=buf;src.loop=true;src.loopStart=.3;src.loopEnd=65.3;src.playbackRate.value=o[0];src.connect(mix);src.start(t,o[1]);});
     crowdReal=true;crowdBase=.4;crowdGain.gain.cancelScheduledValues(t);crowdGain.gain.setValueAtTime(crowdBase,t);try{noiseSrc.stop();}catch(e){}}
 }).catch(()=>{}));}
 function sfx(name,vol=1,rate=1){const b=SFX[name];if(!AC||!b)return false;const s=AC.createBufferSource(),g=AC.createGain();s.buffer=b;s.playbackRate.value=rate;g.gain.value=vol;s.connect(g);g.connect(master);s.start();return true;}
@@ -1594,9 +1594,9 @@ $('tut').addEventListener('pointerdown',e=>{e.preventDefault();const id=e.target
 // Timing meter. x is real time and everything is to scale. A coloured band is the whole window in which that swing can touch the ball
 // (green = CONTACT, the narrower red = POWER), brightest in the middle where timing is best and fading toward the edges; a Juice swing adds
 // gold to both ends of the one you used. A marker in the black means the swing was too early or too late to make contact at all.
-function timeBar(x,pw,jt,perfect,sk=1){const e=$('tbar');e.className='';$('tpt').textContent=pitch?(pitch.P.sp?'JUICE PITCH · ':'')+pitch.P.n+' · '+pitchMph(pitch.dur)+' MPH':'';const SPAN=2.05,band=(el,half)=>{el.style.left=(50-half)+'%';el.style.width=(half*2)+'%';},hc=1.4/SPAN*50*sk,hp=hc*.85/1.2,used=(pw?hp:hc)*jt;
+function timeBar(x,pw,jt,perfect,sk=1,rocket=false){const e=$('tbar');e.className='';$('tpt').textContent=pitch?(pitch.P.sp?'JUICE PITCH · ':'')+pitch.P.n+' · '+pitchMph(pitch.dur)+' MPH':'';const SPAN=2.05,band=(el,half)=>{el.style.left=(50-half)+'%';el.style.width=(half*2)+'%';},hc=1.4/SPAN*50*sk,hp=hc*.85/1.2,used=(pw?hp:hc)*jt;
   band($('tgc'),hc);band($('tgp'),hp);band($('tjx'),jt>1?used:0);$('tgc').classList.toggle('dim',!!pw);$('tgp').classList.toggle('dim',!pw);
-  const mx=clamp(x/SPAN,-1,1)*50,miss=Math.abs(mx)>used;$('tmk').style.left=(50+mx)+'%';$('tmk').style.background=perfect?'#ffe53b':miss?'#ff4d2e':'#fff';$('tmk').classList.toggle('pf',!!perfect);void e.offsetWidth;e.className='go';}
+  const mx=clamp(x/SPAN,-1,1)*50,miss=Math.abs(mx)>used;$('tmk').style.left=(50+mx)+'%';$('tmk').style.background=perfect?'#ffe53b':miss?'#ff4d2e':'#fff';$('tmk').classList.toggle('pf',!!rocket);void e.offsetWidth;e.className='go';}
 function timing(t,c,l){const e=$('tim');e.className='';e.textContent=t;e.style.color=c;e.dataset.l=l||2;void e.offsetWidth;e.className='go';}
 function flash(a){const e=$('flash');e.style.transition='none';e.style.opacity=a*FX;void e.offsetWidth;e.style.transition='opacity .35s';e.style.opacity=0;}
 // OVERDRIVE: fill the Juice meter all the way and it is charged. The meter burns and reads OVERDRIVE READY and the JUICE button becomes the
@@ -1992,6 +1992,8 @@ function tryContact(){flight_pop=false;
     timing(Math.abs(n)>1.4?(n<0?'WAY EARLY':'WAY LATE'):'BALL OUTSIDE THE '+(pw?'RED CORE':'GREEN RING'),pw?'#ff8a70':'#7dffa0');return;}
   const tipped=d>R;
   const qT=Math.max(0,1-.75*Math.pow(Math.abs(n),1.6)),qA=tipped?.15:1-.6*(d/R)*(d/R);let q=qT*qA*(1-.8*chase);
+  $('tmk').classList.toggle('pf',Math.abs(n)<.22&&cr<.3&&chase<=.3&&q>.8); // the rocket is for perfect-perfect only: on time, squared up, and smoked
+ 
   const gs=()=>(Math.random()+Math.random()+Math.random()-1.5)/1.5; // bell-ish, ±1
   // launch: where the barrel met the ball, pitch height, and how square it was
   let la=(pw?25:11)+clamp((pitch.ty-aim.y)/R,-1.3,1.3)*28+(pitch.ty-.82)/.33*5+gs()*(pw?16:12);la=clamp(la,-20,62);
