@@ -244,12 +244,13 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 #tbar .trk i.tg::before,#tut .tgz .trk i.tg::before{content:'';position:absolute;left:50%;top:-6px;margin-left:-5px;border:5px solid transparent;border-top-color:#39ff6a;filter:drop-shadow(0 1px 0 #000)}
 /* the ball, with a mark where the barrel met it (dead centre = squared up) */
 #tbar em{display:flex;align-items:center;justify-content:center;gap:8px}
-#tcb{position:relative;flex:none;width:31px;height:31px;border-radius:50%;background:radial-gradient(circle at 38% 32%,#fff 0,#f1eee2 60%,#cfcbbb 100%);border:1.5px solid #000;box-shadow:0 1px 0 #000;overflow:hidden}
+#tcb{position:relative;flex:none;width:31px;height:31px;margin:0 6px}
 #tcb[hidden]{display:none}
-#tcb::before,#tcb::after{content:'';position:absolute;top:-4px;bottom:-4px;width:23px;border:2px solid #c8281e;border-radius:50%}
-#tcb::before{left:-17px}#tcb::after{right:-17px}
-#tcb b{position:absolute;width:11px;height:11px;margin:-5.5px 0 0 -5.5px;border-radius:50%;background:#ff8a1e;border:1.5px solid #000;z-index:1}
-#tcb b.sq{background:#39ff6a;box-shadow:0 0 7px 2px #39ff6a}
+#tcb::before{content:'';position:absolute;inset:0;border-radius:50%;border:1.5px solid #000;box-shadow:0 1px 0 #000;
+  background:radial-gradient(circle at -38% 50%,rgba(200,40,30,0) 55%,#c8281e 56%,#c8281e 62%,rgba(200,40,30,0) 63%),radial-gradient(circle at 138% 50%,rgba(200,40,30,0) 55%,#c8281e 56%,#c8281e 62%,rgba(200,40,30,0) 63%),radial-gradient(circle at 38% 32%,#fff 0,#f1eee2 60%,#cfcbbb 100%)}
+/* the barrel, laid across the ball where it actually met it: low on the ball = got under it, high = topped it, off to a side = end of the bat or in on the hands */
+#tcb b{position:absolute;width:30px;height:10px;border-radius:5px;background:linear-gradient(#f0d49a,#c2924c 60%,#9a6f33);border:1.5px solid #000;transform:translate(-50%,-50%) rotate(-9deg);box-shadow:0 1px 0 rgba(0,0,0,.6);z-index:1}
+#tcb b.sq{box-shadow:0 0 0 1.5px #39ff6a,0 0 8px 2px #39ff6a}
 /* your swing: the marker carries a caret underneath, pointing up at it, so it can't be mistaken for the green target (whose arrow sits on top) */
 #tbar .trk i.mk:not(.pf)::before{content:'';position:absolute;left:50%;bottom:-13px;margin-left:-6px;border:6px solid transparent;border-bottom-color:var(--mc,#fff);filter:drop-shadow(0 1px 0 #000) drop-shadow(0 -1px 0 #000)}
 /* PERFECT: the marker is a rocket lifting off the bar */
@@ -2088,7 +2089,7 @@ function tryContact(){flight_pop=false;
   const tipped=d>R;
   const qT=Math.max(0,1-.75*Math.pow(Math.abs(n),1.6)),qA=tipped?.15:1-.6*(d/R)*(d/R);let q=qT*qA*(1-.8*chase);
   $('tmk').classList.toggle('pf',Math.abs(n)<.22&&cr<.3&&chase<=.3&&q>.8);
-  {const k=Math.min(1,1/Math.max(1e-6,cr)),dx=(pitch.tx-aim.x)/R*k,dy=cu*k,m=$('tcb').firstChild;$('tcb').hidden=false;m.style.left=(50-dx*36)+'%';m.style.top=(50+dy*36)+'%';m.className=cr<.3?'sq':'';} // where the barrel met the ball: under it, on top of it, off the end, in on the hands // the rocket is for perfect-perfect only: on time, squared up, and smoked
+  {const k=Math.min(1,1/Math.max(1e-6,cr)),dx=(pitch.tx-aim.x)/R*k,dy=cu*k,m=$('tcb').firstChild;$('tcb').hidden=false;m.style.left=(50-dx*42)+'%';m.style.top=(50+dy*42)+'%';m.className=cr<.3?'sq':'';} // where the barrel met the ball: under it, on top of it, off the end, in on the hands // the rocket is for perfect-perfect only: on time, squared up, and smoked
  
   const gs=()=>(Math.random()+Math.random()+Math.random()-1.5)/1.5; // bell-ish, ±1
   // launch: where the barrel met the ball, pitch height, and how square it was
