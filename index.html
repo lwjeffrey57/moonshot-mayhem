@@ -439,17 +439,21 @@ body.mob #tip{display:block}body.mob .how{display:none}
 /* Overdrive is on: blue fire licks in from every edge of the screen and the whole frame pulses */
 #apad.hint{box-shadow:0 0 0 3px rgba(255,229,59,.9),0 0 22px 6px rgba(255,229,59,.55);animation:padHint 1s ease-in-out infinite alternate}
 @keyframes padHint{to{box-shadow:0 0 0 3px rgba(255,229,59,.5),0 0 10px 2px rgba(255,229,59,.25)}}
-#odv{inset:0;z-index:2;opacity:0;transition:opacity .35s;overflow:hidden;box-shadow:inset 0 0 30px 3px rgba(60,160,255,.8);background:radial-gradient(ellipse at 50% 52%,rgba(10,30,110,0) 36%,rgba(6,16,70,.4) 72%,rgba(3,8,44,.78) 100%);animation:odvP .6s ease-in-out infinite alternate}
+#odv{inset:0;z-index:2;opacity:0;transition:opacity .35s;overflow:hidden;box-shadow:inset 0 0 30px 3px rgba(60,160,255,.8);background:radial-gradient(ellipse at 50% 52%,rgba(10,30,110,0) 30%,rgba(6,16,70,.5) 62%,rgba(2,6,34,.92) 100%);animation:odvP .6s ease-in-out infinite alternate}
 #hud.odon #odv::after{content:'';position:absolute;inset:0;background:#cfeaff;opacity:0;animation:odvX .55s ease-out}
 @keyframes odvX{from{opacity:.85}to{opacity:0}}
 #hud.odon #odv{opacity:1}
 /* tunnel vision: dark comic-book speed lines streaking in from the edges toward the strike zone, fading out before they reach it */
-#odv::before{content:'';position:absolute;inset:-25%;pointer-events:none;
-  background:repeating-conic-gradient(from 3deg at 50% 53%,rgba(0,0,14,0) 0deg 3.4deg,rgba(0,0,14,.62) 3.4deg 4.3deg,rgba(0,0,14,0) 4.3deg 8.6deg,rgba(0,0,14,.42) 8.6deg 9.1deg,rgba(0,0,14,0) 9.1deg 13deg,rgba(0,0,14,.7) 13deg 14.4deg,rgba(0,0,14,0) 14.4deg 19deg);
-  -webkit-mask-image:radial-gradient(ellipse 50% 50% at 50% 53%,rgba(0,0,0,0) 34%,rgba(0,0,0,.5) 52%,#000 74%);mask-image:radial-gradient(ellipse 50% 50% at 50% 53%,rgba(0,0,0,0) 34%,rgba(0,0,0,.5) 52%,#000 74%);
-  animation:odvL .9s steps(3) infinite}
-@keyframes odvL{0%{transform:rotate(0deg) scale(1)}33%{transform:rotate(1.4deg) scale(1.03)}66%{transform:rotate(-1deg) scale(1.01)}100%{transform:rotate(0deg) scale(1)}}
-@media (prefers-reduced-motion:reduce){#odv::before{animation:none}}
+#odv::before,#odp::before{content:'';position:absolute;inset:-25%;pointer-events:none;
+  background:repeating-conic-gradient(from 3deg at 50% 53%,rgba(0,0,14,0) 0deg 2.6deg,rgba(0,0,14,.78) 2.6deg 3.7deg,rgba(0,0,14,0) 3.7deg 6.8deg,rgba(0,0,14,.55) 6.8deg 7.4deg,rgba(0,0,14,0) 7.4deg 10.6deg,rgba(0,0,14,.85) 10.6deg 12.3deg,rgba(0,0,14,0) 12.3deg 15deg);
+  -webkit-mask-image:radial-gradient(ellipse 50% 50% at 50% 53%,rgba(0,0,0,0) 27%,rgba(0,0,0,.55) 44%,#000 68%);mask-image:radial-gradient(ellipse 50% 50% at 50% 53%,rgba(0,0,0,0) 27%,rgba(0,0,0,.55) 44%,#000 68%);
+  animation:odvL .82s cubic-bezier(.2,.9,.3,1) infinite}
+/* the lines surge inward on every heartbeat */
+@keyframes odvL{0%{transform:rotate(0deg) scale(1.1)}10%{transform:rotate(.6deg) scale(1)}24%{transform:rotate(.6deg) scale(1.05)}34%{transform:rotate(-.5deg) scale(1)}100%{transform:rotate(0deg) scale(1.1)}}
+#odp::before{background:repeating-conic-gradient(from 9deg at 50% 53%,rgba(26,0,0,0) 0deg 3deg,rgba(26,0,0,.72) 3deg 4.2deg,rgba(26,0,0,0) 4.2deg 8deg,rgba(26,0,0,.5) 8deg 8.7deg,rgba(26,0,0,0) 8.7deg 12deg,rgba(26,0,0,.8) 12deg 13.6deg,rgba(26,0,0,0) 13.6deg 17deg);animation-duration:.62s}
+#hud.pod #odp{background:radial-gradient(ellipse at 50% 52%,rgba(90,10,0,0) 32%,rgba(60,6,0,.42) 64%,rgba(30,2,0,.85) 100%)}
+#hud.pod.odon #odp{background:none}
+@media (prefers-reduced-motion:reduce){#odv::before,#odp::before{animation:none}}
 /* the pitcher's Overdrive: the same thin flame border, in red. In a duel both burn at once, the red one set just inside the blue. */
 #odp{position:absolute;inset:0;z-index:2;opacity:0;transition:opacity .35s;overflow:hidden;pointer-events:none;box-shadow:inset 0 0 30px 3px rgba(255,70,40,.8);filter:none}
 #odp i{position:absolute;opacity:.75;filter:blur(1px) hue-rotate(155deg) saturate(1.7);animation:odvF .42s steps(5) infinite}
@@ -1585,16 +1589,18 @@ let hbNext=0,zoneLP=null,zoneOn=false,crowdCool=0;
 // little level comes out) so the heartbeat and the pitch sit on top. The instant the ball is hit, or the at-bat ends, the park rushes back in.
 function zoneTick(){
   if(!AC||!zoneLP)return;
-  const on=!!(S.over&&S.overOn)&&(S.state==='ready'||S.state==='windup'||S.state==='pitch');
+  const on=!!((S.over&&S.overOn)||S.pOver)&&(S.state==='ready'||S.state==='windup'||S.state==='pitch');
   if(on===zoneOn)return;
   zoneOn=on;const t=AC.currentTime,f=zoneLP.frequency;f.cancelScheduledValues(t);f.setValueAtTime(Math.max(200,f.value),t);
   if(on)f.exponentialRampToValueAtTime(620,t+.7);
   else f.exponentialRampToValueAtTime(20000,t+.18);}
 function heartTick(){
-  if(!AC||!(S.over&&S.overOn)||!(S.state==='ready'||S.state==='windup'||S.state==='pitch'))return;
+  if(!AC||!((S.over&&S.overOn)||S.pOver)||!(S.state==='ready'||S.state==='windup'||S.state==='pitch'))return; // either side's Overdrive brings the pulse up
   const t=AC.currentTime;if(t<hbNext)return;
-  hbNext=t+(S.pOver?.62:.82);
-  tone('sine',74,40,.13,.95);noise(.05,'lowpass',160,60,.5);tone('sine',62,34,.12,.7,.17);noise(.04,'lowpass',140,50,.35,1,.17);}
+  hbNext=t+(S.pOver&&S.over&&S.overOn?.52:S.pOver?.62:.82);
+  // two thumps. The low sine is the chest-felt part on headphones; the higher triangle and the click are what a phone speaker can actually play
+  tone('sine',74,40,.14,1.3);tone('triangle',170,85,.11,.85);noise(.05,'lowpass',420,120,.8);
+  tone('sine',62,34,.13,1,.17);tone('triangle',150,75,.1,.6,.17);noise(.04,'lowpass',360,100,.55,1,.17);}
 // the home crowd lets the pitcher (and the umpire) hear it
 function boo(vol){const have=['boo1','boo2','boo3'].filter(n=>SFX[n]);if(!AC||!have.length||roarG)return;
   sfxSlice(have[(Math.random()*have.length)|0],vol,rand(.94,1.06),rand(0,2.4),rand(2.4,3.3));cheerBusy=AC.currentTime+2.4;}
@@ -1914,7 +1920,7 @@ function updateRunners(dt){
     if(R.delay>0){R.delay-=dt;root.visible=false;continue;}
     const moving=R.s<R.target-1e-4;
     const hold=flight&&flight.admire&&!flight.done&&R.s<=3?3:9; // while the camera is still on the hitter admiring his shot, nobody comes home past him: runners wait at third until he is on his way
-    if(moving)R.s=Math.min(R.target,hold,R.s+(R.lead?17.5:R.jog?10.5:16)*dt/27.43);
+    if(moving)R.s=Math.min(R.target,hold,R.s+(R.raceV?R.raceV*dt:(R.lead?17.5:R.jog?10.5:16)*dt/27.43));else R.raceV=0;
     if(R.s>=4){R.active=false;R.lead=false;root.visible=false;continue;}   // crossed the plate
     root.visible=true;basePos(R.s,_rv);root.position.copy(_rv);
     const i=clamp(Math.floor(R.s),0,3);root.rotation.y=moving?Math.atan2(BASES[i+1][0]-BASES[i][0],BASES[i+1][1]-BASES[i][1]):Math.atan2(-_rv.x,-_rv.z);
@@ -1935,7 +1941,8 @@ function updateThrow(){
   // outfield throws show only the release and the first part of the flight; infield throws (full) are followed all the way to the bag
   if(u<=1&&(Th.full||e<.45)){ball.visible=true;ball.position.lerpVectors(Th.from,Th.to,u);ball.position.y+=Math.sin(u*PI)*Th.len*.05;ball.scale.setScalar(Math.max(1,camera.position.distanceTo(ball.position)*.05));}
   else if(Th.next&&u>1){SND.mitt();Th.from=Th.to.clone();Th.to=Th.next;Th.next=null;Th.len=Th.from.distanceTo(Th.to);Th.dur=clamp(Th.len/42,.3,1.3);Th.bt=now+.22;SND.whoosh();} // the pivot: on to first
-  else if(!Th.done){Th.done=true;ball.visible=false;if(Th.full){SND.mitt();if(Th.q!==undefined){roarOff(.9);crowdOut(Math.max(Th.q,.55));}}}
+  else if(!Th.done){Th.done=true;ball.visible=false;if(Th.full){SND.mitt();if(Th.q!==undefined){roarOff(.9);crowdOut(Math.max(Th.q,.55));}
+    if(Th.safe){const r=flight.raceR||0;pop('SAFE!',[r?`+${r} RUN${r>1?'S':''}`:'','BEAT THE THROW'].filter(Boolean).join(' · '),'',true);buzz([30,40,70]);roar(1,.15);sfxSlice('cheer_big',.8,rand(1,1.08),rand(0,.25),2.8);if(AC)cheerBusy=AC.currentTime+2.4;}}}
 }
 function toReady(d){roarOff();showCard();$('hitinfo').hidden=true;S.state='ready';S.t=now;aim.x=0;aim.y=.825; /* ring back to the middle of the zone before every pitch */if(d)readyDur=d;swing=null;pitch=null;flight=null;ball.visible=false;ballShadow.visible=false;pring.visible=false;ballGlow.material.opacity=0;
   fielders.forEach(f=>{if(!f.isP){f.fig.root.position.copy(f.home);f.fig.root.rotation.y=Math.atan2(-f.home.x,-f.home.z);}f.run=null;});
@@ -2299,10 +2306,14 @@ function finishPlay(){
     cheer(.5,3.5);if(!f.fenceRoar){f.fenceRoar=true;roar(f.roarL||1,.4);}
   }else{
     const r=advance(pl.bases);
-    pop(['SINGLE!','DOUBLE!','TRIPLE!'][pl.bases-1],[r?`+${r} RUN${r>1?'S':''}`:'',pl.tag||(pl.grd?'GROUND-RULE DOUBLE':pl.infield?'BEAT THE THROW':pl.wall?'OFF THE WALL':'')].filter(Boolean).join(' · '),'');cheer(.25,2);roar(.6+.1*pl.bases+.05*r,.3);
-    if(pl.infield){roar(1,.2);sfxSlice('cheer_big',.75,rand(1,1.08),rand(0,.25),2.6);cheerBusy=AC?AC.currentTime+2.4:0;} // beat the throw: the place jumps
+    const race=pl.infield&&pl.f&&pl.f.thrAct&&pl.f!==fielders[0]&&WALK.on; // an infield hit is a race to the bag: shown from first base, and nothing is called until the throw gets there
+    if(race){f.raceR=r;crowdHold(2.4);const rp=pl.f.fig.root.position,arr=now+.2+THROW_REL+clamp(Math.hypot(rp.x-19.4,rp.z+19.4)/42,.3,1.3); // when the throw will reach the bag
+      RUN.list.forEach(R=>{if(R.active&&R.target===1&&R.s<1){R.delay=0;R.raceV=(1-R.s)/Math.max(.35,arr-.2-now);}});} // the runner is paced to hit the bag a step ahead of it
+    else{pop(['SINGLE!','DOUBLE!','TRIPLE!'][pl.bases-1],[r?`+${r} RUN${r>1?'S':''}`:'',pl.tag||(pl.grd?'GROUND-RULE DOUBLE':pl.infield?'BEAT THE THROW':pl.wall?'OFF THE WALL':'')].filter(Boolean).join(' · '),'');cheer(.25,2);roar(.6+.1*pl.bases+.05*r,.3);
+      if(pl.infield){roar(1,.2);sfxSlice('cheer_big',.75,rand(1,1.08),rand(0,.25),2.6);cheerBusy=AC?AC.currentTime+2.4:0;}} // beat the throw: the place jumps
     S.state='result';S.t=now;readyDur=1.5;f.rbi=r;
-    if(pl.f&&pl.f.thrAct&&!pl.grd){const tb=pl.infield?1:[2,3,0][pl.bases-1];
+    if(race){f.thr={t0:now+.2,pick:.2,wait:.75,to:new V3(BASES[1][0],1.2,BASES[1][1]),full:true,safe:true};}
+    else if(pl.f&&pl.f.thrAct&&!pl.grd){const tb=pl.infield?1:[2,3,0][pl.bases-1];
       // if he hasn't got to the ball yet (a ball to the wall, say), he runs the rest of the way first and only then throws: no throwing on the move
       const tfN=now-f.t0,rem=Math.max(0,(pl.tField||pl.endT)-tfN),wait=rem>.05?clamp(rem,.35,.8):0;
       if(wait){const rp=pl.f.fig.root.position;pl.from=rp.clone();pl.tS=tfN;pl.tField=tfN+wait;}
@@ -3256,6 +3267,7 @@ function updateCamera(rdt){
   else if(S.kOut&&MX.clip&&MX.clip.bi===S.kOut.bi&&now>S.kOut.t&&now<S.kOut.t+DEFEAT&&S.state==='result'){ // strikeout: close on the hitter from the pitcher's side
     const e=clamp((now-S.kOut.t)/DEFEAT,0,1);MX.clip.hips.getWorldPosition(_a);const sd=_a.x<0?1:-1;
     camLook.set(_a.x,1.2,_a.z);camPos.set(_a.x+sd*lerp(1.5,1.0,ease(e)),1.25,_a.z-lerp(3.2,2.5,ease(e)));}
+  else if(flight&&flight.thr&&flight.thr.safe&&now>flight.thr.t0+.45&&S.state==='result'){camPos.set(25.4,1.5,-16.2);camLook.set(17.6,1.05,-18.6);} // the race: from foul ground past the bag, the runner coming up the line and the first baseman stretching for the throw
   else if(S.state==='celly2'){const B=BASES[D2.base];if(D2.base===3){camPos.set(B[0]+3.6,.8,B[1]+1.2);}else camPos.set(1.7,.8,-35.4);camLook.set(B[0],1.2,B[1]);}
   else if(pcWalk()&&MX.pit){const o=MX.pit.obj.position;camPos.set(o.x-3.1,1.15,o.z+2.2);camLook.set(o.x,1.15,o.z);} // walking toward the camera, which backs away with him
   else if(pitCut()>=0||trotPit()||S.state==='pdef'||S.state==='pchange'){camPos.set(1.3,1.25,-15.4);camLook.set(0,1.25,-18.4);}
