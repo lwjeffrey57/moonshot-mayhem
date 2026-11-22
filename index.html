@@ -435,7 +435,7 @@ body.mob #tip{display:block}body.mob .how{display:none}
       <div class="tz pcz"><b><span style="color:#3ddc6a">GREEN = CONTACT</span> · <span style="color:#ff6a4a">RED = POWER</span></b>Each swing has its own zone on your bat<small>Move your ring onto the ball. Ball in the green: CONTACT. Ball in the red core: POWER. Closer to the middle = better contact.</small></div>
       <div class="tz lbl lc" id="tlc">CONTACT ZONE<span>▼</span></div><div class="tz lbl lp" id="tlp">POWER ZONE<span>▼</span></div>
       <div class="tz tmz"><b>YELLOW RING = TIMING</b>It shrinks onto a white circle the size of the ball<small>Ring still bigger than the ball: too early. Ring meets the circle and turns <span style="color:#39ff6a">green</span>: swing!</small></div>
-      <div class="tz swz"><b>RIGHT THUMB: SWING</b>Tap as the yellow ring closes on the ball<small>CONTACT is easier and hits line drives. POWER is harder and hits moonshots.</small></div>
+      <div class="tz swz"><b>RIGHT THUMB: SWING</b>Tap one of these to swing the bat<small>CONTACT is easier and hits line drives. POWER is harder and hits moonshots.</small></div>
       <div class="tz jcz"><b>JUICE: MONSTER SWING</b>Tap JUICE, then swing. Costs one quarter<small>Every hit and every walk adds a quarter back. Fill all four for Overdrive.</small></div>
       <div class="tz ovz"><b>FULL METER = OVERDRIVE</b>Fill this bar all the way and it catches fire<small>JUICE turns into a blue OVERDRIVE button. Tap it and every swing that at-bat is a free Juice swing. Then the bar starts over.</small></div>
       <div class="tz ovz2"><b>OVERDRIVE READY!</b>Tap the blue OVERDRIVE button when you want it<small>Every swing this at-bat becomes a free Juice swing: bigger sweet spot, easier timing, harder contact.</small></div>
@@ -1126,8 +1126,8 @@ const TUT_EVERY_LAUNCH=true; // testing: show the guide on every launch; set fal
 let tutFirst=false,tutHold=false,tutSeen=!MOB;try{if(!TUT_EVERY_LAUNCH&&localStorage.getItem('mm_tut')==='1')tutSeen=true;}catch(e){}
 let tutOff=false,jtutSeen=!MOB;try{tutOff=localStorage.getItem('mm_tutoff')==='1';if(!TUT_EVERY_LAUNCH&&localStorage.getItem('mm_jtut')==='1')jtutSeen=true;}catch(e){}
 // the first time the Juice meter is full: point at the JUICE button
-let tutStep=0;const TUT_N=6;
-function tutShow(mode){const T=$('tut');T.className=mode;T.hidden=false;tutHold=true;const n=mode==='j'||mode==='o'?0:+mode.slice(1);tutStep=n;$('tutstp').textContent=n?n+' / '+TUT_N:'';$('tutgo').textContent=n&&n<TUT_N?'NEXT ▶  '+n+'/'+TUT_N:'GOT IT — PLAY ▶';
+let tutStep=0;const TUT_N=6,TUT_ORDER=[1,4,2,3,5,6]; // shown as: left thumb aims, right thumb swings, then the mechanics (zones, timing), then Juice and Overdrive
+function tutShow(mode){const T=$('tut');T.className=mode;T.hidden=false;tutHold=true;const n=mode==='j'||mode==='o'?0:+mode.slice(1);tutStep=n;const idx=TUT_ORDER.indexOf(n)+1;$('tutstp').textContent=n?idx+' / '+TUT_N:'';$('tutgo').textContent=n&&idx<TUT_N?'NEXT ▶  '+idx+'/'+TUT_N:'GOT IT — PLAY ▶';
   const sp=T.querySelector('.spot');sp.style.cssText='';T.querySelectorAll('.pcz,.tmz').forEach(c=>c.style.bottom='');
   $('hud').classList.toggle('tut2',n===2);if(n===1||n===2)tutT0=performance.now();if(n!==1)$('apad').classList.remove('drag');if(n>2||!n){padKnob.style.transform='';padKnob.style.transition='';}
   if(n===2){const H=$('hud').getBoundingClientRect();[['tc','tlc'],['tp','tlp']].forEach(([b,l])=>{const r=$(b).getBoundingClientRect(),e=$(l);e.style.left=(r.left-H.left+r.width/2)+'px';e.style.top=(r.top-H.top-46)+'px';});}
@@ -1166,7 +1166,7 @@ function tutNeed(){if(tutOff||tutSeen||window.__mmManual&&!window.__mmTut)return
 $('tut').addEventListener('pointerdown',e=>{e.preventDefault();const id=e.target.id;
   if(id==='tutoff'){tutOff=true;try{localStorage.setItem('mm_tutoff','1');}catch(x){}tutClose();return;} // no more guides on this device (HOW TO PLAY in the pause menu still works)
   if(id==='tutskip'){tutClose();return;}
-  if(tutStep&&tutStep<TUT_N){tutShow('s'+(tutStep+1));return;}                                            // a tap anywhere moves to the next step
+  {const i=TUT_ORDER.indexOf(tutStep);if(tutStep&&i<TUT_N-1){tutShow('s'+TUT_ORDER[i+1]);return;}}                                            // a tap anywhere moves to the next step
   tutClose();});
 // Timing meter. x is real time and everything is to scale. A coloured band is the whole window in which that swing can touch the ball
 // (green = CONTACT, the narrower red = POWER), brightest in the middle where timing is best and fading toward the edges; a Juice swing adds
