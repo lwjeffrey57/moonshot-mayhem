@@ -154,9 +154,12 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 #hud.wk #card{visibility:hidden}
 /* stat grades, S to F, colour-coded */
 .gS,#walk .wrow b.gS{color:#ffd23b}.gA,#walk .wrow b.gA{color:#3ddc6a}.gB,#walk .wrow b.gB{color:#3ad6ff}.gC,#walk .wrow b.gC{color:#f2f5ff}.gD,#walk .wrow b.gD{color:#ff9a3b}.gF,#walk .wrow b.gF{color:#ff4d2e}
-#hud>#card .stat em{font-style:normal;font-family:var(--display);font-size:14px;width:1em;text-align:center;text-shadow:0 1px 0 #000}
-#walk .wrow b.gr{display:inline-block;min-width:1.5em;padding:0 .25em;margin-left:.2em;text-align:center;border-radius:5px;background:currentColor;font-size:1.15em;line-height:1.25}#walk .wrow b.gr u{text-decoration:none;color:#0b0a1a}
-#hud.mob>#card{flex-wrap:nowrap}#hud.mob>#card .stats{display:flex;gap:7px;margin-top:1px}#hud.mob>#card .stat b{display:none}#hud.mob>#card .stat{font-size:10px;gap:2px}#hud.mob>#card .stat em{font-size:13px}
+#hud>#card .stat em{font-style:normal;font-family:var(--display);font-size:24px;line-height:.85;width:.9em;text-align:center;-webkit-text-stroke:1.2px #0b0a1a;paint-order:stroke fill;text-shadow:0 2px 0 #000}
+#hud>#card .stat{font-size:12px}
+#walk .wrow b.gr{display:inline-block;margin-left:.12em;font-size:2.1em;line-height:.8;vertical-align:-.14em;font-weight:400;-webkit-text-stroke:1.6px #0b0a1a;paint-order:stroke fill;text-shadow:0 3px 0 #000} /* big coloured grade letters: the grade is the headline, the label is the caption */
+#walk .wrow b.gr u{text-decoration:none;color:inherit}
+#walk #wrat{align-items:center;color:var(--dim);letter-spacing:.04em}
+#hud.mob>#card{flex-wrap:nowrap}#hud.mob>#card .stats{display:flex;gap:7px;margin-top:1px}#hud.mob>#card .stat b{display:none}#hud.mob>#card .stat{font-size:10px;gap:3px;align-items:center}#hud.mob>#card .stat em{font-size:22px}
 /* contact readout: exit velocity, launch angle and quality while the ball is in flight */
 #hitinfo{top:192px;left:max(16px,env(safe-area-inset-left,0px));width:172px;white-space:nowrap;background:linear-gradient(#1b1f4a,#0b0c22);border:2px solid var(--pilllo);border-radius:6px;box-shadow:0 3px 0 #000;overflow:hidden;font-family:var(--display);font-style:italic;line-height:1;font-variant-numeric:tabular-nums}
 #hitinfo .q{padding:5px 8px;font-size:16px;text-align:center;color:var(--navy);background:var(--chrome)}
