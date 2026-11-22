@@ -1678,8 +1678,11 @@ function tryContact(){flight_pop=false;
     if(DBG.fl==='bloop'||((tipped||q<.38)&&chase<.6&&la>-5&&Math.random()<.4)){la=rand(28,38);v=rand(22.5,27);kind='BLOOP';}                 // the flare that drops in front of the outfield
     else if(DBG.fl==='chop'||(cu<-.45&&la<2&&Math.random()<.3)){la=rand(-48,-34);v=Math.max(v*.8,25);fopt.chop=1;kind='CHOPPER';}                // beaten into the ground, one big bounce
     else if(DBG.fl==='float'||(la>24&&la<50&&q>.45&&Math.random()<.03)){fopt.g=.55;kind='LOW-GRAVITY POCKET';}}                                   // a Moon special: it just keeps hanging
+  // TOPSPUN IT, hit hard: a sharp line drive with heavy topspin, so it comes off on a line and then dives
+  const tsp=!kind&&!flight_pop&&where==='TOPSPUN IT'&&q>.5&&chase<=.3;if(tsp)la=clamp(Math.max(la,rand(9,15)),9,18);
   // backspin and topspin follow where the barrel met the ball: under it = backspin that carries, on top = topspin that dives
-  const lift=kind==='BLOOP'||kind==='CHOPPER'||flight_pop?rand(-1,1):clamp(cu,-1.2,1.2)*1.9+rand(-1.9,1.7)+(la>18?.3:0);
+  const lift=tsp?rand(-7.5,-5.2):kind==='BLOOP'||kind==='CHOPPER'||flight_pop?rand(-1,1):clamp(cu,-1.2,1.2)*1.9+rand(-1.9,1.7)+(la>18?.3:0);
+  if(tsp)kind='TOPSPIN SINKER';
   if(!kind&&!flight_pop){if(lift>2.7&&la>14)kind='BACKSPIN CARRY';else if(lift<-2.7&&la>5&&la<32)kind='TOPSPIN SINKER';}
   const spin={side:phi/40*3.2+gs()*4,lift};
   const p0=new V3(pitch.tx,pitch.ty,clamp(-dt*6,-.7,.7));
