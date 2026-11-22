@@ -1683,7 +1683,7 @@ function judge(tr,bt){const spd=bt&&bt.spd||1; // batter's speed: 0.85 (plodder)
       for(const o of fielders){if(!o.of)continue;const d=Math.hypot(o.home.x-w.x,o.home.z-w.z);if(d<bd){bd=d;c=o;}}
       if(c&&tr.hrT>=HANG_CATCH&&bd<=10+c.speed*1.6*tr.hrT&&(DBG.rob||Math.random()<.3)){const wr=Math.hypot(w.x,w.z),k=(wr-1.6)/wr; // he makes the catch standing in front of the wall, not in it
         return {type:'out',label:'ROBBED AT THE WALL',endT:tr.hrT,f:c,p:{x:w.x*k,y:w.y,z:w.z*k,t:tr.hrT},air:true,rob:true,dist:tr.dist};}}
-    return {type:'hr',endT:tr.endT,dist:tr.dist,tag:tr.tag||(tr.hrY-WALL_H<1.1&&!tr.eyeT?'JUST ENOUGH':'')};}
+    return {type:'hr',endT:tr.endT,dist:tr.dist,tag:tr.tag||''};}
   if(tr.grd&&!tr.foul){ // ground-rule double: the nearest outfielder still goes after it until it hops the wall
     const L=tr.land||tr.pts[tr.pts.length-1],endT=tr.endT;let f=null,bd=1e9;for(const c of fielders){if(c.isP||!c.of)continue;const d=Math.hypot(c.home.x-L.x,c.home.z-L.z);if(d<bd){bd=d;f=c;}}
     if(!f)return {type:'hit',bases:2,endT,grd:true};
@@ -2763,7 +2763,7 @@ const LITE=matchMedia('(pointer:coarse)').matches;
 if(LITE){QS=.85;rim.shadow.mapSize.set(512,512);renderer.shadowMap.type=T.PCFShadowMap;}else initPost();
 resize();hud();
 const DBG={pcut:false,fl:'',rob:false,pc:false,staunt:false,pod:false,trail:false,orbit:false,pdef:false,dbl:false,cam:false,admire:'',trip:false,fist:false,pop:false,loser:false}; // test hook: pin the camera to CAM_HOME/CAM_LOOK
-window.__mm={S,aim,MX,DBG,landRingOn:()=>landRing.visible,hud,tutAnim,draw:()=>draw(),endGame,TROT,SFX,RUN,ballPos:()=>ball.position,fielders,toReady,CAM_HOME,CAM_LOOK,now:()=>now,simulate,judge,get pitch(){return pitch;},get flight(){return flight;},lastSwing:()=>{const t=swing&&swing.type;swing=null;return t;},lastSwingTurbo:()=>!!(swing&&swing.turbo),doSwing,newGame,V3,
+window.__mm={renderer,scene,S,aim,MX,DBG,landRingOn:()=>landRing.visible,hud,tutAnim,draw:()=>draw(),endGame,TROT,SFX,RUN,ballPos:()=>ball.position,fielders,toReady,CAM_HOME,CAM_LOOK,now:()=>now,simulate,judge,get pitch(){return pitch;},get flight(){return flight;},lastSwing:()=>{const t=swing&&swing.type;swing=null;return t;},lastSwingTurbo:()=>!!(swing&&swing.turbo),doSwing,newGame,V3,
   sim:(dt)=>{hitstop=0;now+=dt;step(dt);},
   step:(n,dt=1/60)=>{for(let i=0;i<n;i++){if(hitstop>0)hitstop=0;now+=dt;step(dt);}updateCamera(dt);draw();}};
 if(!window.__mmManual)requestAnimationFrame(frame);
