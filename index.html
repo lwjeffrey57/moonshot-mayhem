@@ -237,12 +237,12 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 #tbar .jx{background:#ffd23b;box-shadow:0 0 8px 1px rgba(255,210,59,.8)} /* same colours as the bat: green = CONTACT window, red core = POWER window, gold ends = Juice */
 #tbar .dim{opacity:.22}
 #tbar em{position:absolute;left:0;right:0;top:calc(100% + 15px);text-align:center;font-family:var(--display);font-style:italic;font-weight:400;font-size:14px;letter-spacing:.05em;color:var(--volt);text-shadow:0 2px 0 #000,0 0 5px #000;white-space:nowrap} /* the pitch this timing was against */
-#tbar .trk i.mk{top:50%;bottom:auto;width:10px;height:10px;margin:-6.5px 0 0 -6.5px;border-radius:50%;background:#fff;border:1.5px solid #000;box-sizing:content-box} /* your swing is a dot; the target is a gate */
-/* the target: a fixed green gate at dead centre, labelled PERFECT. Land your dot inside it. */
-#tbar .trk i.tg,#tut .tgz .trk i.tg{left:50%;top:-7px;bottom:-7px;width:13px;margin-left:-8.5px;border-radius:4px;background:rgba(57,255,106,.14);border:2px solid #39ff6a;box-shadow:0 0 7px 1px rgba(57,255,106,.8),inset 0 0 0 1px rgba(0,0,0,.45)}
-#tbar .trk i.tg::before,#tut .tgz .trk i.tg::before{content:'PERFECT';position:absolute;left:50%;bottom:calc(100% + 3px);transform:translateX(-50%);font-family:var(--hud);font-style:normal;font-weight:800;font-size:9px;letter-spacing:.14em;color:#39ff6a;text-shadow:0 1px 0 #000,0 0 3px #000;white-space:nowrap}
+#tbar .trk i.mk{top:-4px;bottom:-4px;width:5px;margin-left:-2.5px;border-radius:2.5px;background:#fff;border:1.5px solid #000;box-sizing:content-box}
+/* the target: a fixed green hash at dead centre. Line your marker up with it for PERFECT. */
+#tbar .trk i.tg,#tut .tgz .trk i.tg{left:50%;top:-7px;bottom:-7px;width:3px;margin-left:-1.5px;border-radius:1.5px;background:#39ff6a;box-shadow:0 0 6px 1px rgba(57,255,106,.9),0 0 0 1px rgba(0,0,0,.7)}
+#tbar .trk i.tg::before,#tut .tgz .trk i.tg::before{content:'';position:absolute;left:50%;top:-6px;margin-left:-5px;border:5px solid transparent;border-top-color:#39ff6a;filter:drop-shadow(0 1px 0 #000)}
 /* your swing: the marker carries a caret underneath, pointing up at it, so it can't be mistaken for the green target (whose arrow sits on top) */
-#tbar .trk i.mk:not(.pf)::before{content:'';position:absolute;left:50%;bottom:-14px;margin-left:-6px;border:6px solid transparent;border-bottom-color:var(--mc,#fff);filter:drop-shadow(0 1px 0 #000) drop-shadow(0 -1px 0 #000)}
+#tbar .trk i.mk:not(.pf)::before{content:'';position:absolute;left:50%;bottom:-13px;margin-left:-6px;border:6px solid transparent;border-bottom-color:var(--mc,#fff);filter:drop-shadow(0 1px 0 #000) drop-shadow(0 -1px 0 #000)}
 /* PERFECT: the marker is a rocket lifting off the bar */
 #tbar .trk i.mk.pf{background:none!important;border-color:transparent}
 #tbar .trk i.mk.pf::after{content:'🚀';position:absolute;left:50%;top:50%;font-size:26px;line-height:1;font-style:normal;filter:drop-shadow(0 2px 0 rgba(0,0,0,.8)) drop-shadow(0 0 8px rgba(255,229,59,.9));animation:mkRocket 1.5s cubic-bezier(.2,1.5,.4,1) both}
@@ -377,7 +377,7 @@ body.mob #tip{display:block}body.mob .how{display:none}
 #tut .tgz .trk i{position:absolute;top:0;bottom:0;border-radius:3px}
 #tut .tgz .gc{left:16%;width:68%;background:linear-gradient(90deg,rgba(61,220,106,.28),rgba(61,220,106,.75) 36%,#7dffa0 42%,#7dffa0 58%,rgba(61,220,106,.75) 64%,rgba(61,220,106,.28))}
 #tut .tgz .gp{left:26%;width:48%;background:linear-gradient(90deg,rgba(255,77,46,.3),rgba(255,77,46,.8) 36%,#ff8a70 42%,#ff8a70 58%,rgba(255,77,46,.8) 64%,rgba(255,77,46,.3));opacity:.25}
-#tut .tgz .trk i.mk{top:50%;bottom:auto;width:10px;height:10px;margin:-6.5px 0 0 -6.5px;border-radius:50%;background:#fff;border:1.5px solid #000;animation:tutmk 1.5s linear infinite}
+#tut .tgz .trk i.mk{top:-5px;bottom:-5px;width:5px;margin-left:-2.5px;border-radius:2.5px;background:#fff;border:1.5px solid #000;animation:tutmk 1.5s linear infinite}
 @keyframes tutmk{0%{left:2%;background:#ff4d2e;opacity:0}10%{opacity:1}28%{background:#fff}48%{left:50%;background:#fff}50%,100%{left:50%;background:#ffe53b;box-shadow:0 0 10px 3px #ffe53b;opacity:1}}
 #tut .tgz em{position:absolute;left:0;right:0;top:calc(100% + 4px);text-align:center;font-family:var(--display);font-style:italic;font-weight:400;font-size:20px;letter-spacing:.04em;color:#39ff6a;text-shadow:0 2px 0 #000;animation:tutpf 1.5s linear infinite}
 @keyframes tutpf{0%,48%{opacity:0;transform:scale(.7)}53%,100%{opacity:1;transform:scale(1)}}
