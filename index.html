@@ -2170,6 +2170,10 @@ canvas.addEventListener('pointermove',e=>{
 canvas.addEventListener('pointerdown',e=>{audioInit();
   if(e.pointerType==='touch'){touchLast={id:e.pointerId,x:e.clientX,y:e.clientY,x0:e.clientX,y0:e.clientY};$('apad').classList.add('drag');return;}
   pointerAim(e);doSwing(e.button===2?'power':'contact');e.preventDefault();});
+// Phones hold back the first few pixels of a finger's movement while they decide whether the touch is a tap or a scroll. Claiming the touch
+// the instant it lands tells the browser not to wait, so the ring answers the very first nudge of the thumb. Nothing else about aiming changes.
+canvas.addEventListener('touchstart',e=>{e.preventDefault();},{passive:false});
+canvas.addEventListener('touchmove',e=>{e.preventDefault();},{passive:false});
 const padKnob=$('apad').firstElementChild,aimHome=()=>{if(touchLast)return;aim.x+=(0-aim.x)*.5;aim.y+=(.825-aim.y)*.5;if(Math.abs(aim.x)+Math.abs(aim.y-.825)>.004)requestAnimationFrame(aimHome);else{aim.x=0;aim.y=.825;}}, // let go and the ring springs back to the middle, like a stick
   padEnd=e=>{if(touchLast&&touchLast.id===e.pointerId){touchLast=null;$('apad').classList.remove('drag');padKnob.style.transform='';aimHome();}};
 canvas.addEventListener('pointerup',padEnd);canvas.addEventListener('pointercancel',padEnd);
