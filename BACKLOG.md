@@ -50,6 +50,11 @@ Recordings to find or make (the game currently fakes most of these by reshaping 
 - New stadiums.
 - Fielder ready-stance clip; the unused on-deck clip.
 
+## Marketing (for later)
+- **Share your game.** A one-tap share from the final screen: a ready-made post such as "I hit a 512 ft moonshot and beat the Krakens 14-9
+  on Moonshot Mayhem", with the score, rating and best moment filled in, a link to the game, and ideally a generated image card.
+  Also shareable single feats ("left orbit", "won an Overdrive duel", "walk-off homer").
+
 ## Known gaps in testing
 - Audio has never been listened to by the developer side; all levels and mixes need a human ear.
 - Real-phone frame rate and feel are only checked on the owner's iPhone XR.
