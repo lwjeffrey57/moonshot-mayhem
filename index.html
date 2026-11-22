@@ -354,11 +354,11 @@ body.mob #tip{display:block}body.mob .how{display:none}
 @keyframes htpin{from{transform:rotate(-3deg) scale(2.2);opacity:0}to{transform:rotate(-3deg) scale(1);opacity:1}}
 /* step 2 demo: a ball lands in the green zone and CONTACT lights up, then in the red core and POWER lights up */
 #tut.s2 .spot::before{content:'';position:absolute;left:var(--tx,50%);top:var(--ty,50%);box-sizing:border-box;width:calc(var(--tr,14px)*2);height:calc(var(--tr,14px)*2);margin:calc(var(--tr,14px)*-1);border-radius:50%;border:3px solid #fff;background:rgba(255,255,255,.6)} /* the ball stays put: the bat ring moves onto it */
-#hud.tut2 #tc{animation:tutbA 5.2s linear infinite}#hud.tut2 #tp{animation:tutbB 5.2s linear infinite}
-@keyframes tutbA{0%,28%{opacity:.4;transform:none}32%,50%{opacity:1;transform:scale(1.1);box-shadow:0 4px 0 #000,0 0 26px 8px rgba(61,220,106,.95)}54%,100%{opacity:.4;transform:none}}
-@keyframes tutbB{0%,49%{opacity:0;transform:none}52%,56%{opacity:.4;transform:none}60%,92%{opacity:1;transform:scale(1.1);box-shadow:0 4px 0 #000,0 0 26px 8px rgba(255,90,50,.95)}95%{opacity:.4}100%{opacity:0;transform:none}}
-#tut.s2 .lc{animation:tutlA 5.2s linear infinite}#tut.s2 .lp{animation:tutlB 5.2s linear infinite}
-@keyframes tutlA{0%,28%{opacity:0}32%,50%{opacity:1}54%,100%{opacity:0}}@keyframes tutlB{0%,56%{opacity:0}60%,92%{opacity:1}95%,100%{opacity:0}}
+#hud.tut2 #tc{animation:tutbA 4.4s linear infinite}#hud.tut2 #tp{animation:tutbB 4.4s linear infinite}
+@keyframes tutbA{0%,17%{opacity:.4;transform:none}20%,44%{opacity:1;transform:scale(1.1);box-shadow:0 4px 0 #000,0 0 26px 8px rgba(61,220,106,.95)}48%,100%{opacity:.4;transform:none}}
+@keyframes tutbB{0%,43%{opacity:0;transform:none}46%,50%{opacity:.4;transform:none}54%,92%{opacity:1;transform:scale(1.1);box-shadow:0 4px 0 #000,0 0 26px 8px rgba(255,90,50,.95)}95%{opacity:.4}100%{opacity:0;transform:none}}
+#tut.s2 .lc{animation:tutlA 4.4s linear infinite}#tut.s2 .lp{animation:tutlB 4.4s linear infinite}
+@keyframes tutlA{0%,17%{opacity:0}20%,44%{opacity:1}48%,100%{opacity:0}}@keyframes tutlB{0%,50%{opacity:0}54%,92%{opacity:1}95%,100%{opacity:0}}
 #hud.tut2 #apad{z-index:31;pointer-events:none}
 /* step 2: the two swing buttons stay lit under the dimming, each labelled with its part of the bat */
 #hud.tut2 #touch{z-index:31;pointer-events:none}#hud.tut2 #touch .jc{opacity:.15;animation:none}
@@ -1220,7 +1220,7 @@ function tutShow(mode){const T=$('tut');T.className=mode;T.hidden=false;tutHold=
     sp.style.cssText='left:'+l+'px;top:'+t+'px;width:'+(r-l)+'px;height:'+(bt-t)+'px;--tr:'+(PT_R*zw/(ZONE.x1-ZONE.x0)).toFixed(1)+'px;--tx:'+((c0.x+1)/2*W-l-4).toFixed(1)+'px;--ty:'+((1-c0.y)/2*H-t-4).toFixed(1)+'px;--gx:'+((retC.scale.x+retP.scale.x)/2*zw/(ZONE.x1-ZONE.x0)).toFixed(1)+'px';T.querySelector(n===2?'.pcz':'.tmz').style.bottom=(H-t+16)+'px';$('tutg').style.top=(bt+14)+'px';}}
 // Step 2 demo, in step with the button highlights: the ball never moves. The bat ring starts off it, slides until the ball is in the green
 // (CONTACT lights), then until the ball is in the red core (POWER lights): move the circle to the ball.
-const TUT_LOOP=5200;
+const TUT_LOOP=4400;
 // Step 2 demo. The ball sits still in the upper-right of the zone. The stick leans and the green ring (filled, no red showing yet) travels to it
 // until the ball is dead centre: CONTACT. Then the red core appears around the ball where it already is: POWER.
 const TUT_B={x:.14,y:.985},TUT_S={x:-.17,y:.64};
@@ -1239,9 +1239,9 @@ let tutT0=0;function tutAnim(t){if($('tut').hidden)return;
     const ph=((t-tutT0)%3200)/3200,lit=ph>.2&&ph<.86,tj=$('tj');tj.classList.toggle('dn',ph>.16&&ph<.22);tj.classList.toggle('on',lit);$('tp').classList.toggle('fire',lit);return;}
   if(tutStep===3){reticle.visible=false;return;} // timing step: just the ball, the closing ring and the gauge // held on the pitch from step 2
   if(tutStep!==2)return;const ph=((t-tutT0)%TUT_LOOP)/TUT_LOOP;
-  const u=ph<.08?0:ph<.3?ease((ph-.08)/.22):ph<.93?1:0;
-  reticle.position.set(lerp(TUT_S.x,TUT_B.x,u),lerp(TUT_S.y,TUT_B.y,u),0);retP.visible=ph>=.5&&ph<.93;retCfill.visible=!retP.visible;
-  const push=ph>=.08&&ph<.3?Math.sin((ph-.08)/.22*PI):0,dx=TUT_B.x-TUT_S.x,dy=TUT_B.y-TUT_S.y,L=Math.hypot(dx,dy); // the stick leans the way the ring is travelling
+  const u=ph<.02?0:ph<.18?ease((ph-.02)/.16):ph<.93?1:0; // the stick starts pushing almost at once
+  reticle.position.set(lerp(TUT_S.x,TUT_B.x,u),lerp(TUT_S.y,TUT_B.y,u),0);retP.visible=ph>=.44&&ph<.93;retCfill.visible=!retP.visible;
+  const push=ph>=.02&&ph<.18?Math.sin((ph-.02)/.16*PI):0,dx=TUT_B.x-TUT_S.x,dy=TUT_B.y-TUT_S.y,L=Math.hypot(dx,dy); // the stick leans the way the ring is travelling
   padKnob.style.transition='none';padKnob.style.transform='translate('+(push*36*dx/L).toFixed(1)+'px,'+(-push*36*dy/L).toFixed(1)+'px)';}
 function tutClose(){$('hud').classList.remove('tut7');if(tutDemo){tutDemo=false;setTimeout(hud,0);}$('hud').classList.remove('tut5');if(tutWas5){tutWas5=false;$('tj').classList.remove('dn');setTimeout(hud,0);}reticle.visible=true;$('hud').classList.remove('tut1','tut4');$('apad').classList.remove('drag');retP.visible=true;retCfill.visible=false;padKnob.style.transform='';padKnob.style.transition='';$('hud').classList.remove('tut2');$('tut').hidden=true;tutHold=false;tapBlock=performance.now()+400;swing=null;if(tutFirst){tutFirst=false;S.t=now-readyDur+1.7;}}
 function jtutNeed(){if(tutOff||jtutSeen||window.__mmManual&&!window.__mmTut)return false;jtutSeen=true;tutFirst=true;tutShow('j');try{localStorage.setItem('mm_jtut','1');}catch(e){}return true;}
