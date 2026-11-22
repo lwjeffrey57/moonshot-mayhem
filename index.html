@@ -334,7 +334,7 @@ body.mob #tip{display:block}body.mob .how{display:none}
 #hud.tut5 #touch,#hud.tut7 #touch{z-index:31;pointer-events:none}#hud.tut7 #odv{z-index:31}
 #hud.tut5 #touch{z-index:31;pointer-events:none}#hud.tut5 #tc{opacity:.25}
 /* swing-buttons step: each button is tapped in turn, a light press with a ring where the thumb lands */
-#hud.tut4 #tc{animation:tutTap 2.4s ease-in-out infinite}#hud.tut4 #tp{animation:tutTap 2.4s ease-in-out 1.2s infinite}
+#hud.tut4 #tp{animation:tutTap 2.4s ease-in-out infinite}#hud.tut4 #tc{animation:tutTap 2.4s ease-in-out 1.2s infinite}
 @keyframes tutTap{0%,8%{transform:none;filter:none;box-shadow:0 4px 0 #000}14%{transform:scale(.9);filter:brightness(1.4);box-shadow:0 1px 0 #000,0 0 0 4px rgba(255,255,255,.8)}26%{transform:none;filter:none;box-shadow:0 4px 0 #000,0 0 0 18px rgba(255,255,255,0)}100%{transform:none;filter:none;box-shadow:0 4px 0 #000}}
 @media (prefers-reduced-motion:reduce){#hud.tut4 #tc,#hud.tut4 #tp{animation:none}}
 /* timing step: the same gauge you get after a swing, its needle sweeping in from EARLY and landing dead centre as the ring turns green */
