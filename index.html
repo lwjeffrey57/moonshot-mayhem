@@ -1359,7 +1359,7 @@ function roar(level,ramp,top){
   if(!b)return;
   if(!roarG){roarG=AC.createGain();roarG.gain.value=0;roarG.connect(master);
     roarS=[[.8,1],[1.9,1.06]].map(o=>{const src=AC.createBufferSource();src.buffer=b;src.loop=true;src.loopStart=.8;src.loopEnd=Math.max(1.6,Math.min(3,b.duration-.6));src.playbackRate.value=o[1];src.connect(roarG);src.start(t,o[0]);return src;});}
-  const g=roarG.gain;g.cancelScheduledValues(t);g.setValueAtTime(g.value,t);g.linearRampToValueAtTime(roarTop?Math.min(1.15,.8*Math.max(1,level*.8)):.55*level,t+ramp);}
+  const g=roarG.gain;g.cancelScheduledValues(t);g.setValueAtTime(g.value,t);g.linearRampToValueAtTime(Math.min(1.2,(roarTop?.8:.62)*level),t+ramp);}
 function roarOff(){
   if(!roarG)return;
   const t=AC.currentTime,g=roarG.gain,ss=roarS;roarG=null;roarS=[];roarTop=false;
@@ -1370,10 +1370,21 @@ function sfxSlice(name,vol,rate,off,dur){const b=SFX[name];if(!AC||!b)return fal
   g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol,t+.12);g.gain.setValueAtTime(vol,t+Math.max(.15,dur-.7));g.gain.linearRampToValueAtTime(0,t+dur);
   src.connect(g);g.connect(master);src.start(t,off,dur*rate+.05);return true;}
 // the crowd never sits still: the bed swells and settles on its own, with the odd whoop, between everything else
-let cheerBusy=0,crowdNext=0;
+let cheerBusy=0,crowdNext=0,crowdSt='';
+// The crowd follows the action. Before the pitch it holds its breath; a ball in play gets a rising 'ohh' that lasts while it is in the air;
+// an out lets the air out (a low groan and the bed drops away); hits and homers get their cheers on top.
+function crowdRise(q,dur){if(!AC||!crowdReal||roarG)return;const t=AC.currentTime,g=crowdGain.gain;
+  g.cancelScheduledValues(t);g.setValueAtTime(g.value,t);g.linearRampToValueAtTime(crowdBase*(1.45+.7*q),t+.18);g.setTargetAtTime(crowdBase,t+Math.max(.6,dur),.7);
+  sfxSlice('cheer',.2+.3*q,rand(1.03,1.15),rand(0,1.5),clamp(dur+.5,1.2,2.6));cheerBusy=t+1.2;crowdNext=t+dur+2;}
+function crowdDrop(){if(!AC||!crowdReal||roarG)return;const t=AC.currentTime,g=crowdGain.gain;
+  g.cancelScheduledValues(t);g.setTargetAtTime(crowdBase*.45,t,.12);g.setTargetAtTime(crowdBase,t+1.8,.9);
+  sfxSlice('cheer',.2,rand(.58,.66),rand(.5,2),1.6);cheerBusy=t+1.6;crowdNext=t+3.2;}
 function crowdTick(dt){
   if(!AC||!crowdReal||roarG||S.state==='title'||S.state==='over')return;
-  const t=AC.currentTime;if(t<crowdNext)return;
+  const t=AC.currentTime,live=S.state==='windup'||S.state==='pitch';
+  if(live!==(crowdSt==='live')){crowdSt=live?'live':'';const g=crowdGain.gain; // the hush as the pitcher comes set, released if nothing comes of the pitch
+    if(live){g.cancelScheduledValues(t);g.setTargetAtTime(crowdBase*.72,t,.3);}else if(t>cheerBusy)g.setTargetAtTime(crowdBase,t,.4);}
+  if(live||t<crowdNext)return;
   crowdNext=t+rand(2.2,5);
   if(t>cheerBusy){const g=crowdGain.gain;g.cancelScheduledValues(t);g.setTargetAtTime(crowdBase*rand(.9,1.45),t,.5);g.setTargetAtTime(crowdBase,t+1.4,.8);
     if(Math.random()<.4)sfxSlice(Math.random()<.7?'cheer':'cheer_big',rand(.1,.2),rand(.88,1.14),rand(.3,2.4),rand(1.3,2.2));}}
@@ -1986,9 +1997,11 @@ function tryContact(){flight_pop=false;
   if(!flight.admire&&q>.82&&pw&&play.type!=='foul')pop(['CRUSHED!','SMOKED!','TATTOOED!','OBLITERATED!'][(Math.random()*4)|0],'',tb?'hot':'');
   if(play.type!=='foul'&&(tb||(S.over&&S.overOn)||(play.type==='hr'&&play.dist*3.281>=420)))sfx('crush',1);
   {const od=tb||(S.over&&S.overOn),top=play.type==='hr'&&(od||flight.orbit||play.dist*3.281>=480||(S.bases[0]&&S.bases[1]&&S.bases[2]));
-    if(top)roar(1,1.4,true); /* highest tier: Juice and Overdrive homers, orbit shots, 480 ft and up, grand slams */
-    cheer(play.type==='hr'?.42:.12+.2*q,play.type==='hr'?5:1.6);
-    if(play.type==='hr'&&!top)roar(.8,1.4);}
+    if(play.type==='hr'){const runs=1+S.bases.filter(Boolean).length; // how hard the place erupts once it clears the fence: more for every run it drives in, for Overdrive, and for the long ones
+      flight.roarL=Math.min(1.5,.9+.14*(runs-1)+(od?.2:0)+(play.dist*3.281>=480?.1:0));}
+    if(top)roar(.65,1.4,true); /* highest tier: Juice and Overdrive homers, orbit shots, 480 ft and up, grand slams */
+    if(play.type==='hr')cheer(.42,5);else if(play.type!=='foul')crowdRise(q,Math.min(play.endT,3.2));else cheer(.06,1);
+    if(play.type==='hr'&&!top)roar(.65,1.2);}
   if(play.f){play.from=play.f.fig.root.position.clone();}
   if(play.type==='hit')sendRunners(play.bases,{batter:play.bases});
   else if(play.type==='hr')sendRunners(4,{batter:flight.admire?0:4,jog:true});
@@ -2015,7 +2028,7 @@ function afterPA(delay){ // plate appearance over
 function samePA(delay){S.state='result';S.t=now;S.next=null;readyDur=delay;hud();}
 const DEFEAT=3.5,DEF_CUT=1.6; // strikeout reaction: the camera holds on the hitter until DEF_CUT, then cuts to the pitcher's taunt
 function strike(kind){S.heat=Math.min(1,S.heat+.09);S.strikes++;{const n=S.strikes;setTimeout(()=>SND.call(false,n),kind==='look'?240:60);} // the mitt pops first, then the umpire
-  if(S.strikes>=3){recordOut();pop('STRUCK OUT',kind==='look'?'CAUGHT LOOKING':'SWINGING','cool');cheer(.03,1);if(kind==='look')boo(.5);
+  if(S.strikes>=3){recordOut();pop('STRUCK OUT',kind==='look'?'CAUGHT LOOKING':'SWINGING','cool');if(kind==='look')boo(.5);else crowdDrop();
     // the strikeout sulk: one of the defeat routines, with the camera on him (skipped when walk-ups are off, for pace)
     const ds=MX.clip&&WALK.on?Object.keys(MX.clip.intros).filter(k=>/^d_/.test(k)):[];
     if(ds.length){let ts=MX.pit?Object.keys(MX.pit.taunts):[];{const w=ts.filter(k=>WILD_TAUNT.includes(k));if(earlyShow(S.ks||0)&&w.length)ts=w;}S.ks=(S.ks||0)+1;S.kOut={t:now+(kind==='look'?.15:.45),bi:S.bi,clip:ds[(Math.random()*ds.length)|0],taunt:ts[(Math.random()*ts.length)|0]};afterPA(DEFEAT+.75);}else afterPA(1.5);}
@@ -2031,7 +2044,7 @@ function finishPlay(){
     if(dp){recordOut();S.bases[0]=0;} // the man on first is forced at second, then the relay gets the hitter
     const B=(i)=>new V3(BASES[i][0],1.2,BASES[i][1]);
     if(pl.label==='GROUND OUT'&&pl.f&&pl.f.thrAct)f.thr={t0:now+.05,to:dp?B(2):B(1),next:dp?B(1):null,full:true};
-    pop(dp?'DOUBLE PLAY!':pl.air&&f.q>.7?'ROBBED!':'OUT!',dp?'TWO FOR ONE':pl.label,'cool');SND.mitt();cheer(.04,1);if(!dp&&pl.air&&f.q>.7)boo(.4);afterPA(dp?2.7:f.thr?2.1:1.5);return;}
+    pop(dp?'DOUBLE PLAY!':pl.air&&f.q>.7?'ROBBED!':'OUT!',dp?'TWO FOR ONE':pl.label,'cool');SND.mitt();if(!dp&&pl.air&&f.q>.7)boo(.4);else crowdDrop();afterPA(dp?2.7:f.thr?2.1:1.5);return;}
   S.hits++;S.streak++;S.bestStreak=Math.max(S.bestStreak,S.streak);if(!f.tb)S.juice=Math.min(1,S.juice+.25); // every hit is worth one quarter; // a Juice hit doesn't refill the bar it just spent
   if(pl.type==='hr'){
     const ft=Math.round(pl.dist*3.281);S.hrs++;S.longest=Math.max(S.longest,ft);const r=advance(4);
@@ -2039,7 +2052,7 @@ function finishPlay(){
     S.state='celebrate';S.t=now;readyDur=3.1;
     if(f.admire&&WALK.on)startTrot(); // the biggest ones get the trot (skipped in fast mode)
     for(let i=0;i<9;i++)fireworks.push({t:now+.1+i*.3,p:new V3(rand(-65,65),rand(50,88),rand(-165,-115))});
-    cheer(.5,3.5);roar(Math.min(1.7,.9+.16*r+(S.over&&S.overOn?.25:0)),.5);
+    cheer(.5,3.5);if(!f.fenceRoar){f.fenceRoar=true;roar(f.roarL||1,.4);}
   }else{
     const r=advance(pl.bases);
     pop(['SINGLE!','DOUBLE!','TRIPLE!'][pl.bases-1],[r?`+${r} RUN${r>1?'S':''}`:'',pl.tag||(pl.grd?'GROUND-RULE DOUBLE':pl.infield?'BEAT THE THROW':pl.wall?'OFF THE WALL':'')].filter(Boolean).join(' · '),'');cheer(.25,2);
@@ -2831,6 +2844,7 @@ function step(dt){
     else if(!tr.hr&&tr.land&&tr.land.t>.45&&tf<tr.land.t){ // fly balls and liners (not home runs): a ring on the grass that tightens as the ball comes down
       const k=1-tf/tr.land.t;landRing.visible=true;landRing.position.set(tr.land.x,.07,tr.land.z);landRing.scale.setScalar(lerp(1.4,5,k));landRing.material.opacity=.55+.4*(1-k);}
     if(tr.poleT&&!flight.poleHit&&tf>=tr.poleT){flight.poleHit=true;burst(fxL,ball.position,16,7,.5,[1,.9,.3],5,1);tone('sine',1250,900,.5,.6);tone('triangle',2500,1800,.4,.3);pop('OFF THE POLE!','FAIR BALL','hot');} // doink
+    if(tr.hr&&!flight.fenceRoar&&tf>=tr.hrT){flight.fenceRoar=true;roar(flight.roarL||1,.35);} // over the fence: the roar that has been building steps up
     if(tr.eyeT&&!flight.orbit&&!flight.eyeHit&&tf>=tr.eyeT){flight.eyeHit=true;zapStart(ball.position,false);burst(fxL,ball.position,26,9,.7,[.6,.85,1],7,1);SND.mitt();tone('sine',120,50,.25,.5);} // thud off the batter's eye
     if(tr.land&&!flight.orbit&&!flight.landed&&tf>=tr.land.t){flight.landed=true;_p.set(tr.land.x,.05,tr.land.z);burst(fxL,_p,10,3,.5,[.75,.6,.42],4,2);} // dust where it comes down, so fair or foul is clear
     const dc=camera.position.distanceTo(ball.position);ball.scale.setScalar(Math.max(1,dc*.05));
@@ -2957,7 +2971,7 @@ const LITE=matchMedia('(pointer:coarse)').matches;
 if(LITE){QS=.85;rim.shadow.mapSize.set(512,512);renderer.shadowMap.type=T.PCFShadowMap;}else initPost();
 resize();hud();
 const DBG={pcut:false,fl:'',rob:false,pc:false,staunt:false,pod:false,trail:false,orbit:false,pdef:false,dbl:false,cam:false,admire:'',trip:false,fist:false,pop:false,loser:false}; // test hook: pin the camera to CAM_HOME/CAM_LOOK
-window.__mm={renderer,scene,LODM,camera,zapStart,S,aim,MX,DBG,landRingOn:()=>landRing.visible,hud,tutAnim,draw:()=>draw(),endGame,TROT,SFX,RUN,ballPos:()=>ball.position,ballVisible:()=>ball.visible,fielders,toReady,CAM_HOME,CAM_LOOK,now:()=>now,simulate,judge,get pitch(){return pitch;},get flight(){return flight;},lastSwing:()=>{const t=swing&&swing.type;swing=null;return t;},lastSwingTurbo:()=>!!(swing&&swing.turbo),doSwing,newGame,V3,
+window.__mm={renderer,scene,LODM,camera,zapStart,acState:()=>AC?AC.state+" t="+AC.currentTime.toFixed(1)+" real="+crowdReal+" roar="+!!roarG+" bed="+crowdGain.gain.value.toFixed(2):"none",roar,roarOff,boo,cheer,crowdRise,crowdDrop,S,aim,MX,DBG,landRingOn:()=>landRing.visible,hud,tutAnim,draw:()=>draw(),endGame,TROT,SFX,RUN,ballPos:()=>ball.position,ballVisible:()=>ball.visible,fielders,toReady,CAM_HOME,CAM_LOOK,now:()=>now,simulate,judge,get pitch(){return pitch;},get flight(){return flight;},lastSwing:()=>{const t=swing&&swing.type;swing=null;return t;},lastSwingTurbo:()=>!!(swing&&swing.turbo),doSwing,newGame,V3,
   sim:(dt)=>{hitstop=0;now+=dt;step(dt);},
   step:(n,dt=1/60)=>{for(let i=0;i<n;i++){if(hitstop>0)hitstop=0;now+=dt;step(dt);}updateCamera(dt);draw();}};
 if(!window.__mmManual)requestAnimationFrame(frame);
