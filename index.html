@@ -1423,7 +1423,7 @@ const TIPS=[['AIM','Drag your left thumb anywhere on the screen to move the bat 
   ['READ THE SWING','After every swing, the line under the zone tells you your timing and where the barrel missed.'],
   ['OVERDRIVE','Fill the Juice meter all the way and JUICE turns into a blue OVERDRIVE button. Tap it: every swing that at-bat is a free Juice swing.'],
   ['SPEND OR SAVE','Spend Juice a quarter at a time, or save all four quarters for Overdrive. Overdrive lasts one at-bat, then the meter starts from empty.']];
-let tipI=(Math.random()*3)|0;function nextTip(){const t=TIPS[tipI++%TIPS.length];$('tiph').textContent=t[0];$('tipb').textContent=t[1];}nextTip();setInterval(()=>{if(!$('title').hidden)nextTip();},4500);
+let tipI=(Math.random()*3)|0;function nextTip(){const t=TIPS[tipI++%TIPS.length];$('tiph').textContent='TIPS: '+t[0];$('tipb').textContent=t[1];}nextTip();setInterval(()=>{if(!$('title').hidden)nextTip();},4500);
 // thumb guide before the very first pitch on a phone
 const TUT_EVERY_LAUNCH=true; // testing: show the guide on every launch; set false to go back to once per device
 let tutFirst=false,tutHold=false,tutSeen=!MOB;try{if(!TUT_EVERY_LAUNCH&&localStorage.getItem('mm_tut')==='1')tutSeen=true;}catch(e){}
