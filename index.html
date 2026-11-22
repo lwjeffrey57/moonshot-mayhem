@@ -1438,7 +1438,7 @@ function audioInit(){
   noiseBuf=AC.createBuffer(1,AC.sampleRate*2,AC.sampleRate);const d=noiseBuf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;
   const src=AC.createBufferSource();src.buffer=noiseBuf;src.loop=true;
   const bp=AC.createBiquadFilter();bp.type='bandpass';bp.frequency.value=850;bp.Q.value=.45;
-  crowdGain=AC.createGain();crowdGain.gain.value=.05;src.connect(bp);bp.connect(crowdGain);crowdGain.connect(master);src.start();loadSfx(src);
+  crowdGain=AC.createGain();crowdGain.gain.value=.05;src.connect(bp);bp.connect(crowdGain);zoneLP=AC.createBiquadFilter();zoneLP.type='lowpass';zoneLP.frequency.value=20000;zoneLP.Q.value=.6;crowdGain.connect(zoneLP);zoneLP.connect(master);src.start();loadSfx(src);
 }
 function noise(dur,type,f0,f1,vol,q=1,delay=0){if(!AC)return;const t=AC.currentTime+delay,s=AC.createBufferSource();s.buffer=noiseBuf;
   const f=AC.createBiquadFilter();f.type=type;f.Q.value=q;f.frequency.setValueAtTime(f0,t);f.frequency.exponentialRampToValueAtTime(f1,t+dur);
@@ -1458,10 +1458,13 @@ function roar(level,ramp,top){
   if(!roarG){roarG=AC.createGain();roarG.gain.value=0;roarG.connect(master);
     roarS=[[.8,1],[1.9,1.06]].map(o=>{const src=AC.createBufferSource();src.buffer=b;src.loop=true;src.loopStart=.8;src.loopEnd=Math.max(1.6,Math.min(3,b.duration-.6));src.playbackRate.value=o[1];src.connect(roarG);src.start(t,o[0]);return src;});}
   const g=roarG.gain;g.cancelScheduledValues(t);g.setValueAtTime(g.value,t);g.linearRampToValueAtTime(Math.min(roarTop?.86:1.2,(roarTop?.6:.62)*level),t+ramp);}
-function roarOff(fade=1.8){
+function roarOff(fade=3.6){ // a crowd comes down in a long tail, quick at first and then lingering: never a switch
   if(!roarG)return;
   const t=AC.currentTime,g=roarG.gain,ss=roarS;roarG=null;roarS=[];roarTop=false;roarHR=false;
-  g.cancelScheduledValues(t);g.setValueAtTime(g.value,t);g.linearRampToValueAtTime(0,t+fade);ss.forEach(x=>{try{x.stop(t+fade+.1);}catch(e){}});}
+  const lvl=g.value;g.cancelScheduledValues(t);g.setValueAtTime(lvl,t);g.setTargetAtTime(0,t,fade/3.2);ss.forEach(x=>{try{x.stop(t+fade*1.7);}catch(e){}});
+  if(crowdReal&&lvl>.2&&fade>1.5){ // and the bed stays lifted underneath, settling over the next several seconds, so the next pitch arrives into a buzz, not a void
+    const b=crowdGain.gain;b.cancelScheduledValues(t);b.setValueAtTime(Math.max(b.value,crowdBase*(1.3+.6*Math.min(1,lvl))),t);b.setTargetAtTime(crowdBase,t+.6,1.7);crowdCool=t+6;crowdNext=t+7;
+    if(lvl>.45)setTimeout(()=>{if(!roarG)sfxSlice('cheer',.22,rand(.92,1.02),rand(1.6,2.2),2.4);},900);}} // a last scatter of applause as it dies
 // a piece of a recording: random start point and speed, faded in and out, so the same cheer never sounds the same twice
 function sfxSlice(name,vol,rate,off,dur){const b=SFX[name];if(!AC||!b)return false;
   const t=AC.currentTime,src=AC.createBufferSource(),g=AC.createGain();src.buffer=b;src.playbackRate.value=rate;off=Math.min(off,Math.max(0,b.duration-dur*rate-.05));
@@ -1507,7 +1510,7 @@ function crowdTick(dt){
   if(!AC||!crowdReal||roarG||S.state==='title'||S.state==='over')return;
   const t=AC.currentTime,live=S.state==='windup'||S.state==='pitch';
   if(live!==(crowdSt==='live')){crowdSt=live?'live':'';const g=crowdGain.gain; // the hush as the pitcher comes set, released if nothing comes of the pitch
-    if(live){g.cancelScheduledValues(t);g.setTargetAtTime(crowdBase*.72,t,.3);}else if(t>cheerBusy)g.setTargetAtTime(crowdBase,t,.4);}
+    if(live){if(t>crowdCool){g.cancelScheduledValues(t);g.setTargetAtTime(crowdBase*.72,t,.3);}}else if(t>cheerBusy&&t>crowdCool)g.setTargetAtTime(crowdBase,t,.4);} // no hush while the crowd is still coming down from something big
   if(live||t<crowdNext)return;
   crowdNext=t+rand(2.2,5);
   if(t>cheerBusy){const g=crowdGain.gain;g.cancelScheduledValues(t);g.setTargetAtTime(crowdBase*rand(.9,1.2),t,.7);g.setTargetAtTime(crowdBase,t+1.4,.8);}} // only the bed moves between pitches: no cheers or pops unless something has happened
@@ -1549,7 +1552,16 @@ function crowdPump(k=1){if(!AC)return;const t=AC.currentTime;
   else roar(.95*k,.3);
   sfxSlice('cheer_big',.5*k,rand(1,1.06),rand(0,.3),2.6);cheerBusy=t+2.4;}
 // Overdrive has a pulse: a low 'lub-dub' while it is switched on and the at-bat is live. It quickens when the pitcher is in his too.
-let hbNext=0;
+let hbNext=0,zoneLP=null,zoneOn=false,crowdCool=0;
+// 'In the zone': while Overdrive is on and the at-bat is live, the crowd is heard as if through a wall (the highs are rolled off and a
+// little level comes out) so the heartbeat and the pitch sit on top. The instant the ball is hit, or the at-bat ends, the park rushes back in.
+function zoneTick(){
+  if(!AC||!zoneLP)return;
+  const on=!!(S.over&&S.overOn)&&(S.state==='ready'||S.state==='windup'||S.state==='pitch');
+  if(on===zoneOn)return;
+  zoneOn=on;const t=AC.currentTime,f=zoneLP.frequency;f.cancelScheduledValues(t);f.setValueAtTime(Math.max(200,f.value),t);
+  if(on)f.exponentialRampToValueAtTime(620,t+.7);
+  else f.exponentialRampToValueAtTime(20000,t+.18);}
 function heartTick(){
   if(!AC||!(S.over&&S.overOn)||!(S.state==='ready'||S.state==='windup'||S.state==='pitch'))return;
   const t=AC.currentTime;if(t<hbNext)return;
@@ -3142,7 +3154,7 @@ function step(dt){
   ptarget.visible=pring.visible;if(pring.visible)ptarget.position.copy(pring.position);
   // reticle
   const b=S.bi>=0?curBatter():LINEUP[0],tb=(S.over&&S.overOn)||(!S.over&&juiceOn()&&S.juice>=.25);
-  stickHint();sbTick();zapTick();crowdTick(dt);shoutTick();organTick();roarTick();heartTick();
+  stickHint();sbTick();zapTick();crowdTick(dt);shoutTick();organTick();roarTick();heartTick();zoneTick();
   if(flight&&flight.play.type==='hr'&&!flight.sbHit&&!flight.orbit&&ball.visible&&Math.abs(ball.position.x)<24&&ball.position.y>22&&ball.position.y<40&&ball.position.z<-(fenceR(0)+15)&&ball.position.z>-(fenceR(0)+24)){flight.sbHit=true;zapStart(ball.position,true);burst(fxL,ball.position,26,9,.7,[.6,.85,1],7,1);}
   reticle.position.set(aim.x,aim.y,0);
   {const ez=easyAB()?1.3:1;retC.scale.setScalar(.17*b.con*1.25*(tb?1.2:1)*ez);retP.scale.setScalar(.17*b.con*(tb?.8:.63)*(tb?1.2:1)*ez);}
@@ -3242,7 +3254,7 @@ const LITE=matchMedia('(pointer:coarse)').matches;
 if(LITE){QS=.85;rim.shadow.mapSize.set(512,512);renderer.shadowMap.type=T.PCFShadowMap;}else initPost();
 resize();hud();
 const DBG={pcut:false,fl:'',rob:false,pc:false,staunt:false,pod:false,trail:false,orbit:false,pdef:false,dbl:false,cam:false,admire:'',trip:false,fist:false,pop:false,loser:false}; // test hook: pin the camera to CAM_HOME/CAM_LOOK
-window.__mm={GLOVE,renderer,scene,LODM,camera,zapStart,acState:()=>AC?AC.state+" t="+AC.currentTime.toFixed(1)+" real="+crowdReal+" roar="+!!roarG+" bed="+crowdGain.gain.value.toFixed(2):"none",roar,roarOff,boo,cheer,crowdRise,crowdDrop,S,aim,MX,DBG,landRingOn:()=>landRing.visible,hud,tutAnim,draw:()=>draw(),endGame,TROT,SFX,RUN,ballPos:()=>ball.position,ballVisible:()=>ball.visible,fielders,toReady,CAM_HOME,CAM_LOOK,now:()=>now,simulate,judge,get pitch(){return pitch;},get flight(){return flight;},lastSwing:()=>{const t=swing&&swing.type;swing=null;return t;},lastSwingTurbo:()=>!!(swing&&swing.turbo),doSwing,newGame,V3,
+window.__mm={GLOVE,renderer,scene,LODM,camera,zapStart,acState:()=>AC?(zoneLP?"lp="+Math.round(zoneLP.frequency.value)+" ":"")+AC.state+" t="+AC.currentTime.toFixed(1)+" real="+crowdReal+" roar="+!!roarG+" bed="+crowdGain.gain.value.toFixed(2):"none",roar,roarOff,boo,cheer,crowdRise,crowdDrop,S,aim,MX,DBG,landRingOn:()=>landRing.visible,hud,tutAnim,draw:()=>draw(),endGame,TROT,SFX,RUN,ballPos:()=>ball.position,ballVisible:()=>ball.visible,fielders,toReady,CAM_HOME,CAM_LOOK,now:()=>now,simulate,judge,get pitch(){return pitch;},get flight(){return flight;},lastSwing:()=>{const t=swing&&swing.type;swing=null;return t;},lastSwingTurbo:()=>!!(swing&&swing.turbo),doSwing,newGame,V3,
   sim:(dt)=>{hitstop=0;now+=dt;step(dt);},
   step:(n,dt=1/60)=>{for(let i=0;i<n;i++){if(hitstop>0)hitstop=0;now+=dt;step(dt);}updateCamera(dt);draw();}};
 if(!window.__mmManual)requestAnimationFrame(frame);
