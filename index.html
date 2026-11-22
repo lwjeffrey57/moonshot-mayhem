@@ -759,7 +759,7 @@ const basic=(o)=>new T.MeshBasicMaterial(Object.assign({side:T.DoubleSide},o));
     g.beginPath();g.arc(gx(0),gz(-18.4),29*GS,0,7);dirt();g.restore();                                                             // infield skin
     g.beginPath();g.arc(gx(0),gz(0),3.96*GS,0,7);dirt();
     grass(()=>{g.beginPath();g.moveTo(gx(0),gz(-2.6));g.lineTo(gx(16.8),gz(-19.4));g.lineTo(gx(0),gz(-36.2));g.lineTo(gx(-16.8),gz(-19.4));g.closePath();});
-    g.beginPath();g.rect(gx(-1.25),gz(-17),2.5*GS,14.5*GS);dirt();                                                                   // the keyhole: a path from the plate to the mound, so the strike zone sits on one plain surface
+    g.beginPath();g.rect(gx(-.6),gz(-17),1.2*GS,14.5*GS);dirt();                                                                   // the keyhole: a path from the plate to the mound, so the strike zone sits on one plain surface
     g.beginPath();g.arc(gx(0),gz(0),3.96*GS,0,7);dirt();
     g.beginPath();g.arc(gx(0),gz(-18.4),2.74*GS,0,7);dirt('#a3a4ac');                                                              // mound
     if(mask)return;
@@ -1515,7 +1515,7 @@ function stickHint(){
   const live=!S.stk&&!touchLast&&S.inning===1&&S.outs===0&&S.bi===0&&S.balls+S.strikes===0&&(S.state==='ready'||S.state==='windup'||S.state==='pitch');
   if(live!==hintOn){hintOn=live;$('apad').classList.toggle('hint',live);}}
 // Celebrating on second: he shouts, in big letters over his head. Two lines per celebration, the second one about the runs he drove in if any.
-const SHOUT_A=["LET'S GO!!","LET'S GOOO!","YEAH!!","COME ON!!","THAT'S HOW!"],SHOUT_B=['TWO BAGS!','KEEP IT ROLLING!','NOBODY OUT THERE!','BRING ME HOME!'];
+const SHOUT_A=["LET'S GO!!","LET'S GOOO!","YEAH!!","THAT'S HOW!"],SHOUT_B=['TWO BAGS!','KEEP IT ROLLING!','NOBODY OUT THERE!'];
 let shoutI=-1,shoutLast='';const _sh=new V3();
 function shoutTick(){
   const el=$('shout');
@@ -1609,12 +1609,12 @@ function setBatter(){
   duelEnd();
   if(S.pOver){S.pOver=false;S.heat=0;}
   // PITCHING CHANGE: the defence goes to the bullpen when the man on the mound has given up three runs, or (half the time) to open the third inning.
-  // At most two a game. The new arm comes in fresh, with a full Juice bar, and from the second inning on he sometimes arrives already in Overdrive.
+  // At most two a game. The new arm comes in fresh: two of three bars, or (from the second inning on, a little under half the time) a full bar and already in Overdrive.
   else if(S.bi>=3&&S.pChanges<2&&(DBG.pc||S.runs-S.pRuns0>=3||(S.inning===3&&!S.pc3&&(S.pc3=true)&&Math.random()<.5))){
-    S.pChanges++;S.pRuns0=S.runs;S.pName=BULLPEN[S.pChanges%BULLPEN.length];S.heat=1;S.pcPending=true;if(S.inning>=2&&Math.random()<.45)S.pOver=true;}
+    S.pChanges++;S.pRuns0=S.runs;S.pName=BULLPEN[S.pChanges%BULLPEN.length];S.pcPending=true;if(S.inning>=2&&Math.random()<.45){S.heat=1;S.pOver=true;}else S.heat=.667;} // a full bar always means Overdrive: he arrives either in it, or with two of three bars
   // He can also just snap: from the second inning on there is a chance each new hitter that he goes into Overdrive whatever his meter says,
   // and the more runs he has given up the likelier it is (3% with no runs, about 30% once eight are in). Never in the first inning.
-  else if(S.inning>=2&&((S.heat>=.999&&Math.random()<.55)||DBG.pod||Math.random()<.03+.034*Math.min(S.runs,8))){S.pOver=true;setTimeout(()=>{if(S.pOver){boo(.55);SND.zap();buzz([40,40,40,40,90]);pop('PITCHER OVERDRIVE!','EVERY PITCH THIS AT-BAT IS A JUICE PITCH','hot',true);}},900);duelCheck();}
+  else if(S.inning>=2&&(S.heat>=.999||DBG.pod||Math.random()<.03+.034*Math.min(S.runs,8))){S.pOver=true;setTimeout(()=>{if(S.pOver){boo(.55);SND.zap();buzz([40,40,40,40,90]);pop('PITCHER OVERDRIVE!','EVERY PITCH THIS AT-BAT IS A JUICE PITCH','hot',true);}},900);duelCheck();}
   aim.x=0;aim.y=.825; // every hitter starts with the ring in the middle of the zone
  
   paintJersey(batter,Object.assign({name:b.name,num:b.num},HOME));paintSkin(batter,b.skin);if(MX.ready)paintAtlas(b);
@@ -2026,7 +2026,10 @@ function advance(n,walk){let r=0;const b=S.bases;
   if(walk){if(b[0]){if(b[1]){if(b[2])r++;b[2]=1;}b[1]=1;}b[0]=1;}
   else{for(let i=2;i>=0;i--)if(b[i]){b[i]=0;if(i+n>=3)r++;else b[i+n]=1;}if(n>=4)r++;else b[n-1]=1;}
   addRuns(r);return r;}
-function recordOut(){S.heat=Math.min(1,S.heat+.14);S.outs++;S.streak=0;}
+// The pitcher's bar rounds up: anything that looks full IS full, and a full bar is Overdrive for the next hitter. In the first inning
+// (no pitcher Overdrive yet) it stops short of looking full.
+function heatUp(d){S.heat=Math.min(S.inning<2?.8:1,S.heat+d);if(S.heat>=.9)S.heat=1;}
+function recordOut(){heatUp(.14);S.outs++;S.streak=0;}
 function afterPA(delay){ // plate appearance over
   if(S.outs>=3){S.inning++;S.outs=0;S.bases=[0,0,0];
     if(S.inning>3){S.state='end';S.t=now;readyDur=delay+.4;hud();return;}
@@ -2035,7 +2038,7 @@ function afterPA(delay){ // plate appearance over
 }
 function samePA(delay){S.state='result';S.t=now;S.next=null;readyDur=delay;hud();}
 const DEFEAT=3.5,DEF_CUT=1.6; // strikeout reaction: the camera holds on the hitter until DEF_CUT, then cuts to the pitcher's taunt
-function strike(kind){S.heat=Math.min(1,S.heat+.09);S.strikes++;{const n=S.strikes;setTimeout(()=>SND.call(false,n),kind==='look'?240:60);} // the mitt pops first, then the umpire
+function strike(kind){heatUp(.09);S.strikes++;{const n=S.strikes;setTimeout(()=>SND.call(false,n),kind==='look'?240:60);} // the mitt pops first, then the umpire
   if(S.strikes>=3){recordOut();pop('STRUCK OUT',kind==='look'?'CAUGHT LOOKING':'SWINGING','cool');if(kind==='look')boo(.5);else crowdDrop();
     // the strikeout sulk: one of the defeat routines, with the camera on him (skipped when walk-ups are off, for pace)
     const ds=MX.clip&&WALK.on?Object.keys(MX.clip.intros).filter(k=>/^d_/.test(k)):[];
