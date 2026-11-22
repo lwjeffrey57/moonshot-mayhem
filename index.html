@@ -734,7 +734,7 @@ function lodTick(){
 let cardHd=false;
 function cardTick(){
   if(!MOB)return;
-  const on=camMode==='bat'&&(S.state==='ready'||S.state==='windup'||S.state==='pitch')&&S.cardBi>=0,c=$('card');
+  const on=false,c=$('card'); // switched off: no name over the hitter you are controlling. The card stays in its usual place with his grades.
   if(on!==cardHd){cardHd=on;c.classList.toggle('hd',on);if(!on)c.style.transform='';}
   if(!on)return;
   const W=canvas.clientWidth||innerWidth,H=canvas.clientHeight||innerHeight,lh=MX.lefty?1:-1;
@@ -1372,7 +1372,7 @@ const ballTex=tex(256,128,(g,w,h)=>{g.fillStyle='#f6f3e8';g.fillRect(0,0,w,h);
   g.strokeStyle='#c8281e';g.lineWidth=5;g.beginPath();for(let x=0;x<=w;x+=2){x?g.lineTo(x,Y(x)):g.moveTo(x,Y(x));}g.stroke();
   g.lineWidth=2.2;for(let x=0;x<w;x+=7){const y=Y(x),dy=Y(x+1)-y,L=Math.hypot(1,dy),nx=-dy/L,ny=1/L;g.beginPath();g.moveTo(x-nx*7,y-ny*7);g.lineTo(x+nx*7,y+ny*7);g.stroke();}});
 ballTex.anisotropy=ANISO;
-const ball=new T.Mesh(new T.SphereGeometry(.05,16,12),new T.MeshBasicMaterial({color:0xffffff,map:ballTex}));ball.visible=false;scene.add(ball);
+const ball=new T.Mesh(new T.SphereGeometry(.05,16,12),new T.MeshBasicMaterial({color:0xffffff,map:ballTex,transparent:true}));ball.renderOrder=20;ball.visible=false;{const bg=new T.Group();bg.renderOrder=20;bg.add(ball);scene.add(bg);} // in its own late-drawn group, so it is painted on top of the zone backing and the ring fills instead of being tinted by them
 const SPIN={FASTBALL:[1,0,0,34],CURVEBALL:[-1,0,0,30],SLIDER:[.3,.25,.92,38],CHANGEUP:[.85,.5,.1,17],SCREWBALL:[-.5,.6,.6,26]},_spin=new V3();
 const ballShadow=new T.Mesh(GEO.blob,blobMat);ballShadow.rotation.x=-PI/2;ballShadow.visible=false;scene.add(ballShadow);
 const ballGlow=new T.Sprite(new T.SpriteMaterial({map:glowTex,color:0xffe53b,blending:T.AdditiveBlending,depthWrite:false,transparent:true,opacity:0}));scene.add(ballGlow);
@@ -1381,6 +1381,10 @@ const ZONE={x0:-.28,x1:.28,y0:.5,y1:1.15};
 const zone=new T.Group(); // drawn as thin bars: WebGL lines are always one pixel wide
 {const m=new T.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.55,depthTest:false}),w=.011,W=ZONE.x1-ZONE.x0,H=ZONE.y1-ZONE.y0,cx=(ZONE.x0+ZONE.x1)/2,cy=(ZONE.y0+ZONE.y1)/2;
  [[cx,ZONE.y0,W+w,w],[cx,ZONE.y1,W+w,w],[ZONE.x0,cy,w,H-w],[ZONE.x1,cy,w,H-w]].forEach(q=>{const b=new T.Mesh(new T.PlaneGeometry(q[2],q[3]),m);b.position.set(q[0],q[1],0);b.renderOrder=8;zone.add(b);});}
+// a dark, see-through backing behind the strike zone, so the white ball stands out against the pale ground when it gets there.
+// It is drawn before the ball (which is moved to the end of the draw order below), so it darkens the background and never the ball.
+{const bk=new T.Mesh(new T.PlaneGeometry(ZONE.x1-ZONE.x0,ZONE.y1-ZONE.y0),new T.MeshBasicMaterial({color:0x05060f,transparent:true,opacity:.34,depthTest:false,depthWrite:false}));
+  bk.position.set((ZONE.x0+ZONE.x1)/2,(ZONE.y0+ZONE.y1)/2,0);bk.renderOrder=6;zone.add(bk);}
 zone.renderOrder=8;scene.add(zone);
 const reticle=new T.Group();reticle.renderOrder=9;scene.add(reticle);
 const retC=new T.Mesh(new T.RingGeometry(.93,1,28),overlayMat(0x3ddc6a,.95));retC.renderOrder=9;reticle.add(retC);
