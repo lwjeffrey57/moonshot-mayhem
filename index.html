@@ -508,12 +508,14 @@ body.mob #tip{display:block}body.mob .how{display:none}
 @media (max-height:520px){.how{display:none}}
 @media (max-width:560px){.big{font-size:20px}}
 @media (prefers-reduced-motion:reduce){#pop.go{animation-timing-function:ease-out}}
-#tags i{position:absolute;left:0;top:0;display:none;transform:translate(-50%,-100%);font-family:var(--hud);font-style:normal;font-weight:800;font-size:11px;letter-spacing:.1em;line-height:1;color:#fff;white-space:nowrap;padding:2px 6px 3px;background:rgba(8,10,26,.72);border-radius:8px;border-bottom:2px solid #0e9aa6;pointer-events:none}
-#tags i.me{border-bottom-color:var(--volt);font-size:12px}
-/* phones: during an at-bat the batter card rides just above the hitter's head, where the eyes already are (compact: name over grades) */
-#hud.mob>#card.hd{left:0;top:0;right:auto;bottom:auto;flex-direction:row;gap:6px;padding:3px 8px 4px;align-items:center}
-#hud.mob>#card.hd #cnum{font-size:20px}#hud.mob>#card.hd #cname{font-size:13px}
-#hud.mob>#card.hd .stats{gap:6px;margin-top:0}#hud.mob>#card.hd .stat{font-size:8px;gap:2px}#hud.mob>#card.hd .stat em{font-size:17px}
+#tags i{position:absolute;left:0;top:0;display:none;transform:translate(-50%,-100%);font-family:var(--display);font-style:italic;font-weight:400;font-size:13px;letter-spacing:.04em;line-height:1;color:#fff;white-space:nowrap;-webkit-text-stroke:3px #000;paint-order:stroke fill;text-shadow:0 2px 0 #000;pointer-events:none}
+#tags i.me{color:var(--volt);font-size:15px}
+/* phones: during an at-bat the hitter's number and name ride just above his head, as plain outlined lettering (no panel, no grades) */
+#hud.mob>#card.hd{left:0;top:0;right:auto;bottom:auto;gap:5px;padding:0;align-items:baseline;background:none;border:0;box-shadow:none;transform-origin:0 0}
+#hud.mob>#card.hd .stats{display:none}
+#hud.mob>#card.hd #cnum,#hud.mob>#card.hd #cname{font-family:var(--display);font-style:italic;font-size:16px;line-height:1;color:#fff;-webkit-text-stroke:3px #000;paint-order:stroke fill;text-shadow:0 2px 0 #000}
+#hud.mob>#card.hd #cnum{color:var(--volt)}#hud.mob>#card.hd #cnum::before{content:'#'}
+#hud.mob>#card.hd.odc #cname{color:#8fe8ff}
 #surge{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none;z-index:0}
 #sharp{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:visible;filter:drop-shadow(0 0 .6px rgba(0,0,0,.9))}
 #rating .res{font-family:var(--display);font-style:italic;font-size:clamp(26px,7vw,48px);line-height:1;color:var(--volt);-webkit-text-stroke:1.5px #000;text-shadow:0 4px 0 #000;margin-bottom:8px}
@@ -736,8 +738,9 @@ function cardTick(){
   if(on!==cardHd){cardHd=on;c.classList.toggle('hd',on);if(!on)c.style.transform='';}
   if(!on)return;
   const W=canvas.clientWidth||innerWidth,H=canvas.clientHeight||innerHeight,lh=MX.lefty?1:-1;
-  _s0.set(lh*.97,1.66,.12).project(camera);const cw=c.offsetWidth||150,ch=c.offsetHeight||44;
-  const x=clamp((_s0.x*.5+.5)*W-cw*.42,6,W-cw-6),y=Math.max(150,(-_s0.y*.5+.5)*H-ch-2);
+  if(MX.clip&&MX.clip.hips){MX.clip.hips.getWorldPosition(_s0);_s0.y=1.66;}else _s0.set(lh*.97,1.66,.12);
+  _s0.project(camera);const cw=c.offsetWidth||150,ch=c.offsetHeight||44;
+  const x=clamp((_s0.x*.5+.5)*W-cw*.5,4,W-cw-4),y=Math.max(150,(-_s0.y*.5+.5)*H-ch-2);
   c.style.transform='translate('+x.toFixed(0)+'px,'+y.toFixed(0)+'px)';}
 function draw(){lodTick();gloveTick();if(composer)composer.render();else renderer.render(scene,camera);sharpTick();tagsTick();cardTick();}
 const scene=new T.Scene();
@@ -1150,9 +1153,9 @@ function sbDraw(force){
 function sbTick(){if(sbMsgT<0)sbMsgT=now+4.5;else if(sbMsgT&&now>sbMsgT&&S.state!=='title'&&S.state!=='over'){sbMsgT=0;sbDraw(true);}}
 {
   const sb=new T.Mesh(new T.BoxGeometry(48,18,2.5),[0,1,2,3,4,5].map(i=>i===4?sbMat:new T.MeshBasicMaterial({color:0x15132a})));
-  sb.position.set(0,31,-(fenceR(0)+17));sb.lookAt(0,14,0);scene.add(sb);
+  sb.position.set(0,39,-(fenceR(0)+17));sb.lookAt(0,16,0);scene.add(sb);
   const leg=new T.MeshBasicMaterial({color:0x15132a});
-  [-19,19].forEach(x=>{const m=new T.Mesh(new T.BoxGeometry(1.6,14,1.6),leg);m.position.set(x,16,-(fenceR(0)+18));scene.add(m);});
+  [-19,19].forEach(x=>{const m=new T.Mesh(new T.BoxGeometry(1.6,22,1.6),leg);m.position.set(x,20,-(fenceR(0)+18));scene.add(m);});
   scoreboard('MOONSHOT','MAYHEM');
 }
 // A ball off the batter's eye (a solar array) or the scoreboard shorts it out: the panel flickers, arcs crawl over it, sparks rain down.
@@ -1340,7 +1343,7 @@ const FSCALE={inf:1.22,of:1.55,p:1.1};
 const FIELD=[['1B',16,-23,0],['2B',9,-34,0],['SS',-10,-34,0],['3B',-16,-23,0],['LF',-36,-71,1],['CF',0,-90,1],['RF',36,-71,1]];
 const fielders=FIELD.map((d,i)=>{const fig=mkFielder(['REEF','SQUALL','TIDE','FATHOM','BRINE','MAELSTROM','ANCHOR'][i],[11,2,7,23,31,5,40][i]);
   const home=new V3(d[1],0,d[2]);fig.root.scale.setScalar(d[3]?FSCALE.of:FSCALE.inf);fig.root.position.copy(home);fig.root.rotation.y=Math.atan2(-home.x,-home.z);scene.add(fig.root);
-  return {fig,home,name:['REEF','SQUALL','TIDE','FATHOM','BRINE','MAELSTROM','ANCHOR'][i],pos:d[0],of:!!d[3],scale:d[3]?FSCALE.of:FSCALE.inf,speed:d[3]?5.6:5.2,react:d[3]?.6:.32,reach:d[3]?1.2:1.0,ph:Math.random()*6};});
+  return {fig,home,name:['REEF','SQUALL','TIDE','FATHOM','BRINE','MAELSTROM','ANCHOR'][i],num:[11,2,7,23,31,5,40][i],pos:d[0],of:!!d[3],scale:d[3]?FSCALE.of:FSCALE.inf,speed:d[3]?5.6:5.2,react:d[3]?.6:.32,reach:d[3]?1.2:1.0,ph:Math.random()*6};});
 fielders.push({fig:pitcher,home:new V3(0,0,-17.2),of:false,speed:3.5,react:.55,reach:.6,isP:true,ph:0});
 
 const POSE={
@@ -1425,13 +1428,13 @@ function tagsTick(){
   fielders.forEach((f,i)=>{const T=TAGS[i];let on=live;
     if(on){const r=f.fig.root;_s0.set(r.position.x,2.15*(f.scale||1),r.position.z);const d=_s0.distanceTo(camera.position);_s0.project(camera);
       on=_s0.z<1&&Math.abs(_s0.x)<1.05&&Math.abs(_s0.y)<1.05&&d<95&&(f===flight.play.f||d<60);
-      if(on){const t=f.isP?(S.pName?S.pName[0]:'STORM'):f.name;if(t!==T.t){T.t=t;T.e.textContent=t;}
+      if(on){const t=f.isP?(S.pName?'#'+S.pName[1]+' '+S.pName[0]:'#99 STORM'):'#'+f.num+' '+f.name;if(t!==T.t){T.t=t;T.e.textContent=t;}
         T.e.style.transform='translate(-50%,-100%) translate('+((_s0.x*.5+.5)*W).toFixed(0)+'px,'+((-_s0.y*.5+.5)*H).toFixed(0)+'px)';T.e.classList.toggle('me',f===flight.play.f);}}
     if(on!==T.on){T.on=on;T.e.style.display=on?'block':'none';}});}
 function sharpInit(){
   const ns='http://www.w3.org/2000/svg',sv=document.createElementNS(ns,'svg');sv.id='sharp';sv.setAttribute('aria-hidden','true');$('hud').insertBefore(sv,$('hud').firstChild);
   SH.zone=document.createElementNS(ns,'polygon');SH.zone.setAttribute('fill','none');SH.zone.setAttribute('stroke','#ffffff');SH.zone.setAttribute('stroke-width','2.6');SH.zone.style.filter='drop-shadow(0 0 1px #000) drop-shadow(0 0 1px #000)';SH.zone.setAttribute('stroke-linejoin','miter');SH.zone.style.display='none';sv.appendChild(SH.zone);
-  SH.grid=document.createElementNS(ns,'path');SH.grid.setAttribute('fill','none');SH.grid.setAttribute('stroke','rgba(16,18,30,.8)');SH.grid.setAttribute('stroke-width','1.3'); // dark, so the white ball never crosses a white lineSH.grid.style.display='none';sv.insertBefore(SH.grid,SH.zone); // the classic nine boxes, drawn faint so they guide the eye without covering the ball
+  SH.grid=document.createElementNS(ns,'path');SH.grid.setAttribute('fill','none');SH.grid.setAttribute('stroke','rgba(8,9,20,.95)');SH.grid.setAttribute('stroke-width','1.6');SH.grid.style.display='none';sv.insertBefore(SH.grid,SH.zone); // the classic nine boxes, drawn faint so they guide the eye without covering the ball
   [[retC,.93],[retP,.9],[pring,.86],[ptarget,.84]].forEach(q=>{const e=document.createElementNS(ns,'ellipse');e.setAttribute('fill','none');e.style.display='none';sv.appendChild(e);SH.rings.push({m:q[0],inner:q[1],e,on:false,col:-1});});}
 const _s0=new V3(),_s1=new V3(),_s2=new V3();
 const shVis=o=>{for(;o;o=o.parent)if(!o.visible)return false;return true;};
@@ -3359,7 +3362,7 @@ function step(dt){
   // reticle
   const b=S.bi>=0?curBatter():LINEUP[0],tb=(S.over&&S.overOn)||(!S.over&&juiceOn()&&S.juice>=.25);
   stickHint();sbTick();zapTick();crowdTick(dt);shoutTick();organTick();roarTick();heartTick();zoneTick();
-  if(flight&&flight.play.type==='hr'&&!flight.sbHit&&!flight.orbit&&ball.visible&&Math.abs(ball.position.x)<24&&ball.position.y>22&&ball.position.y<40&&ball.position.z<-(fenceR(0)+15)&&ball.position.z>-(fenceR(0)+24)){flight.sbHit=true;zapStart(ball.position,true);burst(fxL,ball.position,26,9,.7,[.6,.85,1],7,1);}
+  if(flight&&flight.play.type==='hr'&&!flight.sbHit&&!flight.orbit&&ball.visible&&Math.abs(ball.position.x)<24&&ball.position.y>30&&ball.position.y<48&&ball.position.z<-(fenceR(0)+15)&&ball.position.z>-(fenceR(0)+24)){flight.sbHit=true;zapStart(ball.position,true);burst(fxL,ball.position,26,9,.7,[.6,.85,1],7,1);}
   reticle.position.set(aim.x,aim.y,0);
   {const ez=easyAB()?1.3:1;retC.scale.setScalar(.17*b.con*1.25*(tb?1.2:1)*ez);retP.scale.setScalar(.17*b.con*(tb?.8:.63)*(tb?1.2:1)*ez);}
   let showRet=(S.state==='ready'||S.state==='windup'||S.state==='pitch')&&!(swing&&swing.done);
