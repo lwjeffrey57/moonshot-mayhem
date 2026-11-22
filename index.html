@@ -250,6 +250,7 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
   background:radial-gradient(ellipse 72% 46% at 50% 14%,rgba(255,255,255,.62) 0,rgba(255,255,255,.18) 55%,rgba(255,255,255,0) 72%),radial-gradient(circle at 50% 50%,rgba(0,0,0,0) 52%,rgba(0,0,0,.34) 100%);
   box-shadow:inset 0 -7px 10px rgba(0,0,0,.38),inset 0 4px 5px rgba(255,255,255,.4)} /* gamepad look: a domed, glossy cap with a shaded rim */
 .tb{outline:5px solid rgba(20,22,34,.72);outline-offset:1px} /* the dark well each button sits in, like the stick's */
+.tb.ct{width:min(90px,22.5vw);height:min(90px,22.5vw);font-size:clamp(13px,3.9vw,16px);margin-bottom:-36px;margin-right:-4px}
 .tb.pw{background:var(--heat);width:min(128px,32vw);height:min(128px,32vw);color:#fff;font-size:clamp(17px,5.4vw,22px);text-shadow:0 2px 0 #000,0 0 3px #000,1px 1px 0 #000,-1px -1px 0 #000}
 .tb.jc{background:var(--chrome);width:min(76px,19vw);height:min(76px,19vw);font-size:clamp(12px,3.6vw,15px)}
 .tb.jc{position:absolute;right:0;bottom:calc(100% + 14px);z-index:2}.tb.jc::before{inset:0} /* JUICE sits above POWER, leaving the bottom-left for the aim thumb */
@@ -333,7 +334,7 @@ body.mob #tip{display:block}body.mob .how{display:none}
 /* one step at a time: a spotlight (the hole in the dimming) over the control, one short caption beside it */
 #tut .spot{position:absolute;z-index:1;border:4px solid var(--volt);box-shadow:0 0 0 200vmax rgba(6,7,20,.8),0 0 24px 4px var(--volt);animation:jring 1s ease-in-out infinite}
 #tut.s1 .spot{left:calc(var(--padl) - 4px);bottom:calc(var(--tbb) - 12px);width:calc(var(--pad) + 8px);aspect-ratio:1;border-radius:50%}
-#tut.s4 .spot{right:calc(max(14px,env(safe-area-inset-right,0px)) - 9px);bottom:calc(var(--tbb) - 9px);width:calc(min(112px,28vw) + min(128px,32vw) + 30px);height:calc(min(128px,32vw) + 18px);border-radius:80px;animation:none}
+#tut.s4 .spot{right:calc(max(14px,env(safe-area-inset-right,0px)) - 9px);bottom:calc(var(--tbb) - 45px);width:calc(min(90px,22.5vw) + min(128px,32vw) + 26px);height:calc(min(128px,32vw) + 54px);border-radius:80px;animation:none}
 #tut.s5 .spot,#tut.j .spot,#tut.o .spot,#tut.s7 .spot{right:calc(max(14px,env(safe-area-inset-right,0px)) - 10px);bottom:calc(var(--tbb) + min(128px,32vw) + 4px);width:calc(min(76px,19vw) + 20px);aspect-ratio:1;border-radius:50%}
 #tut.s1 .aimz{display:block;left:12px;right:30%;text-align:left;bottom:calc(var(--tbb) + var(--pad) + 22px)}
 #tut.s4 .swz{display:block;left:12px;right:12px;text-align:right;bottom:calc(var(--tbb) + min(128px,32vw) + min(76px,19vw) + 44px)}
@@ -505,7 +506,7 @@ body.mob #tip{display:block}body.mob .how{display:none}
     <div id="apad" aria-hidden="true"><i></i><span>AIM</span></div>
     <div id="touch">
       <button class="tb jc" id="tj" type="button">JUICE<b id="tjn"></b></button>
-      <button class="tb" id="tc" type="button">CONTACT</button>
+      <button class="tb ct" id="tc" type="button">CONTACT</button>
       <button class="tb pw" id="tp" type="button">POWER</button>
     </div>
     <div id="tut" hidden>
@@ -735,7 +736,7 @@ const basic=(o)=>new T.MeshBasicMaterial(Object.assign({side:T.DoubleSide},o));
   // mask: where it is dirt) multiplied by tiling close-up detail, so it holds up at the plate and from the upper deck.
   const GM=Math.min(2048,renderer.capabilities.maxTextureSize),GW=260,GX0=-130,GZ0=-240,GS=GM/GW,gx=x=>(x-GX0)*GS,gz=z=>(z-GZ0)*GS;
   const paintField=(g,mask)=>{
-    const DC={'#7c7d86':'#191922','#a3a4ac':'#34343f'},dirt=c=>{g.fillStyle=mask?'#fff':DIGI?(DC[c]||'#23232d'):c||'#8f9098';g.fill();}; // moon dust, not clay (digital park: slate deck panels)
+    const DC={'#7c7d86':'#1b0d30','#a3a4ac':'#3b1f66'},dirt=c=>{g.fillStyle=mask?'#fff':DIGI?(DC[c]||'#27123f'):c||'#8f9098';g.fill();}; // moon dust, not clay (digital park: slate deck panels)
     const arc=(dr,rev)=>{for(let k=0;k<=60;k++){const i=rev?60-k:k,phi=lerp(-PI/4,PI/4,i/60),r=fenceR(phi)+dr;g.lineTo(gx(r*Math.sin(phi)),gz(-r*Math.cos(phi)));}};
     const playable=()=>{g.beginPath();arc(0);[[70,-70],[30,-4],[15.4,10.6],[8,15.5],[0,17],[-8,15.5],[-15.4,10.6],[-30,-4],[-70,-70]].forEach(q=>g.lineTo(gx(q[0]),gz(q[1])));g.closePath();};
     const grass=path=>{g.save();path();g.clip();
@@ -749,7 +750,7 @@ const basic=(o)=>new T.MeshBasicMaterial(Object.assign({side:T.DoubleSide},o));
     g.save();g.beginPath();g.moveTo(gx(0),gz(4.5));g.lineTo(gx(-62),gz(-57.5));g.lineTo(gx(62),gz(-57.5));g.closePath();g.clip();
     g.beginPath();g.arc(gx(0),gz(-18.4),29*GS,0,7);dirt();g.restore();                                                             // infield skin
     g.beginPath();g.arc(gx(0),gz(0),3.96*GS,0,7);dirt();
-    grass(()=>{g.beginPath();g.moveTo(gx(0),gz(-2.6));g.lineTo(gx(16.8),gz(-19.4));g.lineTo(gx(0),gz(-36.2));g.lineTo(gx(-16.8),gz(-19.4));g.closePath();});
+    if(!DIGI)grass(()=>{g.beginPath();g.moveTo(gx(0),gz(-2.6));g.lineTo(gx(16.8),gz(-19.4));g.lineTo(gx(0),gz(-36.2));g.lineTo(gx(-16.8),gz(-19.4));g.closePath();}); // the digital park has an all-skin infield: one plain surface behind the strike zone
     g.beginPath();g.rect(gx(-1.25),gz(-17),2.5*GS,14.5*GS);dirt();                                                                   // the keyhole: a path from the plate to the mound, so the strike zone sits on one plain surface
     g.beginPath();g.arc(gx(0),gz(0),3.96*GS,0,7);dirt();
     g.beginPath();g.arc(gx(0),gz(-18.4),2.74*GS,0,7);dirt('#a3a4ac');                                                              // mound
@@ -793,12 +794,11 @@ vec3 dg=texture2D(gD,vW/2.4).rgb*texture2D(gD,vW/17.0+0.37).rgb*4.0;
 vec3 dd=texture2D(dD,vW/2.0).rgb*texture2D(dD,vW/11.0+0.11).rgb*4.0;
 col=col*mix(mix(dg,vec3(dot(dg,vec3(0.333))),digi),mix(dd,mix(vec3(1.0),dd,0.3),digi),m)*vL;
 if(digi>0.5){
-// a clear lane from the plate out past the mound: everything the strike zone and the bat ring can ever be seen against stays plain
-float hw=1.7+0.23*max(0.0,1.0-vW.y);float clr=1.0-(1.0-smoothstep(hw,hw+2.2,abs(vW.x+0.15)))*(1.0-smoothstep(21.0,28.0,-vW.y));
+float clr=1.0;
 vec2 r=vec2(vW.x+vW.y,vW.x-vW.y)*0.70711/5.2;vec2 d=0.5-abs(fract(r)-0.5);vec2 w=fwidth(r);
 vec2 l=1.0-smoothstep(vec2(0.008),vec2(0.008)+w*1.5,d);float fade=clamp(0.03/max(w.x,w.y),0.0,1.0);
 col+=vec3(1.0,0.16,0.86)*max(l.x,l.y)*(0.22+0.55*fade)*(1.0-m)*clr; // no grid anywhere near the plate: nothing may cross the strike zone or the bat ring
-col+=vec3(1.0,0.2,0.88)*(1.0-abs(m-0.5)*2.0)*0.45*clr;}
+col+=vec3(1.0,0.2,0.88)*(1.0-abs(m-0.5)*2.0)*0.6*smoothstep(4.5,7.0,length(vW));}
 gl_FragColor=vec4(col,1.0);
 #include <fog_fragment>
 }`});
