@@ -46,6 +46,7 @@ Recordings to find or make (the game currently fakes most of these by reshaping 
 - Announcers: two original characters, captions first, voice later.
 - Lore: why baseball is on the Moon, the Comets and Krakens, batter bios.
 - More celebrations and batting stances (Mixamo clips).
+- Pitching change: the outgoing pitcher walks off the mound dejected before the new arm comes in.
 - New stadiums.
 - Fielder ready-stance clip; the unused on-deck clip.
 
