@@ -238,6 +238,10 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 #tbar .dim{opacity:.22}
 #tbar em{position:absolute;left:0;right:0;top:calc(100% + 5px);text-align:center;font-family:var(--display);font-style:italic;font-weight:400;font-size:14px;letter-spacing:.05em;color:var(--volt);text-shadow:0 2px 0 #000,0 0 5px #000;white-space:nowrap} /* the pitch this timing was against */
 #tbar .trk i.mk{top:-4px;bottom:-4px;width:5px;margin-left:-2.5px;border-radius:2.5px;background:#fff;border:1.5px solid #000;box-sizing:content-box}
+/* PERFECT: the marker is a rocket lifting off the bar */
+#tbar .trk i.mk.pf{background:none!important;border-color:transparent}
+#tbar .trk i.mk.pf::after{content:'🚀';position:absolute;left:50%;top:50%;font-size:26px;line-height:1;font-style:normal;filter:drop-shadow(0 2px 0 rgba(0,0,0,.8)) drop-shadow(0 0 8px rgba(255,229,59,.9));animation:mkRocket 1.5s cubic-bezier(.2,1.5,.4,1) both}
+@keyframes mkRocket{0%{transform:translate(-50%,-30%) rotate(-45deg) scale(.2)}18%{transform:translate(-50%,-55%) rotate(-45deg) scale(1.45)}32%{transform:translate(-50%,-55%) rotate(-45deg) scale(1)}100%{transform:translate(-50%,-110%) rotate(-45deg) scale(1.05)}}
 #tbar.go{animation:tim 1.7s ease-out both}#hud.mob #tbar{top:calc(41% + 32px);margin-left:-130px;width:260px}#hud.wk #tbar{visibility:hidden}
 @keyframes tim{0%{opacity:0;transform:translateY(8px)}15%,70%{opacity:1;transform:none}100%{opacity:0}}
 #flash{inset:0;background:radial-gradient(circle at 50% 55%,#fff,rgba(255,240,180,.7) 40%,transparent 75%);opacity:0}
@@ -487,9 +491,9 @@ body.mob #tip{display:block}body.mob .how{display:none}
     <div id="bug">
       <div class="badge" aria-hidden="true"><span>MM</span></div>
       <div class="rows">
-        <div class="inn"><i>▲</i><span id="inn">1ST</span></div>
-        <div class="tm"><span>COM</span><b id="runs">0</b></div>
+        <div class="inn"><i>▼</i><span id="inn">1ST</span></div>
         <div class="tm alt"><span>KRA</span><b id="oruns">0</b></div>
+        <div class="tm"><span>COM</span><b id="runs">0</b></div>
         <div class="cnt"><span id="count">0-0</span><span id="outs">O: 0</span></div>
       </div>
     </div>
@@ -1059,9 +1063,9 @@ function sbDraw(force){
   const b=curBatter(),sig=[S.runs,S.opp,S.inning,S.outs,S.balls,S.strikes,b.name].join('|');
   if(sig===sbSig&&!force)return;
   sbSig=sig;const g=sbCanvas.getContext('2d');sbFrame(g);
-  g.textAlign='left';g.font='italic 900 96px Arial Black,Arial';g.fillStyle='#ffb21e';g.fillText('COMETS',44,92,430);
-  g.fillStyle='#8fa0c8';g.fillText('KRAKENS',44,200,430);
-  g.textAlign='right';g.fillStyle='#fff';g.font='900 110px Arial Black,Arial';g.fillText(String(S.runs),620,92);g.fillStyle='#8fa0c8';g.fillText(String(S.opp||0),620,200);
+  g.textAlign='left';g.font='italic 900 96px Arial Black,Arial';g.fillStyle='#8fa0c8';g.fillText('KRAKENS',44,92,430);
+  g.fillStyle='#ffb21e';g.fillText('COMETS',44,200,430);
+  g.textAlign='right';g.font='900 110px Arial Black,Arial';g.fillStyle='#8fa0c8';g.fillText(String(S.opp||0),620,92);g.fillStyle='#fff';g.fillText(String(S.runs),620,200);
   g.fillStyle='#22284a';g.fillRect(660,34,4,220);
   g.textAlign='center';g.fillStyle='#3ad6ff';g.font='900 44px Arial Black,Arial';g.fillText('INNING',840,62);
   g.fillStyle='#fff';g.font='900 104px Arial Black,Arial';g.fillText(String(S.inning),840,140);
@@ -1589,7 +1593,7 @@ $('tut').addEventListener('pointerdown',e=>{e.preventDefault();const id=e.target
 // gold to both ends of the one you used. A marker in the black means the swing was too early or too late to make contact at all.
 function timeBar(x,pw,jt,perfect,sk=1){const e=$('tbar');e.className='';$('tpt').textContent=pitch?(pitch.P.sp?'JUICE PITCH · ':'')+pitch.P.n+' · '+pitchMph(pitch.dur)+' MPH':'';const SPAN=2.05,band=(el,half)=>{el.style.left=(50-half)+'%';el.style.width=(half*2)+'%';},hc=1.4/SPAN*50*sk,hp=hc*.85/1.2,used=(pw?hp:hc)*jt;
   band($('tgc'),hc);band($('tgp'),hp);band($('tjx'),jt>1?used:0);$('tgc').classList.toggle('dim',!!pw);$('tgp').classList.toggle('dim',!pw);
-  const mx=clamp(x/SPAN,-1,1)*50,miss=Math.abs(mx)>used;$('tmk').style.left=(50+mx)+'%';$('tmk').style.background=perfect?'#ffe53b':miss?'#ff4d2e':'#fff';void e.offsetWidth;e.className='go';}
+  const mx=clamp(x/SPAN,-1,1)*50,miss=Math.abs(mx)>used;$('tmk').style.left=(50+mx)+'%';$('tmk').style.background=perfect?'#ffe53b':miss?'#ff4d2e':'#fff';$('tmk').classList.toggle('pf',!!perfect);void e.offsetWidth;e.className='go';}
 function timing(t,c,l){const e=$('tim');e.className='';e.textContent=t;e.style.color=c;e.dataset.l=l||2;void e.offsetWidth;e.className='go';}
 function flash(a){const e=$('flash');e.style.transition='none';e.style.opacity=a*FX;void e.offsetWidth;e.style.transition='opacity .35s';e.style.opacity=0;}
 // OVERDRIVE: fill the Juice meter all the way and it is charged. The meter burns and reads OVERDRIVE READY and the JUICE button becomes the
@@ -1810,7 +1814,7 @@ function gameRating(){const G=S.goal,pts=S.runs*10+S.hits*4+S.hrs*8+(S.longest>=
   return {pts,stars:i+1,grade:T[i][1],title:T[i][2],next:T[i+1]?T[i+1][0]-pts:0,nextTitle:T[i+1]?T[i+1][2]:''};}
 function newGame(){gamesPlayed++;try{localStorage.setItem('mm_games',gamesPlayed);}catch(e){}
   Object.assign(S,{inning:1,outs:0,balls:0,strikes:0,runs:0,bases:[0,0,0],hits:0,hrs:0,longest:0,streak:0,bestStreak:0,juice:.25,heat:.2,over:false,stk:false,opp:0,bi:-1,pitches:0,seen:{},kOut:null});S.goal=null; /* per-game goals are switched off for now: pickGoal() is still here to bring them back */S.ks=0;S.d2=0;S.cardBi=-1;S.pChanges=0;S.pRuns0=0;S.pc3=false;S.pcPending=false;S.pName=BULLPEN[0];$('pcap').textContent='PITCHER';S.sTaunt=null;S.stLast=false;jPend=false;S.orbN=0;S.odUses=0;S.duel=false;$('hud').classList.remove('duel');S.pdLast=false;S.pOver=false;S.jSaid=false;S.overOn=false;S.spSeen=false;lastWalk='';
-  $('title').hidden=true;$('over').hidden=true;$('pausebtn').hidden=false;$('mutebtn').hidden=false;setBatter();renderRep();scoreboard('PLAY BALL','INNING 1');S.opp=0;{const k=cpuInning(1);toReady(2);pop('PLAY BALL!',k?'KRAKENS LEAD '+k+'-0':'INNING 1','logo',true);hud();}SND.playball();cheer(.14,1.5);}
+  $('title').hidden=true;$('over').hidden=true;$('pausebtn').hidden=false;$('mutebtn').hidden=false;setBatter();renderRep();scoreboard('PLAY BALL','INNING 1');S.opp=0;toReady(2);pop('PLAY BALL!','INNING 1','logo',true);hud();SND.playball();cheer(.14,1.5);}
 
 // ───────────────────────── pitching
 // brk = how far the pitch moves off a straight line (sideways, vertical) by the time it reaches the plate; k = how late that
@@ -2068,7 +2072,7 @@ function tryContact(){flight_pop=false;
 
 function addRuns(n){if(!n)return;const was=S.runs>S.opp;S.runs+=n;
   if(S.inning===3&&!was&&S.runs>S.opp)setTimeout(()=>{if(S.state!=='over'&&S.state!=='title')timing('⚡ COMETS TAKE THE LEAD ⚡','#3ddc6a',4);},1500);}
-// The Krakens bat in the top of every inning, off-screen: their runs go up as the inning turns over, so the player always knows the score to beat
+// The Krakens bat in the top of the 2nd and 3rd, off-screen (the game always starts 0-0): their runs go up as the inning turns over, so the player always knows the score to beat
 // and, as the home side, always bats last. Arcade rules: plenty of luck early, and their last turn is pulled toward the player's score so the
 // final inning nearly always matters (anything from two behind to three ahead; kinder in a new player's first few games).
 function cpuInning(n){
