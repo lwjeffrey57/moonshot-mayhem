@@ -453,6 +453,8 @@ body.mob #tip{display:block}body.mob .how{display:none}
 #odp::before{background:repeating-conic-gradient(from 9deg at 50% 53%,rgba(26,0,0,0) 0deg 3deg,rgba(26,0,0,.72) 3deg 4.2deg,rgba(26,0,0,0) 4.2deg 8deg,rgba(26,0,0,.5) 8deg 8.7deg,rgba(26,0,0,0) 8.7deg 12deg,rgba(26,0,0,.8) 12deg 13.6deg,rgba(26,0,0,0) 13.6deg 17deg);animation-duration:.62s}
 #hud.pod #odp{background:radial-gradient(ellipse at 50% 52%,rgba(90,10,0,0) 32%,rgba(60,6,0,.42) 64%,rgba(30,2,0,.85) 100%)}
 #hud.pod.odon #odp{background:none}
+#odv::before,#odp::before{opacity:0;transition:opacity .2s}#hud.zone #odv::before,#hud.zone #odp::before{opacity:1}
+#hud:not(.zone) #odv,#hud:not(.zone).pod #odp{background:none}
 @media (prefers-reduced-motion:reduce){#odv::before,#odp::before{animation:none}}
 /* the pitcher's Overdrive: the same thin flame border, in red. In a duel both burn at once, the red one set just inside the blue. */
 #odp{position:absolute;inset:0;z-index:2;opacity:0;transition:opacity .35s;overflow:hidden;pointer-events:none;box-shadow:inset 0 0 30px 3px rgba(255,70,40,.8);filter:none}
@@ -1590,10 +1592,10 @@ let hbNext=0,zoneLP=null,zoneOn=false,crowdCool=0;
 // 'In the zone': while Overdrive is on and the at-bat is live, the crowd is heard as if through a wall (the highs are rolled off and a
 // little level comes out) so the heartbeat and the pitch sit on top. The instant the ball is hit, or the at-bat ends, the park rushes back in.
 function zoneTick(){
-  if(!AC||!zoneLP)return;
   const on=!!((S.over&&S.overOn)||S.pOver)&&(S.state==='ready'||S.state==='windup'||S.state==='pitch');
   if(on===zoneOn)return;
-  zoneOn=on;const t=AC.currentTime,f=zoneLP.frequency;f.cancelScheduledValues(t);f.setValueAtTime(Math.max(200,f.value),t);
+  zoneOn=on;$('hud').classList.toggle('zone',on); // the tunnel vision (speed lines, dark edges) lifts the moment the ball is hit, along with the muffled sound
+  if(!AC||!zoneLP)return;const t=AC.currentTime,f=zoneLP.frequency;f.cancelScheduledValues(t);f.setValueAtTime(Math.max(200,f.value),t);
   if(on)f.exponentialRampToValueAtTime(620,t+.7);
   else f.exponentialRampToValueAtTime(20000,t+.18);}
 function heartTick(){
@@ -2350,7 +2352,7 @@ function juiceTap(){const t=performance.now();if(t-jTapT<250)return;jTapT=t; // 
   if(S.over){if(!S.overOn){S.overOn=true;SND.zap();buzz([20,30,60]);timing('⚡ OVERDRIVE ON: FREE JUICE SWINGS THIS AT-BAT ⚡','#3ad6ff',4);
     S.odUses=(S.odUses||0)+1;
     if(S.odUses===1)S.pOver=false;                         // the first Overdrive of a game is always yours alone: he can't answer it, and if he was in his own he backs off
-    else if(!S.pOver&&S.heat>=.5&&podOK())S.pOver=true;   // after that, the pitcher answers
+    else if(!S.pOver&&S.heat>=.33&&podOK())S.pOver=true;   // after that, the pitcher answers
     duelCheck();}
     else if(!S.odSeen&&(S.state==='ready'||(S.state==='windup'&&!pitch))){ // changed your mind: tap again before the pitch is thrown and it switches back off, still fully charged
       S.overOn=false;S.odUses=Math.max(0,(S.odUses||0)-1);if(S.duel){S.duel=false;$('hud').classList.remove('duel');}
