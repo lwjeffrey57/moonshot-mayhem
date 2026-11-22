@@ -335,6 +335,16 @@ body.mob #tip{display:block}body.mob .how{display:none}
 #hud.tut4 #tc{animation:tutTap 2.4s ease-in-out infinite}#hud.tut4 #tp{animation:tutTap 2.4s ease-in-out 1.2s infinite}
 @keyframes tutTap{0%,8%{transform:none;filter:none;box-shadow:0 4px 0 #000}14%{transform:scale(.9);filter:brightness(1.4);box-shadow:0 1px 0 #000,0 0 0 4px rgba(255,255,255,.8)}26%{transform:none;filter:none;box-shadow:0 4px 0 #000,0 0 0 18px rgba(255,255,255,0)}100%{transform:none;filter:none;box-shadow:0 4px 0 #000}}
 @media (prefers-reduced-motion:reduce){#hud.tut4 #tc,#hud.tut4 #tp{animation:none}}
+/* timing step: the same gauge you get after a swing, its needle sweeping in from EARLY and landing dead centre as the ring turns green */
+#tut.s3 .tgz{display:flex;left:50%;margin-left:-135px;width:270px;align-items:center;gap:8px;font-family:var(--hud);font-style:normal;font-weight:800;font-size:12px;letter-spacing:.12em;color:var(--chrome)}
+#tut .tgz .trk{position:relative;flex:1;height:12px;border-radius:6px;background:rgba(8,9,26,.85);border:2px solid rgba(242,245,255,.6)}
+#tut .tgz .trk i{position:absolute;top:0;bottom:0;border-radius:3px}
+#tut .tgz .gc{left:16%;width:68%;background:linear-gradient(90deg,rgba(61,220,106,.28),rgba(61,220,106,.75) 36%,#7dffa0 42%,#7dffa0 58%,rgba(61,220,106,.75) 64%,rgba(61,220,106,.28))}
+#tut .tgz .gp{left:26%;width:48%;background:linear-gradient(90deg,rgba(255,77,46,.3),rgba(255,77,46,.8) 36%,#ff8a70 42%,#ff8a70 58%,rgba(255,77,46,.8) 64%,rgba(255,77,46,.3));opacity:.25}
+#tut .tgz .trk i.mk{top:-5px;bottom:-5px;width:5px;margin-left:-2.5px;border-radius:2.5px;background:#fff;border:1.5px solid #000;animation:tutmk 1.8s linear infinite}
+@keyframes tutmk{0%{left:2%;background:#ff4d2e;opacity:0}10%{opacity:1}40%{background:#fff}72%{left:50%;background:#fff}74%,100%{left:50%;background:#ffe53b;box-shadow:0 0 10px 3px #ffe53b;opacity:1}}
+#tut .tgz em{position:absolute;left:0;right:0;top:calc(100% + 4px);text-align:center;font-family:var(--display);font-style:italic;font-weight:400;font-size:20px;letter-spacing:.04em;color:#39ff6a;text-shadow:0 2px 0 #000;animation:tutpf 1.8s linear infinite}
+@keyframes tutpf{0%,72%{opacity:0;transform:scale(.7)}76%,100%{opacity:1;transform:scale(1)}}
 /* 'HOW TO PLAY': big in the middle of the screen on the first step, then a smaller header at the top for the rest */
 #tut .htp{left:0;right:0;top:44px;text-align:center;font-size:26px;letter-spacing:.04em;color:var(--volt);-webkit-text-stroke:1px #000;text-shadow:0 3px 0 #000;transform:rotate(-3deg);pointer-events:none}
 #tut.s1 .htp,#tut.s2 .htp,#tut.s3 .htp,#tut.s4 .htp,#tut.s5 .htp,#tut.s6 .htp{display:block}
@@ -487,6 +497,7 @@ body.mob #tip{display:block}body.mob .how{display:none}
       <div class="tz pcz"><b><span style="color:#3ddc6a">GREEN = CONTACT</span> · <span style="color:#ff6a4a">RED = POWER</span></b>Each swing has its own zone on your bat<small>Move your ring onto the ball. Ball in the green: CONTACT. Ball in the red core: POWER. Closer to the middle = better contact.</small></div>
       <div class="tz lbl lc" id="tlc">CONTACT ZONE<span>▼</span></div><div class="tz lbl lp" id="tlp">POWER ZONE<span>▼</span></div>
       <div class="tz tmz"><b>YELLOW RING = TIMING</b>It shrinks onto a white circle the size of the ball<small>Ring still bigger than the ball: too early. Ring meets the circle and turns <span style="color:#39ff6a">green</span>: swing!</small></div>
+      <div class="tz tgz" id="tutg"><span>EARLY</span><div class="trk"><i class="gc"></i><i class="gp"></i><i class="mk"></i></div><span>LATE</span><em>PERFECT!</em></div>
       <div class="tz swz"><b>RIGHT THUMB: SWING</b>Tap a button the moment the ring turns green<small>CONTACT is easier and hits line drives. POWER is harder and hits moonshots.</small></div>
       <div class="tz jcz"><b>JUICE: MONSTER SWING</b>Tap JUICE, then swing. Costs one quarter<small>Every hit and every walk adds a quarter back. Fill all four for Overdrive.</small></div>
       <div class="tz ovz"><b>FULL METER = OVERDRIVE</b>Fill this bar all the way and it catches fire<small>JUICE turns into a blue OVERDRIVE button. Tap it and every swing that at-bat is a free Juice swing. Then the bar starts over.</small></div>
@@ -1199,7 +1210,7 @@ function tutShow(mode){const T=$('tut');T.className=mode;T.hidden=false;tutHold=
     if(n===2){l=Math.max(6,l-74);bt+=22;}
     t-=34;r+=30; // both steps use the same pitch, up and in the right half of the zone // room for the bat ring to start well off the ball and travel to it
     aim.x=0;aim.y=.825;reticle.position.set(TUT_B.x,TUT_B.y,0);retP.visible=true;retCfill.visible=false;const c0=new V3(TUT_B.x,TUT_B.y,0).project(camera); // step 3 keeps the bat where step 2 left it: squared up on that same pitch // bat dead centre for the demo; the ball marker is placed on that exact point (4 = the spotlight's border)
-    sp.style.cssText='left:'+l+'px;top:'+t+'px;width:'+(r-l)+'px;height:'+(bt-t)+'px;--tr:'+(PT_R*zw/(ZONE.x1-ZONE.x0)).toFixed(1)+'px;--tx:'+((c0.x+1)/2*W-l-4).toFixed(1)+'px;--ty:'+((1-c0.y)/2*H-t-4).toFixed(1)+'px;--gx:'+((retC.scale.x+retP.scale.x)/2*zw/(ZONE.x1-ZONE.x0)).toFixed(1)+'px';T.querySelector(n===2?'.pcz':'.tmz').style.bottom=(H-t+16)+'px';}}
+    sp.style.cssText='left:'+l+'px;top:'+t+'px;width:'+(r-l)+'px;height:'+(bt-t)+'px;--tr:'+(PT_R*zw/(ZONE.x1-ZONE.x0)).toFixed(1)+'px;--tx:'+((c0.x+1)/2*W-l-4).toFixed(1)+'px;--ty:'+((1-c0.y)/2*H-t-4).toFixed(1)+'px;--gx:'+((retC.scale.x+retP.scale.x)/2*zw/(ZONE.x1-ZONE.x0)).toFixed(1)+'px';T.querySelector(n===2?'.pcz':'.tmz').style.bottom=(H-t+16)+'px';$('tutg').style.top=(bt+14)+'px';}}
 // Step 2 demo, in step with the button highlights: the ball never moves. The bat ring starts off it, slides until the ball is in the green
 // (CONTACT lights), then until the ball is in the red core (POWER lights): move the circle to the ball.
 const TUT_LOOP=5200;
