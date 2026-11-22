@@ -720,17 +720,20 @@ function ribbon(a,b,uScale=1){
 const basic=(o)=>new T.MeshBasicMaterial(Object.assign({side:T.DoubleSide},o));
 {
   const APEX=.216; // back point of home plate, where the foul lines meet
+  // DIGI: the turf is a projected 'digital' surface (dark, with a glowing grid) instead of green grass, so the green contact ring
+  // never sits on a green background. The grass version is kept for other parks: set DIGI to false.
+  const DIGI=true;
   // ── Playing surface. One shader paints the whole field from two field-wide maps (colour: mowing pattern, wear, shade;
   // mask: where it is dirt) multiplied by tiling close-up detail, so it holds up at the plate and from the upper deck.
   const GM=Math.min(2048,renderer.capabilities.maxTextureSize),GW=260,GX0=-130,GZ0=-240,GS=GM/GW,gx=x=>(x-GX0)*GS,gz=z=>(z-GZ0)*GS;
   const paintField=(g,mask)=>{
     const dirt=c=>{g.fillStyle=mask?'#fff':c||'#8f9098';g.fill();}; // moon dust, not clay
     const arc=(dr,rev)=>{for(let k=0;k<=60;k++){const i=rev?60-k:k,phi=lerp(-PI/4,PI/4,i/60),r=fenceR(phi)+dr;g.lineTo(gx(r*Math.sin(phi)),gz(-r*Math.cos(phi)));}};
-    const playable=()=>{g.beginPath();arc(0);[[70,-70],[30,-4],[13,13],[-13,13],[-30,-4],[-70,-70]].forEach(q=>g.lineTo(gx(q[0]),gz(q[1])));g.closePath();};
+    const playable=()=>{g.beginPath();arc(0);[[70,-70],[30,-4],[15.4,10.6],[8,15.5],[0,17],[-8,15.5],[-15.4,10.6],[-30,-4],[-70,-70]].forEach(q=>g.lineTo(gx(q[0]),gz(q[1])));g.closePath();};
     const grass=path=>{g.save();path();g.clip();
       if(mask){g.fillStyle='#000';g.fillRect(0,0,GM,GM);}
-      else{g.fillStyle='#3a772a';g.fillRect(0,0,GM,GM);   // two mowing directions crossing, like a big-league diamond cut
-        [[PI/4,'rgba(0,22,0,.13)'],[-PI/4,'rgba(236,255,170,.085)']].forEach(([an,c])=>{g.save();g.translate(gx(0),gz(0));g.rotate(an);g.fillStyle=c;const w=5.2*GS;for(let k=-44;k<44;k+=2)g.fillRect(k*w,-GM*2,w,GM*4);g.restore();});}
+      else{g.fillStyle=DIGI?'#0e2c47':'#3a772a';g.fillRect(0,0,GM,GM);   // two mowing directions crossing, like a big-league diamond cut
+        [[PI/4,DIGI?'rgba(0,0,24,.2)':'rgba(0,22,0,.13)'],[-PI/4,DIGI?'rgba(80,200,255,.07)':'rgba(236,255,170,.085)']].forEach(([an,c])=>{g.save();g.translate(gx(0),gz(0));g.rotate(an);g.fillStyle=c;const w=5.2*GS;for(let k=-44;k<44;k+=2)g.fillRect(k*w,-GM*2,w,GM*4);g.restore();});}
       g.restore();};
     g.fillStyle=mask?'#000':'#24242a';g.fillRect(0,0,GM,GM);
     grass(playable);
@@ -743,10 +746,10 @@ const basic=(o)=>new T.MeshBasicMaterial(Object.assign({side:T.DoubleSide},o));
     g.beginPath();g.arc(gx(0),gz(-18.4),2.74*GS,0,7);dirt('#a3a4ac');                                                              // mound
     if(mask)return;
     const blot=(x,z,rx,rz,c,rot=0)=>{g.save();g.translate(gx(x),gz(z));g.rotate(rot);g.scale(rx*GS,rz*GS);const gr=g.createRadialGradient(0,0,0,0,0,1);gr.addColorStop(0,c);gr.addColorStop(1,c.replace(/[\d.]+\)$/,'0)'));g.fillStyle=gr;g.fillRect(-1,-1,2,2);g.restore();};
-    for(let i=0;i<340;i++)blot(rand(-110,110),rand(-130,10),rand(4,15),rand(4,15),Math.random()<.5?'rgba(0,18,0,.07)':'rgba(240,255,170,.05)');   // uneven turf
+    for(let i=0;i<340;i++)blot(rand(-110,110),rand(-130,10),rand(4,15),rand(4,15),Math.random()<.5?(DIGI?'rgba(0,0,20,.07)':'rgba(0,18,0,.07)'):(DIGI?'rgba(120,210,255,.04)':'rgba(240,255,170,.05)'));   // uneven turf
     [[19.4,-19.4],[0,-38.8],[-19.4,-19.4]].forEach(q=>{blot(q[0],q[1],3.2,3.2,'rgba(20,20,28,.28)');blot(q[0],q[1],1.2,1.2,'rgba(245,245,250,.16)');});
     [[16,-23],[9,-34],[-10,-34],[-16,-23]].forEach(q=>blot(q[0],q[1],2.6,2,'rgba(20,20,28,.22)',rand(0,3)));                      // where the infielders stand
-    [[-36,-71],[0,-90],[36,-71]].forEach(q=>blot(q[0],q[1],3,2.4,'rgba(20,30,5,.2)',rand(0,3)));                                   // worn spots in the outfield
+    [[-36,-71],[0,-90],[36,-71]].forEach(q=>blot(q[0],q[1],3,2.4,DIGI?'rgba(0,0,10,.2)':'rgba(20,30,5,.2)',rand(0,3)));                                   // worn spots in the outfield
     blot(0,0,3.4,3.4,'rgba(20,20,28,.2)');blot(0,-17,1.6,1.1,'rgba(20,20,28,.3)');
     for(let i=0;i<70;i++){const an=rand(-1.9,1.9),r=rand(9,28);blot(Math.sin(an)*r,-18.4-Math.cos(an)*r,rand(.6,1.8),rand(.3,.8),'rgba(245,245,250,.07)',rand(0,3));} // rake marks on the skin
     // craters and boot prints in the dust: small on the infield skin, a few bigger ones on the warning track
@@ -767,19 +770,23 @@ const basic=(o)=>new T.MeshBasicMaterial(Object.assign({side:T.DoubleSide},o));
   const dirtD=tile(g=>{
     for(let i=0;i<120;i++){const x=rand(0,512),y=rand(0,512),r=rand(14,46),c=Math.random()<.5?'20,20,30':'245,245,252';wrap(x,y,(px,py)=>{const gr=g.createRadialGradient(px,py,0,px,py,r);gr.addColorStop(0,`rgba(${c},.14)`);gr.addColorStop(1,`rgba(${c},0)`);g.fillStyle=gr;g.fillRect(px-r,py-r,r*2,r*2);});}
     for(let i=0;i<16000;i++){const x=rand(0,512),y=rand(0,512),r=rand(.5,1.9);g.fillStyle=Math.random()<.5?`rgba(245,245,252,${rand(.1,.3)})`:`rgba(16,16,26,${rand(.12,.34)})`;wrap(x,y,(px,py)=>{g.beginPath();g.arc(px,py,r,0,7);g.fill();});}});
-  const groundMat=new T.ShaderMaterial({fog:true,side:T.DoubleSide,uniforms:T.UniformsUtils.merge([T.UniformsLib.fog,{macro:{value:null},maskT:{value:null},gD:{value:null},dD:{value:null}}]),
+  const groundMat=new T.ShaderMaterial({fog:true,side:T.DoubleSide,uniforms:T.UniformsUtils.merge([T.UniformsLib.fog,{macro:{value:null},maskT:{value:null},gD:{value:null},dD:{value:null},digi:{value:DIGI?1:0}}]),extensions:{derivatives:true},
     vertexShader:`varying vec2 vW;varying float vL;
 #include <fog_pars_vertex>
 void main(){vec4 wp=modelMatrix*vec4(position,1.0);vW=wp.xz;vec3 n=normalize(mat3(modelMatrix)*normal);vL=0.78+0.22*abs(n.y);vec4 mvPosition=viewMatrix*wp;gl_Position=projectionMatrix*mvPosition;
 #include <fog_vertex>
 }`,
-    fragmentShader:`uniform sampler2D macro,maskT,gD,dD;varying vec2 vW;varying float vL;
+    fragmentShader:`uniform sampler2D macro,maskT,gD,dD;uniform float digi;varying vec2 vW;varying float vL;
 #include <fog_pars_fragment>
 void main(){vec2 uv=vec2((vW.x+130.0)/260.0,1.0-(vW.y+240.0)/260.0);
 vec3 col=texture2D(macro,uv).rgb;float m=texture2D(maskT,uv).r;
 vec3 dg=texture2D(gD,vW/2.4).rgb*texture2D(gD,vW/17.0+0.37).rgb*4.0;
 vec3 dd=texture2D(dD,vW/2.0).rgb*texture2D(dD,vW/11.0+0.11).rgb*4.0;
-gl_FragColor=vec4(col*mix(dg,dd,m)*vL,1.0);
+col=col*mix(mix(dg,vec3(dot(dg,vec3(0.333))),digi),dd,m)*vL;
+if(digi>0.5){vec2 r=vec2(vW.x+vW.y,vW.x-vW.y)*0.70711/5.2;vec2 d=0.5-abs(fract(r)-0.5);vec2 w=fwidth(r);
+vec2 l=1.0-smoothstep(vec2(0.008),vec2(0.008)+w*1.5,d);float fade=clamp(0.03/max(w.x,w.y),0.0,1.0);
+col+=vec3(0.22,0.78,1.0)*max(l.x,l.y)*(0.2+0.5*fade)*(1.0-m);}
+gl_FragColor=vec4(col,1.0);
 #include <fog_fragment>
 }`});
   Object.assign(groundMat.uniforms,{});groundMat.uniforms.macro.value=macroT;groundMat.uniforms.maskT.value=maskT;groundMat.uniforms.gD.value=grassD;groundMat.uniforms.dD.value=dirtD;
