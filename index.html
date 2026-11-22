@@ -314,10 +314,12 @@ body.mob #tip{display:block}body.mob .how{display:none}
 #tut.s3 .spot::before{border:3px solid #fff;background:rgba(255,255,255,.4)}
 #tut.s3 .spot::after{border:3px solid var(--volt);animation:tutring 1.8s linear infinite}
 @keyframes tutring{0%{transform:scale(6);opacity:0;border-width:.6px}10%{opacity:1}72%{transform:scale(1);border-color:var(--volt);border-width:3px;box-shadow:none}74%,100%{transform:scale(1.12);border-color:#39ff6a;border-width:4px;opacity:1;box-shadow:0 0 14px 4px rgba(57,255,106,.9)}}
+#tut .spot2{display:none;position:absolute;z-index:32;box-sizing:content-box;border:4px solid var(--volt);border-radius:50%;box-shadow:0 0 24px 4px var(--volt);pointer-events:none;animation:jring 1s ease-in-out infinite}#tut.s1 .spot2{display:block}
+#hud.tut1 #apad{z-index:31;pointer-events:none}
 /* 'HOW TO PLAY': big in the middle of the screen on the first step, then a smaller header at the top for the rest */
 #tut .htp{left:0;right:0;top:44px;text-align:center;font-size:26px;letter-spacing:.04em;color:var(--volt);-webkit-text-stroke:1px #000;text-shadow:0 3px 0 #000;transform:rotate(-3deg);pointer-events:none}
 #tut.s1 .htp,#tut.s2 .htp,#tut.s3 .htp,#tut.s4 .htp,#tut.s5 .htp,#tut.s6 .htp{display:block}
-#tut.s1 .htp{top:38%;font-size:clamp(44px,14vw,84px);line-height:.9;-webkit-text-stroke:2px #000;text-shadow:0 6px 0 #000,0 0 40px rgba(255,229,59,.55);animation:htpin .5s cubic-bezier(.2,1.5,.3,1) both}
+#tut.s1 .htp{top:240px;white-space:nowrap;font-size:clamp(30px,10.5vw,56px);line-height:.9;-webkit-text-stroke:2px #000;text-shadow:0 6px 0 #000,0 0 40px rgba(255,229,59,.55);animation:htpin .5s cubic-bezier(.2,1.5,.3,1) both}
 @keyframes htpin{from{transform:rotate(-3deg) scale(2.2);opacity:0}to{transform:rotate(-3deg) scale(1);opacity:1}}
 /* step 2 demo: a ball lands in the green zone and CONTACT lights up, then in the red core and POWER lights up */
 #tut.s2 .spot::before{content:'';position:absolute;left:var(--tx,50%);top:var(--ty,50%);box-sizing:border-box;width:calc(var(--tr,14px)*2);height:calc(var(--tr,14px)*2);margin:calc(var(--tr,14px)*-1);border-radius:50%;border:3px solid #fff;background:rgba(255,255,255,.6)} /* the ball stays put: the bat ring moves onto it */
@@ -435,13 +437,13 @@ body.mob #tip{display:block}body.mob .how{display:none}
       <button class="tb pw" id="tp" type="button">POWER</button>
     </div>
     <div id="tut" hidden>
-      <div class="spot"></div>
+      <div class="spot"></div><div class="spot2"></div>
       <div class="tz htp">HOW TO PLAY</div>
       <div class="tz stp" id="tutstp"></div>
       <div class="tz go" id="tutgo">NEXT ▶</div>
       <div class="tz skip" id="tutskip">Skip ▶▶</div>
       <div class="tz off" id="tutoff">Don't show tutorials again</div>
-      <div class="tz aimz"><b>LEFT THUMB: AIM</b>This is your stick. Push it around to move the bat ring</div>
+      <div class="tz aimz"><b>LEFT THUMB: AIM</b>Push the stick and the bat ring moves with it</div>
       <div class="tz pcz"><b><span style="color:#3ddc6a">GREEN = CONTACT</span> · <span style="color:#ff6a4a">RED = POWER</span></b>Each swing has its own zone on your bat<small>Move your ring onto the ball. Ball in the green: CONTACT. Ball in the red core: POWER. Closer to the middle = better contact.</small></div>
       <div class="tz lbl lc" id="tlc">CONTACT ZONE<span>▼</span></div><div class="tz lbl lp" id="tlp">POWER ZONE<span>▼</span></div>
       <div class="tz tmz"><b>YELLOW RING = TIMING</b>It shrinks onto a white circle the size of the ball<small>Ring still bigger than the ball: too early. Ring meets the circle and turns <span style="color:#39ff6a">green</span>: swing!</small></div>
@@ -1143,6 +1145,13 @@ function tutShow(mode){const T=$('tut');T.className=mode;T.hidden=false;tutHold=
   if(n===2){const H=$('hud').getBoundingClientRect();[['tc','tlc'],['tp','tlp']].forEach(([b,l])=>{const r=$(b).getBoundingClientRect(),e=$(l);e.style.left=(r.left-H.left+r.width/2)+'px';e.style.top=(r.top-H.top-46)+'px';});}
   if(n===5||mode==='j'||mode==='o'){const r=$('tj').getBoundingClientRect(),h=$('hud').getBoundingClientRect(),g=10;sp.style.cssText='left:'+(r.left-h.left-g-4)+'px;top:'+(r.top-h.top-g-4)+'px;right:auto;bottom:auto;width:'+(r.width+2*g)+'px;height:'+(r.height+2*g)+'px;box-sizing:content-box;aspect-ratio:auto';} // ring drawn around the button as it actually is (JUICE and OVERDRIVE are different sizes); 4 = the ring's border
   if(n===6){const r=$('juice').getBoundingClientRect(),h=$('hud').getBoundingClientRect();sp.style.cssText='left:'+(r.left-h.left-10)+'px;top:'+(r.top-h.top-8)+'px;width:'+(r.width+12)+'px;height:'+(r.height+14)+'px';} // the Juice / Overdrive meter
+  $('hud').classList.toggle('tut1',n===1);
+  if(n===1){ // two highlights: the stick (lifted above the dimming, with its own ring) and the strike zone, where the bat ring follows it
+    const H=canvas.clientHeight,W=canvas.clientWidth,a=new V3(ZONE.x0,ZONE.y1,0).project(camera),b=new V3(ZONE.x1,ZONE.y0,0).project(camera),pad=44;
+    const l=(a.x+1)/2*W-pad,t=(1-a.y)/2*H-pad,r=(b.x+1)/2*W+pad,bt=(1-b.y)/2*H+pad;
+    sp.style.cssText='left:'+l+'px;top:'+t+'px;bottom:auto;width:'+(r-l)+'px;height:'+(bt-t)+'px;aspect-ratio:auto;border-radius:18px;animation:none';
+    {const c=T.querySelector('.aimz');c.style.bottom=(H-t+10)+'px';c.style.right='12px';c.style.textAlign='center';} // caption sits above the lit zone
+    const q=$('apad').getBoundingClientRect(),h=$('hud').getBoundingClientRect(),s2=T.querySelector('.spot2');s2.style.cssText='left:'+(q.left-h.left-8)+'px;top:'+(q.top-h.top-8)+'px;width:'+(q.width+8)+'px;height:'+(q.height+8)+'px';}
   if(n===2||n===3){ // spotlight the strike zone itself: project its corners to the screen
     const H=canvas.clientHeight,W=canvas.clientWidth,a=new V3(ZONE.x0,ZONE.y1,0).project(camera),b=new V3(ZONE.x1,ZONE.y0,0).project(camera),pad=16;
     let l=(a.x+1)/2*W-pad,t=(1-a.y)/2*H-pad,r=(b.x+1)/2*W+pad,bt=(1-b.y)/2*H+pad;const zw=r-l-2*pad;retP.visible=true;
@@ -1167,7 +1176,7 @@ let tutT0=0;function tutAnim(t){if($('tut').hidden)return;
   reticle.position.set(lerp(TUT_S.x,TUT_B.x,u),lerp(TUT_S.y,TUT_B.y,u),0);retP.visible=ph>=.5&&ph<.93;retCfill.visible=!retP.visible;
   const push=ph>=.08&&ph<.3?Math.sin((ph-.08)/.22*PI):0,dx=TUT_B.x-TUT_S.x,dy=TUT_B.y-TUT_S.y,L=Math.hypot(dx,dy); // the stick leans the way the ring is travelling
   padKnob.style.transition='none';padKnob.style.transform='translate('+(push*36*dx/L).toFixed(1)+'px,'+(-push*36*dy/L).toFixed(1)+'px)';}
-function tutClose(){$('apad').classList.remove('drag');retP.visible=true;retCfill.visible=false;padKnob.style.transform='';padKnob.style.transition='';$('hud').classList.remove('tut2');$('tut').hidden=true;tutHold=false;if(tutFirst){tutFirst=false;S.t=now-readyDur+.7;}}
+function tutClose(){$('hud').classList.remove('tut1');$('apad').classList.remove('drag');retP.visible=true;retCfill.visible=false;padKnob.style.transform='';padKnob.style.transition='';$('hud').classList.remove('tut2');$('tut').hidden=true;tutHold=false;if(tutFirst){tutFirst=false;S.t=now-readyDur+.7;}}
 function jtutNeed(){if(tutOff||jtutSeen||window.__mmManual&&!window.__mmTut)return false;jtutSeen=true;tutFirst=true;tutShow('j');try{localStorage.setItem('mm_jtut','1');}catch(e){}return true;}
 let otutSeen=!MOB;try{if(!TUT_EVERY_LAUNCH&&localStorage.getItem('mm_otut')==='1')otutSeen=true;}catch(e){}
 // the first time Overdrive is live: point at the bar and say what it does
