@@ -347,8 +347,8 @@ body.mob #tip{display:block}body.mob .how{display:none}
 /* step 3 demo: drawn at the game's real sizes and dead centre of the bat, so it is a picture of a perfect swing: ball in the red core, ring meeting the ball */
 #tut.s3 .spot::before,#tut.s3 .spot::after{content:'';position:absolute;left:var(--tx,50%);top:var(--ty,50%);box-sizing:border-box;width:calc(var(--tr,14px)*2);height:calc(var(--tr,14px)*2);margin:calc(var(--tr,14px)*-1);border-radius:50%}
 #tut.s3 .spot::before{border:3px solid #fff;background:rgba(255,255,255,.4)}
-#tut.s3 .spot::after{border:3px solid var(--volt);animation:tutring 1.25s linear infinite}
-@keyframes tutring{0%{transform:scale(6);opacity:0;border-width:.6px}10%{opacity:1}72%{transform:scale(1);border-color:var(--volt);border-width:3px;box-shadow:none}74%,100%{transform:scale(1.12);border-color:#39ff6a;border-width:4px;opacity:1;box-shadow:0 0 14px 4px rgba(57,255,106,.9)}}
+#tut.s3 .spot::after{border:3px solid var(--volt);animation:tutring 1.5s linear infinite}
+@keyframes tutring{0%{transform:scale(6);opacity:0;border-width:.6px}10%{opacity:1}48%{transform:scale(1);border-color:var(--volt);border-width:3px;box-shadow:none}50%,100%{transform:scale(1.12);border-color:#39ff6a;border-width:4px;opacity:1;box-shadow:0 0 14px 4px rgba(57,255,106,.9)}}
 #tut .spot2{display:none;position:absolute;z-index:32;box-sizing:content-box;border:4px solid var(--volt);border-radius:50%;box-shadow:0 0 24px 4px var(--volt);pointer-events:none;animation:jring 1s ease-in-out infinite}#tut.s1 .spot2{display:block}
 #hud.tut1 #apad{z-index:31;pointer-events:none}
 #hud.tut5 #touch,#hud.tut7 #touch{z-index:31;pointer-events:none}#hud.tut7 #odv{z-index:31}
@@ -363,10 +363,10 @@ body.mob #tip{display:block}body.mob .how{display:none}
 #tut .tgz .trk i{position:absolute;top:0;bottom:0;border-radius:3px}
 #tut .tgz .gc{left:16%;width:68%;background:linear-gradient(90deg,rgba(61,220,106,.28),rgba(61,220,106,.75) 36%,#7dffa0 42%,#7dffa0 58%,rgba(61,220,106,.75) 64%,rgba(61,220,106,.28))}
 #tut .tgz .gp{left:26%;width:48%;background:linear-gradient(90deg,rgba(255,77,46,.3),rgba(255,77,46,.8) 36%,#ff8a70 42%,#ff8a70 58%,rgba(255,77,46,.8) 64%,rgba(255,77,46,.3));opacity:.25}
-#tut .tgz .trk i.mk{top:-5px;bottom:-5px;width:5px;margin-left:-2.5px;border-radius:2.5px;background:#fff;border:1.5px solid #000;animation:tutmk 1.25s linear infinite}
-@keyframes tutmk{0%{left:2%;background:#ff4d2e;opacity:0}10%{opacity:1}40%{background:#fff}72%{left:50%;background:#fff}74%,100%{left:50%;background:#ffe53b;box-shadow:0 0 10px 3px #ffe53b;opacity:1}}
-#tut .tgz em{position:absolute;left:0;right:0;top:calc(100% + 4px);text-align:center;font-family:var(--display);font-style:italic;font-weight:400;font-size:20px;letter-spacing:.04em;color:#39ff6a;text-shadow:0 2px 0 #000;animation:tutpf 1.25s linear infinite}
-@keyframes tutpf{0%,72%{opacity:0;transform:scale(.7)}76%,100%{opacity:1;transform:scale(1)}}
+#tut .tgz .trk i.mk{top:-5px;bottom:-5px;width:5px;margin-left:-2.5px;border-radius:2.5px;background:#fff;border:1.5px solid #000;animation:tutmk 1.5s linear infinite}
+@keyframes tutmk{0%{left:2%;background:#ff4d2e;opacity:0}10%{opacity:1}28%{background:#fff}48%{left:50%;background:#fff}50%,100%{left:50%;background:#ffe53b;box-shadow:0 0 10px 3px #ffe53b;opacity:1}}
+#tut .tgz em{position:absolute;left:0;right:0;top:calc(100% + 4px);text-align:center;font-family:var(--display);font-style:italic;font-weight:400;font-size:20px;letter-spacing:.04em;color:#39ff6a;text-shadow:0 2px 0 #000;animation:tutpf 1.5s linear infinite}
+@keyframes tutpf{0%,48%{opacity:0;transform:scale(.7)}53%,100%{opacity:1;transform:scale(1)}}
 /* 'HOW TO PLAY': big in the middle of the screen on the first step, then a smaller header at the top for the rest */
 #tut .htp{left:0;right:0;top:44px;text-align:center;font-size:26px;letter-spacing:.04em;color:var(--volt);-webkit-text-stroke:1px #000;text-shadow:0 3px 0 #000;transform:rotate(-3deg);pointer-events:none}
 #tut.s1 .htp{display:block} /* the title shows on the opening step only, so it never covers the meters */
