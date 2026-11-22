@@ -808,8 +808,8 @@ const basic=(o)=>new T.MeshBasicMaterial(Object.assign({side:T.DoubleSide},o));
     const playable=()=>{g.beginPath();arc(0);[[70,-70],[30,-4],[15.4,10.6],[8,15.5],[0,17],[-8,15.5],[-15.4,10.6],[-30,-4],[-70,-70]].forEach(q=>g.lineTo(gx(q[0]),gz(q[1])));g.closePath();};
     const grass=path=>{g.save();path();g.clip();
       if(mask){g.fillStyle='#0f0';g.fillRect(0,0,GM,GM);} // mask: red = dirt, green = inside the park at all
-      else{g.fillStyle=DIGI?'#2b2d36':'#3a772a';g.fillRect(0,0,GM,GM);   // two mowing directions crossing, like a big-league diamond cut
-        [[PI/4,DIGI?'rgba(0,0,6,.2)':'rgba(0,22,0,.13)'],[-PI/4,DIGI?'rgba(210,215,235,.06)':'rgba(236,255,170,.085)']].forEach(([an,c])=>{g.save();g.translate(gx(0),gz(0));g.rotate(an);g.fillStyle=c;const w=5.2*GS;for(let k=-44;k<44;k+=2)g.fillRect(k*w,-GM*2,w,GM*4);g.restore();});}
+      else{g.fillStyle=DIGI?'#84858d':'#3a772a';g.fillRect(0,0,GM,GM);   // two mowing directions crossing, like a big-league diamond cut
+        [[PI/4,DIGI?'rgba(0,0,6,.045)':'rgba(0,22,0,.13)'],[-PI/4,DIGI?'rgba(255,255,255,.035)':'rgba(236,255,170,.085)']].forEach(([an,c])=>{g.save();g.translate(gx(0),gz(0));g.rotate(an);g.fillStyle=c;const w=5.2*GS;for(let k=-44;k<44;k+=2)g.fillRect(k*w,-GM*2,w,GM*4);g.restore();});}
       g.restore();};
     g.fillStyle=mask?'#000':'#24242a';g.fillRect(0,0,GM,GM);
     grass(playable);
@@ -860,14 +860,14 @@ void main(){vec2 uv=vec2((vW.x+130.0)/260.0,1.0-(vW.y+240.0)/260.0);
 vec3 col=texture2D(macro,uv).rgb;vec4 mk=texture2D(maskT,uv);float m=mk.r;float inside=step(0.5,mk.g);
 vec3 dg=texture2D(gD,vW/2.4).rgb*texture2D(gD,vW/17.0+0.37).rgb*4.0;
 vec3 dd=texture2D(dD,vW/2.0).rgb*texture2D(dD,vW/11.0+0.11).rgb*4.0;
-col=col*mix(mix(dg,vec3(dot(dg,vec3(0.333))),digi),dd,m)*vL;
+col=col*mix(mix(dg,dd,digi),dd,m)*vL; // moon park: the whole surface is one regolith, so the 'turf' uses the dust detail too
 if(inside<0.5)col=vec3(0.47,0.47,0.5)*dd*vL; // outside the walls it is just the Moon: grey regolith, no turf and no grid
 else if(digi>0.5){
 float hw=1.7+0.23*max(0.0,1.0-vW.y);float clr=1.0-(1.0-smoothstep(hw,hw+2.2,abs(vW.x+0.15)))*(1.0-smoothstep(21.0,28.0,-vW.y)); // a clear lane from the plate past the mound, behind the strike zone
 vec2 r=vec2(vW.x+vW.y,vW.x-vW.y)*0.70711/5.2;vec2 d=0.5-abs(fract(r)-0.5);vec2 w=fwidth(r);
 vec2 l=1.0-smoothstep(vec2(0.008),vec2(0.008)+w*1.5,d);float fade=clamp(0.03/max(w.x,w.y),0.0,1.0);
 col+=vec3(1.0,0.16,0.86)*max(l.x,l.y)*(0.22+0.55*fade)*(1.0-m)*clr*GRIDK; // no grid anywhere near the plate: nothing may cross the strike zone or the bat ring
-col+=mix(vec3(0.75,0.78,0.86)*0.22,vec3(1.0,0.2,0.88)*0.5,GRIDK)*(1.0-abs(m-0.5)*2.0)*clr;}
+col=mix(col,vec3(0.94,0.94,0.92),smoothstep(0.25,0.85,1.0-abs(m-0.5)*2.0)*0.9*clr);} // chalk: the infield, base paths, mound and track are marked out in white lines, the way the old dome parks painted them on the carpet
 gl_FragColor=vec4(col,1.0);
 #include <fog_fragment>
 }`});
