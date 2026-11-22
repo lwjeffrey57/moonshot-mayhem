@@ -1907,9 +1907,9 @@ let hudOver=false,hudBars=0,ringEcho=null,lastWalk='';
 // Flavour first: the first home run and the first strikeout of every game always get the full, ridiculous treatment
 // (the first two of each for a player's first three games), so nobody plays a whole game without seeing what this game is.
 const WALK_ONLY=['w_milling','w_drive','w_golf','w_sad']; // routines that are walk-ups only, never celebrations
-const celClip=own=>{if(!WALK_ONLY.includes(own))return own;const C=MX.clip,w=C?WILD_CEL.filter(k=>C.intros[k]):[];return w.length?w[(Math.random()*w.length)|0]:own;}; // the milling routine is a walk-up only
+let celLast='';const celClip=own=>{if(!WALK_ONLY.includes(own))return own;const C=MX.clip,w=C?WILD_CEL.filter(k=>C.intros[k]):[];return w.length?w[(Math.random()*w.length)|0]:own;}; // the milling routine is a walk-up only
 const earlyShow=n=>n<(gamesPlayed<=3?2:1);let wildTrot=false;
-const WILD_CEL=['w_backflip','w_bboy','w_macarena','w_salsa','w_bdance','w_flair','w_lift','w_pushup','p_loser'],WILD_TAUNT=['p_twerk','p_chicken','p_backflip','p_bboy','p_macarena','p_runman'];
+const WILD_CEL=['w_backflip','w_bboy','w_macarena','w_salsa','w_bdance','w_flair','w_lift','w_pushup','p_loser','p_twerk','p_chicken','p_runman','p_fist','p_clap','p_threat','w_boxing','w_arrow','w_wave'],WILD_TAUNT=['p_twerk','p_chicken','p_backflip','p_bboy','p_macarena','p_runman'];
 const juiceOn=()=>juiceArmed||keys.ShiftLeft||keys.ShiftRight;
 // ratings shown as grades: S is elite, F is a liability. The same scale for power, contact and speed.
 const GRADE_COL={S:'#ffd23b',A:'#3ddc6a',B:'#3ad6ff',C:'#f2f5ff',D:'#ff9a3b',F:'#ff4d2e'};
@@ -1982,7 +1982,9 @@ const TROT={dur:5.85,celT:3.05,cele:false,clip:'',R:null,cam:new V3(),segs:[[0,3
 function startTrot(){const R=RUN.list.find(R=>!R.active)||null;if(!R||!R.jogAct)return false;
   R.active=true;R.trot=true;R.delay=0;R.s=0;R.target=4;TROT.R=R;TROT.cele=false;TROT.cut=false;R.fig.root.scale.setScalar(FSCALE.inf);
   {const C=MX.clip,own=celClip(WALK.by[curBatter().name]);const wild=wildTrot&&C?WILD_CEL.filter(k=>C.intros[k]):[];wildTrot=false;
-    TROT.clip=wild.length&&!DBG.loser?wild[(Math.random()*wild.length)|0]:C&&C.intros.p_loser&&(DBG.loser||Math.random()<.3)?'p_loser':C&&C.intros[own]?own:'';} // sometimes he turns and gives the pitcher the 'loser' sign instead // his own routine once he has touched home
+    const all=C?WILD_CEL.filter(k=>C.intros[k]&&k!=='p_loser'&&k!==celLast):[],pick=a=>a[(Math.random()*a.length)|0],w2=wild.filter(k=>k!=='p_loser'&&k!==celLast);
+    // his own routine about a third of the time, the 'loser' sign at the pitcher now and then, otherwise anything from the whole book (dances, flexes, the pitcher's own strikeout taunts thrown back at him), never the same one twice running
+    TROT.clip=w2.length&&!DBG.loser?pick(w2):C&&C.intros.p_loser&&(DBG.loser||Math.random()<.22)?'p_loser':C&&C.intros[own]&&own!==celLast&&Math.random()<.35?own:all.length?pick(all):C&&C.intros[own]?own:'';celLast=TROT.clip;} // sometimes he turns and gives the pitcher the 'loser' sign instead // his own routine once he has touched home
   // men already on base stay ahead of him: when the highlight cuts in, each is at least three-quarters of a base in front of the man behind, and they keep that lead home
   RUN.list.filter(o=>o!==R&&o.active&&o.target>=4).sort((a,b)=>a.s-b.s).forEach((o,k)=>{o.s=Math.max(o.s,Math.min(3.7,1.7+.75*(k+1)));o.lead=true;o.delay=0;});
  if(DBG.cel)TROT.clip=DBG.cel;
@@ -2365,7 +2367,7 @@ function tryContact(){flight_pop=false;if(pitch.hbp){swing.done=true;swing.miss=
     // its own flight from the moment it leaves the bat: one smooth climb out over the wall and away, never the normal arc
     const hd=Math.hypot(v0.x,v0.z)||1,dx=v0.x/hd,dz=v0.z/hd;flight.orbP=[p0.clone(),new V3(p0.x+dx*46,p0.y+15,p0.z+dz*46),new V3(p0.x+dx*135,96,p0.z+dz*135),ORB_TO.clone()];
     // ...or it never gets as far as Earth: there is a satellite in the way
-    if(sat){flight.sat=true;const T0=new V3(p0.x+dx*235,150,p0.z+dz*235);flight.orbP[2].set(p0.x+dx*150,104,p0.z+dz*150);flight.orbP[3]=T0;satPlace(T0,Math.atan2(dx,dz));}}
+    if(sat){flight.sat=true;const T0=new V3(p0.x+dx*430,270,p0.z+dz*430);flight.orbP[2].set(p0.x+dx*200,150,p0.z+dz*200);flight.orbP[3]=T0;satPlace(T0,Math.atan2(dx,dz));}}
   pitch.hit=true;pring.visible=false;S.state='flight';payHeat();$('mph').textContent=pitchMph(pitch.dur);$('plast').textContent=pitch.P.n+' · '+pitchMph(pitch.dur)+' MPH';$('pitchinfo').classList.add('on'),$('plast').classList.add('on');renderRep(pitch.P);
   if(tb)juiceArmed=false;
   // ── the payoff
@@ -2505,7 +2507,7 @@ function finishPlay(){
   // Triples always get one, on third (they are rare, and a triple is the most exciting play there is short of a homer).
   if(pl.type==='hit'&&(pl.bases===2||pl.bases===3)&&S.state==='result'&&WALK.on&&MX.clip&&(pl.bases===3||DBG.dbl||earlyShow(S.d2||0)||Math.random()<.4)){
     const w=WILD_CEL.filter(k=>k!=='p_loser'&&k!=='w_lift'&&MX.clip.intros[k]); // the lift uses the bat as the barbell, so it is kept for home plate
-    if(w.length){S.d2=(S.d2||0)+1;S.next=()=>{D2.base=pl.bases;D2.rbi=f.rbi||0;D2.clip=w[(Math.random()*w.length)|0];RUN.list.forEach(R=>{if(R.active&&R.target===D2.base)R.s=D2.base;});S.state='celly2';S.t=now;flash(.35);crowdPump();};}}
+    if(w.length){S.d2=(S.d2||0)+1;S.next=()=>{D2.base=pl.bases;D2.rbi=f.rbi||0;{const w3=w.filter(k=>k!==celLast);D2.clip=(w3.length?w3:w)[(Math.random()*(w3.length||w.length))|0];celLast=D2.clip;}RUN.list.forEach(R=>{if(R.active&&R.target===D2.base)R.s=D2.base;});S.state='celly2';S.t=now;flash(.35);crowdPump();};}}
   // Now and then, after a hit that scores a run (or a triple), a quick cut to the pitcher wearing it. Never twice in a row, never on top of another cut.
   if(!S.next&&pl.type==='hit'&&S.state==='result'&&(f.rbi>0||pl.bases===3)&&WALK.on&&MX.pit&&MX.pit.defs.length&&!S.pdLast&&(DBG.pdef||Math.random()<.4)){S.pdLast=true;S.next=()=>{S.state='pdef';S.t=now;};}
   else if(pl.type==='hit')S.pdLast=false;
@@ -2518,7 +2520,7 @@ const SAT={g:new T.Group(),parts:[],t:0};
   {const d=add(new T.ConeGeometry(5,3.2,14,1,true),new T.MeshBasicMaterial({color:0xe8ecf5,fog:false,side:T.DoubleSide}),0,7.5,2);d.rotation.x=PI;}
   add(new T.CylinderGeometry(.25,.25,9,5),mb(0xcfd6e6),0,-8,-3);
   {const b=add(new T.SphereGeometry(.9,8,6),mb(0xff3b3b),0,-12.6,-3);}
-  SAT.g.scale.setScalar(2.7);SAT.g.visible=false;scene.add(SAT.g);}
+  SAT.g.scale.setScalar(1.5);SAT.g.visible=false;scene.add(SAT.g);}
 function satPlace(at,yaw){SAT.g.visible=true;SAT.g.position.copy(at);SAT.g.rotation.set(.35,yaw+.6,.25);SAT.t=now;SAT.parts.forEach(P=>{P.m.position.copy(P.home);P.m.rotation.set(P.m===SAT.parts[3].m?PI:0,0,0);P.v.set(0,0,0);P.w.set(0,0,0);});}
 function satBreak(){SAT.parts.forEach((P,i)=>{P.v.copy(P.home).normalize().multiplyScalar(rand(8,16)).add(_v.set(rand(-5,5),rand(-3,6),rand(-5,5)));if(!i)P.v.set(rand(-3,3),rand(-2,2),-14);P.w.set(rand(-3,3),rand(-3,3),rand(-3,3));});}
 function satTick(){if(!SAT.g.visible)return;if(!(flight&&flight.sat)){SAT.g.visible=false;return;}const dt=Math.min(.05,now-SAT.t);SAT.t=now;
@@ -2796,7 +2798,7 @@ function setupClip(obj,clip,B,sk){
   if(sc){C.strike=mixer.clipAction(sc);C.strike.play();C.strike.setEffectiveWeight(0);}
   // intros stay in the batter's box: work out how far each clip sits (or finishes) from where he stands in his stance
   const hipsAt=(c,ts)=>{const v=new V3(),sum=new V3();probe(c,at=>ts.forEach(t=>{at(t);C.hips.getWorldPosition(v);sum.add(v);}));return sum.multiplyScalar(1/ts.length);},home=hipsAt(ic||clip,[0]);
-  C.intros={};obj.animations.filter(c=>/^[wdc]_/.test(c.name)||c.name==='p_loser').forEach(c=>{keep(c);const loop=c.duration<2.5,ref=hipsAt(c,loop?[0,1,2,3,4,5,6,7].map(k=>k/8*c.duration):[c.duration-.02]);
+  C.intros={};obj.animations.filter(c=>/^[wdc]_/.test(c.name)||/^p_(loser|twerk|chicken|runman|fist|clap|threat)$/.test(c.name)).forEach(c=>{keep(c);const loop=c.duration<2.5,ref=hipsAt(c,loop?[0,1,2,3,4,5,6,7].map(k=>k/8*c.duration):[c.duration-.02]);
     const a=mixer.clipAction(c);a.play();a.setEffectiveWeight(0);C.intros[c.name]={a,dur:c.duration,loop,off:{x:home.x-ref.x,z:home.z-ref.z},loc:{x:-(ref.x-obj.position.x),z:-(ref.z-obj.position.z)}};}); // loc: where the routine sits relative to the model's own origin
 }
 const WHIFF_HOLD=1.15; // seconds of the swing-and-miss clip shown after the miss before he resets
@@ -3181,7 +3183,7 @@ function loadPlayers(kind){ // body file = character mesh; clips.json = motion-c
         trim:g=>{let o=geos.get(g.uuid);if(!o){o=weld(g);o.userData.lite=liteGeo(o,LOD_CELL);geos.set(g.uuid,o);}return o;}}; // shared full and low-detail meshes, as for the hitters
       makeD=names=>{const o=T.SkeletonUtils.clone(dbase);o.animations=names.map(n=>mkClip(cj[n],n));return o;}; // his suit has its own sealed helmet: no glass bubble
     }catch(e){console.warn('defence model failed, using the hitters model',e);makeD=make;defSkin=skins&&skins.away;}
-    try{setupModel(make(['hit','idle','idle2','strike'].filter(k=>cj[k]).concat(Object.keys(cj).filter(k=>/^[wdc]_/.test(k)||k==='p_loser'))),skins&&skins.home);}catch(e){console.warn('batter model failed, using built-in figure',e);fallback(batter);}
+    try{setupModel(make(['hit','idle','idle2','strike'].filter(k=>cj[k]).concat(Object.keys(cj).filter(k=>/^[wdc]_/.test(k)||/^p_(loser|twerk|chicken|runman|fist|clap|threat)$/.test(k)))),skins&&skins.home);}catch(e){console.warn('batter model failed, using built-in figure',e);fallback(batter);}
     playersDone();
     try{setupPitcher(makeD(['pitch',...Object.keys(cj).filter(k=>/^[pd]_/.test(k))]),defSkin);}catch(e){console.warn('pitcher model failed, using built-in figure',e);fallback(pitcher);}
     // fielders are built one at a time so the page doesn't freeze while seven more models are prepared
@@ -3521,7 +3523,8 @@ function updateCamera(rdt){
     _a.set(q.x-p0.x,q.y-p0.y,q.z-p0.z);if(_a.lengthSq()<1e-6)_a.set(0,0,-1);_a.normalize(); // riding just behind and above the ball, looking where it is going
     camPos.set(p0.x,p0.y,p0.z).addScaledVector(_a,-7).add(_b.set(0,1.7,0));camLook.set(p0.x,p0.y,p0.z).addScaledVector(_a,14);}
   else if(flight&&flight.orb&&!flight.done){ // from just outside the park, watching it climb away toward Earth
-    camPos.copy(flight.orbFrom).add(_a.set(34,6,62)).addScaledVector(_b.copy(ball.position).sub(flight.orbFrom),.12);camLook.copy(ball.position);camera.position.lerp(camPos,now-flight.orb<.08?1:.2);}
+    if(flight.sat){camPos.set(flight.orbFrom.x*.45+16,104,flight.orbFrom.z*.45+34).addScaledVector(_b.copy(ball.position).sub(flight.orbFrom),.04);camLook.copy(flight.satHit?SAT.g.position:ball.position);} // from high over the park, clear of every deck and roof, looking up and out at it
+    else{camPos.copy(flight.orbFrom).add(_a.set(34,6,62)).addScaledVector(_b.copy(ball.position).sub(flight.orbFrom),.12);camLook.copy(ball.position);}camera.position.lerp(camPos,now-flight.orb<.08?1:.2);}
   else if(S.kOut&&S.kOut.taunt&&MX.pit&&now>S.kOut.t+DEF_CUT&&now<S.kOut.t+DEFEAT&&S.state==='result'){ // ...then the pitcher, from the plate side
     pcutT=now;pcutH.set(0,2.3,-18.4);const e=clamp((now-S.kOut.t-DEF_CUT)/(DEFEAT-DEF_CUT),0,1);camLook.set(0,1.45,-18.4);camPos.set(lerp(1.6,1.1,e),1.35,-18.4+lerp(4.6,3.8,ease(e)));}
   else if(S.kOut&&MX.clip&&MX.clip.bi===S.kOut.bi&&now>S.kOut.t&&now<S.kOut.t+DEFEAT&&S.state==='result'){ // strikeout: close on the hitter from the pitcher's side
