@@ -1,0 +1,43 @@
+# Moonshot Mayhem backlog
+
+North star: a casual player picks it up and, by the end of the first nine outs, thinks they're pretty good at it. Then wants another game.
+
+## Before going public
+- Replace all ripped audio (crowd pops, boos, umpire calls, crushed-ball effect) with original or licensed sound.
+- Set the tutorial back to showing once, not on every launch.
+
+## Next up
+- **Audio design (crucial).** Original sound set: bat cracks by contact quality, mitt pops, layered crowd, Juice/Overdrive stingers, menu sounds. Longer crowd bed, more cheer variations, chants.
+- **Home vs away crowd dynamics**, audio first, then visual: the crowd reacts differently depending on who is at the plate and who is winning.
+- **Overdrive look.** A clearly different feel when it is on (reference: the Gamebreaker moment in NFL Street), by changing the scene itself rather than the screen border.
+- **Stadium design pass.** Decide what Moonshot Park is (dome or open sky, landmarks, where Earth sits, lighting mood) and build to it.
+- **Frame rate.** Next candidates: merge the stadium's many small pieces, tune render resolution.
+- **Real player models** instead of one shared character for everyone.
+
+## Modes
+- Home Run Derby (reuses everything; best value).
+- Easy mode and exhibition (today's game plus a difficulty dial).
+- Skill challenges.
+- Mini season with roguelike upgrades.
+- Challenges.
+
+## Gameplay
+- Difficulty levels: hide the timing target, later ring, pitch-colour cues, smaller power core, tighter windows.
+- Give CONTACT a real job (two-strike protection, contact builds Juice, and so on).
+- Hit by pitch: animation, strategy around it, possible brawl.
+- Stealing bases (needs a one-tap control design first).
+- Pitching, not only hitting (effectively a second game).
+- Fielder alignment and depth, dives and jumping catches.
+- A short "last swing" breakdown.
+
+## Presentation
+- Announcers: two original characters, captions first, voice later.
+- Lore: why baseball is on the Moon, the Comets and Krakens, batter bios.
+- More celebrations and batting stances (Mixamo clips).
+- New stadiums.
+- Fielder ready-stance clip; the unused on-deck clip.
+
+## Known gaps in testing
+- Audio has never been listened to by the developer side; all levels and mixes need a human ear.
+- Real-phone frame rate and feel are only checked on the owner's iPhone XR.
+- Many cutscenes and effects have only been checked as stills, not in motion.
