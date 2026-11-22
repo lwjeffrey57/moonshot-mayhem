@@ -1602,9 +1602,10 @@ function simulate(p0,v0,spin,opt){spin=spin||{side:0,lift:0};opt=opt||{};const G
 function judge(tr,bt){const spd=bt&&bt.spd||1; // batter's speed: 0.85 (plodder) to 1.15 (burner)
   if(tr.hr){
     // a ball that only just clears can be brought back: an outfielder who can get to that spot on the wall in time sometimes goes up and takes it away
-    if(!tr.tag&&!tr.eyeT&&tr.hrY-WALL_H<2.2){const w=tr.pts[Math.min(tr.pts.length-1,Math.round(tr.hrT*120))];let c=null,bd=1e9;
+    if(!tr.tag&&!tr.eyeT&&tr.hrY-WALL_H<1.5){const w=tr.pts[Math.min(tr.pts.length-1,Math.round(tr.hrT*120))];let c=null,bd=1e9;
       for(const o of fielders){if(!o.of)continue;const d=Math.hypot(o.home.x-w.x,o.home.z-w.z);if(d<bd){bd=d;c=o;}}
-      if(c&&tr.hrT>2.6&&bd<=10+c.speed*1.6*tr.hrT&&(DBG.rob||Math.random()<.3))return {type:'out',label:'ROBBED AT THE WALL',endT:tr.hrT,f:c,p:{x:w.x,y:w.y,z:w.z,t:tr.hrT},air:true,rob:true,dist:tr.dist};}
+      if(c&&tr.hrT>2.6&&bd<=10+c.speed*1.6*tr.hrT&&(DBG.rob||Math.random()<.3)){const wr=Math.hypot(w.x,w.z),k=(wr-1.6)/wr; // he makes the catch standing in front of the wall, not in it
+        return {type:'out',label:'ROBBED AT THE WALL',endT:tr.hrT,f:c,p:{x:w.x*k,y:w.y,z:w.z*k,t:tr.hrT},air:true,rob:true,dist:tr.dist};}}
     return {type:'hr',endT:tr.endT,dist:tr.dist,tag:tr.tag||(tr.hrY-WALL_H<1.1&&!tr.eyeT?'JUST ENOUGH':'')};}
   if(tr.grd&&!tr.foul){ // ground-rule double: the nearest outfielder still goes after it until it hops the wall
     const L=tr.land||tr.pts[tr.pts.length-1],endT=tr.endT;let f=null,bd=1e9;for(const c of fielders){if(c.isP||!c.of)continue;const d=Math.hypot(c.home.x-L.x,c.home.z-L.z);if(d<bd){bd=d;f=c;}}
@@ -2458,7 +2459,7 @@ function updateFielders(dt){
         if(f.strAct&&Math.abs(lat)>.86&&ml<22){strafe=lat>0?1:-1;r.rotation.y=face;}else r.rotation.y=Math.atan2(mx,mz);
         f.ph+=dt*13;applyPose(f.fig,runPose(f.ph));running=true;}
       else{applyPose(f.fig,pl.air?POSE.fCatch:POSE.fReady);} // glove up only for balls caught in the air; a ball fielded on the ground is taken low
-      r.position.x=px;r.position.z=pz;
+      {const rr=Math.hypot(px,pz),fr=fenceR(Math.atan2(px,-pz))-1.1;if(rr>fr){r.position.x=px*fr/rr;r.position.z=pz*fr/rr;}else{r.position.x=px;r.position.z=pz;}} // no fielder ever goes into or through the wall
       if(mocap&&!moving){const ct=CATCH.t-(pl.endT-tf);if(ct>=CATCH.t-g.lead-.001){clipT=clamp(ct,CATCH.start,CATCH.end);r.rotation.y=g.face;}}
     }else if(flight&&!flight.play.f&&f.of&&flight.play.type==='hr'){ // watch it leave
       applyPose(f.fig,POSE.pSet);r.rotation.y=Math.atan2(ball.position.x-r.position.x,ball.position.z-r.position.z);
@@ -2552,7 +2553,9 @@ function step(dt){
       if(!flight.orb&&tf>=1.1&&!(flight.admire&&tf<flight.A)){flight.orb=now;flight.orbFrom=bez(.22,new V3());flight.play.endT=tf+3.1;pop('LEFT ORBIT!','NEXT STOP: EARTH','cool',true);SND.boom();SND.zap();buzz([40,40,40,40,120]);}
       bez(flight.orb?.22+.78*Math.pow(clamp((now-flight.orb)/3.1,0,1),1.5):.22*ease(Math.min(1,tf/1.1)),ball.position);}
     if(flight.dShow){const ft=Math.round(flight.dFt*Math.min(1,Math.hypot(p.x,p.z)/(flight.dEnd||1)));if(ft!==flight.dLast){flight.dLast=ft;$('hds').textContent=ft+' FT';}}
-    if(!tr.hr&&tr.land&&tr.land.t>1.1&&tf<tr.land.t){ // fly balls and liners (not home runs): a ring on the grass that tightens as the ball comes down
+    if(flight.play.rob&&tf<flight.play.endT){const pl=flight.play,k=1-tf/pl.endT; // a ball that is going to be brought back gets the same yellow ring as any catchable fly
+      landRing.visible=true;landRing.position.set(pl.p.x,.07,pl.p.z);landRing.scale.setScalar(lerp(1.4,5,k));landRing.material.opacity=.55+.4*(1-k);}
+    else if(!tr.hr&&tr.land&&tr.land.t>1.1&&tf<tr.land.t){ // fly balls and liners (not home runs): a ring on the grass that tightens as the ball comes down
       const k=1-tf/tr.land.t;landRing.visible=true;landRing.position.set(tr.land.x,.07,tr.land.z);landRing.scale.setScalar(lerp(1.4,5,k));landRing.material.opacity=.55+.4*(1-k);}
     if(tr.poleT&&!flight.poleHit&&tf>=tr.poleT){flight.poleHit=true;burst(fxL,ball.position,16,7,.5,[1,.9,.3],5,1);tone('sine',1250,900,.5,.6);tone('triangle',2500,1800,.4,.3);pop('OFF THE POLE!','FAIR BALL','hot');} // doink
     if(tr.eyeT&&!flight.orbit&&!flight.eyeHit&&tf>=tr.eyeT){flight.eyeHit=true;burst(fxL,ball.position,14,6,.5,[.6,.9,.6],5,1);SND.mitt();tone('sine',120,50,.25,.5);} // thud off the batter's eye
@@ -2679,7 +2682,7 @@ const LITE=matchMedia('(pointer:coarse)').matches;
 if(LITE){QS=.85;rim.shadow.mapSize.set(512,512);renderer.shadowMap.type=T.PCFShadowMap;}else initPost();
 resize();hud();
 const DBG={pcut:false,fl:'',rob:false,pc:false,staunt:false,pod:false,trail:false,orbit:false,pdef:false,dbl:false,cam:false,admire:'',trip:false,fist:false,pop:false,loser:false}; // test hook: pin the camera to CAM_HOME/CAM_LOOK
-window.__mm={S,aim,MX,DBG,hud,tutAnim,draw:()=>draw(),endGame,TROT,SFX,RUN,ballPos:()=>ball.position,fielders,toReady,CAM_HOME,CAM_LOOK,now:()=>now,simulate,judge,get pitch(){return pitch;},get flight(){return flight;},lastSwing:()=>{const t=swing&&swing.type;swing=null;return t;},lastSwingTurbo:()=>!!(swing&&swing.turbo),doSwing,newGame,V3,
+window.__mm={S,aim,MX,DBG,landRingOn:()=>landRing.visible,hud,tutAnim,draw:()=>draw(),endGame,TROT,SFX,RUN,ballPos:()=>ball.position,fielders,toReady,CAM_HOME,CAM_LOOK,now:()=>now,simulate,judge,get pitch(){return pitch;},get flight(){return flight;},lastSwing:()=>{const t=swing&&swing.type;swing=null;return t;},lastSwingTurbo:()=>!!(swing&&swing.turbo),doSwing,newGame,V3,
   sim:(dt)=>{hitstop=0;now+=dt;step(dt);},
   step:(n,dt=1/60)=>{for(let i=0;i<n;i++){if(hitstop>0)hitstop=0;now+=dt;step(dt);}updateCamera(dt);draw();}};
 if(!window.__mmManual)requestAnimationFrame(frame);
