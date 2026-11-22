@@ -240,8 +240,8 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 #tbar em{position:absolute;left:0;right:0;top:calc(100% + 15px);text-align:center;font-family:var(--display);font-style:italic;font-weight:400;font-size:14px;letter-spacing:.05em;color:var(--volt);text-shadow:0 2px 0 #000,0 0 5px #000;white-space:nowrap} /* the pitch this timing was against */
 #tbar .trk i.mk{top:-4px;bottom:-4px;width:5px;margin-left:-2.5px;border-radius:2.5px;background:#fff;border:1.5px solid #000;box-sizing:content-box}
 /* the target: a fixed green hash at dead centre. Line your marker up with it for PERFECT. */
-#tbar .trk i.tg,#tut .tgz .trk i.tg{left:50%;top:-7px;bottom:-7px;width:3px;margin-left:-1.5px;border-radius:1.5px;background:#39ff6a;box-shadow:0 0 6px 1px rgba(57,255,106,.9),0 0 0 1px rgba(0,0,0,.7)}
-#tbar .trk i.tg::before,#tut .tgz .trk i.tg::before{content:'';position:absolute;left:50%;top:-6px;margin-left:-5px;border:5px solid transparent;border-top-color:#39ff6a;filter:drop-shadow(0 1px 0 #000)}
+#tbar .trk i.tg,#tut .tgz .trk i.tg{left:50%;top:-7px;bottom:-7px;width:3px;margin-left:-1.5px;border-radius:1.5px;background:#fff;box-shadow:0 0 5px 1px rgba(255,255,255,.75),0 0 0 1px rgba(0,0,0,.7)}
+#tbar .trk i.tg::before,#tut .tgz .trk i.tg::before{content:'';position:absolute;left:50%;top:-6px;margin-left:-5px;border:5px solid transparent;border-top-color:#fff;filter:drop-shadow(0 1px 0 #000)}
 /* the ball, with a mark where the barrel met it (dead centre = squared up) */
 #tbar em{display:flex;align-items:center;justify-content:center;gap:8px}
 #tcb{position:relative;flex:none;width:34px;height:34px;margin:0 9px}
@@ -387,7 +387,7 @@ body.mob #tip{display:block}body.mob .how{display:none}
 #tut .tgz .gc{left:16%;width:68%;background:linear-gradient(90deg,rgba(61,220,106,.28),rgba(61,220,106,.75) 36%,#7dffa0 42%,#7dffa0 58%,rgba(61,220,106,.75) 64%,rgba(61,220,106,.28))}
 #tut .tgz .gp{left:26%;width:48%;background:linear-gradient(90deg,rgba(255,77,46,.3),rgba(255,77,46,.8) 36%,#ff8a70 42%,#ff8a70 58%,rgba(255,77,46,.8) 64%,rgba(255,77,46,.3));opacity:.25}
 #tut .tgz .trk i.mk{top:-5px;bottom:-5px;width:5px;margin-left:-2.5px;border-radius:2.5px;background:#fff;border:1.5px solid #000;animation:tutmk 1.5s linear infinite}
-@keyframes tutmk{0%{left:2%;background:#ff4d2e;opacity:0}10%{opacity:1}28%{background:#fff}48%{left:50%;background:#fff}50%,100%{left:50%;background:#ffe53b;box-shadow:0 0 10px 3px #ffe53b;opacity:1}}
+@keyframes tutmk{0%{left:2%;background:#ff4d2e;opacity:0}10%{opacity:1}28%{background:#39ff6a}48%{left:50%;background:#39ff6a}50%,100%{left:50%;background:#39ff6a;box-shadow:0 0 10px 3px #39ff6a;opacity:1}}
 #tut .tgz em{position:absolute;left:0;right:0;top:calc(100% + 4px);text-align:center;font-family:var(--display);font-style:italic;font-weight:400;font-size:20px;letter-spacing:.04em;color:#39ff6a;text-shadow:0 2px 0 #000;animation:tutpf 1.5s linear infinite}
 @keyframes tutpf{0%,48%{opacity:0;transform:scale(.7)}53%,100%{opacity:1;transform:scale(1)}}
 /* 'HOW TO PLAY': big in the middle of the screen on the first step, then a smaller header at the top for the rest */
@@ -1765,7 +1765,7 @@ function timeBar(x,pw,jt,perfect,sk=1,rocket=false){const e=$('tbar');e.classNam
   band($('tgc'),hc);band($('tgp'),hp);band($('tjx'),jt>1?used:0);$('tgc').classList.toggle('dim',!!pw);$('tgp').classList.toggle('dim',!pw);
   let mx=clamp(x/SPAN,-1,1)*50;const miss=Math.abs(mx)>used;
   {const tw=$('tmk').parentNode.clientWidth||150,gap=1700/tw;if(perfect)mx=0;else if(Math.abs(mx)<gap)mx=(x<0?-1:1)*gap;} // at least 17 px of daylight between the two marks /* the picture never contradicts the verdict: a PERFECT sits exactly on the target, and anything else is drawn visibly clear of it */
- $('tmk').style.left=(50+mx)+'%';{const mc=perfect?'#ffe53b':miss?'#ff4d2e':'#fff';$('tmk').style.background=mc;$('tmk').style.setProperty('--mc',mc);}$('tmk').classList.toggle('pf',!!rocket);void e.offsetWidth;e.className='go';}
+ $('tmk').style.left=(50+mx)+'%';{const mc=miss?'#ff4d2e':'#39ff6a'; /* the target is white; your swing is green (red if it missed the window) */$('tmk').style.background=mc;$('tmk').style.setProperty('--mc',mc);}$('tmk').classList.toggle('pf',!!rocket);void e.offsetWidth;e.className='go';}
 function timing(t,c,l){const e=$('tim');e.className='';e.textContent=t;e.style.color=c;e.dataset.l=l||2;e.dataset.rk=$('tmk').classList.contains('pf')?1:0;void e.offsetWidth;e.className='go';}
 function flash(a){const e=$('flash');e.style.transition='none';e.style.opacity=a*FX;void e.offsetWidth;e.style.transition='opacity .35s';e.style.opacity=0;}
 // OVERDRIVE: fill the Juice meter all the way and it is charged. The meter burns and reads OVERDRIVE READY and the JUICE button becomes the
