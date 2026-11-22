@@ -1365,8 +1365,11 @@ let AC=null,master=null,crowdGain=null,noiseBuf=null,crowdBase=.05,crowdReal=fal
 const SFX={},SFX_FILES=['crowd','cheer','cheer_big','strike','ball','swing1','swing2','swing3','swing4','playball','ball2','ball3','ball4','strike2','out','catch','crush','boo1','boo2','boo3','pop_max'];
 function loadSfx(noiseSrc){SFX_FILES.forEach(n=>fetch('sfx/'+n+'.mp3').then(r=>r.ok?r.arrayBuffer():Promise.reject()).then(b=>new Promise((res,rej)=>AC.decodeAudioData(b,res,rej))).then(buf=>{SFX[n]=buf;
   if(n==='crowd'){ // real stadium ambience takes over from the filtered noise
-    const s=AC.createBufferSource();s.buffer=buf;s.loop=true;s.loopStart=.06;s.loopEnd=buf.duration-.06;s.connect(crowdGain);
-    const t=AC.currentTime;crowdReal=true;crowdBase=.4;crowdGain.gain.cancelScheduledValues(t);crowdGain.gain.setValueAtTime(crowdBase,t);s.start(t,.06);try{noiseSrc.stop();}catch(e){}}
+    // the bed is a short, even stretch of crowd with nothing in it you could pick out (no single voices), looped seamlessly; two copies at
+    // slightly different speeds overlap so the pattern never audibly comes round again
+    const t=AC.currentTime,mix=AC.createGain();mix.gain.value=.78;mix.connect(crowdGain);
+    [[1,.3],[.93,3.3]].forEach(o=>{const src=AC.createBufferSource();src.buffer=buf;src.loop=true;src.loopStart=.3;src.loopEnd=6.4;src.playbackRate.value=o[0];src.connect(mix);src.start(t,o[1]);});
+    crowdReal=true;crowdBase=.4;crowdGain.gain.cancelScheduledValues(t);crowdGain.gain.setValueAtTime(crowdBase,t);try{noiseSrc.stop();}catch(e){}}
 }).catch(()=>{}));}
 function sfx(name,vol=1,rate=1){const b=SFX[name];if(!AC||!b)return false;const s=AC.createBufferSource(),g=AC.createGain();s.buffer=b;s.playbackRate.value=rate;g.gain.value=vol;s.connect(g);g.connect(master);s.start();return true;}
 // Phones: sound may only start from a tap, the context can be suspended or interrupted (calls, switching apps), and on iPhone
