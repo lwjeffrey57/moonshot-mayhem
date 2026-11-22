@@ -1300,7 +1300,15 @@ function runPose(ph){const s=Math.sin(ph),c=Math.cos(ph);
   return pose({y:.9+Math.abs(c)*.03,lean:.34,hL:[-.25-.8*s,0,.04],kL:.75+.55*c,hR:[-.25+.8*s,0,-.04],kR:.75-.55*c,sL:[.9*s,0,.15],eL:-1.4,sR:[-.9*s,0,-.15],eR:-1.4});}
 
 // ───────────────────────── ball, reticle, fx
-const ball=new T.Mesh(new T.SphereGeometry(.05,8,6),new T.MeshBasicMaterial({color:0xffffff}));ball.visible=false;scene.add(ball);
+// The ball has seams, and each pitch spins its own way (a fastball's backspin, a curve tumbling forward, the slider's tight 'dot'):
+// something real to read out of the hand, the way a hitter does. Never shown before release.
+const ballTex=tex(256,128,(g,w,h)=>{g.fillStyle='#f6f3e8';g.fillRect(0,0,w,h);
+  const Y=x=>h/2-.33*h*Math.sin(x/w*PI*4);
+  g.strokeStyle='#c8281e';g.lineWidth=5;g.beginPath();for(let x=0;x<=w;x+=2){x?g.lineTo(x,Y(x)):g.moveTo(x,Y(x));}g.stroke();
+  g.lineWidth=2.2;for(let x=0;x<w;x+=7){const y=Y(x),dy=Y(x+1)-y,L=Math.hypot(1,dy),nx=-dy/L,ny=1/L;g.beginPath();g.moveTo(x-nx*7,y-ny*7);g.lineTo(x+nx*7,y+ny*7);g.stroke();}});
+ballTex.anisotropy=ANISO;
+const ball=new T.Mesh(new T.SphereGeometry(.05,16,12),new T.MeshBasicMaterial({color:0xffffff,map:ballTex}));ball.visible=false;scene.add(ball);
+const SPIN={FASTBALL:[1,0,0,34],CURVEBALL:[-1,0,0,30],SLIDER:[.3,.25,.92,38],CHANGEUP:[.85,.5,.1,17],SCREWBALL:[-.5,.6,.6,26]},_spin=new V3();
 const ballShadow=new T.Mesh(GEO.blob,blobMat);ballShadow.rotation.x=-PI/2;ballShadow.visible=false;scene.add(ballShadow);
 const ballGlow=new T.Sprite(new T.SpriteMaterial({map:glowTex,color:0xffe53b,blending:T.AdditiveBlending,depthWrite:false,transparent:true,opacity:0}));scene.add(ballGlow);
 const overlayMat=(c,o)=>new T.MeshBasicMaterial({color:c,transparent:true,opacity:o,depthTest:false,depthWrite:false,side:T.DoubleSide});
@@ -2944,6 +2952,7 @@ function step(dt){
   if(swing&&swing.practice&&now-swing.t0>.55){swing=null;if(S.state==='ready')S.t=Math.max(S.t,now-readyDur+.5);} // bat is back; give him another half second to get set before the windup // practice cut finished: bat is back, he can swing for real
   if(S.state==='pitch'&&pitch){
     const u=(now-pitch.t0)/pitch.dur;pitchPos(pitch,u,ball.position);
+    {const sp=SPIN[pitch.P.n]||[.7,.7,.1,46];_spin.set(sp[0],sp[1],sp[2]).normalize();ball.rotateOnWorldAxis(_spin,sp[3]*dt);}
     ball.scale.setScalar(1);ballShadow.position.set(ball.position.x,.03,ball.position.z);ballShadow.scale.setScalar(.16);
     const show=u>(pitch.P.sp?.42:.22)&&u<1;pring.visible=show;
     if(show){pring.position.set(pitch.tx,pitch.ty,0);const uT=u+SW_T/pitch.dur, // the ring runs ahead by the swing time, so 'tap when it finishes closing' is exactly on time
