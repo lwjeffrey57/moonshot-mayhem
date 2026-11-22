@@ -2319,9 +2319,11 @@ function tryContact(){flight_pop=false;if(pitch.hbp){swing.done=true;swing.miss=
   {const od=tb||(S.over&&S.overOn),ft=play.dist*3.281,on=S.bases.filter(Boolean).length,top=play.type==='hr'&&(flight.orbit||on===3||ft>=500||(S.over&&S.overOn&&ft>=450)||(S.inning===3&&S.runs<=S.opp&&S.runs+on+1>S.opp));
     if(play.type==='hr'){const runs=1+S.bases.filter(Boolean).length; // how hard the place erupts once it clears the fence: more for every run it drives in, for Overdrive, and for the long ones
       flight.roarL=Math.min(1.6,1.1+.14*(runs-1)+(od?.2:0)+(play.dist*3.281>=480?.1:0));}
-    if(top)roar(.65,1.4,true); /* highest tier, and it has to be earned: orbit shots, grand slams, 500 ft and up, Overdrive homers of 450+, and the homer that takes the lead in the last inning */
+    const odHR=play.type==='hr'&&S.over&&S.overOn; // an Overdrive homer: no build-up, the place erupts on contact
+    if(top)roar(odHR?1:.65,odHR?.12:1.4,true); /* highest tier, and it has to be earned: orbit shots, grand slams, 500 ft and up, Overdrive homers of 450+, and the homer that takes the lead in the last inning */
     if(play.type==='hr')cheer(.42,5);else if(play.type!=='foul'){crowdRise(q,Math.min(play.endT,8),q>.82&&pw);roar(.28+.34*q+(q>.82&&pw?.2:0),.22);} /* every ball in play: a looped crowd layer that lives exactly as long as the play does, so the park cannot go quiet while the ball is live */else cheer(.06,1);
-    if(play.type==='hr'&&!top){roar(.85,.6);roarHR=true;roarWave=0;}}
+    if(play.type==='hr'&&!top){roar(odHR?Math.max(1.15,flight.roarL):.85,odHR?.12:.6);roarHR=true;roarWave=0;}
+    if(odHR){flight.fenceRoar=true;crowdE=1;sfxSlice('cheer_big',.9,rand(1,1.06),0,3);}}
   if(play.f){play.from=play.f.fig.root.position.clone();}
   if(play.type==='hit')sendRunners(play.bases,{batter:play.bases});
   else if(play.type==='hr')sendRunners(4,{batter:flight.admire?0:4,jog:true});
