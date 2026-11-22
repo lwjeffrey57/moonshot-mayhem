@@ -2474,7 +2474,7 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden&&inPlay())s
 const MX={ready:false,map:[],on:true,token:0,kind:'ely'};
 // player looks you can switch between on the title screen
 const MODELS={ely:{label:'armoured',body:'ely.txt',clips:'ely_clips.min.json',tex:{d:'ely_d.jpg',n:'ely_n.jpg',s:'ely_s.jpg',g:'ely_g.jpg'},
-  def:{body:'van.txt',tex:{d:'van_d.jpg',n:'van_n.jpg',s:'van_s.jpg'}}}},ORDER=['ely']; // one look for now; add entries here to offer more on the title screen
+  def:{body:'van.txt',tex:{d:'van_d.jpg',n:'van_n.jpg',s:'van_s.jpg'}},ump:{body:'exo.txt',tex:{Body_MAT:'exo_body.jpg',Exo_MAT:'exo_suit.jpg'}}}},ORDER=['ely']; // one look for now; add entries here to offer more on the title screen
 try{const k=localStorage.getItem('mm_kind');if(MODELS[k])MX.kind=k;}catch(e){}
 const atlasC=document.createElement('canvas');atlasC.width=atlasC.height=1024;const atlasT=new T.CanvasTexture(atlasC);
 const SW={skin:[800,544],sleeve:[864,544],trim:[928,544],glove:[992,544],shoe:[800,608],sole:[864,608],band:[928,608],hair:[992,608],belt:[800,672]};
@@ -2765,9 +2765,9 @@ function prepModel(obj,tx,custom){ // dress + bulk a Mixamo mannequin; returns i
   const D={armX:la.x,armY:la.y,armZ:la.z,hipsY:W('Hips').y,neckY:W('Neck').y,headY:W('Head').y,topY:B('HeadTop_End')?W('HeadTop_End').y:W('Head').y+24,chestZ:W('Spine1').z+1,
     legX:ul.x,legY:ul.y,footX:ft.x,thigh:ul.distanceTo(kn),shin:kn.distanceTo(ft),footY:ft.y,uarm:la.distanceTo(fa),farm:fa.distanceTo(hd)};
   const mat=custom?custom.mat:new T.MeshPhongMaterial({map:tx,skinning:true,shininess:18,specular:0x303038});
-  meshes.forEach(m=>{let g=m.geometry.index?m.geometry.toNonIndexed():m.geometry;
+  meshes.forEach(m=>{const mn=m.material&&m.material.name||'';let g=m.geometry.index?m.geometry.toNonIndexed():m.geometry;
     if(custom)g=custom.trim?custom.trim(g,D):g;else{dress(g,D);if(MX.bulk)bulk(g,D);}   // a textured character keeps its own UVs and look
-    m.geometry=g;m.material=mat;m.castShadow=true;m.frustumCulled=false;
+    m.geometry=g;m.material=custom&&custom.mats&&custom.mats[mn]||mat;if(custom&&custom.hide&&custom.hide.test(mn))m.visible=false;m.castShadow=true;m.frustumCulled=false; // a model in several parts keeps a material per part
     if(g.userData.lite){m.userData.full=g;m.userData.lite=g.userData.lite;m.userData.isLite=false;LODM.push(m);}});
   obj.scale.setScalar(s);
   const K=MX.spineK;if(K!==1){B('Spine').scale.setScalar(K);B('Head').scale.setScalar(1.03/K);}
@@ -2827,14 +2827,14 @@ function retargetFig(d,rt){
 // fly-ball catch clip (a catcher's pop-up): we only use the part where he is already standing under the ball
 const CATCH={start:2.2,t:3.5,end:5.9};
 // Catcher and plate umpire. They only appear in the walk-up shot: from the batting camera a catcher would sit right in front of the strike zone.
-function setupPlateCrew(make,skins,makeD=make,defSkin=skins.away){
+function setupPlateCrew(make,skins,makeD=make,defSkin=skins.away,makeU=make,umpSkin=skins.ump){
   const cat=makeD(['catch']),{B}=prepModel(cat,pitT,defSkin),clip=cat.animations[0];
   clip.tracks=clip.tracks.filter(t=>/quaternion$/.test(t.name)||/Hips\.position$/.test(t.name));
   const mixer=new T.AnimationMixer(cat),act=mixer.clipAction(clip);act.play();act.time=.4;mixer.update(0); // the clip opens in a catcher's crouch
   const gl=mkGlove('mitt');gl.position.set(0,1,0);B('LeftHand').add(gl);
   cat.position.set(0,0,1.45);cat.rotation.y=PI;scene.add(cat);
   const uf={fig:mkFielder('UMP',0)};uf.fig.root.position.set(.12,0,2.45);uf.fig.root.rotation.y=PI;scene.add(uf.fig.root);
-  setupFielder(uf,make([]),skins.ump,true);
+  setupFielder(uf,makeU([]),umpSkin,true);
   const up=pose({y:.84,lean:.42,hL:[-.5,0,.34],kL:.85,hR:[-.5,0,-.34],kR:.85,sL:[-.35,0,.22],eL:-.5,sR:[-.35,0,-.22],eR:-.5,head:0}); // hands on knees, peering over the catcher
   MX.crew={cat,mixer,act,uf,up,show:null};
 }
@@ -2987,7 +2987,18 @@ function loadPlayers(kind){ // body file = character mesh; clips.json = motion-c
     fielders.filter(f=>!f.isP).forEach((f,i)=>setTimeout(()=>{if(my!==MX.token)return;
       try{setupFielder(f,makeD(['catch','run','strafe','throw','d_1','d_2','d_3'].filter(k=>cj[k])),defSkin);}catch(e){console.warn('fielder model failed, using built-in figure',e);fallback(f.fig);}},400+i*220));
     if(skins&&cj.run)setTimeout(()=>{if(my!==MX.token)return;try{setupRunners(make,skins);}catch(e){console.warn('baserunners failed',e);}},2300);
-    if(skins&&cj.catch)setTimeout(()=>{if(my!==MX.token)return;try{setupPlateCrew(make,skins,makeD,defSkin);}catch(e){console.warn('catcher/umpire failed',e);}},250);
+    // the umpire has his own model too. It is the least important download in the game, so nothing waits for it: the plate crew (only seen in
+    // walk-ups) is built when it arrives, or after a few seconds with the stand-in umpire if it hasn't.
+    const umpP=cfg.ump&&canClone?Promise.all([loadBuf(cfg.ump.body),...Object.keys(cfg.ump.tex).map(k=>loadImg(cfg.ump.tex[k]).then(i=>[k,i]))]).catch(()=>null):Promise.resolve(null);
+    if(skins&&cj.catch)Promise.race([umpP,new Promise(res=>setTimeout(()=>res(null),4500))]).then(um=>{if(my!==MX.token)return;
+      let makeU=make,umpSkin=skins.ump;
+      if(um)try{const ub=new T.FBXLoader().parse(um[0],''),geos=new Map(),mats={};
+        um.slice(1).forEach(([k,img])=>{const t=new T.Texture(img);t.needsUpdate=true;t.anisotropy=ANISO;mats[k]=new T.MeshPhongMaterial({map:t,color:0x9aa0ad,specular:0x222222,shininess:16,skinning:true});});
+        mats.Eye_MAT=mats.Body_MAT;
+        umpSkin={mat:mats.Body_MAT,mats,hide:/Eye_Spec|Brows/,trim:g=>{let o=geos.get(g.uuid);if(!o){o=weld(g);o.userData.lite=liteGeo(o,LOD_CELL);geos.set(g.uuid,o);}return o;}};
+        makeU=names=>{const o=T.SkeletonUtils.clone(ub);o.animations=[];helmet(o);return o;};
+      }catch(e){console.warn('umpire model failed, using the stand-in',e);makeU=make;umpSkin=skins.ump;}
+      try{setupPlateCrew(make,skins,makeD,defSkin,makeU,umpSkin);}catch(e){console.warn('catcher/umpire failed',e);}});
   }).catch(e=>{console.warn('player models unavailable, using built-in figures',e);if(my===MX.token){figs.forEach(fallback);playersDone();}});
 }
 gloveLoad();loadPlayers(MX.kind);
