@@ -2299,7 +2299,11 @@ function judge0(tr,bt){const spd=bt&&bt.spd||1; // batter's speed: 0.85 (plodder
   if(wallBall)bases=Math.max(2,bases); // off the wall is at least a double
   // show the ball come down (and carom off the wall) before the call; long flies used to be cut off in mid-air
   const shown=Math.max(4.4,tr.land?tr.land.t+.7:0,tr.wall?tr.wallT+.6:0);
-  return {type:'hit',bases,endT:Math.min(p.t,shown),tField:p.t,f,p,wall:wallBall}; // wall: it reached the fence before anyone got to it
+  // A ball that gets past the outfielder (smoked into the gap, or all the way to the wall) is chased, not met: it arrives first, hits the
+  // wall or rolls on, and he gets to it half a second or more behind it.
+  let tF=p.t,pp=p,late=false;
+  if(f.of&&(wallBall||Math.hypot(p.x,p.z)>Math.hypot(f.home.x,f.home.z)+3)){late=true;tF=p.t+(wallBall?.75:.5);const q=tr.pts[Math.min(tr.pts.length-1,Math.round(tF*120))];pp={x:q.x,y:0,z:q.z,t:tF};}
+  return {type:'hit',bases,endT:Math.min(tF,shown),tField:tF,f,p:pp,wall:wallBall,late}; // wall: it reached the fence before anyone got to it
 }
 
 let flight_pop=false;
@@ -3273,7 +3277,7 @@ function updateFielders(dt){
   for(const f of fielders){if(f.isP)continue;const r=f.fig.root;let clipT=-1,running=false,strafe=0;
     let diving=false,dmir=false;
     if(flight&&flight.play.f===f){const pl=flight.play,mocap=pl.air&&f.act&&!pl.dive;
-      if(!pl.tgt){pl.tgt={x:pl.p.x,z:pl.p.z,face:Math.atan2(-pl.p.x,-pl.p.z),lead:pl.air?0:Math.min(.3,pl.endT*.3)}; /* on a ball on the ground he gets there a beat early, to set his feet and get down for it */
+      if(!pl.tgt){pl.tgt={x:pl.p.x,z:pl.p.z,face:Math.atan2(-pl.p.x,-pl.p.z),lead:pl.air||pl.late?0:Math.min(.3,pl.endT*.3)}; /* on a ball on the ground he gets there a beat early, to set his feet and get down for it */
         if(mocap){ // stop where the clip starts him, so its own drift carries the glove to the ball
           const dx=f.startOff.x-f.catchOff.x,dz=f.startOff.z-f.catchOff.z,c=Math.cos(pl.tgt.face),sn=Math.sin(pl.tgt.face);
           const k=f.scale||1;pl.tgt.x+=(dx*c+dz*sn)*k;pl.tgt.z+=(-dx*sn+dz*c)*k;pl.tgt.lead=Math.min(CATCH.t-CATCH.start,pl.endT*.5);}
