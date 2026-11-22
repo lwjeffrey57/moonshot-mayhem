@@ -758,11 +758,11 @@ const basic=(o)=>new T.MeshBasicMaterial(Object.assign({side:T.DoubleSide},o));
     g.fillStyle=mask?'#000':'#24242a';g.fillRect(0,0,GM,GM);
     grass(playable);
     g.save();playable();g.clip();g.beginPath();arc(3);arc(-4.6,true);g.closePath();dirt('#7c7d86');g.restore();                    // warning track
-    g.save();g.beginPath();g.moveTo(gx(0),gz(4.5));g.lineTo(gx(-62),gz(-57.5));g.lineTo(gx(62),gz(-57.5));g.closePath();g.clip();
+    g.save();g.beginPath();g.moveTo(gx(0),gz(2.2));g.lineTo(gx(-62),gz(-59.8));g.lineTo(gx(62),gz(-59.8));g.closePath();g.clip();
     g.beginPath();g.arc(gx(0),gz(-18.4),29*GS,0,7);dirt();g.restore();                                                             // infield skin
-    g.beginPath();g.arc(gx(0),gz(0),3.96*GS,0,7);dirt();
-    grass(()=>{g.beginPath();g.moveTo(gx(0),gz(-2.6));g.lineTo(gx(16.8),gz(-19.4));g.lineTo(gx(0),gz(-36.2));g.lineTo(gx(-16.8),gz(-19.4));g.closePath();});
-    g.beginPath();g.arc(gx(0),gz(0),3.96*GS,0,7);dirt();
+    g.beginPath();g.arc(gx(0),gz(0),3.1*GS,0,7);dirt();
+    grass(()=>{g.beginPath();g.moveTo(gx(0),gz(-1.5));g.lineTo(gx(17.9),gz(-19.4));g.lineTo(gx(0),gz(-37.3));g.lineTo(gx(-17.9),gz(-19.4));g.closePath();});
+    g.beginPath();g.arc(gx(0),gz(0),3.1*GS,0,7);dirt();
     g.beginPath();g.arc(gx(0),gz(-18.4),2.74*GS,0,7);dirt('#a3a4ac');                                                              // mound
     if(mask)return;
     const blot=(x,z,rx,rz,c,rot=0)=>{g.save();g.translate(gx(x),gz(z));g.rotate(rot);g.scale(rx*GS,rz*GS);const gr=g.createRadialGradient(0,0,0,0,0,1);gr.addColorStop(0,c);gr.addColorStop(1,c.replace(/[\d.]+\)$/,'0)'));g.fillStyle=gr;g.fillRect(-1,-1,2,2);g.restore();};
