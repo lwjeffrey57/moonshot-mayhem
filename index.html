@@ -1397,8 +1397,7 @@ function crowdTick(dt){
     if(live){g.cancelScheduledValues(t);g.setTargetAtTime(crowdBase*.72,t,.3);}else if(t>cheerBusy)g.setTargetAtTime(crowdBase,t,.4);}
   if(live||t<crowdNext)return;
   crowdNext=t+rand(2.2,5);
-  if(t>cheerBusy){const g=crowdGain.gain;g.cancelScheduledValues(t);g.setTargetAtTime(crowdBase*rand(.9,1.45),t,.5);g.setTargetAtTime(crowdBase,t+1.4,.8);
-    if(Math.random()<.4)sfxSlice(Math.random()<.7?'cheer':'cheer_big',rand(.1,.2),rand(.88,1.14),rand(.3,2.4),rand(1.3,2.2));}}
+  if(t>cheerBusy){const g=crowdGain.gain;g.cancelScheduledValues(t);g.setTargetAtTime(crowdBase*rand(.9,1.2),t,.7);g.setTargetAtTime(crowdBase,t+1.4,.8);}} // only the bed moves between pitches: no cheers or pops unless something has happened
 // the home crowd lets the pitcher (and the umpire) hear it
 function boo(vol){const have=['boo1','boo2','boo3'].filter(n=>SFX[n]);if(!AC||!have.length||roarG)return;
   sfxSlice(have[(Math.random()*have.length)|0],vol,rand(.94,1.06),rand(0,2.4),rand(2.4,3.3));cheerBusy=AC.currentTime+2.4;}
