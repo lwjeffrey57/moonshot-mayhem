@@ -1447,11 +1447,11 @@ function choosePitch(){
   // the pitcher has a meter too: strikes and outs build Heat, and he spends a bar of it to throw a special pitch
   // The pitcher has Juice too. Nobody sees it in the first three at-bats of a game; the fourth hitter on is guaranteed the game's first
   // special pitch within his first two pitches, so the player learns early that it exists. After that it follows the Heat meter.
-  const due=S.bi>=3&&!S.spSeen&&(S.balls+S.strikes>=1||Math.random()<.5);if(due)S.heat=Math.max(S.heat,.34);
+  const due=S.bi>=3&&!S.spSeen&&(S.balls+S.strikes>=1||Math.random()<.5);
   // The more runs on the board, the angrier he gets: his Heat builds a little on every pitch and he reaches for a Juice pitch more often.
   // It stays a dice roll each pitch, so there is never a pattern to sit on.
-  const mad=Math.min(S.runs,10);if(S.bi>=3)S.heat=Math.min(1,S.heat+.012*mad);
-  const special=S.pOver||(S.bi>=3&&S.heat>=.333&&(due||Math.random()<.38+.04*mad)); // new players don't see special pitches in their first inning // the Heat is only deducted once the pitch has been seen (payHeat), so the meter doesn't give it away
+  const mad=Math.min(S.runs,10); // his meter itself only moves on strikes, outs and what he spends
+  const special=S.pOver||(S.bi>=3&&(due||(S.heat>=.333&&Math.random()<.38+.04*mad))); // new players don't see special pitches in their first inning // the Heat is only deducted once the pitch has been seen (payHeat), so the meter doesn't give it away
   const pool=PITCHES.filter(p=>S.pOver?p.sp:special?p.sp&&!p.od:!p.sp);let tw=0;pool.forEach(p=>tw+=p.w||1);let r=Math.random()*tw,P=pool[0];
   for(const p of pool){r-=p.w||1;if(r<=0){P=p;break;}}
   const inZone=S.bi===0||Math.random()<.64;let tx,ty; // the first hitter of every game only sees strikes: nobody's first at-bat is a walk
@@ -1655,7 +1655,7 @@ function finishPlay(){
     const B=(i)=>new V3(BASES[i][0],1.2,BASES[i][1]);
     if(pl.label==='GROUND OUT'&&pl.f&&pl.f.thrAct)f.thr={t0:now+.05,to:dp?B(2):B(1),next:dp?B(1):null,full:true};
     pop(dp?'DOUBLE PLAY!':pl.air&&f.q>.7?'ROBBED!':'OUT!',dp?'TWO FOR ONE':pl.label,'cool');SND.mitt();cheer(.04,1);afterPA(dp?2.7:f.thr?2.1:1.5);return;}
-  S.heat=Math.max(0,S.heat-.12);S.hits++;S.streak++;S.bestStreak=Math.max(S.bestStreak,S.streak);if(!f.tb)S.juice=Math.min(1,S.juice+.25); // every hit is worth one quarter; // a Juice hit doesn't refill the bar it just spent
+  S.hits++;S.streak++;S.bestStreak=Math.max(S.bestStreak,S.streak);if(!f.tb)S.juice=Math.min(1,S.juice+.25); // every hit is worth one quarter; // a Juice hit doesn't refill the bar it just spent
   if(pl.type==='hr'){
     const ft=Math.round(pl.dist*3.281);S.hrs++;S.longest=Math.max(S.longest,ft);const r=advance(4);
     buzz([40,50,90]);pop(r===4?'GRAND SLAM!':'GONE!',`${ft} FT · +${r} RUN${r>1?'S':''}`,'hot',true);scoreboard('HOME RUN',ft+' FT');
