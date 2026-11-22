@@ -1197,6 +1197,7 @@ function tutShow(mode){const T=$('tut');T.className=mode;T.hidden=false;tutHold=
   if(n===2){const H=$('hud').getBoundingClientRect();[['tc','tlc'],['tp','tlp']].forEach(([b,l])=>{const r=$(b).getBoundingClientRect(),e=$(l);e.style.left=(r.left-H.left+r.width/2)+'px';e.style.top=(r.top-H.top-46)+'px';});}
   if(n===5||mode==='j'||mode==='o'){const r=$('tj').getBoundingClientRect(),h=$('hud').getBoundingClientRect(),g=10;sp.style.cssText='left:'+(r.left-h.left-g-4)+'px;top:'+(r.top-h.top-g-4)+'px;right:auto;bottom:auto;width:'+(r.width+2*g)+'px;height:'+(r.height+2*g)+'px;box-sizing:content-box;aspect-ratio:auto';} // ring drawn around the button as it actually is (JUICE and OVERDRIVE are different sizes); 4 = the ring's border
   if(n===6){const r=$('juice').getBoundingClientRect(),h=$('hud').getBoundingClientRect();sp.style.cssText='left:'+(r.left-h.left-10)+'px;top:'+(r.top-h.top-8)+'px;width:'+(r.width+12)+'px;height:'+(r.height+14)+'px';} // the Juice / Overdrive meter
+  reticle.visible=n!==3;
   $('hud').classList.toggle('tut1',n===1);$('hud').classList.toggle('tut4',n===4);
   if(n===1){ // two highlights: the stick (lifted above the dimming, with its own ring) and the strike zone, where the bat ring follows it
     const H=canvas.clientHeight,W=canvas.clientWidth,a=new V3(ZONE.x0,ZONE.y1,0).project(camera),b=new V3(ZONE.x1,ZONE.y0,0).project(camera),pad=44;
@@ -1222,13 +1223,13 @@ let tutT0=0;function tutAnim(t){if($('tut').hidden)return;
     const e=(t-tutT0)/1000,a=e*2.4,r=(.55+.45*Math.sin(e*1.3))*34,x=Math.cos(a)*r,y=Math.sin(a*1.5)*r*.85;
     padKnob.style.transition='none';padKnob.style.transform='translate('+x.toFixed(1)+'px,'+y.toFixed(1)+'px)';$('apad').classList.add('drag');
     reticle.position.set(x/34*.2,.825-y/34*.22,0);return;}
-  if(tutStep===3){reticle.position.set(TUT_B.x,TUT_B.y,0);retP.visible=true;retCfill.visible=false;return;} // held on the pitch from step 2
+  if(tutStep===3){reticle.visible=false;return;} // timing step: just the ball, the closing ring and the gauge // held on the pitch from step 2
   if(tutStep!==2)return;const ph=((t-tutT0)%TUT_LOOP)/TUT_LOOP;
   const u=ph<.08?0:ph<.3?ease((ph-.08)/.22):ph<.93?1:0;
   reticle.position.set(lerp(TUT_S.x,TUT_B.x,u),lerp(TUT_S.y,TUT_B.y,u),0);retP.visible=ph>=.5&&ph<.93;retCfill.visible=!retP.visible;
   const push=ph>=.08&&ph<.3?Math.sin((ph-.08)/.22*PI):0,dx=TUT_B.x-TUT_S.x,dy=TUT_B.y-TUT_S.y,L=Math.hypot(dx,dy); // the stick leans the way the ring is travelling
   padKnob.style.transition='none';padKnob.style.transform='translate('+(push*36*dx/L).toFixed(1)+'px,'+(-push*36*dy/L).toFixed(1)+'px)';}
-function tutClose(){$('hud').classList.remove('tut1','tut4');$('apad').classList.remove('drag');retP.visible=true;retCfill.visible=false;padKnob.style.transform='';padKnob.style.transition='';$('hud').classList.remove('tut2');$('tut').hidden=true;tutHold=false;if(tutFirst){tutFirst=false;S.t=now-readyDur+.7;}}
+function tutClose(){reticle.visible=true;$('hud').classList.remove('tut1','tut4');$('apad').classList.remove('drag');retP.visible=true;retCfill.visible=false;padKnob.style.transform='';padKnob.style.transition='';$('hud').classList.remove('tut2');$('tut').hidden=true;tutHold=false;if(tutFirst){tutFirst=false;S.t=now-readyDur+.7;}}
 function jtutNeed(){if(tutOff||jtutSeen||window.__mmManual&&!window.__mmTut)return false;jtutSeen=true;tutFirst=true;tutShow('j');try{localStorage.setItem('mm_jtut','1');}catch(e){}return true;}
 let otutSeen=!MOB;try{if(!TUT_EVERY_LAUNCH&&localStorage.getItem('mm_otut')==='1')otutSeen=true;}catch(e){}
 // the first time Overdrive is live: point at the bar and say what it does
