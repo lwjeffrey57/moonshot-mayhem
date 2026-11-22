@@ -867,7 +867,9 @@ float hw=1.7+0.23*max(0.0,1.0-vW.y);float clr=1.0-(1.0-smoothstep(hw,hw+2.2,abs(
 vec2 r=vec2(vW.x+vW.y,vW.x-vW.y)*0.70711/5.2;vec2 d=0.5-abs(fract(r)-0.5);vec2 w=fwidth(r);
 vec2 l=1.0-smoothstep(vec2(0.008),vec2(0.008)+w*1.5,d);float fade=clamp(0.03/max(w.x,w.y),0.0,1.0);
 col+=vec3(1.0,0.16,0.86)*max(l.x,l.y)*(0.22+0.55*fade)*(1.0-m)*clr*GRIDK; // no grid anywhere near the plate: nothing may cross the strike zone or the bat ring
-col=mix(col,vec3(0.94,0.94,0.92),smoothstep(0.25,0.85,1.0-abs(m-0.5)*2.0)*0.9*clr);} // chalk: the infield, base paths, mound and track are marked out in white lines, the way the old dome parks painted them on the carpet
+{float o=0.19/260.0; // chalk about 40 cm wide: wherever the surface type changes within that distance
+float e=abs(texture2D(maskT,uv+vec2(o,0.0)).r-texture2D(maskT,uv-vec2(o,0.0)).r)+abs(texture2D(maskT,uv+vec2(0.0,o)).r-texture2D(maskT,uv-vec2(0.0,o)).r);
+col=mix(col,vec3(0.95,0.95,0.93),smoothstep(0.15,0.6,e)*0.95*clr);}} // chalk: the infield, base paths, mound and track are marked out in white lines, the way the old dome parks painted them on the carpet
 gl_FragColor=vec4(col,1.0);
 #include <fog_fragment>
 }`});
