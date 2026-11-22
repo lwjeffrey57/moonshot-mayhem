@@ -349,7 +349,7 @@ body.mob #tip{display:block}body.mob .how{display:none}
 /* 'HOW TO PLAY': big in the middle of the screen on the first step, then a smaller header at the top for the rest */
 #tut .htp{left:0;right:0;top:44px;text-align:center;font-size:26px;letter-spacing:.04em;color:var(--volt);-webkit-text-stroke:1px #000;text-shadow:0 3px 0 #000;transform:rotate(-3deg);pointer-events:none}
 #tut.s1 .htp{display:block} /* the title shows on the opening step only, so it never covers the meters */
-#tut.s1 .htp{top:240px;white-space:nowrap;font-size:clamp(30px,10.5vw,56px);line-height:.9;-webkit-text-stroke:2px #000;text-shadow:0 6px 0 #000,0 0 40px rgba(255,229,59,.55);animation:htpin .5s cubic-bezier(.2,1.5,.3,1) both}
+#tut.s1 .htp{top:256px;white-space:nowrap;font-size:clamp(30px,10.5vw,56px);line-height:.9;-webkit-text-stroke:2px #000;text-shadow:0 6px 0 #000,0 0 40px rgba(255,229,59,.55);animation:htpin .5s cubic-bezier(.2,1.5,.3,1) both}
 @keyframes htpin{from{transform:rotate(-3deg) scale(2.2);opacity:0}to{transform:rotate(-3deg) scale(1);opacity:1}}
 /* step 2 demo: a ball lands in the green zone and CONTACT lights up, then in the red core and POWER lights up */
 #tut.s2 .spot::before{content:'';position:absolute;left:var(--tx,50%);top:var(--ty,50%);box-sizing:border-box;width:calc(var(--tr,14px)*2);height:calc(var(--tr,14px)*2);margin:calc(var(--tr,14px)*-1);border-radius:50%;border:3px solid #fff;background:rgba(255,255,255,.6)} /* the ball stays put: the bat ring moves onto it */
