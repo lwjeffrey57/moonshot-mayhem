@@ -1467,18 +1467,17 @@ let tutT0=0;function tutAnim(t){if($('tut').hidden)return;
   reticle.position.set(lerp(TUT_S.x,TUT_B.x,u),lerp(TUT_S.y,TUT_B.y,u),0);retP.visible=ph>=.44&&ph<.93;retCfill.visible=!retP.visible;
   const push=ph>=.02&&ph<.18?Math.sin((ph-.02)/.16*PI):0,dx=TUT_B.x-TUT_S.x,dy=TUT_B.y-TUT_S.y,L=Math.hypot(dx,dy); // the stick leans the way the ring is travelling
   padKnob.style.transition='none';padKnob.style.transform='translate('+(push*36*dx/L).toFixed(1)+'px,'+(-push*36*dy/L).toFixed(1)+'px)';}
-// First batter of a game, before the first pitch: if the stick hasn't been touched yet, it rolls once in a small circle and the bat ring
-// moves with it, so the player sees that one drives the other. Never while a thumb is on it, and never again once it has been used.
+// First batter of a game, before the first pitch: if the stick hasn't been touched yet, it rolls once in a small circle to say 'move me'.
+// Only the stick moves: the bat ring stays centred until the player moves it themselves. Never while a thumb is on it, and never again once it has been used.
 let hintOn=false,hintE0=0;
 function stickHint(){
   if(!MOB)return;
   if(touchLast){S.stk=true;hintOn=false;return;}
   const e=now-S.t-.35,end=readyDur-.75,live=!S.stk&&S.state==='ready'&&S.inning===1&&S.outs===0&&S.bi===0&&S.balls+S.strikes===0&&e>0&&e<end;
-  if(!live){if(hintOn){hintOn=false;padKnob.style.transform='';padKnob.style.transition='';$('apad').classList.remove('drag');aim.x=0;aim.y=.825;}return;}
+  if(!live){if(hintOn){hintOn=false;padKnob.style.transform='';padKnob.style.transition='';$('apad').classList.remove('drag');}return;}
   if(!hintOn){hintOn=true;hintE0=e;}
   const u=(e-hintE0)/Math.max(.3,end-hintE0),env=Math.min(1,u/.15,(1-u)/.15),a=u*PI*2-PI/2,r=26*clamp(env,0,1),x=Math.cos(a)*r,y=Math.sin(a)*r;
-  padKnob.style.transition='none';padKnob.style.transform='translate('+x.toFixed(1)+'px,'+y.toFixed(1)+'px)';$('apad').classList.add('drag');
-  aim.x=x/34*.2;aim.y=.825-y/34*.22;}
+  padKnob.style.transition='none';padKnob.style.transform='translate('+x.toFixed(1)+'px,'+y.toFixed(1)+'px)';$('apad').classList.add('drag');}
 function tutClose(){$('hud').classList.remove('tut7');if(tutDemo){tutDemo=false;setTimeout(hud,0);}$('hud').classList.remove('tut5');if(tutWas5){tutWas5=false;$('tj').classList.remove('dn');setTimeout(hud,0);}reticle.visible=true;$('hud').classList.remove('tut1','tut4');$('apad').classList.remove('drag');retP.visible=true;retCfill.visible=false;padKnob.style.transform='';padKnob.style.transition='';$('hud').classList.remove('tut2');$('tut').hidden=true;tutHold=false;tapBlock=performance.now()+400;swing=null;if(tutFirst){tutFirst=false;S.t=now-readyDur+1.7;}}
 function jtutNeed(){if(tutOff||jtutSeen||window.__mmManual&&!window.__mmTut)return false;jtutSeen=true;tutFirst=true;tutShow('j');try{localStorage.setItem('mm_jtut','1');}catch(e){}return true;}
 let otutSeen=!MOB;try{if(!TUT_EVERY_LAUNCH&&localStorage.getItem('mm_otut')==='1')otutSeen=true;}catch(e){}
