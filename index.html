@@ -918,7 +918,7 @@ gl_FragColor=vec4(col,1.0);
     g.fillStyle='#34304e';for(let x=0;x<w;x+=128)g.fillRect(x,0,9,h);g.fillStyle='#262340';g.fillRect(0,120,w,11);});
   crowd.anisotropy=ANISO;
   crowd.wrapS=crowd.wrapT=T.RepeatWrapping;crowd.repeat.set(1/36,1.6);
-  const cm=basic({map:crowd});
+  const cm=basic({map:crowd});EYE.cm=cm;EYE.crowd=crowd;
   // the upper deck and its roof are open from left-centre (25 degrees) round to right-centre (15 degrees): the Earth hangs over the scoreboard,
   // and the rocket on its pad and the crater rim stand in the opening to its left. The deck is kept in right field and down both lines.
   const GAP0=8,GAP1=24,split=a=>[a.slice(0,GAP0+1),a.slice(GAP1)];
@@ -982,7 +982,7 @@ gl_FragColor=vec4(col,1.0);
           g.fillStyle='#c9ccd6';g.fillRect(cx-7,y0+23,14,3);
         }}}});
   fans.wrapS=fans.wrapT=T.RepeatWrapping;fans.repeat.set(1/9.6,3.84);fans.anisotropy=ANISO;
-  const fm=basic({map:fans});
+  const fm=basic({map:fans});EYE.fm=fm;EYE.fans=fans;
   // the backstop is an arc behind the plate (BK_A metres back at its deepest) that runs smoothly into the two foul-side walls
   const BK_A=17,BK_R=(26-BK_A)/(Math.SQRT2-1),BK_Z=BK_A-BK_R;
   // foul-side walls and stands
@@ -1359,6 +1359,27 @@ const PT_R=.068;
 // the rings are where the eyes live, so their outlines are redrawn on top as vector shapes at the screen's native sharpness.
 // They only trace what the 3D scene already shows (same place, size and colour each frame); nothing about aiming or timing changes.
 const SH={zone:null,rings:[],zon:false,W:0,H:0};
+// The crowd moves. Three cheap tricks, all driven by one 'energy' number that every cheer and roar pushes up and that drains away
+// over a couple of seconds: the stands bounce (the crowd picture is nudged up and down, in two halves out of step with each other),
+// they brighten, and camera flashes sparkle across them. One extra draw call in total.
+let crowdE=0,crowdShow=0;const FLASH={pts:null,n:64,life:new Float32Array(64)};
+function standPt(o){const k=Math.random();
+  if(k<.42){const phi=rand(-PI/4,PI/4),u=Math.random(),r=fenceR(phi);return o.copy(pol(r+2+32*u,phi,WALL_H+1.2+21*u));}
+  if(k<.6){let phi=rand(-PI/4,PI/4);if(phi>-25*DEG&&phi<15*DEG)phi=phi<-5*DEG?rand(-45,-26)*DEG:rand(16,45)*DEG;const u=Math.random(),r=fenceR(phi);return o.copy(pol(r+31+22*u,phi,33+15*u));}
+  const sd=Math.random()<.5?1:-1,t=Math.random(),u=Math.random(),ax=lerp(70,30,t),az=lerp(-70,-4,t);return o.set(sd*(ax+.866*(2+31*u)),2.6+20.5*u,az+.5*(2+31*u));}
+function crowdFx(dt){
+  if(REDUCE||!EYE.cm)return;
+  crowdE=Math.max(0,crowdE-dt*.42);crowdShow+=(crowdE-crowdShow)*Math.min(1,dt*6);
+  const e=crowdShow,t=performance.now()/1000,b=1+.42*e+.05*e*Math.sin(t*9);
+  EYE.cm.color.setScalar(b);EYE.fm.color.setScalar(b);
+  EYE.crowd.offset.y=Math.sin(t*11)*.0035*e;EYE.fans.offset.y=Math.sin(t*11+2.1)*.012*e;
+  if(!FLASH.pts){const g=new T.BufferGeometry();g.setAttribute('position',new T.BufferAttribute(new Float32Array(FLASH.n*3).fill(-999),3));
+    FLASH.pts=new T.Points(g,new T.PointsMaterial({map:glowTex,color:0xffffff,size:7.5,sizeAttenuation:true,transparent:true,blending:T.AdditiveBlending,depthWrite:false,fog:false}));FLASH.pts.frustumCulled=false;scene.add(FLASH.pts);}
+  const P=FLASH.pts.geometry.attributes.position;let spawn=(.8+70*e*e)*dt; // a few sparkles at rest, a storm of them when the place erupts
+  for(let i=0;i<FLASH.n;i++){
+    if(FLASH.life[i]>0){FLASH.life[i]-=dt;if(FLASH.life[i]<=0)P.setXYZ(i,0,-999,0);}
+    else if(spawn>0&&Math.random()<spawn){spawn-=1;FLASH.life[i]=rand(.07,.17);standPt(_s0);P.setXYZ(i,_s0.x,_s0.y,_s0.z);}}
+  P.needsUpdate=true;}
 function sharpInit(){
   const ns='http://www.w3.org/2000/svg',sv=document.createElementNS(ns,'svg');sv.id='sharp';sv.setAttribute('aria-hidden','true');$('hud').insertBefore(sv,$('hud').firstChild);
   SH.zone=document.createElementNS(ns,'polygon');SH.zone.setAttribute('fill','none');SH.zone.setAttribute('stroke','rgba(255,255,255,.92)');SH.zone.setAttribute('stroke-width','1.6');SH.zone.setAttribute('stroke-linejoin','miter');SH.zone.style.display='none';sv.appendChild(SH.zone);
@@ -1449,7 +1470,7 @@ function tone(type,f0,f1,dur,vol,delay=0){if(!AC)return;const t=AC.currentTime+d
 // Home runs: one continuous roar from contact until the next batter steps in, instead of a cheer at contact and another when it lands.
 // Two staggered loops of the steady middle of the big cheer, so the seam is never heard; the level rises with runs scored and Overdrive.
 let roarG=null,roarS=[],roarTop=false,roarHR=false,roarWave=0;
-function roar(level,ramp,top){
+function roar(level,ramp,top){crowdE=Math.max(crowdE,Math.min(1,level));
   if(!AC)return;
   const t=AC.currentTime,b=SFX.cheer_big;
   if(!roarG&&top&&SFX.pop_max){ // the biggest moments: the whole place comes unglued. The recording's own build-up plays once, then its sustained peak loops.
@@ -1475,7 +1496,7 @@ function sfxSlice(name,vol,rate,off,dur){const b=SFX[name];if(!AC||!b)return fal
 let cheerBusy=0,crowdNext=0,crowdSt='';
 // The crowd follows the action. Before the pitch it holds its breath; a ball in play gets a rising 'ohh' that lasts while it is in the air;
 // an out lets the air out (a low groan and the bed drops away); hits and homers get their cheers on top.
-function crowdRise(q,dur,big){if(!AC||!crowdReal||roarG)return;const t=AC.currentTime,g=crowdGain.gain;
+function crowdRise(q,dur,big){crowdE=Math.max(crowdE,big?.8:.35+.3*q);if(!AC||!crowdReal||roarG)return;const t=AC.currentTime,g=crowdGain.gain;
   // the bed is a continuous recording, so holding it up for the whole flight is what guarantees the park never goes quiet while the ball is in the air
   g.cancelScheduledValues(t);g.setValueAtTime(g.value,t);g.linearRampToValueAtTime(crowdBase*(big?2.8:1.9+.8*q),t+.18);g.setTargetAtTime(crowdBase,t+Math.max(.8,dur+.4),.7);
   if(big)sfxSlice('cheer_big',.8,rand(.97,1.05),rand(0,.3),clamp(dur+1.2,2.2,3.6)); // squared up with the POWER swing ('CRUSHED!', 'OBLITERATED!'): the place jumps, home run or not
@@ -1570,7 +1591,7 @@ function heartTick(){
 // the home crowd lets the pitcher (and the umpire) hear it
 function boo(vol){const have=['boo1','boo2','boo3'].filter(n=>SFX[n]);if(!AC||!have.length||roarG)return;
   sfxSlice(have[(Math.random()*have.length)|0],vol,rand(.94,1.06),rand(0,2.4),rand(2.4,3.3));cheerBusy=AC.currentTime+2.4;}
-function cheer(level,dur){if(!AC)return;const t=AC.currentTime,g=crowdGain.gain;
+function cheer(level,dur){crowdE=Math.max(crowdE,Math.min(1,level*1.6));if(!AC)return;const t=AC.currentTime,g=crowdGain.gain;
   if(crowdReal){ // the ambience swells a little; the reaction itself is a recorded cheer on top
     if(roarG){}else if(level>=.5&&SFX.pop_max){sfxSlice('pop_max',.6,1,0,4.6);cheerBusy=t+4;}
     else if(level>=.4){sfxSlice('cheer_big',.95,rand(.95,1.06),rand(0,.4),3.4);cheerBusy=t+3;}
@@ -3259,7 +3280,7 @@ function frame(t){
     if(slowT>0){slowT-=rdt;timeScale=REDUCE?1:lerp(1,.22,clamp(slowT/.35,0,1));}else timeScale=1;
     const dt=rdt*timeScale;now+=dt;step(dt);
   }
-  updateCamera(rdt);
+  updateCamera(rdt);crowdFx(rdt);
   draw();
   if(fpsOn)fpsTick(rawMs,performance.now()-w0);
   requestAnimationFrame(frame);
@@ -3270,7 +3291,7 @@ const LITE=matchMedia('(pointer:coarse)').matches;
 if(LITE){QS=.85;rim.shadow.mapSize.set(512,512);renderer.shadowMap.type=T.PCFShadowMap;}else initPost();
 resize();hud();
 const DBG={pcut:false,fl:'',rob:false,pc:false,staunt:false,pod:false,trail:false,orbit:false,pdef:false,dbl:false,cam:false,admire:'',trip:false,fist:false,pop:false,loser:false}; // test hook: pin the camera to CAM_HOME/CAM_LOOK
-window.__mm={GLOVE,renderer,scene,LODM,camera,zapStart,acState:()=>AC?(zoneLP?"lp="+Math.round(zoneLP.frequency.value)+" ":"")+AC.state+" t="+AC.currentTime.toFixed(1)+" real="+crowdReal+" roar="+!!roarG+" bed="+crowdGain.gain.value.toFixed(2):"none",roar,roarOff,boo,cheer,crowdRise,crowdDrop,S,aim,MX,DBG,landRingOn:()=>landRing.visible,hud,tutAnim,draw:()=>draw(),endGame,TROT,SFX,RUN,ballPos:()=>ball.position,ballVisible:()=>ball.visible,fielders,toReady,CAM_HOME,CAM_LOOK,now:()=>now,simulate,judge,get pitch(){return pitch;},get flight(){return flight;},lastSwing:()=>{const t=swing&&swing.type;swing=null;return t;},lastSwingTurbo:()=>!!(swing&&swing.turbo),doSwing,newGame,V3,
+window.__mm={crowdFx,setE:v=>{crowdE=v;crowdShow=v;},GLOVE,renderer,scene,LODM,camera,zapStart,acState:()=>AC?(zoneLP?"lp="+Math.round(zoneLP.frequency.value)+" ":"")+AC.state+" t="+AC.currentTime.toFixed(1)+" real="+crowdReal+" roar="+!!roarG+" bed="+crowdGain.gain.value.toFixed(2):"none",roar,roarOff,boo,cheer,crowdRise,crowdDrop,S,aim,MX,DBG,landRingOn:()=>landRing.visible,hud,tutAnim,draw:()=>draw(),endGame,TROT,SFX,RUN,ballPos:()=>ball.position,ballVisible:()=>ball.visible,fielders,toReady,CAM_HOME,CAM_LOOK,now:()=>now,simulate,judge,get pitch(){return pitch;},get flight(){return flight;},lastSwing:()=>{const t=swing&&swing.type;swing=null;return t;},lastSwingTurbo:()=>!!(swing&&swing.turbo),doSwing,newGame,V3,
   sim:(dt)=>{hitstop=0;now+=dt;step(dt);},
   step:(n,dt=1/60)=>{for(let i=0;i<n;i++){if(hitstop>0)hitstop=0;now+=dt;step(dt);}updateCamera(dt);draw();}};
 if(!window.__mmManual)requestAnimationFrame(frame);
