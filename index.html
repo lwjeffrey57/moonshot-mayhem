@@ -1434,7 +1434,7 @@ function tagsTick(){
 function sharpInit(){
   const ns='http://www.w3.org/2000/svg',sv=document.createElementNS(ns,'svg');sv.id='sharp';sv.setAttribute('aria-hidden','true');$('hud').insertBefore(sv,$('hud').firstChild);
   SH.zone=document.createElementNS(ns,'polygon');SH.zone.setAttribute('fill','none');SH.zone.setAttribute('stroke','#ffffff');SH.zone.setAttribute('stroke-width','2.6');SH.zone.style.filter='drop-shadow(0 0 1px #000) drop-shadow(0 0 1px #000)';SH.zone.setAttribute('stroke-linejoin','miter');SH.zone.style.display='none';sv.appendChild(SH.zone);
-  SH.grid=document.createElementNS(ns,'path');SH.grid.setAttribute('fill','none');SH.grid.setAttribute('stroke','rgba(8,9,20,.95)');SH.grid.setAttribute('stroke-width','1.6');SH.grid.style.display='none';sv.insertBefore(SH.grid,SH.zone); // the classic nine boxes, drawn faint so they guide the eye without covering the ball
+  SH.grid=document.createElementNS(ns,'path');SH.grid.setAttribute('fill','none');SH.grid.setAttribute('stroke','rgba(70,74,90,.5)');SH.grid.setAttribute('stroke-width','1.4');SH.grid.style.display='none';sv.insertBefore(SH.grid,SH.zone); // the classic nine boxes, drawn faint so they guide the eye without covering the ball
   [[retC,.93],[retP,.9],[pring,.86],[ptarget,.84]].forEach(q=>{const e=document.createElementNS(ns,'ellipse');e.setAttribute('fill','none');e.style.display='none';sv.appendChild(e);SH.rings.push({m:q[0],inner:q[1],e,on:false,col:-1});});}
 const _s0=new V3(),_s1=new V3(),_s2=new V3();
 const shVis=o=>{for(;o;o=o.parent)if(!o.visible)return false;return true;};
