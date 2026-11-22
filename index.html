@@ -1362,7 +1362,7 @@ const fireworks=[];
 // ───────────────────────── audio (all synthesized)
 let AC=null,master=null,crowdGain=null,noiseBuf=null,crowdBase=.05,crowdReal=false;
 // Recorded sounds (sfx/*.mp3). Each one replaces a synthesized sound once it has loaded; if a file is missing the synth version plays.
-const SFX={},SFX_FILES=['bed','cheer','cheer_big','strike','ball','swing1','swing2','swing3','swing4','playball','ball2','ball3','ball4','strike2','out','catch','crush','boo1','boo2','boo3','pop_max'];
+const SFX={},SFX_FILES=['bed','cheer','cheer_big','strike','ball','swing1','swing2','swing3','swing4','playball','ball2','ball3','ball4','strike2','out','catch','crush','boo1','boo2','boo3','pop_max','org_charge','org_chord','org_post','org_clap','org_letsgo','org_neenaa','org_mariachi','org_lgo','org_rise'];
 function loadSfx(noiseSrc){SFX_FILES.forEach(n=>fetch('sfx/'+n+'.mp3').then(r=>r.ok?r.arrayBuffer():Promise.reject()).then(b=>new Promise((res,rej)=>AC.decodeAudioData(b,res,rej))).then(buf=>{SFX[n]=buf;
   if(n==='bed'){ // real stadium ambience takes over from the filtered noise
     // the bed is 65 seconds of even ballpark crowd with the identifiable moments (claps, cracks, surges, single voices) cut out, looped
@@ -1436,8 +1436,14 @@ function crowdRise(q,dur,big){if(!AC||!crowdReal||roarG)return;const t=AC.curren
 // keep the bed up for d more seconds (a fielder still chasing the ball down, the throw coming in): the play is not over, so neither is the noise
 function crowdHold(d){if(!AC||!crowdReal||roarG)return;const t=AC.currentTime,g=crowdGain.gain;g.cancelScheduledValues(t);g.setTargetAtTime(crowdBase*2,t,.2);g.setTargetAtTime(crowdBase,t+d,.9);crowdNext=t+d+2;}
 function crowdDrop(){if(!AC||!crowdReal||roarG)return;const t=AC.currentTime,g=crowdGain.gain;
-  g.cancelScheduledValues(t);g.setTargetAtTime(crowdBase*.45,t,.12);g.setTargetAtTime(crowdBase,t+1.8,.9);
-  sfxSlice('cheer',.2,rand(.58,.66),rand(.5,2),1.6);cheerBusy=t+1.6;crowdNext=t+3.2;}
+  g.cancelScheduledValues(t);g.setTargetAtTime(crowdBase*.85,t,.2);g.setTargetAtTime(crowdBase,t+1.6,.9);
+  sfxSlice('cheer',.3,rand(.6,.68),rand(.6,1.4),1.6);cheerBusy=t+1.6;crowdNext=t+3.2;}
+// A ball in play is caught or thrown out: the park reacts, it never just switches off. A hard-hit one gets a sharp, surprised 'OHH!'
+// (the big cheer, pitched up and cut short); a routine one gets a smaller ripple. The bed stays at or above its normal level throughout.
+function crowdOut(q){if(!AC||!crowdReal)return;const t=AC.currentTime,g=crowdGain.gain,hard=q>.5;
+  g.cancelScheduledValues(t);g.setValueAtTime(Math.max(g.value,crowdBase*1.3),t);g.setTargetAtTime(crowdBase*(hard?1.7:1.3),t,.1);g.setTargetAtTime(crowdBase,t+(hard?1.8:1.1),.9);
+  if(hard)sfxSlice('cheer_big',.34+.3*q,rand(1.08,1.18),rand(.2,.6),rand(1.7,2.1));else sfxSlice('cheer',.42,rand(.95,1.05),rand(.7,1.3),1.5);
+  cheerBusy=t+1.8;crowdNext=t+3.4;}
 function crowdTick(dt){
   if(!AC||!crowdReal||roarG||S.state==='title'||S.state==='over')return;
   const t=AC.currentTime,live=S.state==='windup'||S.state==='pitch';
@@ -1446,6 +1452,30 @@ function crowdTick(dt){
   if(live||t<crowdNext)return;
   crowdNext=t+rand(2.2,5);
   if(t>cheerBusy){const g=crowdGain.gain;g.cancelScheduledValues(t);g.setTargetAtTime(crowdBase*rand(.9,1.2),t,.7);g.setTargetAtTime(crowdBase,t+1.4,.8);}} // only the bed moves between pitches: no cheers or pops unless something has happened
+// The ballpark organ. One riff at a time, picked for the situation as a hitter settles in, never back to back, and it stops the moment
+// a ball is put in play. Riffs: charge (rally), chord (filler), post (start of an inning), clap, letsgo, neenaa (taunting a new pitcher),
+// mariachi (man on first), lgo (big spot in the last inning), rise (two strikes: clap it up).
+let orgS=null,orgG=null,orgNext=0,orgLast='',orgSt='',orgInn=0;
+function organStop(fade=.3){if(!orgS)return;const t=AC.currentTime;try{orgG.gain.cancelScheduledValues(t);orgG.gain.setValueAtTime(orgG.gain.value,t);orgG.gain.linearRampToValueAtTime(0,t+fade);orgS.stop(t+fade+.05);}catch(e){}orgS=null;}
+function organPlay(name,vol=.5){const b=SFX['org_'+name];if(!AC||!b)return false;organStop(.15);
+  const t=AC.currentTime;orgS=AC.createBufferSource();orgG=AC.createGain();orgS.buffer=b;orgG.gain.value=vol;orgS.connect(orgG);orgG.connect(master);orgS.start(t);
+  const me=orgS;orgS.onended=()=>{if(orgS===me)orgS=null;};orgLast=name;orgNext=t+b.duration+rand(12,22);return true;}
+function organTick(){
+  if(!AC)return;
+  const st=S.state;if(st===orgSt)return;
+  const was=orgSt;orgSt=st;
+  if(st==='flight'){organStop(.25);return;}
+  if(st==='title'||st==='over'||st==='end'){organStop(.4);return;}
+  if(st!=='ready'||orgS||AC.currentTime<orgNext||roarG)return;
+  const fresh=S.balls+S.strikes===0,risp=S.bases[1]||S.bases[2],behind=S.opp>S.runs,pick=a=>{const o=a.filter(n=>n!==orgLast);return o[(Math.random()*o.length)|0];};
+  let n='';
+  if(orgInn!==S.inning&&fresh){orgInn=S.inning;n='post';}
+  else if(fresh&&S.inning===3&&(behind||risp)&&Math.random()<.7)n=pick(['lgo','charge','letsgo']);
+  else if(fresh&&risp&&Math.random()<.7)n=pick(['charge','letsgo','clap']);
+  else if(fresh&&S.bases[0]&&Math.random()<.4)n=pick(['mariachi','chord']);
+  else if(!fresh&&S.strikes===2&&Math.random()<.35)n='rise';
+  else if(fresh&&Math.random()<.22)n=pick(['chord','clap','letsgo']);
+  if(n)organPlay(n);}
 // the home crowd lets the pitcher (and the umpire) hear it
 function boo(vol){const have=['boo1','boo2','boo3'].filter(n=>SFX[n]);if(!AC||!have.length||roarG)return;
   sfxSlice(have[(Math.random()*have.length)|0],vol,rand(.94,1.06),rand(0,2.4),rand(2.4,3.3));cheerBusy=AC.currentTime+2.4;}
@@ -1786,7 +1816,7 @@ function toReady(d){roarOff();showCard();$('hitinfo').hidden=true;S.state='ready
   fielders.forEach(f=>{if(!f.isP){f.fig.root.position.copy(f.home);f.fig.root.rotation.y=Math.atan2(-f.home.x,-f.home.z);}f.run=null;});
   camMode='bat';hud();syncRunners();
   if(S.pcPending){S.pcPending=false;S.state='pchange';S.t=now;const P=S.pName; // the scene: a cut to the mound for the new man, then the hitter comes up as usual
-    flash(.45);pop('PITCHING CHANGE','NOW PITCHING: #'+P[1]+' '+P[0],'hot',true);boo(.55);buzz([40,60,40]);$('pcap').textContent='PITCHER · '+P[0];
+    flash(.45);pop('PITCHING CHANGE','NOW PITCHING: #'+P[1]+' '+P[0],'hot',true);boo(.55);if(organPlay('neenaa',.55))orgNext+=6;buzz([40,60,40]);$('pcap').textContent='PITCHER · '+P[0];
     {const ts=MX.pit?Object.keys(MX.pit.taunts).filter(k=>/clap|threat/.test(k)):[];if(ts.length)S.sTaunt={t:now+.7,clip:ts[(Math.random()*ts.length)|0],dur:1.8};}return;}
   if(WALK.on&&S.fresh&&S.bi>=0&&!S.seen[S.bi%LINEUP.length]&&MX.clip&&MX.clip.intros[WALK.by[curBatter().name]])startWalkup();}
 const BULLPEN=[['STORM',99],['VOLKOV',47],['DIAZ',13]],PCH=2.7;
@@ -2098,7 +2128,7 @@ function afterPA(delay){ // plate appearance over
     if(S.inning>3){S.state='end';S.t=now;readyDur=delay+.4;hud();return;}
     setBatter();S.state='result';S.t=now;S.next=()=>{renderRep();const k=cpuInning(S.inning),need=S.opp-S.runs+1;
       pop('INNING '+S.inning,(k?'KRAKENS SCORE '+k:'KRAKENS HELD')+' · '+(S.inning===3&&need>0?'NEED '+need+' TO WIN':scoreLine()),k?'hot':'cool',true);
-      scoreboard(k?'KRAKENS +'+k:'INNING '+S.inning,scoreLine());if(k>=2)boo(.4);else SND.organ();toReady(2.6);hud();};readyDur=delay;hud();return;}
+      scoreboard(k?'KRAKENS +'+k:'INNING '+S.inning,scoreLine());if(k>=2)boo(.4);toReady(2.6);hud();};readyDur=delay;hud();return;}
   setBatter();S.state='result';S.t=now;S.next=null;readyDur=delay;hud();
 }
 function samePA(delay){S.state='result';S.t=now;S.next=null;readyDur=delay;hud();}
@@ -2120,7 +2150,7 @@ function finishPlay(){
     if(dp){recordOut();S.bases[0]=0;} // the man on first is forced at second, then the relay gets the hitter
     const B=(i)=>new V3(BASES[i][0],1.2,BASES[i][1]);
     if(pl.label==='GROUND OUT'&&pl.f&&pl.f.thrAct)f.thr={t0:now+.05,to:dp?B(2):B(1),next:dp?B(1):null,full:true};
-    pop(dp?'DOUBLE PLAY!':pl.air&&f.q>.7?'ROBBED!':'OUT!',dp?'TWO FOR ONE':pl.label,'cool');SND.mitt();roarOff(.45);if(!dp&&pl.air&&f.q>.7)boo(.4);else crowdDrop();afterPA(dp?2.7:f.thr?2.1:1.5);return;}
+    pop(dp?'DOUBLE PLAY!':pl.air&&f.q>.7?'ROBBED!':'OUT!',dp?'TWO FOR ONE':pl.label,'cool');SND.mitt();roarOff(.9);if(!dp&&pl.air&&f.q>.7){crowdOut(f.q);setTimeout(()=>boo(.4),700);}else crowdOut(f.q);afterPA(dp?2.7:f.thr?2.1:1.5);return;}
   S.hits++;S.streak++;S.bestStreak=Math.max(S.bestStreak,S.streak);if(!f.tb)S.juice=Math.min(1,S.juice+.25); // every hit is worth one quarter; // a Juice hit doesn't refill the bar it just spent
   if(pl.type==='hr'){
     const ft=Math.round(pl.dist*3.281);S.hrs++;S.longest=Math.max(S.longest,ft);const r=advance(4);
@@ -2952,7 +2982,7 @@ function step(dt){
   ptarget.visible=pring.visible;if(pring.visible)ptarget.position.copy(pring.position);
   // reticle
   const b=S.bi>=0?curBatter():LINEUP[0],tb=(S.over&&S.overOn)||(!S.over&&juiceOn()&&S.juice>=.25);
-  stickHint();sbTick();zapTick();crowdTick(dt);shoutTick();
+  stickHint();sbTick();zapTick();crowdTick(dt);shoutTick();organTick();
   if(flight&&flight.play.type==='hr'&&!flight.sbHit&&!flight.orbit&&ball.visible&&Math.abs(ball.position.x)<24&&ball.position.y>22&&ball.position.y<40&&ball.position.z<-(fenceR(0)+15)&&ball.position.z>-(fenceR(0)+24)){flight.sbHit=true;zapStart(ball.position,true);burst(fxL,ball.position,26,9,.7,[.6,.85,1],7,1);}
   reticle.position.set(aim.x,aim.y,0);
   {const ez=easyAB()?1.3:1;retC.scale.setScalar(.17*b.con*1.25*(tb?1.2:1)*ez);retP.scale.setScalar(.17*b.con*(tb?.8:.63)*(tb?1.2:1)*ez);}
