@@ -1229,7 +1229,7 @@ let tutT0=0;function tutAnim(t){if($('tut').hidden)return;
   reticle.position.set(lerp(TUT_S.x,TUT_B.x,u),lerp(TUT_S.y,TUT_B.y,u),0);retP.visible=ph>=.5&&ph<.93;retCfill.visible=!retP.visible;
   const push=ph>=.08&&ph<.3?Math.sin((ph-.08)/.22*PI):0,dx=TUT_B.x-TUT_S.x,dy=TUT_B.y-TUT_S.y,L=Math.hypot(dx,dy); // the stick leans the way the ring is travelling
   padKnob.style.transition='none';padKnob.style.transform='translate('+(push*36*dx/L).toFixed(1)+'px,'+(-push*36*dy/L).toFixed(1)+'px)';}
-function tutClose(){reticle.visible=true;$('hud').classList.remove('tut1','tut4');$('apad').classList.remove('drag');retP.visible=true;retCfill.visible=false;padKnob.style.transform='';padKnob.style.transition='';$('hud').classList.remove('tut2');$('tut').hidden=true;tutHold=false;if(tutFirst){tutFirst=false;S.t=now-readyDur+.7;}}
+function tutClose(){reticle.visible=true;$('hud').classList.remove('tut1','tut4');$('apad').classList.remove('drag');retP.visible=true;retCfill.visible=false;padKnob.style.transform='';padKnob.style.transition='';$('hud').classList.remove('tut2');$('tut').hidden=true;tutHold=false;tapBlock=performance.now()+400;swing=null;if(tutFirst){tutFirst=false;S.t=now-readyDur+1.7;}}
 function jtutNeed(){if(tutOff||jtutSeen||window.__mmManual&&!window.__mmTut)return false;jtutSeen=true;tutFirst=true;tutShow('j');try{localStorage.setItem('mm_jtut','1');}catch(e){}return true;}
 let otutSeen=!MOB;try{if(!TUT_EVERY_LAUNCH&&localStorage.getItem('mm_otut')==='1')otutSeen=true;}catch(e){}
 // the first time Overdrive is live: point at the bar and say what it does
@@ -1842,9 +1842,10 @@ const tap=(id,fn)=>$(id).addEventListener('pointerdown',e=>{e.preventDefault();a
 // because some mobile browsers drop pointer events for a second finger. A ripple shows exactly where the tap registered.
 // instant press feedback: the button dips and flashes on the same frame the touch lands
 const press=id=>{const e=$(id);e.classList.remove('dn');void e.offsetWidth;e.classList.add('dn');clearTimeout(e._dn);e._dn=setTimeout(()=>e.classList.remove('dn'),140);};
-let lastTapT=0,lastTapX=0,lastTapY=0;
+let tapBlock=0,lastTapT=0,lastTapX=0,lastTapY=0;
 function cornerTap(x,y){
   if(!MOB||paused||tutHold||!$('title').hidden||!$('over').hidden)return false;
+  if(performance.now()<tapBlock)return true;
   if(S.state==='walkup'){doSwing('contact');return true;}
   if(S.state==='trot'||S.state==='celly2'||S.state==='pdef'||S.state==='pchange'||(flight&&flight.admire&&!flight.done&&S.state==='flight')){doSwing('contact');return true;} // with the buttons away, a touch anywhere skips the cutscene
   if(ctlHidden)return false; // during a walk-up nothing is a button: a touch anywhere on the screen skips it, and that is all it does
