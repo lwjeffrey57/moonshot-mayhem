@@ -381,6 +381,26 @@ body.mob #tip{display:block}body.mob .how{display:none}
 #rating .st{font-size:clamp(22px,6vw,34px);letter-spacing:.12em;color:var(--volt);text-shadow:0 2px 0 #000}#rating .st i{font-style:normal;color:rgba(242,245,255,.25)}
 #rating .ti{font-size:clamp(18px,4.6vw,28px);color:var(--chrome);text-shadow:0 2px 0 #000}
 #rating .gl{margin-top:6px;font-family:var(--hud);font-style:normal;font-weight:800;font-size:14px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}#rating .gl.ok{color:var(--turf)}
+/* Overdrive is on: blue fire licks in from every edge of the screen and the whole frame pulses */
+#odv{inset:0;z-index:2;opacity:0;transition:opacity .35s;overflow:hidden;box-shadow:inset 0 0 70px 14px rgba(40,140,255,.75);animation:odvP .6s ease-in-out infinite alternate}
+#hud.odon #odv{opacity:1}#hud.duel #odv{opacity:0}
+@keyframes odvP{to{box-shadow:inset 0 0 110px 26px rgba(110,210,255,.95)}}
+#odv i{position:absolute;filter:blur(1.5px);opacity:.9;animation:odvF .42s steps(5) infinite}
+#odv .b,#odv .t{left:-40px;right:-40px;height:64px;background:
+  radial-gradient(ellipse 13px 46px at 15px 100%,#fff 0,#9fe8ff 30%,#2e8cff 58%,rgba(30,110,255,0) 76%) 0 100%/30px 100% repeat-x,
+  radial-gradient(ellipse 17px 62px at 20px 100%,#eafcff 0,#58c8ff 34%,#1e6fff 60%,rgba(30,90,255,0) 78%) 11px 100%/41px 100% repeat-x}
+#odv .b{bottom:-4px}#odv .t{top:-4px;transform:scaleY(-1);height:44px;opacity:.7}
+#odv .l,#odv .r{top:-40px;bottom:-40px;width:46px;background:
+  radial-gradient(ellipse 34px 13px at 0 15px,#fff 0,#9fe8ff 30%,#2e8cff 58%,rgba(30,110,255,0) 76%) 0 0/100% 30px repeat-y,
+  radial-gradient(ellipse 46px 17px at 0 20px,#eafcff 0,#58c8ff 34%,#1e6fff 60%,rgba(30,90,255,0) 78%) 0 11px/100% 41px repeat-y;animation-name:odvS}
+#odv .l{left:-4px}#odv .r{right:-4px;transform:scaleX(-1)}
+@keyframes odvF{from{background-position:0 100%,11px 100%}to{background-position:30px 100%,-30px 100%}}
+@keyframes odvS{from{background-position:0 0,0 11px}to{background-position:0 -30px,0 52px}}
+@media (prefers-reduced-motion:reduce){#odv,#odv i{animation:none}}
+/* CONTACT burns blue in Overdrive too, the same as POWER */
+.tb.odf{background:radial-gradient(circle at 50% 115%,#e6fbff 0%,#58d6ff 26%,#1e7bff 58%,#0a2a9a 86%);border-color:#020a2a;animation:odglow .45s ease-in-out infinite alternate}
+.tb.odf::after{content:'';position:absolute;z-index:-1;left:-8%;right:-8%;top:-46%;bottom:38%;pointer-events:none;filter:blur(1.5px) hue-rotate(185deg) saturate(1.4);transform-origin:50% 100%;
+  background:radial-gradient(ellipse 15% 62% at 16% 100%,#ffd84a 0,#ff7a1e 45%,transparent 72%),radial-gradient(ellipse 17% 88% at 36% 100%,#fff2a0 0,#ff8a1e 42%,transparent 72%),radial-gradient(ellipse 18% 100% at 56% 100%,#ffe066 0,#ff5a1e 46%,transparent 72%),radial-gradient(ellipse 16% 74% at 76% 100%,#ffd84a 0,#ff7a1e 44%,transparent 72%),radial-gradient(ellipse 12% 50% at 91% 100%,#ffb21e 0,#ff5a1e 45%,transparent 72%);animation:flames .38s ease-in-out infinite alternate}
 /* Overdrive duel: both sides burning at once. Two slabs slam together, then the screen edges glow blue and red for the at-bat. */
 #duel{inset:0;overflow:hidden;visibility:hidden;z-index:45;font-family:var(--display);font-style:italic}
 #duel i{position:absolute;top:0;bottom:0;width:52%;display:flex;align-items:flex-start;padding-top:30vh;font-style:italic;font-size:clamp(20px,6vw,44px);letter-spacing:.06em;color:#fff;text-shadow:0 3px 0 #000}
@@ -478,6 +498,7 @@ body.mob #tip{display:block}body.mob .how{display:none}
     <div id="tbar" aria-hidden="true"><span>EARLY</span><div class="trk"><i class="jx" id="tjx"></i><i class="gc" id="tgc"></i><i class="gp" id="tgp"></i><i class="mk" id="tmk"></i></div><span>LATE</span><em id="tpt"></em></div>
     <div id="fps" hidden></div>
     <div id="duelv" aria-hidden="true"></div>
+    <div id="odv" aria-hidden="true"><i class="b"></i><i class="t"></i><i class="l"></i><i class="r"></i></div>
     <div id="duel" aria-hidden="true"><i class="dl">BATTER</i><i class="dr">PITCHER</i><b>OVERDRIVE<span>DUEL</span></b></div>
     <div id="goal" hidden></div>
   </div>
@@ -1238,7 +1259,7 @@ function hud(){overCheck();hudLater=false;if(S.bi>=0)cardStats(curBatter());
   const j=$('juice');j.classList.toggle('ready',S.juice>=.25);j.classList.toggle('armed',juiceOn()&&S.juice>=.25);j.classList.toggle('over',S.over);
   $('jtxt').textContent=S.over?(S.overOn?'OVERDRIVE ON':'OVERDRIVE READY'):'JUICE';
   {const bars=Math.round(S.juice*4),tj=$('tj'); // Juice only ever moves a quarter at a time: four quarters, four bars // counted exactly the way a Juice swing is paid for, so the badge never promises a bar that isn't there
-   tj.classList.toggle('has',bars>0);tj.classList.toggle('none',bars===0);$('tjn').textContent=S.over?'':bars?'×'+bars:'';tj.firstChild.nodeValue=S.over?'OVER DRIVE':'JUICE';tj.classList.toggle('od',!!S.over);tj.classList.toggle('odon',!!(S.over&&S.overOn));if(S.over){tj.classList.remove('none','has');}$('tp').classList.toggle('blue',!!(S.over&&S.overOn));$('kj').classList.toggle('has',bars>0);
+   tj.classList.toggle('has',bars>0);tj.classList.toggle('none',bars===0);$('tjn').textContent=S.over?'':bars?'×'+bars:'';tj.firstChild.nodeValue=S.over?'OVER DRIVE':'JUICE';tj.classList.toggle('od',!!S.over);tj.classList.toggle('odon',!!(S.over&&S.overOn));if(S.over){tj.classList.remove('none','has');}$('tp').classList.toggle('blue',!!(S.over&&S.overOn));$('tc').classList.toggle('odf',!!(S.over&&S.overOn));$('hud').classList.toggle('odon',!!(S.over&&S.overOn));$('kj').classList.toggle('has',bars>0);
     if(S.over)$('jtoast').classList.remove('go'); // the big OVERDRIVE READY call says it; no pill over the button
     if(bars>hudBars&&!S.over&&!S.jSaid&&S.state!=='title'&&S.state!=='over')jPend=true;
     if(S.over||!bars)jPend=false;
