@@ -209,6 +209,11 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 .wkopt{pointer-events:auto;background:none;border:1px solid var(--dim);padding:6px 12px;cursor:pointer;font-family:var(--hud)}
 /* centre calls */
 #pop{left:0;right:0;top:26%;text-align:center;opacity:0}
+/* the shout over a player celebrating on the bag */
+#shout{position:absolute;left:50%;top:30%;z-index:6;pointer-events:none;white-space:nowrap;opacity:0;font-family:var(--display);font-style:italic;font-size:clamp(34px,9vw,84px);line-height:1;color:var(--volt);-webkit-text-stroke:2px #000;text-shadow:0 4px 0 #000,0 0 22px rgba(255,229,59,.55);transform:translate(-50%,-100%) rotate(-6deg)}
+#shout.go{animation:shoutIn 1.5s cubic-bezier(.2,1.4,.4,1) forwards}
+#shout.b{color:#3ad6ff;text-shadow:0 4px 0 #000,0 0 22px rgba(58,214,255,.6);transform:translate(-50%,-100%) rotate(5deg)}
+@keyframes shoutIn{0%{opacity:0;scale:.3}14%{opacity:1;scale:1.3}26%{scale:1}82%{opacity:1;scale:1.04}100%{opacity:0;scale:1.12}}
 #pop .t{font-family:var(--display);font-size:clamp(40px,10vw,120px);line-height:.95;font-style:italic;letter-spacing:.01em;
   color:var(--volt);-webkit-text-stroke:2px #000;text-shadow:0 5px 0 #000,0 0 40px rgba(255,229,59,.55);text-wrap:balance}
 #pop .s{font-family:var(--display);font-size:clamp(16px,3.2vw,34px);color:var(--chrome);text-shadow:0 3px 0 #000;margin-top:6px;font-variant-numeric:tabular-nums}
@@ -523,6 +528,7 @@ body.mob #tip{display:block}body.mob .how{display:none}
       <div class="tz jz"><b>YOUR JUICE IS FULL</b>Tap JUICE, then swing for a monster hit<small>Each Juice swing burns one quarter of the meter.</small></div>
     </div>
     <div id="pop"><div class="t"></div><div class="s"></div></div>
+    <div id="shout" aria-hidden="true"></div>
     <div id="tim"></div>
     <div id="tbar" aria-hidden="true"><span>EARLY</span><div class="trk"><i class="jx" id="tjx"></i><i class="gc" id="tgc"></i><i class="gp" id="tgp"></i><i class="mk" id="tmk"></i></div><span>LATE</span><em id="tpt"></em></div>
     <div id="fps" hidden></div>
@@ -788,9 +794,7 @@ col=col*mix(mix(dg,vec3(dot(dg,vec3(0.333))),digi),mix(dd,mix(vec3(1.0),dd,0.3),
 if(digi>0.5){vec2 r=vec2(vW.x+vW.y,vW.x-vW.y)*0.70711/5.2;vec2 d=0.5-abs(fract(r)-0.5);vec2 w=fwidth(r);
 vec2 l=1.0-smoothstep(vec2(0.008),vec2(0.008)+w*1.5,d);float fade=clamp(0.03/max(w.x,w.y),0.0,1.0);
 col+=vec3(1.0,0.16,0.86)*max(l.x,l.y)*(0.22+0.55*fade)*(1.0-m);
-vec2 r2=vW/1.3;vec2 d2=0.5-abs(fract(r2)-0.5);vec2 w2=fwidth(r2);vec2 l2=1.0-smoothstep(vec2(0.02),vec2(0.02)+w2*1.5,d2);
-col+=vec3(0.72,0.36,1.0)*max(l2.x,l2.y)*0.22*clamp(0.06/max(w2.x,w2.y),0.0,1.0)*m;
-col+=vec3(1.0,0.2,0.88)*(1.0-abs(m-0.5)*2.0)*0.8;}
+col+=vec3(1.0,0.2,0.88)*(1.0-abs(m-0.5)*2.0)*0.45;}
 gl_FragColor=vec4(col,1.0);
 #include <fog_fragment>
 }`});
@@ -1487,6 +1491,20 @@ function stickHint(){
   if(touchLast)S.stk=true;
   const live=!S.stk&&!touchLast&&S.inning===1&&S.outs===0&&S.bi===0&&S.balls+S.strikes===0&&(S.state==='ready'||S.state==='windup'||S.state==='pitch');
   if(live!==hintOn){hintOn=live;$('apad').classList.toggle('hint',live);}}
+// Celebrating on second: he shouts, in big letters over his head. Two lines per celebration, the second one about the runs he drove in if any.
+const SHOUT_A=["LET'S GO!!","LET'S GOOO!","YEAH!!","COME ON!!","THAT'S HOW!"],SHOUT_B=['TWO BAGS!','KEEP IT ROLLING!','WHO WANTS IT?!','NOBODY OUT THERE!','BRING ME HOME!'];
+let shoutI=-1,shoutLast='';const _sh=new V3();
+function shoutTick(){
+  const el=$('shout');
+  if(S.state!=='celly2'){if(shoutI!==-1){shoutI=-1;el.classList.remove('go','b');}return;}
+  const e=now-S.t,i=e<.2?-1:e<Math.max(1.5,D2.dur*.5)?0:1;
+  _sh.set(0,2.3,-38.8).project(camera);
+  const w=canvas.clientWidth||innerWidth,h=canvas.clientHeight||innerHeight;
+  el.style.left=((_sh.x*.5+.5)*w).toFixed(0)+'px';el.style.top=Math.max(MOB?250:120,(-_sh.y*.5+.5)*h).toFixed(0)+'px';
+  if(i===shoutI||i<0)return;
+  shoutI=i;let t;const pool=i?SHOUT_B:SHOUT_A;
+  if(i&&D2.rbi)t='+'+D2.rbi+' RBI!';else do{t=pool[(Math.random()*pool.length)|0];}while(t===shoutLast);
+  shoutLast=t;el.textContent=t;el.classList.toggle('b',!!i);el.classList.remove('go');void el.offsetWidth;el.classList.add('go');buzz([20,30,40]);}
 function tutClose(){$('hud').classList.remove('tut7');if(tutDemo){tutDemo=false;setTimeout(hud,0);}$('hud').classList.remove('tut5');if(tutWas5){tutWas5=false;$('tj').classList.remove('dn');setTimeout(hud,0);}reticle.visible=true;$('hud').classList.remove('tut1','tut4');$('apad').classList.remove('drag');retP.visible=true;retCfill.visible=false;padKnob.style.transform='';padKnob.style.transition='';$('hud').classList.remove('tut2');$('tut').hidden=true;tutHold=false;tapBlock=performance.now()+400;swing=null;if(tutFirst){tutFirst=false;S.t=now-readyDur+1.7;}}
 function jtutNeed(){if(tutOff||jtutSeen||window.__mmManual&&!window.__mmTut)return false;jtutSeen=true;tutFirst=true;tutShow('j');try{localStorage.setItem('mm_jtut','1');}catch(e){}return true;}
 let otutSeen=!MOB;try{if(!TUT_EVERY_LAUNCH&&localStorage.getItem('mm_otut')==='1')otutSeen=true;}catch(e){}
@@ -2032,7 +2050,7 @@ function finishPlay(){
   // Some doubles get a show of their own: once the play is over, cut to him standing on second doing one of the home-run celebrations.
   if(pl.type==='hit'&&pl.bases===2&&S.state==='result'&&WALK.on&&MX.clip&&(DBG.dbl||earlyShow(S.d2||0)||Math.random()<.4)){
     const w=WILD_CEL.filter(k=>k!=='p_loser'&&k!=='w_lift'&&MX.clip.intros[k]); // the lift uses the bat as the barbell, so it is kept for home plate
-    if(w.length){S.d2=(S.d2||0)+1;S.next=()=>{D2.clip=w[(Math.random()*w.length)|0];RUN.list.forEach(R=>{if(R.active&&R.target===2)R.s=2;});S.state='celly2';S.t=now;flash(.35);cheer(.3,2.5);};}}
+    if(w.length){S.d2=(S.d2||0)+1;S.next=()=>{D2.rbi=f.rbi||0;D2.clip=w[(Math.random()*w.length)|0];RUN.list.forEach(R=>{if(R.active&&R.target===2)R.s=2;});S.state='celly2';S.t=now;flash(.35);cheer(.3,2.5);};}}
   // Now and then, after a hit that scores a run (or a triple), a quick cut to the pitcher wearing it. Never twice in a row, never on top of another cut.
   if(!S.next&&pl.type==='hit'&&S.state==='result'&&(f.rbi>0||pl.bases===3)&&WALK.on&&MX.pit&&MX.pit.defs.length&&!S.pdLast&&(DBG.pdef||Math.random()<.4)){S.pdLast=true;S.next=()=>{S.state='pdef';S.t=now;};}
   else if(pl.type==='hit')S.pdLast=false;
@@ -2835,7 +2853,7 @@ function step(dt){
   ptarget.visible=pring.visible;if(pring.visible)ptarget.position.copy(pring.position);
   // reticle
   const b=S.bi>=0?curBatter():LINEUP[0],tb=(S.over&&S.overOn)||(!S.over&&juiceOn()&&S.juice>=.25);
-  stickHint();sbTick();zapTick();crowdTick(dt);
+  stickHint();sbTick();zapTick();crowdTick(dt);shoutTick();
   if(flight&&flight.play.type==='hr'&&!flight.sbHit&&!flight.orbit&&ball.visible&&Math.abs(ball.position.x)<24&&ball.position.y>22&&ball.position.y<40&&ball.position.z<-(fenceR(0)+15)&&ball.position.z>-(fenceR(0)+24)){flight.sbHit=true;zapStart(ball.position,true);burst(fxL,ball.position,26,9,.7,[.6,.85,1],7,1);}
   reticle.position.set(aim.x,aim.y,0);
   {const ez=easyAB()?1.3:1;retC.scale.setScalar(.17*b.con*1.25*(tb?1.2:1)*ez);retP.scale.setScalar(.17*b.con*(tb?.8:.63)*(tb?1.2:1)*ez);}
