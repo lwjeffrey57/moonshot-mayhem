@@ -1290,7 +1290,7 @@ const fireworks=[];
 // ───────────────────────── audio (all synthesized)
 let AC=null,master=null,crowdGain=null,noiseBuf=null,crowdBase=.05,crowdReal=false;
 // Recorded sounds (sfx/*.mp3). Each one replaces a synthesized sound once it has loaded; if a file is missing the synth version plays.
-const SFX={},SFX_FILES=['crowd','cheer','cheer_big','strike','ball','swing1','swing2','swing3','swing4','playball','ball2','ball3','ball4','strike2','out','catch','crush','boo1','boo2','boo3'];
+const SFX={},SFX_FILES=['crowd','cheer','cheer_big','strike','ball','swing1','swing2','swing3','swing4','playball','ball2','ball3','ball4','strike2','out','catch','crush','boo1','boo2','boo3','pop_max'];
 function loadSfx(noiseSrc){SFX_FILES.forEach(n=>fetch('sfx/'+n+'.mp3').then(r=>r.ok?r.arrayBuffer():Promise.reject()).then(b=>new Promise((res,rej)=>AC.decodeAudioData(b,res,rej))).then(buf=>{SFX[n]=buf;
   if(n==='crowd'){ // real stadium ambience takes over from the filtered noise
     const s=AC.createBufferSource();s.buffer=buf;s.loop=true;s.loopStart=.06;s.loopEnd=buf.duration-.06;s.connect(crowdGain);
@@ -1329,16 +1329,20 @@ function tone(type,f0,f1,dur,vol,delay=0){if(!AC)return;const t=AC.currentTime+d
   const g=AC.createGain();g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(.001,t+dur);o.connect(g);g.connect(master);o.start(t);o.stop(t+dur+.02);}
 // Home runs: one continuous roar from contact until the next batter steps in, instead of a cheer at contact and another when it lands.
 // Two staggered loops of the steady middle of the big cheer, so the seam is never heard; the level rises with runs scored and Overdrive.
-let roarG=null,roarS=[];
-function roar(level,ramp){
-  if(!AC||!SFX.cheer_big)return;
+let roarG=null,roarS=[],roarTop=false;
+function roar(level,ramp,top){
+  if(!AC)return;
   const t=AC.currentTime,b=SFX.cheer_big;
+  if(!roarG&&top&&SFX.pop_max){ // the biggest moments: the whole place comes unglued. The recording's own build-up plays once, then its sustained peak loops.
+    const pb=SFX.pop_max,src=AC.createBufferSource();roarG=AC.createGain();roarG.gain.value=.8*level;roarG.connect(master);
+    src.buffer=pb;src.loop=true;src.loopStart=3.5;src.loopEnd=Math.max(5,pb.duration-1.5);src.connect(roarG);src.start(t,0);roarS=[src];roarTop=true;return;}
+  if(!b)return;
   if(!roarG){roarG=AC.createGain();roarG.gain.value=0;roarG.connect(master);
     roarS=[[.8,1],[1.9,1.06]].map(o=>{const src=AC.createBufferSource();src.buffer=b;src.loop=true;src.loopStart=.8;src.loopEnd=Math.max(1.6,Math.min(3,b.duration-.6));src.playbackRate.value=o[1];src.connect(roarG);src.start(t,o[0]);return src;});}
-  const g=roarG.gain;g.cancelScheduledValues(t);g.setValueAtTime(g.value,t);g.linearRampToValueAtTime(.55*level,t+ramp);}
+  const g=roarG.gain;g.cancelScheduledValues(t);g.setValueAtTime(g.value,t);g.linearRampToValueAtTime(roarTop?Math.min(1.15,.8*Math.max(1,level*.8)):.55*level,t+ramp);}
 function roarOff(){
   if(!roarG)return;
-  const t=AC.currentTime,g=roarG.gain,ss=roarS;roarG=null;roarS=[];
+  const t=AC.currentTime,g=roarG.gain,ss=roarS;roarG=null;roarS=[];roarTop=false;
   g.cancelScheduledValues(t);g.setValueAtTime(g.value,t);g.linearRampToValueAtTime(0,t+1.8);ss.forEach(x=>{try{x.stop(t+1.9);}catch(e){}});}
 // a piece of a recording: random start point and speed, faded in and out, so the same cheer never sounds the same twice
 function sfxSlice(name,vol,rate,off,dur){const b=SFX[name];if(!AC||!b)return false;
@@ -1358,7 +1362,8 @@ function boo(vol){const have=['boo1','boo2','boo3'].filter(n=>SFX[n]);if(!AC||!h
   sfxSlice(have[(Math.random()*have.length)|0],vol,rand(.94,1.06),rand(0,2.4),rand(2.4,3.3));cheerBusy=AC.currentTime+2.4;}
 function cheer(level,dur){if(!AC)return;const t=AC.currentTime,g=crowdGain.gain;
   if(crowdReal){ // the ambience swells a little; the reaction itself is a recorded cheer on top
-    if(roarG){}else if(level>=.4){sfxSlice('cheer_big',.95,rand(.95,1.06),rand(0,.4),3.4);cheerBusy=t+3;}
+    if(roarG){}else if(level>=.5&&SFX.pop_max){sfxSlice('pop_max',.8,1,0,4.6);cheerBusy=t+4;}
+    else if(level>=.4){sfxSlice('cheer_big',.95,rand(.95,1.06),rand(0,.4),3.4);cheerBusy=t+3;}
     else if(level>=.2&&t>cheerBusy-1.2){sfxSlice('cheer',.45+level,rand(.9,1.12),rand(0,1.6),rand(2.4,3.2));cheerBusy=t+2.6;}
     level=crowdBase*clamp(Math.sqrt(level/.05),.6,2.2);}
   g.cancelScheduledValues(t);g.setValueAtTime(g.value,t);g.linearRampToValueAtTime(level,t+.25);g.setTargetAtTime(crowdBase,t+dur,.9);}
@@ -1950,8 +1955,10 @@ function tryContact(){flight_pop=false;
     if(kind){flight.admire=kind;flight.trot=WALK.on&&RUN.list.length>0;flight.A=Math.max(1.2,Math.min(kind==='show'&&!flight.trot?3.9:2.5,play.endT-1.3));pop(['NO DOUBT!','SEE YA!','FORGET IT!'][(Math.random()*3)|0],'',tb?'hot':'');}}
   if(!flight.admire&&q>.82&&pw&&play.type!=='foul')pop(['CRUSHED!','SMOKED!','TATTOOED!','OBLITERATED!'][(Math.random()*4)|0],'',tb?'hot':'');
   if(play.type!=='foul'&&(tb||(S.over&&S.overOn)||(play.type==='hr'&&play.dist*3.281>=420)))sfx('crush',1);
-  cheer(play.type==='hr'?.42:.12+.2*q,play.type==='hr'?5:1.6);
-  if(play.type==='hr')roar(tb||(S.over&&S.overOn)?1:.8,1.4);
+  {const od=tb||(S.over&&S.overOn),top=play.type==='hr'&&(od||flight.orbit||play.dist*3.281>=480||(S.bases[0]&&S.bases[1]&&S.bases[2]));
+    if(top)roar(1,1.4,true); /* highest tier: Juice and Overdrive homers, orbit shots, 480 ft and up, grand slams */
+    cheer(play.type==='hr'?.42:.12+.2*q,play.type==='hr'?5:1.6);
+    if(play.type==='hr'&&!top)roar(.8,1.4);}
   if(play.f){play.from=play.f.fig.root.position.clone();}
   if(play.type==='hit')sendRunners(play.bases,{batter:play.bases});
   else if(play.type==='hr')sendRunners(4,{batter:flight.admire?0:4,jog:true});
