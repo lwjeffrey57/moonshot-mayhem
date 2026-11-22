@@ -1362,9 +1362,9 @@ const fireworks=[];
 // ───────────────────────── audio (all synthesized)
 let AC=null,master=null,crowdGain=null,noiseBuf=null,crowdBase=.05,crowdReal=false;
 // Recorded sounds (sfx/*.mp3). Each one replaces a synthesized sound once it has loaded; if a file is missing the synth version plays.
-const SFX={},SFX_FILES=['crowd','cheer','cheer_big','strike','ball','swing1','swing2','swing3','swing4','playball','ball2','ball3','ball4','strike2','out','catch','crush','boo1','boo2','boo3','pop_max'];
+const SFX={},SFX_FILES=['bed','cheer','cheer_big','strike','ball','swing1','swing2','swing3','swing4','playball','ball2','ball3','ball4','strike2','out','catch','crush','boo1','boo2','boo3','pop_max'];
 function loadSfx(noiseSrc){SFX_FILES.forEach(n=>fetch('sfx/'+n+'.mp3').then(r=>r.ok?r.arrayBuffer():Promise.reject()).then(b=>new Promise((res,rej)=>AC.decodeAudioData(b,res,rej))).then(buf=>{SFX[n]=buf;
-  if(n==='crowd'){ // real stadium ambience takes over from the filtered noise
+  if(n==='bed'){ // real stadium ambience takes over from the filtered noise
     // the bed is 65 seconds of even ballpark crowd with the identifiable moments (claps, cracks, surges, single voices) cut out, looped
     // seamlessly; two copies at slightly different speeds overlap so the pattern never audibly comes round again
     const t=AC.currentTime,mix=AC.createGain();mix.gain.value=.78;mix.connect(crowdGain);
