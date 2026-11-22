@@ -1464,7 +1464,7 @@ function toReady(d){showCard();$('hitinfo').hidden=true;S.state='ready';S.t=now;
   camMode='bat';hud();syncRunners();
   if(S.pcPending){S.pcPending=false;S.state='pchange';S.t=now;const P=S.pName; // the scene: a cut to the mound for the new man, then the hitter comes up as usual
     flash(.45);pop('PITCHING CHANGE','NOW PITCHING: #'+P[1]+' '+P[0],'hot',true);cheer(.2,2.5);buzz([40,60,40]);$('pcap').textContent='PITCHER · '+P[0];
-    {const ts=MX.pit?Object.keys(MX.pit.taunts).filter(k=>/fist|clap|threat/.test(k)):[];if(ts.length)S.sTaunt={t:now+.7,clip:ts[(Math.random()*ts.length)|0],dur:1.8};}return;}
+    {const ts=MX.pit?Object.keys(MX.pit.taunts).filter(k=>/clap|threat/.test(k)):[];if(ts.length)S.sTaunt={t:now+.7,clip:ts[(Math.random()*ts.length)|0],dur:1.8};}return;}
   if(WALK.on&&S.fresh&&S.bi>=0&&!S.seen[S.bi%LINEUP.length]&&MX.clip&&MX.clip.intros[WALK.by[curBatter().name]])startWalkup();}
 const BULLPEN=[['STORM',99],['VOLKOV',47],['DIAZ',13]],PCH=2.7;
 // Starting before the player models have arrived left an empty batter's box and skipped the first walk-up, so Play Ball waits for them.
