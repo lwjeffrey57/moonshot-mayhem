@@ -1017,8 +1017,8 @@ const zone=new T.Group(); // drawn as thin bars: WebGL lines are always one pixe
 zone.renderOrder=8;scene.add(zone);
 const reticle=new T.Group();reticle.renderOrder=9;scene.add(reticle);
 const retC=new T.Mesh(new T.RingGeometry(.93,1,28),overlayMat(0x3ddc6a,.95));retC.renderOrder=9;reticle.add(retC);
-const retCfill=new T.Mesh(new T.CircleGeometry(.64,28),overlayMat(0x3ddc6a,.26));retCfill.renderOrder=8;retCfill.visible=false;retC.add(retCfill); // fills the middle of the green zone whenever the red core isn't drawn
-{const band=new T.Mesh(new T.RingGeometry(.64,.93,32),overlayMat(0x3ddc6a,.26));band.renderOrder=8;retC.add(band);} // CONTACT zone filled green from the power core out to the ring
+const retCfill=new T.Mesh(new T.CircleGeometry(.5,28),overlayMat(0x3ddc6a,.26));retCfill.renderOrder=8;retCfill.visible=false;retC.add(retCfill); // fills the middle of the green zone whenever the red core isn't drawn
+{const band=new T.Mesh(new T.RingGeometry(.5,.93,32),overlayMat(0x3ddc6a,.26));band.renderOrder=8;retC.add(band);} // CONTACT zone filled green from the power core out to the ring
 const retP=new T.Mesh(new T.RingGeometry(.9,1,24),overlayMat(0xff4d2e,.95));retP.renderOrder=9;reticle.add(retP);
 {const fill=new T.Mesh(new T.CircleGeometry(.9,28),overlayMat(0xff4d2e,.4));fill.renderOrder=8;retP.add(fill);} // POWER sweet spot reads as a hot core inside the bat ring, not a second ring
 const retDot=new T.Mesh(new T.CircleGeometry(.014,8),overlayMat(0xffffff,.9));retDot.renderOrder=9;reticle.add(retDot);retDot.visible=false;
@@ -1538,7 +1538,7 @@ function tryContact(){flight_pop=false;
   const ez=easyAB()?1.3:1,JT=tb?1.35:1,win=.118*(pw?.85:1.2)*JT*ez,n=dt/win;
   // chasing: how far outside the strike zone the pitch is (0 in the zone → 1 well off the plate)
   const offX=Math.max(ZONE.x0-pitch.tx,pitch.tx-ZONE.x1,0),offY=Math.max(ZONE.y0-pitch.ty,pitch.ty-ZONE.y1,0),chase=clamp(Math.hypot(offX,offY)/.16,0,1);
-  const R=.17*b.con*(pw?(tb?.8:.72):1.25)*(tb?1.2:1)*(1-.3*chase)*ez; // the power core is 10% smaller without Juice; Juice gives the old size back, then its usual boost
+  const R=.17*b.con*(pw?(tb?.8:.63):1.25)*(tb?1.2:1)*(1-.3*chase)*ez; // the power core is 10% smaller without Juice; Juice gives the old size back, then its usual boost
   const d=Math.hypot(aim.x-pitch.tx,aim.y-pitch.ty);
   // where the barrel was relative to the ball, in sweet-spot radii: u>0 = swung under it, e>0 = ball out toward the end of the bat
   const cu=(pitch.ty-aim.y)/R,ce=(pitch.tx-aim.x)/R*(MX.lefty?-1:1),cr=Math.hypot(cu,ce);
@@ -2444,7 +2444,7 @@ function step(dt){
   // reticle
   const b=S.bi>=0?curBatter():LINEUP[0],tb=(S.over&&S.overOn)||(!S.over&&juiceOn()&&S.juice>=.25);
   reticle.position.set(aim.x,aim.y,0);
-  {const ez=easyAB()?1.3:1;retC.scale.setScalar(.17*b.con*1.25*(tb?1.2:1)*ez);retP.scale.setScalar(.17*b.con*(tb?.8:.72)*(tb?1.2:1)*ez);}
+  {const ez=easyAB()?1.3:1;retC.scale.setScalar(.17*b.con*1.25*(tb?1.2:1)*ez);retP.scale.setScalar(.17*b.con*(tb?.8:.63)*(tb?1.2:1)*ez);}
   let showRet=(S.state==='ready'||S.state==='windup'||S.state==='pitch')&&!(swing&&swing.done);
   retC.visible=retP.visible=true;echoBall.visible=false;
   if(swing&&!swing.practice){retC.visible=swing.type==='contact';retP.visible=swing.type==='power';} // mid-swing, only the ring that counts for this swing
