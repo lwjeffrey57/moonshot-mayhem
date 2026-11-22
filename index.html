@@ -248,7 +248,7 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 #tcb[hidden]{display:none}
 #tcb::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3CradialGradient id='g' cx='.38' cy='.32' r='.75'%3E%3Cstop offset='0' stop-color='%23fff'/%3E%3Cstop offset='.6' stop-color='%23f1eee2'/%3E%3Cstop offset='1' stop-color='%23cfcbbb'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='16' cy='16' r='14.6' fill='url%28%23g%29' stroke='%23000' stroke-width='1.6'/%3E%3Cg fill='none' stroke='%23c8281e' stroke-linecap='round'%3E%3Cpath stroke-width='1.5' d='M9 3.6 Q15 16 9 28.4 M23 3.6 Q17 16 23 28.4'/%3E%3Cg stroke-width='1.1'%3E%3Cpath d='M8.4 6.2 L12.8 7.8 M19.2 7.8 L23.6 6.2'/%3E%3Cpath d='M9.4 10.2 L13.8 11.8 M18.2 11.8 L22.6 10.2'/%3E%3Cpath d='M9.8 14.2 L14.2 15.8 M17.8 15.8 L22.2 14.2'/%3E%3Cpath d='M9.6 18.2 L14.0 19.8 M18.0 19.8 L22.4 18.2'/%3E%3Cpath d='M8.9 22.2 L13.3 23.8 M18.7 23.8 L23.1 22.2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") center/100% 100% no-repeat;filter:drop-shadow(0 1px 0 #000)}
 /* the barrel, laid across the ball where it actually met it: low on the ball = got under it, high = topped it, off to a side = end of the bat or in on the hands */
-#tcb b{position:absolute;width:40px;height:13px;border-radius:6.5px;background:linear-gradient(#f0d49a,#c2924c 60%,#9a6f33);border:1.5px solid #000;transform:translate(-50%,-50%) rotate(-9deg);box-shadow:0 1px 0 rgba(0,0,0,.6);z-index:1}
+#tcb b{position:absolute;width:33px;height:10px;border-radius:5px;background:linear-gradient(#f0d49a,#c2924c 60%,#9a6f33);border:1.5px solid #000;transform:translate(-50%,-50%) rotate(-9deg);box-shadow:0 1px 0 rgba(0,0,0,.6);z-index:1}
 #tcb b.sq{box-shadow:0 0 0 1.5px #39ff6a,0 0 8px 2px #39ff6a}
 /* your swing: the marker carries a caret underneath, pointing up at it, so it can't be mistaken for the green target (whose arrow sits on top) */
 #tbar .trk i.mk:not(.pf)::before{content:'';position:absolute;left:50%;bottom:-13px;margin-left:-6px;border:6px solid transparent;border-bottom-color:var(--mc,#fff);filter:drop-shadow(0 1px 0 #000) drop-shadow(0 -1px 0 #000)}
@@ -2597,6 +2597,32 @@ function updateClip(dt){
         if(B.p.y<.06){B.p.y=.06;B.rest=true;_bd.set(0,1,0).applyQuaternion(B.q);_bd.y=0;if(_bd.lengthSq()<.01)_bd.set(1,0,0);_bd.normalize();B.q.setFromUnitVectors(UP,_bd);}} // comes to rest lying flat
       bat.position.copy(B.p);bat.quaternion.copy(B.q);bat.updateMatrixWorld(true);}}
 }
+// Gloves, built from shaped leather pieces rather than one blob: a fielder's glove (four finger stalls, thumb, a dark web between
+// thumb and forefinger, heel pad and wrist strap) and a catcher's mitt (round, thick-rimmed, with a deep dark pocket). Each glove is
+// two meshes (leather and dark trim), so eight of them on the field cost almost nothing. Units are the hand bone's (centimetres).
+const GLOVE={};
+function gloveGeo(parts){ // [geometry, x,y,z, sx,sy,sz, rotZ] pieces merged into one geometry
+  const pos=[],nor=[],m=new T.Matrix4(),q=new T.Quaternion(),e=new T.Euler(),P=new V3(),Sc=new V3(),n3=new T.Matrix3();
+  for(const a of parts){const g=a[0].index?a[0].toNonIndexed():a[0];e.set(a[8]||0,0,a[7]||0);q.setFromEuler(e);m.compose(P.set(a[1],a[2],a[3]),q,Sc.set(a[4],a[5],a[6]));n3.getNormalMatrix(m);
+    const gp=g.attributes.position,gn=g.attributes.normal;
+    for(let i=0;i<gp.count;i++){P.fromBufferAttribute(gp,i).applyMatrix4(m);pos.push(P.x,P.y,P.z);P.fromBufferAttribute(gn,i).applyMatrix3(n3).normalize();nor.push(P.x,P.y,P.z);}}
+  const out=new T.BufferGeometry();out.setAttribute('position',new T.Float32BufferAttribute(pos,3));out.setAttribute('normal',new T.Float32BufferAttribute(nor,3));return out;}
+function mkGlove(kind){
+  if(!GLOVE.sph){GLOVE.sph=new T.SphereGeometry(1,10,8);GLOVE.box=new T.BoxGeometry(1,1,1);GLOVE.tor=new T.TorusGeometry(1,.26,6,16);
+    GLOVE.tan=new T.MeshLambertMaterial({color:0x7a4a24});GLOVE.dark=new T.MeshLambertMaterial({color:0x24150b});
+    GLOVE.mittC=new T.MeshLambertMaterial({color:0x4d2c15}); // matte leather, dark enough that the stadium bloom doesn't make it glow
+    const S=GLOVE.sph,B=GLOVE.box,To=GLOVE.tor;
+    GLOVE.fa=gloveGeo([[S,0,8,0, 9.6,9,4.4],                                   // palm and pocket
+      [S,-6.6,16.4,0, 2.6,6.2,2.7,.2],[S,-2.3,18,0, 2.6,6.8,2.7,.06],[S,2.1,18,0, 2.6,6.8,2.7,-.06],[S,6.3,16.5,0, 2.6,6.2,2.7,-.2], // finger stalls, fanned
+      [S,11.2,10.5,0, 3,7.4,3,-.5],                                              // thumb
+      [B,0,.8,0, 15,4.6,6.2]]);                                                  // heel pad
+    GLOVE.fb=gloveGeo([[B,9.2,15.2,0, 5.2,9,1.5,-.3],                           // the web
+      [B,0,-1.6,0, 12.5,2.2,6.6],                                                // wrist strap
+      [B,-2.2,13.6,2.9, 13,1,1,0],[B,-2.2,16.2,2.9, 13,1,1,0]]);                // lacing across the fingers
+    GLOVE.ma=gloveGeo([[S,0,10.5,0, 12.2,12.6,5.4],[To,0,10.5,-.6, 10.4,10.8,7.5],[S,12,9,0, 3.6,8,3.6,-.45],[B,0,-.6,0, 13,4.4,6.6]]); // round body, thick rim, thumb, heel
+    GLOVE.mb=gloveGeo([[S,-.6,11,-3.4, 7.6,7.8,2.2],[B,11,15.5,0, 5.6,8,1.6,-.35],[B,0,-3,0, 11,2.2,7]]);}                             // deep pocket, web, strap
+  const g=new T.Group(),mitt=kind==='mitt',a=new T.Mesh(mitt?GLOVE.ma:GLOVE.fa,mitt?GLOVE.mittC:GLOVE.tan),b=new T.Mesh(mitt?GLOVE.mb:GLOVE.fb,GLOVE.dark);
+  a.castShadow=true;g.add(a,b);return g;}
 function prepModel(obj,tx,custom){ // dress + bulk a Mixamo mannequin; returns its skeleton helpers and measurements
   const s=.87/88.9;
   const meshes=[];obj.traverse(n=>{if(n.isSkinnedMesh)meshes.push(n);});if(!meshes.length)throw new Error('no skinned mesh');
@@ -2636,7 +2662,7 @@ function setupPitcher(obj,custom){
     const sp=v1.z-v0.z;if(sp>best){best=sp;tRel=t;th=h;}}});
   if(!custom)addHat(B,D,pitcher.mats.cap,false);   // textured characters go bare-headed for now
   // glove on the non-throwing hand
-  {const gl=new T.Mesh(GEO.glove,pitcher.mats.glove);gl.scale.set(75,100,50);gl.position.set(0,9,0);(th===hand?lh:hand).add(gl);gl.castShadow=true;}
+  {const gl=mkGlove('fielder');gl.position.set(0,1,0);(th===hand?lh:hand).add(gl);}
   mixer.setTime(0);
   const taunts={};obj.animations.filter(c=>/^p_/.test(c.name)).forEach(c=>{c.tracks=c.tracks.filter(t=>/quaternion$/.test(t.name)||/Hips\.position$/.test(t.name));const a=mixer.clipAction(c);a.play();a.setEffectiveWeight(0);taunts[c.name]={a,dur:c.duration};});
   const defs=obj.animations.filter(c=>/^d_/.test(c.name)).map(c=>{c.tracks=c.tracks.filter(t=>/quaternion$/.test(t.name)||/Hips\.position$/.test(t.name));const a=mixer.clipAction(c);a.play();a.setEffectiveWeight(0);a.dur=c.duration;return a;});
@@ -2673,7 +2699,7 @@ function setupPlateCrew(make,skins){
   const cat=make(['catch']),{B}=prepModel(cat,pitT,skins.away),clip=cat.animations[0];
   clip.tracks=clip.tracks.filter(t=>/quaternion$/.test(t.name)||/Hips\.position$/.test(t.name));
   const mixer=new T.AnimationMixer(cat),act=mixer.clipAction(clip);act.play();act.time=.4;mixer.update(0); // the clip opens in a catcher's crouch
-  const gl=new T.Mesh(GEO.glove,pitcher.mats.glove);gl.scale.set(85,110,55);gl.position.set(0,9,0);gl.castShadow=true;B('LeftHand').add(gl);
+  const gl=mkGlove('mitt');gl.position.set(0,1,0);B('LeftHand').add(gl);
   cat.position.set(0,0,1.45);cat.rotation.y=PI;scene.add(cat);
   const uf={fig:mkFielder('UMP',0)};uf.fig.root.position.set(.12,0,2.45);uf.fig.root.rotation.y=PI;scene.add(uf.fig.root);
   setupFielder(uf,make([]),skins.ump,true);
@@ -2688,7 +2714,7 @@ function updatePlateCrew(){
 function setupFielder(f,obj,custom,noGlove){
   const d=f.fig,{s,B,D,K}=prepModel(obj,pitT,custom);d.root.add(obj);
   f.rt=fitDriver(d,B,D,s,K);f.obj=obj;f.catching=false;
-  if(!noGlove){const gl=new T.Mesh(GEO.glove,pitcher.mats.glove);gl.scale.set(75,100,50);gl.position.set(0,9,0);gl.castShadow=true;B('LeftHand').add(gl);}
+  if(!noGlove){const gl=mkGlove('fielder');gl.position.set(0,1,0);B('LeftHand').add(gl);}
   const clip=obj.animations.find(c=>c.name==='catch');
   if(clip&&clip.duration>CATCH.end){clip.tracks=clip.tracks.filter(t=>/quaternion$/.test(t.name)||/Hips\.position$/.test(t.name));
     f.mixer=new T.AnimationMixer(obj);f.act=f.mixer.clipAction(clip);f.act.play();
