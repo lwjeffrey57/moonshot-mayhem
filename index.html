@@ -1440,10 +1440,17 @@ function burst(fx,p,n,sp,life,col,gr=0,up=0){for(let i=0;i<n;i++){_v.set(rand(-1
 const fireworks=[];
 
 // ───────────────────────── audio (all synthesized)
-let AC=null,master=null,crowdGain=null,noiseBuf=null,crowdBase=.05,crowdReal=false;
+let AC=null,master=null,crowdGain=null,noiseBuf=null,crowdBase=.018,crowdReal=false; // the hiss stand-in is kept very low: it is only ever heard if the crowd recording is late
 // Recorded sounds (sfx/*.mp3). Each one replaces a synthesized sound once it has loaded; if a file is missing the synth version plays.
 const SFX={},SFX_FILES=['bed','cheer','cheer_big','strike','ball','swing1','swing2','swing3','swing4','playball','ball2','ball3','ball4','strike2','out','catch2','crush','boo1','boo2','boo3','pop_max','org_charge','org_chord','org_post','org_clap','org_letsgo','org_neenaa','org_mariachi','org_lgo','org_rise'];
-function loadSfx(noiseSrc){SFX_FILES.forEach(n=>fetch('sfx/'+n+'.mp3').then(r=>r.ok?r.arrayBuffer():Promise.reject()).then(b=>new Promise((res,rej)=>AC.decodeAudioData(b,res,rej))).then(buf=>{SFX[n]=buf;
+// The sound files start downloading the moment the page opens (three at a time, the ones the first seconds of a game need first), so they
+// are already here when PLAY BALL is tapped. Before, nothing was fetched until that tap, and with the player models also downloading the
+// game started on its stand-in synth sounds: hiss for a crowd, a jingle instead of the umpire.
+const SFX_RAW={};
+{const order=['playball','bed','catch2','swing1','swing2','swing3','swing4','strike','ball','cheer','cheer_big','strike2','ball2','ball3','ball4','out','crush','boo1','boo2','boo3','pop_max'].concat(SFX_FILES.filter(n=>/^org_/.test(n)));
+  let i=0;const next=()=>{if(i>=order.length)return;const n=order[i++];SFX_RAW[n]=fetch('sfx/'+n+'.mp3').then(r=>r.ok?r.arrayBuffer():Promise.reject());SFX_RAW[n].then(next,next);};
+  next();next();next();}
+function loadSfx(noiseSrc){SFX_FILES.forEach(n=>(SFX_RAW[n]||(SFX_RAW[n]=fetch('sfx/'+n+'.mp3').then(r=>r.ok?r.arrayBuffer():Promise.reject()))).then(b=>new Promise((res,rej)=>AC.decodeAudioData(b.slice(0),res,rej))).then(buf=>{SFX[n]=buf;
   if(n==='bed'){ // real stadium ambience takes over from the filtered noise
     // the bed is 65 seconds of even ballpark crowd with the identifiable moments (claps, cracks, surges, single voices) cut out, looped
     // seamlessly; two copies at slightly different speeds overlap so the pattern never audibly comes round again
@@ -1475,7 +1482,7 @@ function audioInit(){
   noiseBuf=AC.createBuffer(1,AC.sampleRate*2,AC.sampleRate);const d=noiseBuf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;
   const src=AC.createBufferSource();src.buffer=noiseBuf;src.loop=true;
   const bp=AC.createBiquadFilter();bp.type='bandpass';bp.frequency.value=850;bp.Q.value=.45;
-  crowdGain=AC.createGain();crowdGain.gain.value=.05;src.connect(bp);bp.connect(crowdGain);zoneLP=AC.createBiquadFilter();zoneLP.type='lowpass';zoneLP.frequency.value=20000;zoneLP.Q.value=.6;crowdGain.connect(zoneLP);zoneLP.connect(master);src.start();loadSfx(src);
+  crowdGain=AC.createGain();crowdGain.gain.value=.018;src.connect(bp);bp.connect(crowdGain);zoneLP=AC.createBiquadFilter();zoneLP.type='lowpass';zoneLP.frequency.value=20000;zoneLP.Q.value=.6;crowdGain.connect(zoneLP);zoneLP.connect(master);src.start();loadSfx(src);
 }
 function noise(dur,type,f0,f1,vol,q=1,delay=0){if(!AC)return;const t=AC.currentTime+delay,s=AC.createBufferSource();s.buffer=noiseBuf;
   const f=AC.createBiquadFilter();f.type=type;f.Q.value=q;f.frequency.setValueAtTime(f0,t);f.frequency.exponentialRampToValueAtTime(f1,t+dur);
@@ -1608,7 +1615,7 @@ function heartTick(){
 // the home crowd lets the pitcher (and the umpire) hear it
 function boo(vol){const have=['boo1','boo2','boo3'].filter(n=>SFX[n]);if(!AC||!have.length||roarG)return;
   sfxSlice(have[(Math.random()*have.length)|0],vol,rand(.94,1.06),rand(0,2.4),rand(2.4,3.3));cheerBusy=AC.currentTime+2.4;}
-function cheer(level,dur){crowdE=Math.max(crowdE,Math.min(1,level*1.6));if(!AC)return;const t=AC.currentTime,g=crowdGain.gain;
+function cheer(level,dur){crowdE=Math.max(crowdE,Math.min(1,level*1.6));if(!AC)return;if(!crowdReal)level*=.25;const t=AC.currentTime,g=crowdGain.gain;
   if(crowdReal){ // the ambience swells a little; the reaction itself is a recorded cheer on top
     if(roarG){}else if(level>=.5&&SFX.pop_max){sfxSlice('pop_max',.6,1,0,4.6);cheerBusy=t+4;}
     else if(level>=.4){sfxSlice('cheer_big',.95,rand(.95,1.06),rand(0,.4),3.4);cheerBusy=t+3;}
@@ -1620,7 +1627,7 @@ const SND={
     if(power&&q>.6){tone('sine',150,38,.5,.9*q);noise(.35,'lowpass',900,120,.5*q);}},
   whoosh(){if(!sfx('swing'+(1+(Math.random()*4|0)),.8,rand(.94,1.08)))noise(.2,'bandpass',300,1900,.35,1.5);},
   pitch(){noise(.09,'bandpass',700,2600,.5,1.3);tone('sine',190,80,.09,.4);}, // the ball leaving the hand: one short snap, identical for every pitch. It used to be a long whoosh, and on slow pitches the whoosh ended well before the ball arrived, which read as 'it's there' too early
-  playball(n=6){if(sfx('playball',.95))return;if(n>0)setTimeout(()=>SND.playball(n-1),250);else SND.organ();}, // the umpire's call; waits briefly for the file on the first game, falls back to the jingle
+  playball(n=14){if(sfx('playball',.95))return;if(n>0)setTimeout(()=>SND.playball(n-1),250);}, // the umpire's call; waits up to a few seconds for the file, and stays silent sooner than play a jingle // the umpire's call; waits briefly for the file on the first game, falls back to the jingle
   mitt(k){if(k!=null){noise(.055,'bandpass',3000,1500,.85,1.1);noise(.03,'highpass',2500,2500,.35,.7);tone('triangle',1200,480,.04,.34);
       if(AC&&crowdReal&&!roarG){const t=AC.currentTime,g=crowdGain.gain;g.cancelScheduledValues(t);g.setTargetAtTime(crowdBase*.4,t,.015);g.setTargetAtTime(crowdBase,t+.22,.25);}} // the crowd dips for a fifth of a second under the pop, so it stands on its own /* a pitch into the catcher's glove also gets a bright snap on top: the recorded pop is mostly low thud, which phone speakers and the crowd swallow */
     if(sfx('catch2',k==null?.34:lerp(1.05,1.2,k),k==null?rand(.95,1.05):lerp(.94,1.08,k)))return; // recorded glove pop; pitches play it louder and brighter the faster they are
@@ -1996,7 +2003,7 @@ function gameRating(){const G=S.goal,pts=S.runs*10+S.hits*4+S.hrs*8+(S.longest>=
   return {pts,stars:i+1,grade:T[i][1],title:T[i][2],next:T[i+1]?T[i+1][0]-pts:0,nextTitle:T[i+1]?T[i+1][2]:''};}
 function newGame(){gamesPlayed++;try{localStorage.setItem('mm_games',gamesPlayed);}catch(e){}
   Object.assign(S,{inning:1,outs:0,balls:0,strikes:0,runs:0,bases:[0,0,0],hits:0,hrs:0,longest:0,streak:0,bestStreak:0,juice:.25,heat:.2,over:false,stk:false,opp:0,bi:-1,pitches:0,seen:{},kOut:null});S.goal=null; /* per-game goals are switched off for now: pickGoal() is still here to bring them back */S.ks=0;S.d2=0;S.cardBi=-1;S.pChanges=0;S.pRuns0=0;S.pc3=false;S.pcPending=false;S.pName=BULLPEN[0];$('pcap').textContent='PITCHER';S.sTaunt=null;S.stLast=false;jPend=false;S.orbN=0;S.odUses=0;S.duel=false;$('hud').classList.remove('duel');S.pdLast=false;S.pOver=false;S.jSaid=false;S.overOn=false;S.spSeen=false;lastWalk='';
-  $('title').hidden=true;$('over').hidden=true;$('pausebtn').hidden=false;$('mutebtn').hidden=false;setBatter();renderRep();scoreboard('PLAY BALL','INNING 1');S.opp=0;toReady(2);pop('PLAY BALL!','INNING 1','logo');hud();SND.playball();cheer(.14,1.5);}
+  $('title').hidden=true;$('over').hidden=true;$('pausebtn').hidden=false;$('mutebtn').hidden=false;setBatter();renderRep();scoreboard('PLAY BALL','INNING 1');S.opp=0;toReady(2);pop('PLAY BALL!','','logo');hud();SND.playball();cheer(.14,1.5);}
 
 // ───────────────────────── pitching
 // brk = how far the pitch moves off a straight line (sideways, vertical) by the time it reaches the plate; k = how late that
