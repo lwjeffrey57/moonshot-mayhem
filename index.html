@@ -2641,7 +2641,7 @@ function mkGlove(kind){
     GLOVE.ma=gloveGeo([[S,0,10.5,0, 12.2,12.6,5.4],[To,0,10.5,-.6, 10.4,10.8,7.5],[S,12,9,0, 3.6,8,3.6,-.45],[B,0,-.6,0, 13,4.4,6.6]]); // round body, thick rim, thumb, heel
     GLOVE.mb=gloveGeo([[S,-.6,11,-3.4, 7.6,7.8,2.2],[B,11,15.5,0, 5.6,8,1.6,-.35],[B,0,-3,0, 11,2.2,7]]);}                             // deep pocket, web, strap
   const g=new T.Group(),mitt=kind==='mitt';g.rotation.y=GLOVE_PHI;
-  if(mitt){const a=new T.Mesh(GLOVE.mitt||(GLOVE.mitt=mittGeo()),GLOVE.vc),b=new T.Mesh(GLOVE.mittLace||(GLOVE.mittLace=mittLace()),GLOVE.dark);a.castShadow=true;a.position.z=b.position.z=6.2;g.rotation.y=PI/2;g.add(a,b);return g;} // pocket turned to face the pitcher, hand tucked behind it
+  if(mitt){const a=new T.Mesh(GLOVE.ma,GLOVE.mittC),b=new T.Mesh(GLOVE.mb,GLOVE.dark);a.castShadow=true;g.rotation.y=0;g.add(a,b);return g;} // the simple round mitt (the sculpted one, mittGeo below, is kept but unused)
   const a=new T.Mesh(GLOVE.fa,GLOVE.tan),b=new T.Mesh(GLOVE.fb,GLOVE.dark);a.castShadow=true;g.add(a,b);
   g.userData.simple=[a,b];GLOVE.list.push(g);if(GLOVE.real)gloveReal(g);return g;}
 // The catcher's mitt, sculpted as one surface: a fat rolled rim, a deep dished pocket, a thumb lobe with the web beside it, a rounded
