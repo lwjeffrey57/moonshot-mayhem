@@ -44,6 +44,7 @@ Recordings to find or make (the game currently fakes most of these by reshaping 
 
 ## Presentation
 - Announcers: two original characters, captions first, voice later.
+- Identity homework: the shouts over the hitter's head after a homer (placeholders are in) and the call-out wording generally.
 - Lore: why baseball is on the Moon, the Comets and Krakens, batter bios.
 - More celebrations and batting stances (Mixamo clips).
 - Pitching change: the outgoing pitcher walks off the mound dejected before the new arm comes in.
