@@ -314,9 +314,9 @@ body.mob #tip{display:block}body.mob .how{display:none}
 #tut.s2 .spot::before{content:'';position:absolute;left:var(--tx,50%);top:var(--ty,50%);box-sizing:border-box;width:calc(var(--tr,14px)*2);height:calc(var(--tr,14px)*2);margin:calc(var(--tr,14px)*-1);border-radius:50%;border:3px solid #fff;background:rgba(255,255,255,.6)} /* the ball stays put: the bat ring moves onto it */
 #hud.tut2 #tc{animation:tutbA 5.2s linear infinite}#hud.tut2 #tp{animation:tutbB 5.2s linear infinite}
 @keyframes tutbA{0%,28%{opacity:.4;transform:none}32%,50%{opacity:1;transform:scale(1.1);box-shadow:0 4px 0 #000,0 0 26px 8px rgba(61,220,106,.95)}54%,100%{opacity:.4;transform:none}}
-@keyframes tutbB{0%,49%{opacity:0;transform:none}52%,70%{opacity:.4;transform:none}74%,92%{opacity:1;transform:scale(1.1);box-shadow:0 4px 0 #000,0 0 26px 8px rgba(255,90,50,.95)}95%{opacity:.4}100%{opacity:0;transform:none}}
+@keyframes tutbB{0%,49%{opacity:0;transform:none}52%,56%{opacity:.4;transform:none}60%,92%{opacity:1;transform:scale(1.1);box-shadow:0 4px 0 #000,0 0 26px 8px rgba(255,90,50,.95)}95%{opacity:.4}100%{opacity:0;transform:none}}
 #tut.s2 .lc{animation:tutlA 5.2s linear infinite}#tut.s2 .lp{animation:tutlB 5.2s linear infinite}
-@keyframes tutlA{0%,28%{opacity:0}32%,50%{opacity:1}54%,100%{opacity:0}}@keyframes tutlB{0%,70%{opacity:0}74%,92%{opacity:1}95%,100%{opacity:0}}
+@keyframes tutlA{0%,28%{opacity:0}32%,50%{opacity:1}54%,100%{opacity:0}}@keyframes tutlB{0%,56%{opacity:0}60%,92%{opacity:1}95%,100%{opacity:0}}
 #hud.tut2 #apad{z-index:31;pointer-events:none}
 /* step 2: the two swing buttons stay lit under the dimming, each labelled with its part of the bat */
 #hud.tut2 #touch{z-index:31;pointer-events:none}#hud.tut2 #touch .jc{opacity:.15;animation:none}
@@ -1000,6 +1000,7 @@ const zone=new T.Group(); // drawn as thin bars: WebGL lines are always one pixe
 zone.renderOrder=8;scene.add(zone);
 const reticle=new T.Group();reticle.renderOrder=9;scene.add(reticle);
 const retC=new T.Mesh(new T.RingGeometry(.93,1,28),overlayMat(0x3ddc6a,.95));retC.renderOrder=9;reticle.add(retC);
+const retCfill=new T.Mesh(new T.CircleGeometry(.64,28),overlayMat(0x3ddc6a,.26));retCfill.renderOrder=8;retCfill.visible=false;retC.add(retCfill); // fills the middle of the green zone whenever the red core isn't drawn
 {const band=new T.Mesh(new T.RingGeometry(.64,.93,32),overlayMat(0x3ddc6a,.26));band.renderOrder=8;retC.add(band);} // CONTACT zone filled green from the power core out to the ring
 const retP=new T.Mesh(new T.RingGeometry(.9,1,24),overlayMat(0xff4d2e,.95));retP.renderOrder=9;reticle.add(retP);
 {const fill=new T.Mesh(new T.CircleGeometry(.9,28),overlayMat(0xff4d2e,.4));fill.renderOrder=8;retP.add(fill);} // POWER sweet spot reads as a hot core inside the bat ring, not a second ring
@@ -1135,19 +1136,21 @@ function tutShow(mode){const T=$('tut');T.className=mode;T.hidden=false;tutHold=
   if(n===2||n===3){ // spotlight the strike zone itself: project its corners to the screen
     const H=canvas.clientHeight,W=canvas.clientWidth,a=new V3(ZONE.x0,ZONE.y1,0).project(camera),b=new V3(ZONE.x1,ZONE.y0,0).project(camera),pad=16;
     let l=(a.x+1)/2*W-pad,t=(1-a.y)/2*H-pad,r=(b.x+1)/2*W+pad,bt=(1-b.y)/2*H+pad;const zw=r-l-2*pad;retP.visible=true;
-    if(n===2){l=Math.max(6,l-74);bt+=22;} // room for the bat ring to start well off the ball and travel to it
-    aim.x=0;aim.y=.825;reticle.position.set(0,.825,0);const c0=new V3(0,.825,0).project(camera); // bat dead centre for the demo; the ball marker is placed on that exact point (4 = the spotlight's border)
+    if(n===2){l=Math.max(6,l-74);bt+=22;t-=34;r+=30;} // room for the bat ring to start well off the ball and travel to it
+    aim.x=0;aim.y=.825;reticle.position.set(0,.825,0);const c0=(n===2?new V3(TUT_B.x,TUT_B.y,0):new V3(0,.825,0)).project(camera); // bat dead centre for the demo; the ball marker is placed on that exact point (4 = the spotlight's border)
     sp.style.cssText='left:'+l+'px;top:'+t+'px;width:'+(r-l)+'px;height:'+(bt-t)+'px;--tr:'+(PT_R*zw/(ZONE.x1-ZONE.x0)).toFixed(1)+'px;--tx:'+((c0.x+1)/2*W-l-4).toFixed(1)+'px;--ty:'+((1-c0.y)/2*H-t-4).toFixed(1)+'px;--gx:'+((retC.scale.x+retP.scale.x)/2*zw/(ZONE.x1-ZONE.x0)).toFixed(1)+'px';T.querySelector(n===2?'.pcz':'.tmz').style.bottom=(H-t+16)+'px';}}
 // Step 2 demo, in step with the button highlights: the ball never moves. The bat ring starts off it, slides until the ball is in the green
 // (CONTACT lights), then until the ball is in the red core (POWER lights): move the circle to the ball.
 const TUT_LOOP=5200;
-let tutT0=0;function tutAnim(t){if(tutStep!==2||$('tut').hidden)return;const ph=((t-tutT0)%TUT_LOOP)/TUT_LOOP,Rc=retC.scale.x,Rp=retP.scale.x,far=Rc*1.75,mid=(Rc+Rp)/2+.01,sm=(a,b,u)=>lerp(a,b,ease(clamp(u,0,1)));
-  // 0-8% waiting off the ball · 8-30% the thumb pushes and the green ring slides onto the ball (CONTACT) · 50% the red core appears · 56-72% slides again until the ball is in the core (POWER)
-  const d=ph<.08?far:ph<.3?sm(far,mid,(ph-.08)/.22):ph<.56?mid:ph<.72?sm(mid,0,(ph-.56)/.16):ph<.93?0:far;
-  reticle.position.set(-d*.92,.825-d*.4,0);retP.visible=ph>=.5&&ph<.93;
-  const push=ph>=.08&&ph<.3?Math.sin((ph-.08)/.22*PI):ph>=.56&&ph<.72?Math.sin((ph-.56)/.16*PI)*.7:0; // the stick leans the way the ring is travelling
-  padKnob.style.transition='none';padKnob.style.transform='translate('+(push*34*.92).toFixed(1)+'px,'+(-push*34*.4).toFixed(1)+'px)';}
-function tutClose(){retP.visible=true;padKnob.style.transform='';padKnob.style.transition='';$('hud').classList.remove('tut2');$('tut').hidden=true;tutHold=false;if(tutFirst){tutFirst=false;S.t=now-readyDur+.7;}}
+// Step 2 demo. The ball sits still in the upper-right of the zone. The stick leans and the green ring (filled, no red showing yet) travels to it
+// until the ball is dead centre: CONTACT. Then the red core appears around the ball where it already is: POWER.
+const TUT_B={x:.14,y:.985},TUT_S={x:-.17,y:.64};
+let tutT0=0;function tutAnim(t){if(tutStep!==2||$('tut').hidden)return;const ph=((t-tutT0)%TUT_LOOP)/TUT_LOOP;
+  const u=ph<.08?0:ph<.3?ease((ph-.08)/.22):ph<.93?1:0;
+  reticle.position.set(lerp(TUT_S.x,TUT_B.x,u),lerp(TUT_S.y,TUT_B.y,u),0);retP.visible=ph>=.5&&ph<.93;retCfill.visible=!retP.visible;
+  const push=ph>=.08&&ph<.3?Math.sin((ph-.08)/.22*PI):0,dx=TUT_B.x-TUT_S.x,dy=TUT_B.y-TUT_S.y,L=Math.hypot(dx,dy); // the stick leans the way the ring is travelling
+  padKnob.style.transition='none';padKnob.style.transform='translate('+(push*36*dx/L).toFixed(1)+'px,'+(-push*36*dy/L).toFixed(1)+'px)';}
+function tutClose(){retP.visible=true;retCfill.visible=false;padKnob.style.transform='';padKnob.style.transition='';$('hud').classList.remove('tut2');$('tut').hidden=true;tutHold=false;if(tutFirst){tutFirst=false;S.t=now-readyDur+.7;}}
 function jtutNeed(){if(tutOff||jtutSeen||window.__mmManual&&!window.__mmTut)return false;jtutSeen=true;tutFirst=true;tutShow('j');try{localStorage.setItem('mm_jtut','1');}catch(e){}return true;}
 let otutSeen=!MOB;try{if(!TUT_EVERY_LAUNCH&&localStorage.getItem('mm_otut')==='1')otutSeen=true;}catch(e){}
 // the first time Overdrive is live: point at the bar and say what it does
@@ -1562,7 +1565,9 @@ function tryContact(){flight_pop=false;
     chase>.3?'#ff4d2e':Math.abs(n)<.22&&cr<.3?'#ffe53b':flight.lvl===1?'#9aa3c7':'#f2f5ff',flight.lvl); // timing, then where the barrel met it
   // No-doubters: sometimes stay on the hitter instead of the ball. 'admire' = he holds his finish, watches it and drops the bat;
   // 'show' = the same, then his own walk-up routine as a celebration. Decided here because we already know where the ball lands.
-  if(play.type==='hr'&&MX.clip){const ft=play.dist*3.281,big=tb||ft>=500,r=Math.random(),early=earlyShow(S.hrs),kind=DBG.admire||(early?'show':big?(r<.6?'show':r<.85?'admire':''):ft>=440?(r<.5?'admire':''):'');wildTrot=early;
+  if(play.type==='hr'&&MX.clip){const ft=play.dist*3.281,big=tb||ft>=500,r=Math.random(),early=earlyShow(S.hrs),kind=DBG.trail?'':DBG.admire||(early?'show':big?(r<.45?'show':r<.65?'admire':''):ft>=440?(r<.4?'admire':''):'');wildTrot=early;
+    if(!kind&&!flight.orbit&&ft>=420&&(DBG.trail||Math.random()<.6))flight.trailCam=true; // some no-doubters are watched from right behind the ball
+   
     if(kind){flight.admire=kind;flight.trot=WALK.on&&RUN.list.length>0;flight.A=Math.max(1.2,Math.min(kind==='show'&&!flight.trot?3.9:2.5,play.endT-1.3));pop(['NO DOUBT!','SEE YA!','FORGET IT!'][(Math.random()*3)|0],'',tb?'hot':'');}}
   if(!flight.admire&&q>.82&&pw&&play.type!=='foul')pop(['CRUSHED!','SMOKED!','TATTOOED!','OBLITERATED!'][(Math.random()*4)|0],'',tb?'hot':'');
   cheer(play.type==='hr'?.42:.12+.2*q,play.type==='hr'?5:1.6);
@@ -2411,6 +2416,7 @@ function step(dt){
   if(swing&&!swing.practice){retC.visible=swing.type==='contact';retP.visible=swing.type==='power';} // mid-swing, only the ring that counts for this swing
   if(ringEcho){const e=now-ringEcho.t;if(e>.75||S.state==='ready'||S.state==='windup')ringEcho=null;
     else{showRet=true;reticle.position.set(ringEcho.x,ringEcho.y,0);retC.visible=!ringEcho.pw;retP.visible=ringEcho.pw;echoBall.visible=true;echoBall.position.set(ringEcho.bx,ringEcho.by,.001);}}
+  retCfill.visible=!retP.visible;
   reticle.visible=showRet;zone.visible=S.state==='ready'||S.state==='windup'||S.state==='pitch';
 }
 // Batting cameras. Each is a position and a look-at point; 'side' ones sit on the open side of the plate, away from the hitter.
@@ -2431,6 +2437,9 @@ function updateCamera(rdt){
   if(!DBG.cam)applyCam();
   if(S.state==='flight'&&flight&&!flight.done&&now-flight.t0>.02)camMode='chase';
   if(DBG.cam){camPos.copy(CAM_HOME);camLook.copy(CAM_LOOK);}
+  else if(flight&&flight.trailCam&&!flight.done&&now-flight.t0>.25){const tr=flight.tr,i=Math.min(tr.pts.length-1,Math.floor((now-flight.t0)*120)),q=tr.pts[Math.min(tr.pts.length-1,i+6)],p0=tr.pts[i];
+    _a.set(q.x-p0.x,q.y-p0.y,q.z-p0.z);if(_a.lengthSq()<1e-6)_a.set(0,0,-1);_a.normalize(); // riding just behind and above the ball, looking where it is going
+    camPos.set(p0.x,p0.y,p0.z).addScaledVector(_a,-7).add(_b.set(0,1.7,0));camLook.set(p0.x,p0.y,p0.z).addScaledVector(_a,14);}
   else if(flight&&flight.orb&&!flight.done){ // from just outside the park, watching it climb away toward Earth
     camPos.copy(flight.orbFrom).add(_a.set(34,6,62)).addScaledVector(_b.copy(ball.position).sub(flight.orbFrom),.12);camLook.copy(ball.position);camera.position.lerp(camPos,now-flight.orb<.08?1:.2);}
   else if(S.kOut&&S.kOut.taunt&&MX.pit&&now>S.kOut.t+DEF_CUT&&now<S.kOut.t+DEFEAT&&S.state==='result'){ // ...then the pitcher, from the plate side
@@ -2497,7 +2506,7 @@ try{const b=+localStorage.getItem('mm_best')||0;if(b)$('best').textContent='Best
 const LITE=matchMedia('(pointer:coarse)').matches;
 if(LITE){QS=.85;rim.shadow.mapSize.set(512,512);renderer.shadowMap.type=T.PCFShadowMap;}else initPost();
 resize();hud();
-const DBG={orbit:false,pdef:false,dbl:false,cam:false,admire:'',trip:false,fist:false,pop:false,loser:false}; // test hook: pin the camera to CAM_HOME/CAM_LOOK
+const DBG={trail:false,orbit:false,pdef:false,dbl:false,cam:false,admire:'',trip:false,fist:false,pop:false,loser:false}; // test hook: pin the camera to CAM_HOME/CAM_LOOK
 window.__mm={S,aim,MX,DBG,hud,tutAnim,draw:()=>draw(),endGame,TROT,SFX,RUN,ballPos:()=>ball.position,fielders,toReady,CAM_HOME,CAM_LOOK,now:()=>now,simulate,judge,get pitch(){return pitch;},get flight(){return flight;},lastSwing:()=>{const t=swing&&swing.type;swing=null;return t;},lastSwingTurbo:()=>!!(swing&&swing.turbo),doSwing,newGame,V3,
   sim:(dt)=>{hitstop=0;now+=dt;step(dt);},
   step:(n,dt=1/60)=>{for(let i=0;i<n;i++){if(hitstop>0)hitstop=0;now+=dt;step(dt);}updateCamera(dt);draw();}};
