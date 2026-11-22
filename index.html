@@ -1632,7 +1632,7 @@ function finishPlay(){
   const cel=S.state==='celebrate'||S.state==='trot';setBatter();if(cel)readyDur=3.1;else readyDur=f.thr?2.0:1.5;S.next=null;hud();
   // Some doubles get a show of their own: once the play is over, cut to him standing on second doing one of the home-run celebrations.
   if(pl.type==='hit'&&pl.bases===2&&S.state==='result'&&WALK.on&&MX.clip&&(DBG.dbl||earlyShow(S.d2||0)||Math.random()<.4)){
-    const w=WILD_CEL.filter(k=>k!=='p_loser'&&MX.clip.intros[k]);
+    const w=WILD_CEL.filter(k=>k!=='p_loser'&&k!=='w_lift'&&MX.clip.intros[k]); // the lift uses the bat as the barbell, so it is kept for home plate
     if(w.length){S.d2=(S.d2||0)+1;S.next=()=>{D2.clip=w[(Math.random()*w.length)|0];RUN.list.forEach(R=>{if(R.active&&R.target===2)R.s=2;});S.state='celly2';S.t=now;flash(.35);cheer(.3,2.5);};}}
   // Now and then, after a hit that scores a run (or a triple), a quick cut to the pitcher wearing it. Never twice in a row, never on top of another cut.
   if(!S.next&&pl.type==='hit'&&S.state==='result'&&(f.rbi>0||pl.bases===3)&&WALK.on&&MX.pit&&MX.pit.defs.length&&!S.pdLast&&(DBG.pdef||Math.random()<.4)){S.pdLast=true;S.next=()=>{S.state='pdef';S.t=now;};}
