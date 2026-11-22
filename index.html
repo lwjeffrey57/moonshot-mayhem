@@ -1863,7 +1863,9 @@ function flash(a){const e=$('flash');e.style.transition='none';e.style.opacity=a
 // half full, the pitcher answers on the spot; if the pitcher is already in Overdrive, tapping makes it a duel. Winner is decided by the at-bat.
 function duelCheck(){if(S.duel||!(S.over&&S.overOn&&S.pOver))return;if((S.odUses||0)<2&&!pOD()){S.pOver=false;return;}S.duel=true;S.duelHits=S.hits;$('hud').classList.add('duel');
   const d=$('duel');d.classList.remove('go');void d.offsetWidth;d.classList.add('go');SND.zap();setTimeout(()=>SND.zap(),180);buzz([60,40,60,40,140]);shake=Math.max(shake,.35*FX);flash(.5);cheer(.45,4);
-  if(S.state==='ready'){S.t=now;readyDur=Math.max(readyDur,2.3);}} // the pitch waits for the banner
+  if(S.state==='ready'){S.t=now;readyDur=Math.max(readyDur,2.3);} // the pitch waits for the banner
+  else if((S.state==='windup'||S.state==='pitch')&&!swing&&!flight){ // he was already into his delivery: that pitch is called off and he comes set again, so the hitter gets a fair look
+    if(pitch)S.pitches=Math.max(0,S.pitches-1);S.state='ready';S.t=now;readyDur=2.0;pitch=null;ball.visible=false;ballShadow.visible=false;pring.visible=false;ballGlow.material.opacity=0;}}
 function duelEnd(){if(!S.duel)return;S.duel=false;$('hud').classList.remove('duel');const won=S.hits>S.duelHits||S.walked;
   setTimeout(()=>pop(won?'DUEL WON!':'DUEL LOST',won?'THE HITTER TAKES IT':'THE PITCHER TAKES IT',won?'cool':'hot',true),500);if(won)cheer(.5,3);else boo(.6);}
 function overCheck(){if(S.over||S.juice<.95||S.state==='title'||S.state==='over')return;S.juice=1;S.over=true;S.overOn=false;juiceArmed=false;hudLater=true; // a bar that looks full IS full: anything from 95% up snaps to full and becomes Overdrive on the spot
