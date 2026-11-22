@@ -134,7 +134,7 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 #rep .pill .k{height:17px;min-width:17px;font-size:12px;padding:0 3px}
 /* phones and small windows: one meter, no extras */
 @media (max-height:520px){#keys{display:none}}
-@media (max-width:900px){#heat,#zmini{display:none}.meter,#juice{width:min(240px,38vw)}#bug .badge{display:none}#bug .rows{width:98px}#diamond{width:92px;height:76px}#pausebtn{top:92px}.mcap,#cnum,#cname{font-size:14px}}
+@media (max-width:900px){#zmini{display:none}#meters{flex-direction:column;gap:4px;align-items:center}#heat .mbar{height:18px}#heat .mtxt{font-size:12px}.meter,#juice{width:min(240px,38vw)}#bug .badge{display:none}#bug .rows{width:98px}#diamond{width:92px;height:76px}#pausebtn{top:92px}.mcap,#cnum,#cname{font-size:14px}}
 
 /* batter card, bottom-left, with the control pills stacked above it */
 #hud>#card{left:max(16px,env(safe-area-inset-left,0px));bottom:12px;margin:0;display:flex;gap:10px;align-items:center;justify-content:flex-start;font-style:normal;text-shadow:none}
@@ -359,6 +359,7 @@ body.mob #tip{display:block}body.mob .how{display:none}
 #mutebtn{display:none;top:148px;right:max(16px,env(safe-area-inset-right,0px));pointer-events:auto;height:36px;padding:0 13px;font-family:var(--display);font-style:italic;font-size:13px;letter-spacing:.04em;color:var(--chrome);background:rgba(8,9,26,.72);border:2px solid rgba(242,245,255,.45);border-radius:18px;cursor:pointer}
 #hud.mob #mutebtn{display:block}#hud.mob #mutebtn[hidden]{display:none}#mutebtn.off{color:var(--ink);background:var(--heat);border-color:#000}
 #goal{left:50%;top:66px;transform:translateX(-50%);padding:4px 12px;white-space:nowrap;font-family:var(--display);font-style:italic;font-size:14px;letter-spacing:.03em;color:var(--chrome);background:rgba(8,9,26,.78);border:2px solid rgba(242,245,255,.4);border-radius:14px;z-index:5}
+#hud #goal{display:none} /* the goal is announced at PLAY BALL and reported on the final screen; it no longer sits under the meters */
 #goal b{color:var(--volt);font-weight:400;margin-left:6px}#goal.done{color:var(--ink);background:var(--turf);border-color:#000}#goal.done b{color:var(--ink)}#goal.pop{animation:jgain .5s cubic-bezier(.2,1.6,.4,1)}
 #hud.wk #goal{visibility:hidden}@media (max-width:900px){#goal{font-size:12px;padding:3px 10px}}
 #rating{text-align:center;font-family:var(--display);font-style:italic;line-height:1.05}
