@@ -221,8 +221,8 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 #pop.hot .t{color:var(--heat);text-shadow:0 5px 0 #000,0 0 50px rgba(255,77,46,.8)}
 #pop.cool .t{color:var(--ice);text-shadow:0 5px 0 #000,0 0 40px rgba(58,214,255,.6)}
 #pop.plain .t{color:var(--chrome);text-shadow:0 5px 0 #000}
-#pop.logo .t{color:var(--volt);font-size:clamp(52px,14vw,140px);-webkit-text-stroke:3px #000;text-shadow:0 6px 0 #000,0 0 18px #000,0 0 60px rgba(255,229,59,.55);transform:rotate(-4deg)}
-#pop.logo .s{color:var(--heat);font-size:clamp(22px,5.6vw,44px);-webkit-text-stroke:1.5px #000;text-shadow:0 4px 0 #000,0 0 14px #000;transform:rotate(-4deg);margin-top:10px}
+#pop.logo .t{color:var(--volt);font-size:clamp(36px,9.5vw,92px);-webkit-text-stroke:2px #000;text-shadow:0 6px 0 #000,0 0 18px #000,0 0 60px rgba(255,229,59,.55);transform:rotate(-4deg)}
+#pop.logo .s{color:var(--heat);font-size:clamp(15px,3.8vw,28px);-webkit-text-stroke:1.5px #000;text-shadow:0 4px 0 #000,0 0 14px #000;transform:rotate(-4deg);margin-top:10px}
 #pop.go{animation:slam 1.5s cubic-bezier(.2,1.4,.3,1) both}
 #pop.go.long{animation-duration:3.2s}
 @keyframes slam{0%{opacity:0;transform:scale(2.6) rotate(-4deg)}9%{opacity:1;transform:scale(.94) rotate(-2deg)}14%{transform:scale(1.04) rotate(-2deg)}20%,80%{opacity:1;transform:scale(1) rotate(-2deg)}100%{opacity:0;transform:scale(1.08) rotate(-2deg)}}
@@ -1128,16 +1128,16 @@ const ZAP={t:-9,p:new V3(),sb:false,bolts:[],glow:null,nb:0};
 }
 // the stadium lights during a short: floodlight glows, the light on the players, and a dimming veil over the picture
 function zapLights(lv){hemi.intensity=.85*lv;sun.intensity=.8*lv;ZAP.lv=lv;$('surge').style.opacity=REDUCE?0:Math.max(0,(1-lv)*.6);}
-function zapStart(p,sb){ZAP.t=now;ZAP.p.copy(p);ZAP.sb=sb;ZAP.nb=0;SND.zap();setTimeout(()=>SND.zap(),160);setTimeout(()=>SND.zap(),420);}
+function zapStart(p,sb){ZAP.t=now;ZAP.p.copy(p);ZAP.sb=sb;ZAP.nb=0;SND.zap();[160,420,900,1500,2200].forEach(ms=>setTimeout(()=>SND.zap(),ms));}
 function zapTick(){
-  const e=now-ZAP.t,on=e>=0&&e<1.7;
+  const ZD=3.4,e=now-ZAP.t,on=e>=0&&e<ZD;
   if(!on){if(ZAP.glow.visible){ZAP.glow.visible=false;ZAP.bolts.forEach(l=>{l.visible=false;});if(EYE.mat)EYE.mat.color.setScalar(1);sbMat.color.setScalar(1);zapLights(1);}return;}
-  const k=1-e/1.7,fl=Math.random();
+  const k=1-e/ZD,fl=Math.random();
   if(EYE.mat&&!ZAP.sb)EYE.mat.color.setScalar(fl<.35*k?9:fl<.6?.25:1);
-  if(ZAP.sb||e<.9)sbMat.color.setScalar(fl<.3?.12:fl<.45*k?1.8:1);
+  if(ZAP.sb||e<1.8)sbMat.color.setScalar(fl<.3?.12:fl<.45*k?1.8:1);
   ZAP.glow.visible=true;ZAP.glow.position.copy(ZAP.p);ZAP.glow.position.z+=.6;ZAP.glow.scale.setScalar((6+Math.random()*16)*k+2);
   if(now>ZAP.nb){ZAP.nb=now+.05;
-    zapLights(e<1.25&&Math.random()<.5?rand(.12,.5):e<1.25&&Math.random()<.25?1.25:1); // power surge: the whole park browns out and flares in fits until the breakers catch
+    zapLights(e<2.6&&Math.random()<.5?rand(.12,.5):e<2.6&&Math.random()<.25?1.25:1); // power surge: the whole park browns out and flares in fits until the breakers catch
     ZAP.bolts.forEach(l=>{l.visible=Math.random()<.5+.5*k;const a=l.geometry.attributes.position,an=Math.random()*PI*2,len=(4+Math.random()*10)*(.4+k);
       for(let i=0;i<9;i++){const u=i/8,j=i&&i<8?1.1:0;a.setXYZ(i,ZAP.p.x+Math.cos(an)*len*u+rand(-j,j),ZAP.p.y+Math.sin(an)*len*u*.7+rand(-j,j),ZAP.p.z+.5+u*.4);}
       a.needsUpdate=true;});
@@ -1808,10 +1808,10 @@ function setBatter(){
   // PITCHING CHANGE: the defence goes to the bullpen when the man on the mound has given up three runs, or (half the time) to open the third inning.
   // At most two a game. The new arm comes in fresh: two of three bars, or (from the second inning on, a little under half the time) a full bar and already in Overdrive.
   else if(S.bi>=3&&S.pChanges<2&&(DBG.pc||S.runs-S.pRuns0>=3||(S.inning===3&&!S.pc3&&(S.pc3=true)&&Math.random()<.5))){
-    S.pChanges++;S.pRuns0=S.runs;S.pName=BULLPEN[S.pChanges%BULLPEN.length];S.pcPending=true;if(S.inning>=2&&Math.random()<.45){S.heat=1;S.pOver=true;}else S.heat=.667;} // a full bar always means Overdrive: he arrives either in it, or with two of three bars
+    S.pChanges++;S.pRuns0=S.runs;S.pName=BULLPEN[S.pChanges%BULLPEN.length];S.pcPending=true;if(podOK()&&Math.random()<.5){S.heat=1;S.pOver=true;}else S.heat=.667;} // a full bar always means Overdrive: he arrives either in it, or with two of three bars
   // He can also just snap: from the second inning on there is a chance each new hitter that he goes into Overdrive whatever his meter says,
   // and the more runs he has given up the likelier it is (3% with no runs, about 30% once eight are in). Never in the first inning.
-  else if(S.inning>=2&&(S.heat>=.999||DBG.pod||Math.random()<.03+.034*Math.min(S.runs,8))){S.pOver=true;setTimeout(()=>{if(S.pOver){boo(.55);SND.zap();buzz([40,40,40,40,90]);pop('PITCHER OVERDRIVE!','EVERY PITCH THIS AT-BAT IS A JUICE PITCH','hot',true);}},900);duelCheck();}
+  else if(podOK()&&(S.heat>=.999||DBG.pod||Math.random()<.05+.04*Math.min(S.runs,8))){S.pOver=true;setTimeout(()=>{if(S.pOver){boo(.55);SND.zap();buzz([40,40,40,40,90]);pop('PITCHER OVERDRIVE!','EVERY PITCH THIS AT-BAT IS A JUICE PITCH','hot',true);}},900);duelCheck();}
   aim.x=0;aim.y=.825; // every hitter starts with the ring in the middle of the zone
  
   paintJersey(batter,Object.assign({name:b.name,num:b.num},HOME));paintSkin(batter,b.skin);if(MX.ready)paintAtlas(b);
@@ -1968,7 +1968,7 @@ function gameRating(){const G=S.goal,pts=S.runs*10+S.hits*4+S.hrs*8+(S.longest>=
   return {pts,stars:i+1,grade:T[i][1],title:T[i][2],next:T[i+1]?T[i+1][0]-pts:0,nextTitle:T[i+1]?T[i+1][2]:''};}
 function newGame(){gamesPlayed++;try{localStorage.setItem('mm_games',gamesPlayed);}catch(e){}
   Object.assign(S,{inning:1,outs:0,balls:0,strikes:0,runs:0,bases:[0,0,0],hits:0,hrs:0,longest:0,streak:0,bestStreak:0,juice:.25,heat:.2,over:false,stk:false,opp:0,bi:-1,pitches:0,seen:{},kOut:null});S.goal=null; /* per-game goals are switched off for now: pickGoal() is still here to bring them back */S.ks=0;S.d2=0;S.cardBi=-1;S.pChanges=0;S.pRuns0=0;S.pc3=false;S.pcPending=false;S.pName=BULLPEN[0];$('pcap').textContent='PITCHER';S.sTaunt=null;S.stLast=false;jPend=false;S.orbN=0;S.odUses=0;S.duel=false;$('hud').classList.remove('duel');S.pdLast=false;S.pOver=false;S.jSaid=false;S.overOn=false;S.spSeen=false;lastWalk='';
-  $('title').hidden=true;$('over').hidden=true;$('pausebtn').hidden=false;$('mutebtn').hidden=false;setBatter();renderRep();scoreboard('PLAY BALL','INNING 1');S.opp=0;toReady(2);pop('PLAY BALL!','INNING 1','logo',true);hud();SND.playball();cheer(.14,1.5);}
+  $('title').hidden=true;$('over').hidden=true;$('pausebtn').hidden=false;$('mutebtn').hidden=false;setBatter();renderRep();scoreboard('PLAY BALL','INNING 1');S.opp=0;toReady(2);pop('PLAY BALL!','INNING 1','logo');hud();SND.playball();cheer(.14,1.5);}
 
 // ───────────────────────── pitching
 // brk = how far the pitch moves off a straight line (sideways, vertical) by the time it reaches the plate; k = how late that
@@ -1994,7 +1994,7 @@ function renderRep(last){ // the pitcher's repertoire: movement, name, typical s
   $('replist').innerHTML=PITCHES.map(P=>{const m=Math.hypot(P.brk[0],P.brk[1]),a=m<.1?'•':arrows[((Math.round(Math.atan2(P.brk[1],P.brk[0])/(PI/4))%8)+8)%8];
     return `<div class="pill${P.sp?' sp':''}${P===last?' last':''}"><span class="k">${P.wob?'~':a}</span>${P.n}<b>${pitchMph(P.dur*inningSp())}</b></div>`;}).join('');
 }
-function payHeat(){if(pitch&&pitch.P.sp&&!pitch.paid){pitch.paid=true;if(!S.pOver)S.heat=Math.max(0,S.heat-.3334);hud();
+function payHeat(){if(pitch&&pitch.P.sp&&!pitch.paid){pitch.paid=true;if(!S.pOver)S.heat=Math.max(0,S.heat-.24);hud(); // a Juice pitch costs him less than it used to, so his bar actually fills
   // said after the pitch has been seen, never before: the first one of the game gets the big call
   const n=pitch.P.n;S.spSeen=true;buzz(25);if(!(swing&&!swing.practice))setTimeout(()=>timing('JUICE PITCH! · '+n,'#ff6a4a',3),450);}} // on a swing the line under the timing meter says it instead, so the swing feedback isn't overwritten
 // Welcome at-bat: a new player's first hitter of the game sees slow, straight pitches down the middle and gets a more forgiving bat,
@@ -2247,8 +2247,11 @@ function advance(n,walk){let r=0;const b=S.bases;
   addRuns(r);return r;}
 // The pitcher's bar rounds up: anything that looks full IS full, and a full bar is Overdrive for the next hitter. In the first inning
 // (no pitcher Overdrive yet) it stops short of looking full.
-function heatUp(d){S.heat=Math.min(S.inning<2?.8:1,S.heat+d);if(S.heat>=.9)S.heat=1;}
-function recordOut(){heatUp(.14);S.outs++;S.streak=0;}
+// When the pitcher is allowed Overdrive: a new player's first three games keep it out of the first inning entirely; after that it can
+// come as soon as the lineup has turned over once (the fourth hitter of the game).
+const podOK=()=>gamesPlayed<=3?S.inning>=2:S.bi>=3;
+function heatUp(d){S.heat=Math.min(podOK()?1:.8,S.heat+d);if(S.heat>=.9)S.heat=1;}
+function recordOut(){heatUp(.17);S.outs++;S.streak=0;}
 function afterPA(delay){ // plate appearance over
   if(S.outs>=3){S.inning++;S.outs=0;S.bases=[0,0,0];
     if(S.inning>3){S.state='end';S.t=now;readyDur=delay+.4;hud();return;}
@@ -2259,7 +2262,7 @@ function afterPA(delay){ // plate appearance over
 }
 function samePA(delay){S.state='result';S.t=now;S.next=null;readyDur=delay;hud();}
 const DEFEAT=3.5,DEF_CUT=1.6; // strikeout reaction: the camera holds on the hitter until DEF_CUT, then cuts to the pitcher's taunt
-function strike(kind){heatUp(.09);S.strikes++;{const n=S.strikes;setTimeout(()=>SND.call(false,n),kind==='look'?240:60);} // the mitt pops first, then the umpire
+function strike(kind){heatUp(.11);S.strikes++;{const n=S.strikes;setTimeout(()=>SND.call(false,n),kind==='look'?240:60);} // the mitt pops first, then the umpire
   if(S.strikes>=3){recordOut();pop('STRUCK OUT',kind==='look'?'CAUGHT LOOKING':'SWINGING','cool');if(kind==='look')boo(.5);else crowdDrop();
     // the strikeout sulk: one of the defeat routines, with the camera on him (skipped when walk-ups are off, for pace)
     const ds=MX.clip&&WALK.on?Object.keys(MX.clip.intros).filter(k=>/^d_/.test(k)):[];
@@ -2327,7 +2330,7 @@ function juiceTap(){const t=performance.now();if(t-jTapT<250)return;jTapT=t; // 
   if(S.over){if(!S.overOn){S.overOn=true;SND.zap();buzz([20,30,60]);timing('⚡ OVERDRIVE ON: FREE JUICE SWINGS THIS AT-BAT ⚡','#3ad6ff',4);
     S.odUses=(S.odUses||0)+1;
     if(S.odUses===1)S.pOver=false;                         // the first Overdrive of a game is always yours alone: he can't answer it, and if he was in his own he backs off
-    else if(!S.pOver&&S.heat>=.5&&S.inning>=2)S.pOver=true;   // after that, the pitcher answers
+    else if(!S.pOver&&S.heat>=.5&&podOK())S.pOver=true;   // after that, the pitcher answers
     duelCheck();}}else juiceArmed=!juiceArmed;hud();}
 function doSwing(type){
   if(paused||S.state==='title'||S.state==='over')return;
@@ -2443,7 +2446,8 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden&&inPlay())s
 // ───────────────────────── rigged batter mesh (Mixamo skeleton), dressed in code and driven by the rig above
 const MX={ready:false,map:[],on:true,token:0,kind:'ely'};
 // player looks you can switch between on the title screen
-const MODELS={ely:{label:'armoured',body:'ely.txt',clips:'ely_clips.min.json',tex:{d:'ely_d.jpg',n:'ely_n.jpg',s:'ely_s.jpg',g:'ely_g.jpg'}}},ORDER=['ely']; // one look for now; add entries here to offer more on the title screen
+const MODELS={ely:{label:'armoured',body:'ely.txt',clips:'ely_clips.min.json',tex:{d:'ely_d.jpg',n:'ely_n.jpg',s:'ely_s.jpg',g:'ely_g.jpg'},
+  def:{body:'van.txt',tex:{d:'van_d.jpg',n:'van_n.jpg',s:'van_s.jpg'}}}},ORDER=['ely']; // one look for now; add entries here to offer more on the title screen
 try{const k=localStorage.getItem('mm_kind');if(MODELS[k])MX.kind=k;}catch(e){}
 const atlasC=document.createElement('canvas');atlasC.width=atlasC.height=1024;const atlasT=new T.CanvasTexture(atlasC);
 const SW={skin:[800,544],sleeve:[864,544],trim:[928,544],glove:[992,544],shoe:[800,608],sole:[864,608],band:[928,608],hair:[992,608],belt:[800,672]};
@@ -2796,8 +2800,8 @@ function retargetFig(d,rt){
 // fly-ball catch clip (a catcher's pop-up): we only use the part where he is already standing under the ball
 const CATCH={start:2.2,t:3.5,end:5.9};
 // Catcher and plate umpire. They only appear in the walk-up shot: from the batting camera a catcher would sit right in front of the strike zone.
-function setupPlateCrew(make,skins){
-  const cat=make(['catch']),{B}=prepModel(cat,pitT,skins.away),clip=cat.animations[0];
+function setupPlateCrew(make,skins,makeD=make,defSkin=skins.away){
+  const cat=makeD(['catch']),{B}=prepModel(cat,pitT,defSkin),clip=cat.animations[0];
   clip.tracks=clip.tracks.filter(t=>/quaternion$/.test(t.name)||/Hips\.position$/.test(t.name));
   const mixer=new T.AnimationMixer(cat),act=mixer.clipAction(clip);act.play();act.time=.4;mixer.update(0); // the clip opens in a catcher's crouch
   const gl=mkGlove('mitt');gl.position.set(0,1,0);B('LeftHand').add(gl);
@@ -2930,7 +2934,10 @@ function loadPlayers(kind){ // body file = character mesh; clips.json = motion-c
   const own=cfg.clips?fetch(cfg.clips).then(r=>r.ok?r.json():null).catch(()=>null):Promise.resolve(null); // clips made for this body, where we have them
   const imgs=cfg.tex?Promise.all(['d','n','s','g'].map(k=>loadImg(cfg.tex[k]).then(i=>(loadStep(),i)))):Promise.resolve(null);
   ldN=0;loadStep();[clipsP,own].forEach(q=>q.then(()=>loadStep(),()=>{}));
-  Promise.all([loadBuf(cfg.body).then(b=>(loadStep(),b)),clipsP,imgs,own]).then(([bb,cj0,im,oc])=>{const cj=Object.assign({},cj0,oc||{});
+  // The other team's body: its own model and textures, fetched alongside. If it isn't here within a few seconds of everything else
+  // (a slow connection), the defence is built from the hitters' model instead, so the game is never held up for it.
+  const defP=cfg.def?Promise.all([loadBuf(cfg.def.body),...['d','n','s'].map(k=>loadImg(cfg.def.tex[k]))]).catch(()=>null):Promise.resolve(null);
+  Promise.all([loadBuf(cfg.body).then(b=>(loadStep(),b)),clipsP,imgs,own]).then(r=>Promise.race([defP,new Promise(res=>setTimeout(()=>res(null),3500))]).then(df=>r.concat([df]))).then(([bb,cj0,im,oc,df])=>{const cj=Object.assign({},cj0,oc||{});
     if(my!==MX.token)return;                                   // switched again while loading
     const skins=im?makeSkins(im):null,base=new T.FBXLoader().parse(bb,''),canClone=!!(T.SkeletonUtils&&T.SkeletonUtils.clone); // the character file is read once; every other player is a copy of it
     // space helmets: a clear glass bubble on a metal collar, on every player, so faces and animation stay fully visible
@@ -2939,14 +2946,21 @@ function loadPlayers(kind){ // body file = character mesh; clips.json = motion-c
     const helmet=o=>{let h=null;o.traverse(b=>{if(b.isBone&&/Head$/.test(b.name)&&!/HeadTop/.test(b.name))h=b;});if(!h)return;
       const a=new T.Mesh(bubbleG,rimM),b=new T.Mesh(bubbleG,glass),c=new T.Mesh(collarG,collarM);a.userData.helm=b.userData.helm=c.userData.helm=true;a.position.y=b.position.y=9;a.renderOrder=3;b.renderOrder=4;c.rotation.x=PI/2;c.position.set(0,-4,1);h.add(a,b,c);};
     const make=names=>{const o=canClone?T.SkeletonUtils.clone(base):new T.FBXLoader().parse(bb,'');o.animations=names.map(n=>mkClip(cj[n],n));helmet(o);return o;};
+    let makeD=make,defSkin=skins&&skins.away;
+    if(df&&canClone)try{const dbase=new T.FBXLoader().parse(df[0],''),tx=i=>{const t=new T.Texture(i);t.needsUpdate=true;t.anisotropy=ANISO;return t;},geos=new Map();
+      defSkin={mat:new T.MeshPhongMaterial({map:tx(df[1]),normalMap:tx(df[2]),specularMap:tx(df[3]),color:0xc4c4c4,specular:0x2a2a2a,shininess:18,skinning:true}), // toned down so the pale armour doesn't blow out under the lights
+       
+        trim:g=>{let o=geos.get(g.uuid);if(!o){o=weld(g);o.userData.lite=liteGeo(o,LOD_CELL);geos.set(g.uuid,o);}return o;}}; // shared full and low-detail meshes, as for the hitters
+      makeD=names=>{const o=T.SkeletonUtils.clone(dbase);o.animations=names.map(n=>mkClip(cj[n],n));return o;}; // his suit has its own sealed helmet: no glass bubble
+    }catch(e){console.warn('defence model failed, using the hitters model',e);makeD=make;defSkin=skins&&skins.away;}
     try{setupModel(make(['hit','idle','idle2','strike'].filter(k=>cj[k]).concat(Object.keys(cj).filter(k=>/^[wdc]_/.test(k)||k==='p_loser'))),skins&&skins.home);}catch(e){console.warn('batter model failed, using built-in figure',e);fallback(batter);}
     playersDone();
-    try{setupPitcher(make(['pitch',...Object.keys(cj).filter(k=>/^[pd]_/.test(k))]),skins&&skins.away);}catch(e){console.warn('pitcher model failed, using built-in figure',e);fallback(pitcher);}
+    try{setupPitcher(makeD(['pitch',...Object.keys(cj).filter(k=>/^[pd]_/.test(k))]),defSkin);}catch(e){console.warn('pitcher model failed, using built-in figure',e);fallback(pitcher);}
     // fielders are built one at a time so the page doesn't freeze while seven more models are prepared
     fielders.filter(f=>!f.isP).forEach((f,i)=>setTimeout(()=>{if(my!==MX.token)return;
-      try{setupFielder(f,make(['catch','run','strafe','throw','d_1','d_2','d_3'].filter(k=>cj[k])),skins&&skins.away);}catch(e){console.warn('fielder model failed, using built-in figure',e);fallback(f.fig);}},400+i*220));
+      try{setupFielder(f,makeD(['catch','run','strafe','throw','d_1','d_2','d_3'].filter(k=>cj[k])),defSkin);}catch(e){console.warn('fielder model failed, using built-in figure',e);fallback(f.fig);}},400+i*220));
     if(skins&&cj.run)setTimeout(()=>{if(my!==MX.token)return;try{setupRunners(make,skins);}catch(e){console.warn('baserunners failed',e);}},2300);
-    if(skins&&cj.catch)setTimeout(()=>{if(my!==MX.token)return;try{setupPlateCrew(make,skins);}catch(e){console.warn('catcher/umpire failed',e);}},250);
+    if(skins&&cj.catch)setTimeout(()=>{if(my!==MX.token)return;try{setupPlateCrew(make,skins,makeD,defSkin);}catch(e){console.warn('catcher/umpire failed',e);}},250);
   }).catch(e=>{console.warn('player models unavailable, using built-in figures',e);if(my===MX.token){figs.forEach(fallback);playersDone();}});
 }
 gloveLoad();loadPlayers(MX.kind);

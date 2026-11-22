@@ -9,6 +9,10 @@ Third-party assets used in Moonshot Mayhem and the terms they are used under.
   leather, packed into `glove.txt`. **This licence requires the credit to be shown to players** (a credits screen
   or the store page) when the game is released.
 
+- **Defence players (pitcher, fielders, catcher)**: "Vanguard" by T. Choonyung, and **hitters**: "Ely" by K. Atienza, both
+  from Adobe Mixamo (https://www.mixamo.com), along with the Mixamo animation clips. Mixamo characters and animations are
+  royalty-free for use in games under Adobe's terms; they may not be redistributed as standalone assets.
+
 ## Audio
 All crowd, umpire, organ and effect recordings in `sfx/` are placeholders taken from online sources and must be
 replaced with original or licensed sound before release (see BACKLOG.md).
