@@ -218,6 +218,7 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 @keyframes tim{0%{opacity:0;transform:translateY(8px)}15%,70%{opacity:1;transform:none}100%{opacity:0}}
 #flash{inset:0;background:radial-gradient(circle at 50% 55%,#fff,rgba(255,240,180,.7) 40%,transparent 75%);opacity:0}
 /* touch */
+#touch,#apad{transition:opacity .18s}#hud.noctl #touch,#hud.noctl #apad,#hud.noctl #jtoast{opacity:0;pointer-events:none}
 #hud .rip{position:absolute;z-index:40;width:56px;height:56px;margin:-28px;border:3px solid #fff;border-radius:50%;pointer-events:none;animation:rip .4s ease-out forwards}@keyframes rip{from{transform:scale(.3);opacity:.9}to{transform:scale(1.5);opacity:0}}
 #touch::before{content:'';position:absolute;z-index:-1;inset:-30px -14px -36px -30px} /* near misses around the buttons still count */
 :root{--tbb:max(calc(env(safe-area-inset-bottom,0px) + 70px),13vh);--padl:max(4px,env(safe-area-inset-left,0px));--pad:min(146px,calc(100vw - 272px))} /* --pad: the aim pad fills everything left of CONTACT */ /* how far the swing buttons sit above the bottom edge: thumb height, not the screen edge */
@@ -1208,7 +1209,7 @@ function duelEnd(){if(!S.duel)return;S.duel=false;$('hud').classList.remove('due
 function overCheck(){if(S.over||S.juice<.95||S.state==='title'||S.state==='over')return;S.juice=1;S.over=true;S.overOn=false;juiceArmed=false;hudLater=true; // a bar that looks full IS full: anything from 95% up snaps to full and becomes Overdrive on the spot
  SND.zap();buzz([30,40,30,40,80]);
   setTimeout(()=>{if(S.over&&!S.overOn)pop('OVERDRIVE READY!','','cool',true);},900);}
-let hudLater=false;
+let hudLater=false,ctlHidden=false;
 function hud(){overCheck();hudLater=false;
   $('runs').textContent=S.runs;$('inn').textContent=['1ST','2ND','3RD'][Math.min(S.inning,3)-1];$('count').textContent=S.balls+'-'+S.strikes;
   $('outs').textContent='O: '+S.outs;
@@ -1740,7 +1741,9 @@ const press=id=>{const e=$(id);e.classList.remove('dn');void e.offsetWidth;e.cla
 let lastTapT=0,lastTapX=0,lastTapY=0;
 function cornerTap(x,y){
   if(!MOB||paused||tutHold||!$('title').hidden||!$('over').hidden)return false;
-  if(S.state==='walkup'){doSwing('contact');return true;} // during a walk-up nothing is a button: a touch anywhere on the screen skips it, and that is all it does
+  if(S.state==='walkup'){doSwing('contact');return true;}
+  if(S.state==='trot'||S.state==='celly2'||S.state==='pdef'||(flight&&flight.admire&&!flight.done&&S.state==='flight')){doSwing('contact');return true;} // with the buttons away, a touch anywhere skips the cutscene
+  if(ctlHidden)return false; // during a walk-up nothing is a button: a touch anywhere on the screen skips it, and that is all it does
   const c=id=>{const r=$(id).getBoundingClientRect();return {x:r.left+r.width/2,y:r.top+r.height/2,r:r.width/2,l:r.left,t:r.top};},d=o=>Math.hypot(x-o.x,y-o.y);
   const J=c('tj'),C=c('tc'),P=c('tp');if(!C.r)return false;
   if(!((x>=C.l-5&&y>=Math.min(C.t,P.t)-24)||(x>=J.l-16&&y>=J.t-22)))return false; // the button rows and everything under them, plus the JUICE column
@@ -2355,6 +2358,7 @@ function trail(o,c,far,hot){
 
 function step(dt){
   overCheck();if(hudLater)hud(); // checked every frame, so the bar and the button switch the instant the meter fills
+  {const hide=MOB&&!(S.state==='ready'||S.state==='windup'||S.state==='pitch');if(hide!==ctlHidden){ctlHidden=hide;$('hud').classList.toggle('noctl',hide);}} // the stick and buttons are only on screen while there is a pitch to hit
   landRing.visible=false;
   // aim by keyboard
   const kx=(keys.ArrowRight||keys.KeyD?1:0)-(keys.ArrowLeft||keys.KeyA?1:0),ky=(keys.ArrowUp||keys.KeyW?1:0)-(keys.ArrowDown||keys.KeyS?1:0);
