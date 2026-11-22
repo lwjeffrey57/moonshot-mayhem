@@ -56,6 +56,17 @@ Recordings to find or make (the game currently fakes most of these by reshaping 
   on Moonshot Mayhem", with the score, rating and best moment filled in, a link to the game, and ideally a generated image card.
   Also shareable single feats ("left orbit", "won an Overdrive duel", "walk-off homer").
 
+- **TikTok and Instagram Reels.** Short vertical highlight clips as the main way people find the game.
+  - What to post: the moments that need no explanation in three seconds. Satellite knocked out, ball leaving orbit, the short circuit on
+    the scoreboard, an infielder getting drilled, a diving catch, an Overdrive duel, a walk-off, the wildest walk-ups and celebrations.
+  - Format: 6 to 15 seconds, vertical, the big moment inside the first two seconds, the game's name and link on screen at the end.
+    The phone layout is already vertical, so a screen recording is the right shape with no editing.
+  - Series ideas: "moonshot of the day", longest homer of the week, "can you beat this score", a new walk-up or celebration each post.
+  - Needs before posting: original audio in place (ripped crowd and umpire sounds will get clips muted or taken down), a clean way to
+    record (see below), and the link going somewhere a new player can start in one tap.
+  - Possible in-game help, later: a "save that clip" button that records the last few seconds of play, and a clean-HUD replay mode so
+    clips are not covered in buttons. Pairs with the share button above.
+
 ## Known gaps in testing
 - Audio has never been listened to by the developer side; all levels and mixes need a human ear.
 - Real-phone frame rate and feel are only checked on the owner's iPhone XR.
