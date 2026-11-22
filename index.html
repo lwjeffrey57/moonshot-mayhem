@@ -1641,8 +1641,8 @@ function tryContact(){flight_pop=false;
   const d=Math.hypot(aim.x-pitch.tx,aim.y-pitch.ty);
   // where the barrel was relative to the ball, in sweet-spot radii: u>0 = swung under it, e>0 = ball out toward the end of the bat
   const cu=(pitch.ty-aim.y)/R,ce=(pitch.tx-aim.x)/R*(MX.lefty?-1:1),cr=Math.hypot(cu,ce);
-  const onT=Math.abs(n)<.22,side=onT?(cr<.7?'JUST MISSED THE BARREL':'OFF THE BARREL'):n<0?'OFF THE END':'JAMMED'; // jammed means late and off the end means early, so the words always agree with the timing
-  const where=cr<.3?'SQUARED UP':Math.abs(cu)>=Math.abs(ce)?(onT&&cr<.7?(cu>0?'JUST UNDER IT':'JUST ON TOP OF IT'):(cu>0?'UNDER IT':'ON TOP OF IT')):side;
+  const onT=Math.abs(n)<.22,side=onT?(cr<.7?'GOT MOST OF IT':'OFF THE BARREL'):n<0?'OFF THE END':'JAMMED'; // jammed means late and off the end means early, so the words always agree with the timing
+  const where=cr<.3?'SQUARED UP':Math.abs(cu)>=Math.abs(ce)?(onT&&cr<.7?(cu>0?'A TOUCH UNDER':'A TOUCH ON TOP'):(cu>0?'UNDER IT':'ON TOP OF IT')):side;
   timeBar(n*(pw?.85/1.2:1)*JT*SK,pw,JT,Math.abs(n)<.22,SK);
   if(Math.abs(n)>1.4||d>R*1.3){swing.miss=true;
     if(d>R)ringEcho={t:now,x:aim.x,y:aim.y,bx:pitch.tx,by:pitch.ty,pw}; // freeze the ring and mark where the ball was: it has to be inside
