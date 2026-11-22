@@ -1230,10 +1230,10 @@ let tutT0=0;function tutAnim(t){if($('tut').hidden)return;
     padKnob.style.transition='none';padKnob.style.transform='translate('+x.toFixed(1)+'px,'+y.toFixed(1)+'px)';$('apad').classList.add('drag');
     reticle.position.set(x/34*.2,.825-y/34*.22,0);return;}
   if(tutStep===6){ // the meter builds a quarter at a time and, left unspent, becomes Overdrive
-    const ph=((t-tutT0)%4200)/4200,q=ph<.14?1:ph<.3?2:ph<.46?3:4,full=q===4;$('jfill').style.width=(q*25)+'%';$('juice').classList.toggle('over',full);$('jtxt').textContent=full?'OVERDRIVE READY':'JUICE';return;}
+    const ph=((t-tutT0)%3400)/3400,q=ph<.09?1:ph<.18?2:ph<.27?3:4,full=q===4;$('jfill').style.width=(q*25)+'%';$('juice').classList.toggle('over',full);$('jtxt').textContent=full?'OVERDRIVE READY':'JUICE';return;}
   if(tutStep===7){ // the button is tapped: both swing buttons and the screen catch blue fire
-    const ph=((t-tutT0)%3600)/3600,on=ph>.25&&ph<.9,tj=$('tj');$('jfill').style.width='100%';$('juice').classList.add('over');$('jtxt').textContent=on?'OVERDRIVE ON':'OVERDRIVE READY';
-    tj.firstChild.nodeValue='OVER DRIVE';tj.classList.add('od');tj.classList.remove('has','none','on');$('tjn').textContent='';tj.classList.toggle('dn',ph>.21&&ph<.27);tj.classList.toggle('odon',on);
+    const ph=((t-tutT0)%3400)/3400,on=ph>.1&&ph<.9,tj=$('tj');$('jfill').style.width='100%';$('juice').classList.add('over');$('jtxt').textContent=on?'OVERDRIVE ON':'OVERDRIVE READY';
+    tj.firstChild.nodeValue='OVER DRIVE';tj.classList.add('od');tj.classList.remove('has','none','on');$('tjn').textContent='';tj.classList.toggle('dn',ph>.06&&ph<.12);tj.classList.toggle('odon',on);
     $('tp').classList.toggle('fire',on);$('tp').classList.toggle('blue',on);$('tc').classList.toggle('odf',on);$('hud').classList.toggle('odon',on);return;}
   if(tutStep===5){ // Juice demo: the JUICE button is tapped, and POWER catches fire
     const ph=((t-tutT0)%3200)/3200,lit=ph>.2&&ph<.86,tj=$('tj');tj.classList.toggle('dn',ph>.16&&ph<.22);tj.classList.toggle('on',lit);$('tp').classList.toggle('fire',lit);return;}
