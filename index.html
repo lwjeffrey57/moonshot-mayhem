@@ -1892,7 +1892,7 @@ function cardStats(b){const od=!!(S.over&&S.overOn);$('card').classList.toggle('
     $('s'+k).style.width=clamp((v-.85)/.32*100+(od?22:0),6,100)+'%';$('s'+k).style.background=od?'#58d6ff':GRADE_COL[base];const e=$('g'+k);e.textContent=g;e.className='g'+base+(od?' up':'');});}
 function setBatter(){
   if(S.over&&S.overOn&&S.walked){} // a walk doesn't use it up: it stays on for the next hitter
-  else if(S.over&&S.overOn){S.over=false;S.overOn=false;S.juice=0;setTimeout(()=>timing('OVERDRIVE SPENT · FILL THE JUICE METER TO RECHARGE','#3ad6ff',2),700);}
+  else if(S.over&&S.overOn){S.over=false;S.overOn=false;S.juice=0;}
   juiceArmed=false; // Juice armed for one hitter never carries over to the next
   S.walked=false;S.odSeen=false;S.bi++;const b=curBatter();S.balls=0;S.strikes=0;
   // The pitcher has Overdrive too: when his Heat meter is full, every pitch of the next at-bat is a Juice pitch. Then his meter starts over.
