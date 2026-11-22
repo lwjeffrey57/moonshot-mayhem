@@ -1416,8 +1416,11 @@ let cheerBusy=0,crowdNext=0,crowdSt='';
 // The crowd follows the action. Before the pitch it holds its breath; a ball in play gets a rising 'ohh' that lasts while it is in the air;
 // an out lets the air out (a low groan and the bed drops away); hits and homers get their cheers on top.
 function crowdRise(q,dur){if(!AC||!crowdReal||roarG)return;const t=AC.currentTime,g=crowdGain.gain;
-  g.cancelScheduledValues(t);g.setValueAtTime(g.value,t);g.linearRampToValueAtTime(crowdBase*(1.45+.7*q),t+.18);g.setTargetAtTime(crowdBase,t+Math.max(.6,dur),.7);
-  sfxSlice('cheer',.2+.3*q,rand(1.03,1.15),rand(0,1.5),clamp(dur+.5,1.2,2.6));cheerBusy=t+1.2;crowdNext=t+dur+2;}
+  // the bed is a continuous recording, so holding it up for the whole flight is what guarantees the park never goes quiet while the ball is in the air
+  g.cancelScheduledValues(t);g.setValueAtTime(g.value,t);g.linearRampToValueAtTime(crowdBase*(1.9+.8*q),t+.18);g.setTargetAtTime(crowdBase,t+Math.max(.8,dur+.4),.7);
+  for(let k=0,at=0;at<dur+.2&&k<4;k++,at+=1.9){const d=Math.min(2.6,dur+.7-at);if(d<.9)break; // the rising 'ohh' on top, re-voiced every couple of seconds on long flies so it carries all the way down
+    if(at===0)sfxSlice('cheer',.2+.3*q,rand(1.03,1.15),rand(0,1.5),d);else setTimeout(()=>{if(!roarG&&flight&&!flight.done)sfxSlice('cheer',.16+.24*q,rand(1.0,1.12),rand(0,1.5),d);},at*1000);}
+  cheerBusy=t+1.2;crowdNext=t+dur+2;}
 function crowdDrop(){if(!AC||!crowdReal||roarG)return;const t=AC.currentTime,g=crowdGain.gain;
   g.cancelScheduledValues(t);g.setTargetAtTime(crowdBase*.45,t,.12);g.setTargetAtTime(crowdBase,t+1.8,.9);
   sfxSlice('cheer',.2,rand(.58,.66),rand(.5,2),1.6);cheerBusy=t+1.6;crowdNext=t+3.2;}
@@ -2041,7 +2044,7 @@ function tryContact(){flight_pop=false;
     if(play.type==='hr'){const runs=1+S.bases.filter(Boolean).length; // how hard the place erupts once it clears the fence: more for every run it drives in, for Overdrive, and for the long ones
       flight.roarL=Math.min(1.5,.9+.14*(runs-1)+(od?.2:0)+(play.dist*3.281>=480?.1:0));}
     if(top)roar(.65,1.4,true); /* highest tier: Juice and Overdrive homers, orbit shots, 480 ft and up, grand slams */
-    if(play.type==='hr')cheer(.42,5);else if(play.type!=='foul')crowdRise(q,Math.min(play.endT,3.2));else cheer(.06,1);
+    if(play.type==='hr')cheer(.42,5);else if(play.type!=='foul')crowdRise(q,Math.min(play.endT,8));else cheer(.06,1);
     if(play.type==='hr'&&!top)roar(.65,1.2);}
   if(play.f){play.from=play.f.fig.root.position.clone();}
   if(play.type==='hit')sendRunners(play.bases,{batter:play.bases});
