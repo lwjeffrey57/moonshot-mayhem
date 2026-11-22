@@ -1533,7 +1533,9 @@ function tryContact(){flight_pop=false;
   const tr=simulate(p0,v0,spin),play=judge(tr,b);
   flight={tr,play,t0:now,q,pw,tb,od:!!(S.over&&S.overOn),v,done:false,called:false,trailC:S.over&&S.overOn?[.2,.55,1]:tb?[1,.45,.1]:pw&&q>.75?[1,.85,.25]:[.5,.5,.55]}; // Overdrive hits burn blue, Juice hits orange
   // Some Overdrive home runs don't come down: the ball leaves the Moon's orbit, headed for Earth. Always the first Overdrive homer of a game.
-  if(flight.od&&play.type==='hr'&&(DBG.orbit||!S.orbN||Math.random()<.35)){S.orbN=(S.orbN||0)+1;flight.orbit=true;play.endT+=9;}
+  if(flight.od&&play.type==='hr'&&(DBG.orbit||!S.orbN||Math.random()<.35)){S.orbN=(S.orbN||0)+1;flight.orbit=true;play.endT+=9;
+    // its own flight from the moment it leaves the bat: one smooth climb out over the wall and away, never the normal arc
+    const hd=Math.hypot(v0.x,v0.z)||1,dx=v0.x/hd,dz=v0.z/hd;flight.orbP=[p0.clone(),new V3(p0.x+dx*46,p0.y+15,p0.z+dz*46),new V3(p0.x+dx*135,96,p0.z+dz*135),ORB_TO.clone()];}
   pitch.hit=true;pring.visible=false;S.state='flight';payHeat();$('mph').textContent=pitchMph(pitch.dur);$('plast').textContent=pitch.P.n+' · '+pitchMph(pitch.dur)+' MPH';$('pitchinfo').classList.add('on'),$('plast').classList.add('on');renderRep(pitch.P);
   if(tb)juiceArmed=false;
   // ── the payoff
@@ -2370,16 +2372,16 @@ function step(dt){
   if(flight&&!flight.done&&(S.state==='flight')){
     const tf=now-flight.t0,tr=flight.tr,i=Math.min(tr.pts.length-1,Math.floor(tf*120)),p=tr.pts[i];
     ball.visible=true;ball.position.set(p.x,p.y,p.z);
-    if(flight.orbit){
-      if(!flight.orb&&tf>=tr.hrT+.2&&!(flight.admire&&tf<flight.A)){flight.orb=now;flight.orbFrom=ball.position.clone();flight.play.endT=tf+3.1;pop('LEFT ORBIT!','NEXT STOP: EARTH','cool',true);SND.boom();SND.zap();buzz([40,40,40,40,120]);}
-      if(flight.orb){const u=clamp((now-flight.orb)/3.1,0,1);ball.position.lerpVectors(flight.orbFrom,ORB_TO,u*u*.85+u*.1);}}
+    if(flight.orbit){const B=flight.orbP,bez=(u,o)=>{const v=1-u;return o.set(0,0,0).addScaledVector(B[0],v*v*v).addScaledVector(B[1],3*v*v*u).addScaledVector(B[2],3*v*u*u).addScaledVector(B[3],u*u*u);};
+      if(!flight.orb&&tf>=1.1&&!(flight.admire&&tf<flight.A)){flight.orb=now;flight.orbFrom=bez(.22,new V3());flight.play.endT=tf+3.1;pop('LEFT ORBIT!','NEXT STOP: EARTH','cool',true);SND.boom();SND.zap();buzz([40,40,40,40,120]);}
+      bez(flight.orb?.22+.78*Math.pow(clamp((now-flight.orb)/3.1,0,1),1.5):.22*ease(Math.min(1,tf/1.1)),ball.position);}
     if(flight.dShow){const ft=Math.round(flight.dFt*Math.min(1,Math.hypot(p.x,p.z)/(flight.dEnd||1)));if(ft!==flight.dLast){flight.dLast=ft;$('hds').textContent=ft+' FT';}}
     if(!tr.hr&&tr.land&&tr.land.t>1.1&&tf<tr.land.t){ // fly balls and liners (not home runs): a ring on the grass that tightens as the ball comes down
       const k=1-tf/tr.land.t;landRing.visible=true;landRing.position.set(tr.land.x,.07,tr.land.z);landRing.scale.setScalar(lerp(1.4,5,k));landRing.material.opacity=.55+.4*(1-k);}
-    if(tr.eyeT&&!flight.eyeHit&&tf>=tr.eyeT){flight.eyeHit=true;burst(fxL,ball.position,14,6,.5,[.6,.9,.6],5,1);SND.mitt();tone('sine',120,50,.25,.5);} // thud off the batter's eye
-    if(tr.land&&!flight.landed&&tf>=tr.land.t){flight.landed=true;_p.set(tr.land.x,.05,tr.land.z);burst(fxL,_p,10,3,.5,[.75,.6,.42],4,2);} // dust where it comes down, so fair or foul is clear
+    if(tr.eyeT&&!flight.orbit&&!flight.eyeHit&&tf>=tr.eyeT){flight.eyeHit=true;burst(fxL,ball.position,14,6,.5,[.6,.9,.6],5,1);SND.mitt();tone('sine',120,50,.25,.5);} // thud off the batter's eye
+    if(tr.land&&!flight.orbit&&!flight.landed&&tf>=tr.land.t){flight.landed=true;_p.set(tr.land.x,.05,tr.land.z);burst(fxL,_p,10,3,.5,[.75,.6,.42],4,2);} // dust where it comes down, so fair or foul is clear
     const dc=camera.position.distanceTo(ball.position);ball.scale.setScalar(Math.max(1,dc*.05));
-    ballShadow.visible=!flight.orb;ballShadow.position.set(p.x,.03,p.z);ballShadow.scale.setScalar(.2+Math.min(1.2,p.y*.03));
+    ballShadow.visible=!flight.orbit;ballShadow.position.set(p.x,.03,p.z);ballShadow.scale.setScalar(.2+Math.min(1.2,p.y*.03));
     trail(flight,flight.trailC,dc>9,flight.tb||(flight.pw&&flight.q>.75));
     ballGlow.position.copy(ball.position);ballGlow.material.opacity=flight.tb?.8:flight.q>.75?.4:0;ballGlow.scale.setScalar(Math.max(.3,dc*.04));
     ballGlow.material.color.setHex(flight.od?0x3a9bff:flight.tb?0xff6a1a:0xffe53b);
