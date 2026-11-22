@@ -1456,7 +1456,7 @@ function loadSfx(noiseSrc){SFX_FILES.forEach(n=>(SFX_RAW[n]||(SFX_RAW[n]=fetch('
     // seamlessly; two copies at slightly different speeds overlap so the pattern never audibly comes round again
     const t=AC.currentTime,mix=AC.createGain();mix.gain.value=.78;mix.connect(crowdGain);
     [[1,.3],[.93,33]].forEach(o=>{const src=AC.createBufferSource();src.buffer=buf;src.loop=true;src.loopStart=.3;src.loopEnd=65.3;src.playbackRate.value=o[0];src.connect(mix);src.start(t,o[1]);});
-    crowdReal=true;crowdBase=.4;crowdGain.gain.cancelScheduledValues(t);crowdGain.gain.setValueAtTime(crowdBase,t);try{noiseSrc.stop();}catch(e){}}
+    crowdReal=true;crowdBase=.4;crowdGain.gain.cancelScheduledValues(t);crowdGain.gain.setValueAtTime(crowdBase,t);}
 }).catch(()=>{}));}
 function sfx(name,vol=1,rate=1){const b=SFX[name];if(!AC||!b)return false;const s=AC.createBufferSource(),g=AC.createGain();s.buffer=b;s.playbackRate.value=rate;g.gain.value=vol;s.connect(g);g.connect(master);s.start();return true;}
 // Phones: sound may only start from a tap, the context can be suspended or interrupted (calls, switching apps), and on iPhone
@@ -1480,9 +1480,9 @@ function audioInit(){
   if(AC)return;try{AC=new (window.AudioContext||window.webkitAudioContext)();}catch(e){return;}
   master=AC.createGain();master.gain.value=muted?0:.8;master.connect(AC.destination);
   noiseBuf=AC.createBuffer(1,AC.sampleRate*2,AC.sampleRate);const d=noiseBuf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;
-  const src=AC.createBufferSource();src.buffer=noiseBuf;src.loop=true;
-  const bp=AC.createBiquadFilter();bp.type='bandpass';bp.frequency.value=850;bp.Q.value=.45;
-  crowdGain=AC.createGain();crowdGain.gain.value=.018;src.connect(bp);bp.connect(crowdGain);zoneLP=AC.createBiquadFilter();zoneLP.type='lowpass';zoneLP.frequency.value=20000;zoneLP.Q.value=.6;crowdGain.connect(zoneLP);zoneLP.connect(master);src.start();loadSfx(src);
+  // (noiseBuf is still used for short percussive effects: the bat crack, the glove snap, the zap. There is no hiss crowd any more:
+  // the crowd is the recording or nothing.)
+  crowdGain=AC.createGain();crowdGain.gain.value=0;zoneLP=AC.createBiquadFilter();zoneLP.type='lowpass';zoneLP.frequency.value=20000;zoneLP.Q.value=.6;crowdGain.connect(zoneLP);zoneLP.connect(master);loadSfx(null);
 }
 function noise(dur,type,f0,f1,vol,q=1,delay=0){if(!AC)return;const t=AC.currentTime+delay,s=AC.createBufferSource();s.buffer=noiseBuf;
   const f=AC.createBiquadFilter();f.type=type;f.Q.value=q;f.frequency.setValueAtTime(f0,t);f.frequency.exponentialRampToValueAtTime(f1,t+dur);
@@ -1623,24 +1623,20 @@ function cheer(level,dur){crowdE=Math.max(crowdE,Math.min(1,level*1.6));if(!AC)r
     level=crowdBase*clamp(Math.sqrt(level/.05),.6,2.2);}
   g.cancelScheduledValues(t);g.setValueAtTime(g.value,t);g.linearRampToValueAtTime(level,t+.25);g.setTargetAtTime(crowdBase,t+dur,.9);}
 const SND={
-  crack(q,power){noise(.07,'bandpass',2400,900,.9*q+.3,1.2);tone('triangle',1100,260,.06,.5*q+.2);tone('square',520,140,.04,.12);
+  crack(q,power){noise(.07,'bandpass',2400,900,.9*q+.3,1.2);tone('triangle',1100,260,.06,.5*q+.2);
     if(power&&q>.6){tone('sine',150,38,.5,.9*q);noise(.35,'lowpass',900,120,.5*q);}},
-  whoosh(){if(!sfx('swing'+(1+(Math.random()*4|0)),.8,rand(.94,1.08)))noise(.2,'bandpass',300,1900,.35,1.5);},
+  whoosh(){sfx('swing'+(1+(Math.random()*4|0)),.8,rand(.94,1.08));},
   pitch(){noise(.09,'bandpass',700,2600,.5,1.3);tone('sine',190,80,.09,.4);}, // the ball leaving the hand: one short snap, identical for every pitch. It used to be a long whoosh, and on slow pitches the whoosh ended well before the ball arrived, which read as 'it's there' too early
   playball(n=14){if(sfx('playball',.95))return;if(n>0)setTimeout(()=>SND.playball(n-1),250);}, // the umpire's call; waits up to a few seconds for the file, and stays silent sooner than play a jingle // the umpire's call; waits briefly for the file on the first game, falls back to the jingle
   mitt(k){if(k!=null){noise(.055,'bandpass',3000,1500,.85,1.1);noise(.03,'highpass',2500,2500,.35,.7);tone('triangle',1200,480,.04,.34);
       if(AC&&crowdReal&&!roarG){const t=AC.currentTime,g=crowdGain.gain;g.cancelScheduledValues(t);g.setTargetAtTime(crowdBase*.4,t,.015);g.setTargetAtTime(crowdBase,t+.22,.25);}} // the crowd dips for a fifth of a second under the pop, so it stands on its own /* a pitch into the catcher's glove also gets a bright snap on top: the recorded pop is mostly low thud, which phone speakers and the crowd swallow */
-    if(sfx('catch2',k==null?.34:lerp(1.05,1.2,k),k==null?rand(.95,1.05):lerp(.94,1.08,k)))return; // recorded glove pop; pitches play it louder and brighter the faster they are
-    if(k==null){noise(.06,'lowpass',1400,300,.7);tone('sine',190,90,.09,.5);return;}
-    // a pitch hitting the catcher's mitt: a sharp leather crack plus a low thud, harder and brighter the faster the pitch (k: 0 = slow, 1 = heat)
-    noise(.035,'highpass',lerp(1800,3200,k),900,lerp(.55,1,k));noise(.07,'lowpass',lerp(1100,1900,k),260,lerp(.6,.95,k));tone('sine',lerp(150,230,k),70,lerp(.14,.09,k),lerp(.55,.8,k));},
+    sfx('catch2',k==null?.34:lerp(1.05,1.2,k),k==null?rand(.95,1.05):lerp(.94,1.08,k));}, // recorded glove pop; pitches play it louder and brighter the faster they are
   call(hi,n){if(hi&&n>1&&sfx('ball'+Math.min(4,n),.95))return; // the umpire counts them: ball two, ball three, ball four
     if(!hi&&n>=3&&sfx('out',.95))return; // strike three: the emphatic out call
     if(!hi&&n===2&&sfx('strike2',.95))return;
-    if(sfx(hi?'ball':'strike',.9))return;tone('square',hi?620:300,hi?620:240,.09,.12);tone('square',hi?830:220,hi?830:180,.14,.12,.1);},
+    sfx(hi?'ball':'strike',.9);},
   boom(){tone('sine',90,30,.6,.6);noise(.5,'bandpass',2400,5000,.18,.6,.05);},
   zap(){noise(.25,'highpass',2500,6000,.25,3);tone('sawtooth',1400,200,.2,.12);},
-  organ(){[392,523,659,784,659,784].forEach((f,i)=>tone('square',f,f,i===5?.4:.13,.07,i*.14));},
 };
 
 // ───────────────────────── game state
