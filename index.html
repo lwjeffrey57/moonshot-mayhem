@@ -453,7 +453,9 @@ body.mob #tip{display:block}body.mob .how{display:none}
 #odp::before{background:repeating-conic-gradient(from 9deg at 50% 53%,rgba(26,0,0,0) 0deg 3deg,rgba(26,0,0,.72) 3deg 4.2deg,rgba(26,0,0,0) 4.2deg 8deg,rgba(26,0,0,.5) 8deg 8.7deg,rgba(26,0,0,0) 8.7deg 12deg,rgba(26,0,0,.8) 12deg 13.6deg,rgba(26,0,0,0) 13.6deg 17deg);animation-duration:.62s}
 #hud.pod #odp{background:radial-gradient(ellipse at 50% 52%,rgba(90,10,0,0) 32%,rgba(60,6,0,.42) 64%,rgba(30,2,0,.85) 100%)}
 #hud.pod.odon #odp{background:none}
-#odv::before,#odp::before{opacity:0;transition:opacity .2s}#hud.zone #odv::before,#hud.zone #odp::before{opacity:1}
+#odv::before,#odp::before{opacity:0;transition:opacity .2s}#hud.zone #odp::before{opacity:1}
+#hud.zone #odv::before{opacity:.32} /* your own Overdrive: a hint of tunnel vision only, so it never gets in the way of seeing the pitch */
+#hud.zone.odon #odv{background:radial-gradient(ellipse at 50% 52%,rgba(10,30,110,0) 46%,rgba(6,16,70,.28) 78%,rgba(2,6,34,.6) 100%)}
 #hud:not(.zone) #odv,#hud:not(.zone).pod #odp{background:none}
 @media (prefers-reduced-motion:reduce){#odv::before,#odp::before{animation:none}}
 /* the pitcher's Overdrive: the same thin flame border, in red. In a duel both burn at once, the red one set just inside the blue. */
@@ -1650,7 +1652,7 @@ const batS={b:0,h:new V3(-.36,1.36,.36),d:new V3(-.25,1,-.15).normalize(),pose:l
 const SW_T=.07; // tap-to-contact time. Short on purpose: the swing has to feel instant
 const curBatter=()=>LINEUP[S.bi%LINEUP.length];
 // the name-and-ratings card follows the hitter the player is looking at, not the one who is merely due up
-function showCard(){if(S.bi<0)return;S.cardBi=S.bi;const b=curBatter();$('cnum').textContent=b.num;$('cname').textContent=b.name+(b.lh?' · L':' · R');cardStats(b);}
+function showCard(){if(S.bi<0)return;S.cardBi=S.bi;const b=curBatter();$('cnum').textContent=b.num;$('cname').textContent=b.name+(b.lh?' · L':' · R')+(b.hb>0?' ▲':b.hb<0?' ▼':'');cardStats(b);}
 
 function pop(t,s='',cls='',long=false){const e=$('pop');e.className='';e.querySelector('.t').textContent=t;e.querySelector('.s').textContent=s;void e.offsetWidth;e.className='go '+cls+(long?' long':'');}
 let MOB=false;function setMob(){MOB=matchMedia('(pointer:coarse)').matches||innerWidth<=560;$('hud').classList.toggle('mob',MOB);document.body.classList.toggle('mob',MOB);}setMob();addEventListener('resize',setMob); // narrow a desktop window to preview the phone layout
@@ -1968,8 +1970,17 @@ function hbpStart(){S.state='hbp';S.t=now;S.hbpN=(S.hbpN||0)+1;S.hbpF=false;ball
   pop(['DRILLED!','PLUNKED!','WORE IT!'][(Math.random()*3)|0],'HIT BY PITCH','hot',true);roarOff(.5);boo(.75);crowdE=Math.max(crowdE,.6);
   {const ts=MX.pit?Object.keys(MX.pit.taunts).filter(k=>/clap|threat/.test(k)):[];if(ts.length)S.sTaunt={t:now+1,clip:ts[(Math.random()*ts.length)|0],dur:2.2};} // and the pitcher isn't sorry
   hud();}
-function hbpEnd(){S.walked=true;S.juice=Math.min(1,S.juice+.5);walkRunners();{const R=RUN.list.find(R=>R.active&&R.target===1&&R.s<1);if(R)R.hurt=true;}
-  const r=advance(1,true);pop('TAKE YOUR BASE',(r?'+1 RUN · ':'')+'+2 JUICE','plain');cheer(.3,2);afterPA(1.6);}
+// Getting hit is a gamble for both sides. The hitter takes his base either way, but how he takes it is a roll of the dice:
+// 35% it fires him up (all three ratings up for the rest of the game, two bars of Juice), 40% it shakes him up (ratings down, one bar),
+// 25% he shrugs it off (no change, one bar). So plunking a man can hand the hitters a better player than the one who got hit.
+function hbpEnd(){const b=curBatter(),r0=Math.random(),k=r0<.35?1:r0<.75?-1:0;
+  if(k){if(!b.base)b.base={spd:b.spd,pwr:b.pwr,con:b.con};const m=k>0?1.1:.9;b.spd=clamp(b.spd*m,.7,1.25);b.pwr=clamp(b.pwr*m,.7,1.25);b.con=clamp(b.con*m,.7,1.25);b.hb=(b.hb||0)+k;}
+  S.walked=true;S.juice=Math.min(1,S.juice+(k>0?.5:.25));walkRunners();{const R=RUN.list.find(R=>R.active&&R.target===1&&R.s<1);if(R)R.hurt=k<=0;}
+  const r=advance(1,true),run=r?'+1 RUN · ':'';
+  if(k>0){pop('FIRED UP!',run+b.name+' · RATINGS UP · +2 JUICE','hot',true);cheer(.5,3);roar(.9,.3);buzz([30,40,80]);}
+  else if(k<0){pop('SHAKEN UP',run+b.name+' · RATINGS DOWN','cool',true);crowdDrop();}
+  else{pop('SHOOK IT OFF',run+'TAKE YOUR BASE','plain');cheer(.3,2);}
+  showCard();afterPA(1.9);}
 function pcIntro(){if(S.pcI)return;S.pcI=true;const P=S.pName;
   flash(.45);pop('PITCHING CHANGE','NOW PITCHING: #'+P[1]+' '+P[0],'hot',true);boo(.55);if(organPlay('neenaa',.55))orgNext+=6;buzz([40,60,40]);$('pcap').textContent='PITCHER · '+P[0];
   S.pcS=0;} // (he then throws one warm-up pitch, in updatePitcher, so it is plain there is a new arm out there)
@@ -1997,7 +2008,7 @@ function goalHud(){const G=S.goal,e=$('goal');if(!G){e.hidden=true;return;}const
 function gameRating(){const G=S.goal,pts=S.runs*10+S.hits*4+S.hrs*8+(S.longest>=450?10:S.longest>=400?5:0)+S.bestStreak*2+(G&&G.done?15:0);
   const T=[[0,'D','BENCH WARMER'],[20,'C','ROOKIE'],[45,'B','EVERYDAY STARTER'],[75,'A','ALL-STAR'],[110,'S','MOONSHOT LEGEND']];let i=0;T.forEach((t,j)=>{if(pts>=t[0])i=j;});
   return {pts,stars:i+1,grade:T[i][1],title:T[i][2],next:T[i+1]?T[i+1][0]-pts:0,nextTitle:T[i+1]?T[i+1][2]:''};}
-function newGame(){gamesPlayed++;try{localStorage.setItem('mm_games',gamesPlayed);}catch(e){}
+function newGame(){LINEUP.forEach(b=>{if(b.base)Object.assign(b,b.base);b.hb=0;}); /* stat changes from getting hit last only for the game */gamesPlayed++;try{localStorage.setItem('mm_games',gamesPlayed);}catch(e){}
   Object.assign(S,{inning:1,outs:0,balls:0,strikes:0,runs:0,bases:[0,0,0],hits:0,hrs:0,longest:0,streak:0,bestStreak:0,juice:.25,heat:.2,over:false,stk:false,opp:0,bi:-1,pitches:0,seen:{},kOut:null});S.goal=null; /* per-game goals are switched off for now: pickGoal() is still here to bring them back */S.ks=0;S.d2=0;S.cardBi=-1;S.pChanges=0;S.pRuns0=0;S.pc3=false;S.pcPending=false;S.pName=BULLPEN[0];$('pcap').textContent='PITCHER';S.sTaunt=null;S.stLast=false;jPend=false;S.orbN=0;S.odUses=0;S.duel=false;$('hud').classList.remove('duel');S.pdLast=false;S.pOver=false;S.jSaid=false;S.overOn=false;S.spSeen=false;lastWalk='';
   $('title').hidden=true;$('over').hidden=true;$('pausebtn').hidden=false;$('mutebtn').hidden=false;setBatter();renderRep();scoreboard('PLAY BALL','INNING 1');S.opp=0;toReady(2);pop('PLAY BALL!','','logo');hud();SND.playball();cheer(.14,1.5);}
 
@@ -2051,7 +2062,7 @@ function choosePitch(){
     if(side===0)tx=ZONE.x0-o;else if(side===1)tx=ZONE.x1+o;else if(side===2)ty=ZONE.y0-o;else ty=ZONE.y1+o;}
   // Now and then one gets away from him (far more often when he is in Overdrive and throwing with bad intentions): it is headed for the hitter.
   // Never to the first three hitters of a new player's early games, and at most twice a game.
-  const hbp=S.bi>0&&!(gamesPlayed<=3&&S.bi<3)&&(S.hbpN||0)<2&&(DBG.hbp||Math.random()<(S.pOver?.08:.014));
+  const hbp=S.bi>0&&!(S.over&&S.overOn)&&!(gamesPlayed<=3&&S.bi<3)&&(S.hbpN||0)<2&&(DBG.hbp||Math.random()<(S.pOver?.06:.01)); // never while the hitter is in Overdrive
   if(hbp){tx=(curBatter().lh?1:-1)*.68;ty=rand(1.05,1.3);}
   const sp=inningSp();
   return {P,tx,ty,hbp,dur:P.dur*sp*rand(.97,1.03),brk:new V3(P.brk[0]*rand(.8,1.15),P.brk[1]*rand(.8,1.15),0),arc:P.arc,rel:new V3(),t0:0,
