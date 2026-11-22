@@ -1290,7 +1290,7 @@ const fireworks=[];
 // ───────────────────────── audio (all synthesized)
 let AC=null,master=null,crowdGain=null,noiseBuf=null,crowdBase=.05,crowdReal=false;
 // Recorded sounds (sfx/*.mp3). Each one replaces a synthesized sound once it has loaded; if a file is missing the synth version plays.
-const SFX={},SFX_FILES=['crowd','cheer','cheer_big','strike','ball','swing1','swing2','swing3','swing4','playball','ball2','ball3','ball4','strike2','out','catch','crush'];
+const SFX={},SFX_FILES=['crowd','cheer','cheer_big','strike','ball','swing1','swing2','swing3','swing4','playball','ball2','ball3','ball4','strike2','out','catch','crush','boo1','boo2','boo3'];
 function loadSfx(noiseSrc){SFX_FILES.forEach(n=>fetch('sfx/'+n+'.mp3').then(r=>r.ok?r.arrayBuffer():Promise.reject()).then(b=>new Promise((res,rej)=>AC.decodeAudioData(b,res,rej))).then(buf=>{SFX[n]=buf;
   if(n==='crowd'){ // real stadium ambience takes over from the filtered noise
     const s=AC.createBufferSource();s.buffer=buf;s.loop=true;s.loopStart=.06;s.loopEnd=buf.duration-.06;s.connect(crowdGain);
@@ -1353,6 +1353,9 @@ function crowdTick(dt){
   crowdNext=t+rand(2.2,5);
   if(t>cheerBusy){const g=crowdGain.gain;g.cancelScheduledValues(t);g.setTargetAtTime(crowdBase*rand(.9,1.45),t,.5);g.setTargetAtTime(crowdBase,t+1.4,.8);
     if(Math.random()<.4)sfxSlice(Math.random()<.7?'cheer':'cheer_big',rand(.1,.2),rand(.88,1.14),rand(.3,2.4),rand(1.3,2.2));}}
+// the home crowd lets the pitcher (and the umpire) hear it
+function boo(vol){const have=['boo1','boo2','boo3'].filter(n=>SFX[n]);if(!AC||!have.length||roarG)return;
+  sfxSlice(have[(Math.random()*have.length)|0],vol,rand(.94,1.06),rand(0,2.4),rand(2.4,3.3));cheerBusy=AC.currentTime+2.4;}
 function cheer(level,dur){if(!AC)return;const t=AC.currentTime,g=crowdGain.gain;
   if(crowdReal){ // the ambience swells a little; the reaction itself is a recorded cheer on top
     if(roarG){}else if(level>=.4){sfxSlice('cheer_big',.95,rand(.95,1.06),rand(0,.4),3.4);cheerBusy=t+3;}
@@ -1499,7 +1502,7 @@ function duelCheck(){if(S.duel||!(S.over&&S.overOn&&S.pOver))return;if((S.odUses
   const d=$('duel');d.classList.remove('go');void d.offsetWidth;d.classList.add('go');SND.zap();setTimeout(()=>SND.zap(),180);buzz([60,40,60,40,140]);shake=Math.max(shake,.35*FX);flash(.5);cheer(.45,4);
   if(S.state==='ready'){S.t=now;readyDur=Math.max(readyDur,2.3);}} // the pitch waits for the banner
 function duelEnd(){if(!S.duel)return;S.duel=false;$('hud').classList.remove('duel');const won=S.hits>S.duelHits||S.walked;
-  setTimeout(()=>pop(won?'DUEL WON!':'DUEL LOST',won?'THE HITTER TAKES IT':'THE PITCHER TAKES IT',won?'cool':'hot',true),500);cheer(won?.5:.1,3);}
+  setTimeout(()=>pop(won?'DUEL WON!':'DUEL LOST',won?'THE HITTER TAKES IT':'THE PITCHER TAKES IT',won?'cool':'hot',true),500);if(won)cheer(.5,3);else boo(.6);}
 function overCheck(){if(S.over||S.juice<.95||S.state==='title'||S.state==='over')return;S.juice=1;S.over=true;S.overOn=false;juiceArmed=false;hudLater=true; // a bar that looks full IS full: anything from 95% up snaps to full and becomes Overdrive on the spot
  SND.zap();buzz([30,40,30,40,80]);
   setTimeout(()=>{if(S.over&&!S.overOn)pop('OVERDRIVE READY!','','cool',true);},900);}
@@ -1557,7 +1560,7 @@ function setBatter(){
     S.pChanges++;S.pRuns0=S.runs;S.pName=BULLPEN[S.pChanges%BULLPEN.length];S.heat=1;S.pcPending=true;if(S.inning>=2&&Math.random()<.45)S.pOver=true;}
   // He can also just snap: from the second inning on there is a chance each new hitter that he goes into Overdrive whatever his meter says,
   // and the more runs he has given up the likelier it is (3% with no runs, about 30% once eight are in). Never in the first inning.
-  else if(S.inning>=2&&((S.heat>=.999&&Math.random()<.55)||DBG.pod||Math.random()<.03+.034*Math.min(S.runs,8))){S.pOver=true;setTimeout(()=>{if(S.pOver){SND.zap();buzz([40,40,40,40,90]);pop('PITCHER OVERDRIVE!','EVERY PITCH THIS AT-BAT IS A JUICE PITCH','hot',true);}},900);duelCheck();}
+  else if(S.inning>=2&&((S.heat>=.999&&Math.random()<.55)||DBG.pod||Math.random()<.03+.034*Math.min(S.runs,8))){S.pOver=true;setTimeout(()=>{if(S.pOver){boo(.55);SND.zap();buzz([40,40,40,40,90]);pop('PITCHER OVERDRIVE!','EVERY PITCH THIS AT-BAT IS A JUICE PITCH','hot',true);}},900);duelCheck();}
   aim.x=0;aim.y=.825; // every hitter starts with the ring in the middle of the zone
  
   paintJersey(batter,Object.assign({name:b.name,num:b.num},HOME));paintSkin(batter,b.skin);if(MX.ready)paintAtlas(b);
@@ -1679,7 +1682,7 @@ function toReady(d){roarOff();showCard();$('hitinfo').hidden=true;S.state='ready
   fielders.forEach(f=>{if(!f.isP){f.fig.root.position.copy(f.home);f.fig.root.rotation.y=Math.atan2(-f.home.x,-f.home.z);}f.run=null;});
   camMode='bat';hud();syncRunners();
   if(S.pcPending){S.pcPending=false;S.state='pchange';S.t=now;const P=S.pName; // the scene: a cut to the mound for the new man, then the hitter comes up as usual
-    flash(.45);pop('PITCHING CHANGE','NOW PITCHING: #'+P[1]+' '+P[0],'hot',true);cheer(.2,2.5);buzz([40,60,40]);$('pcap').textContent='PITCHER · '+P[0];
+    flash(.45);pop('PITCHING CHANGE','NOW PITCHING: #'+P[1]+' '+P[0],'hot',true);boo(.55);buzz([40,60,40]);$('pcap').textContent='PITCHER · '+P[0];
     {const ts=MX.pit?Object.keys(MX.pit.taunts).filter(k=>/clap|threat/.test(k)):[];if(ts.length)S.sTaunt={t:now+.7,clip:ts[(Math.random()*ts.length)|0],dur:1.8};}return;}
   if(WALK.on&&S.fresh&&S.bi>=0&&!S.seen[S.bi%LINEUP.length]&&MX.clip&&MX.clip.intros[WALK.by[curBatter().name]])startWalkup();}
 const BULLPEN=[['STORM',99],['VOLKOV',47],['DIAZ',13]],PCH=2.7;
@@ -1975,14 +1978,14 @@ function afterPA(delay){ // plate appearance over
 function samePA(delay){S.state='result';S.t=now;S.next=null;readyDur=delay;hud();}
 const DEFEAT=3.5,DEF_CUT=1.6; // strikeout reaction: the camera holds on the hitter until DEF_CUT, then cuts to the pitcher's taunt
 function strike(kind){S.heat=Math.min(1,S.heat+.09);S.strikes++;{const n=S.strikes;setTimeout(()=>SND.call(false,n),kind==='look'?240:60);} // the mitt pops first, then the umpire
-  if(S.strikes>=3){recordOut();pop('STRUCK OUT',kind==='look'?'CAUGHT LOOKING':'SWINGING','cool');cheer(.03,1);
+  if(S.strikes>=3){recordOut();pop('STRUCK OUT',kind==='look'?'CAUGHT LOOKING':'SWINGING','cool');cheer(.03,1);if(kind==='look')boo(.5);
     // the strikeout sulk: one of the defeat routines, with the camera on him (skipped when walk-ups are off, for pace)
     const ds=MX.clip&&WALK.on?Object.keys(MX.clip.intros).filter(k=>/^d_/.test(k)):[];
     if(ds.length){let ts=MX.pit?Object.keys(MX.pit.taunts):[];{const w=ts.filter(k=>WILD_TAUNT.includes(k));if(earlyShow(S.ks||0)&&w.length)ts=w;}S.ks=(S.ks||0)+1;S.kOut={t:now+(kind==='look'?.15:.45),bi:S.bi,clip:ds[(Math.random()*ds.length)|0],taunt:ts[(Math.random()*ts.length)|0]};afterPA(DEFEAT+.75);}else afterPA(1.5);}
   else{pop(kind==='look'?'STRIKE':'WHIFF!','','plain');
     // sometimes he lets the hitter know about it: a taunt on the mound, seen from the normal batting view (the camera only goes to him after a strikeout)
     const ts=MX.pit&&WALK.on?Object.keys(MX.pit.taunts):[],go=ts.length&&!S.stLast&&(DBG.staunt||Math.random()<.4);S.stLast=!!go;
-    if(go)S.sTaunt={t:now+.35,clip:ts[(Math.random()*ts.length)|0],dur:2.1};
+    if(go){S.sTaunt={t:now+.35,clip:ts[(Math.random()*ts.length)|0],dur:2.1};setTimeout(()=>boo(.45),500);}
     samePA((kind==='look'?1.05:1.3)+(go?.75:0));}}
 function finishPlay(){
   const f=flight,pl=f.play;f.done=true;
@@ -1991,7 +1994,7 @@ function finishPlay(){
     if(dp){recordOut();S.bases[0]=0;} // the man on first is forced at second, then the relay gets the hitter
     const B=(i)=>new V3(BASES[i][0],1.2,BASES[i][1]);
     if(pl.label==='GROUND OUT'&&pl.f&&pl.f.thrAct)f.thr={t0:now+.05,to:dp?B(2):B(1),next:dp?B(1):null,full:true};
-    pop(dp?'DOUBLE PLAY!':pl.air&&f.q>.7?'ROBBED!':'OUT!',dp?'TWO FOR ONE':pl.label,'cool');SND.mitt();cheer(.04,1);afterPA(dp?2.7:f.thr?2.1:1.5);return;}
+    pop(dp?'DOUBLE PLAY!':pl.air&&f.q>.7?'ROBBED!':'OUT!',dp?'TWO FOR ONE':pl.label,'cool');SND.mitt();cheer(.04,1);if(!dp&&pl.air&&f.q>.7)boo(.4);afterPA(dp?2.7:f.thr?2.1:1.5);return;}
   S.hits++;S.streak++;S.bestStreak=Math.max(S.bestStreak,S.streak);if(!f.tb)S.juice=Math.min(1,S.juice+.25); // every hit is worth one quarter; // a Juice hit doesn't refill the bar it just spent
   if(pl.type==='hr'){
     const ft=Math.round(pl.dist*3.281);S.hrs++;S.longest=Math.max(S.longest,ft);const r=advance(4);
