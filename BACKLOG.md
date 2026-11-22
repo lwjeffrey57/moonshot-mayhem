@@ -14,6 +14,18 @@ North star: a casual player picks it up and, by the end of the first nine outs, 
 - **Frame rate.** Next candidates: merge the stadium's many small pieces, tune render resolution.
 - **Real player models** instead of one shared character for everyone.
 
+## Audio still needed
+Recordings to find or make (the game currently fakes most of these by reshaping the few cheers it has):
+- Crowd groan ("aww"), two or three versions.
+- Rising "ohhh" as a ball climbs, 2-4 seconds, a couple of versions.
+- A real surprised gasp for hard-hit balls that get caught.
+- Medium cheers for singles and doubles, three or four different ones.
+- Bat cracks in three tiers: weak, solid, crushed.
+- Juice pitch sounds, a different one per pitch (the crushed-contact effect, pitched down, is the placeholder for all of them).
+- A pitch-release sound and a catcher's-mitt pop that cut through on a phone speaker.
+- Electrical zap and power-down hum for the short circuit; an Overdrive activation sting.
+- More organ riffs and a chant or two.
+
 ## Modes
 - Home Run Derby (reuses everything; best value).
 - Easy mode and exhibition (today's game plus a difficulty dial).
