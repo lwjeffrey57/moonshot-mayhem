@@ -443,6 +443,13 @@ body.mob #tip{display:block}body.mob .how{display:none}
 #hud.odon #odv::after{content:'';position:absolute;inset:0;background:#cfeaff;opacity:0;animation:odvX .55s ease-out}
 @keyframes odvX{from{opacity:.85}to{opacity:0}}
 #hud.odon #odv{opacity:1}
+/* tunnel vision: dark comic-book speed lines streaking in from the edges toward the strike zone, fading out before they reach it */
+#odv::before{content:'';position:absolute;inset:-25%;pointer-events:none;
+  background:repeating-conic-gradient(from 3deg at 50% 53%,rgba(0,0,14,0) 0deg 3.4deg,rgba(0,0,14,.62) 3.4deg 4.3deg,rgba(0,0,14,0) 4.3deg 8.6deg,rgba(0,0,14,.42) 8.6deg 9.1deg,rgba(0,0,14,0) 9.1deg 13deg,rgba(0,0,14,.7) 13deg 14.4deg,rgba(0,0,14,0) 14.4deg 19deg);
+  -webkit-mask-image:radial-gradient(ellipse 50% 50% at 50% 53%,rgba(0,0,0,0) 34%,rgba(0,0,0,.5) 52%,#000 74%);mask-image:radial-gradient(ellipse 50% 50% at 50% 53%,rgba(0,0,0,0) 34%,rgba(0,0,0,.5) 52%,#000 74%);
+  animation:odvL .9s steps(3) infinite}
+@keyframes odvL{0%{transform:rotate(0deg) scale(1)}33%{transform:rotate(1.4deg) scale(1.03)}66%{transform:rotate(-1deg) scale(1.01)}100%{transform:rotate(0deg) scale(1)}}
+@media (prefers-reduced-motion:reduce){#odv::before{animation:none}}
 /* the pitcher's Overdrive: the same thin flame border, in red. In a duel both burn at once, the red one set just inside the blue. */
 #odp{position:absolute;inset:0;z-index:2;opacity:0;transition:opacity .35s;overflow:hidden;pointer-events:none;box-shadow:inset 0 0 30px 3px rgba(255,70,40,.8);filter:none}
 #odp i{position:absolute;opacity:.75;filter:blur(1px) hue-rotate(155deg) saturate(1.7);animation:odvF .42s steps(5) infinite}
@@ -1801,7 +1808,7 @@ function setBatter(){
   if(S.over&&S.overOn&&S.walked){} // a walk doesn't use it up: it stays on for the next hitter
   else if(S.over&&S.overOn){S.over=false;S.overOn=false;S.juice=0;setTimeout(()=>timing('OVERDRIVE SPENT · FILL THE JUICE METER TO RECHARGE','#3ad6ff',2),700);}
   juiceArmed=false; // Juice armed for one hitter never carries over to the next
-  S.walked=false;S.bi++;const b=curBatter();S.balls=0;S.strikes=0;
+  S.walked=false;S.odSeen=false;S.bi++;const b=curBatter();S.balls=0;S.strikes=0;
   // The pitcher has Overdrive too: when his Heat meter is full, every pitch of the next at-bat is a Juice pitch. Then his meter starts over.
   duelEnd();
   if(S.pOver){S.pOver=false;S.heat=0;}
@@ -2059,7 +2066,7 @@ function simulate(p0,v0,spin,opt){spin=spin||{side:0,lift:0};opt=opt||{};const G
       const d=r-fr,hy=WALL_H+(d-1.3)*2.026;
       if(d>1.3&&d<9&&p.y<hy){const nx=p.x/r,nz=p.z/r,n3x=-.897*nx,n3y=.443,n3z=-.897*nz,vn=v.x*n3x+v.y*n3y+v.z*n3z;
         if(vn<0){if(!eyeT){eyeT=t;const q=p.clone(),w=v.clone();let n=0;while(q.y>0&&n++<2000){const sp2=w.length();w.multiplyScalar(1-DRAG*sp2*dt);w.y-=G*dt;q.addScaledVector(w,dt);}dist=Math.hypot(q.x,q.z);} // distance is where it would have come down
-          v.x-=1.35*vn*n3x;v.y-=1.35*vn*n3y;v.z-=1.35*vn*n3z;v.multiplyScalar(.8);p.y=hy+.03;}}}
+          v.x-=1.62*vn*n3x;v.y-=1.62*vn*n3y;v.z-=1.62*vn*n3z;v.multiplyScalar(.8);p.y=hy+.03;}}} // comes off the panel up and back toward the field
     if(hr||grd){const sy=r>fr+1.5?WALL_H+.3+(r-fr-1.5)*.667:0;
       if(p.y<=sy||r>fr+58){pts.push({x:p.x,y:p.y,z:p.z,t});break;}}
     else if(p.y<=0){
@@ -2331,7 +2338,11 @@ function juiceTap(){const t=performance.now();if(t-jTapT<250)return;jTapT=t; // 
     S.odUses=(S.odUses||0)+1;
     if(S.odUses===1)S.pOver=false;                         // the first Overdrive of a game is always yours alone: he can't answer it, and if he was in his own he backs off
     else if(!S.pOver&&S.heat>=.5&&podOK())S.pOver=true;   // after that, the pitcher answers
-    duelCheck();}}else juiceArmed=!juiceArmed;hud();}
+    duelCheck();}
+    else if(!S.odSeen&&(S.state==='ready'||(S.state==='windup'&&!pitch))){ // changed your mind: tap again before the pitch is thrown and it switches back off, still fully charged
+      S.overOn=false;S.odUses=Math.max(0,(S.odUses||0)-1);if(S.duel){S.duel=false;$('hud').classList.remove('duel');}
+      buzz(20);timing('OVERDRIVE OFF · STILL CHARGED','#9aa3c7',2);}
+  }else juiceArmed=!juiceArmed;hud();}
 function doSwing(type){
   if(paused||S.state==='title'||S.state==='over')return;
   if(S.state==='trot'){S.t=now-TROT.dur;return;} // skip the trot
@@ -2384,7 +2395,7 @@ addEventListener('keydown',e=>{keys[e.code]=true;if(e.repeat)return;
   else if(e.code==='Enter'){if(!paused&&(S.state==='title'||S.state==='over')){audioInit();startGame();}}
   else if(e.code==='Escape'||e.code==='KeyP'){setPaused(!paused);}
   else if(e.code==='KeyC'){nextCam();}
-  if(e.code.startsWith('Shift')){if(!e.repeat&&!paused&&S.over&&!S.overOn&&S.state!=='title'&&S.state!=='over')juiceTap();hud();} // Shift on its own switches Overdrive on, the same as tapping the button on a phone
+  if(e.code.startsWith('Shift')){if(!e.repeat&&!paused&&S.over&&S.state!=='title'&&S.state!=='over')juiceTap();hud();} // Shift on its own switches Overdrive on, the same as tapping the button on a phone
   if(e.code.startsWith('Arrow'))e.preventDefault();});
 addEventListener('keyup',e=>{keys[e.code]=false;if(e.code.startsWith('Shift'))hud();});
 addEventListener('blur',()=>{for(const k in keys)keys[k]=false;});
@@ -3127,7 +3138,7 @@ function step(dt){
   if(st==='ready'&&el>=.25&&S.juice>=.999&&!S.over&&jtutNeed())return;
   if(st==='ready'&&el>=readyDur&&!swing){S.state='windup'; /* the pitcher waits for a practice cut to finish: no quick pitches */windupT0=now;released=false;S.fresh=false;pitch=choosePitch();S.pitches++;readyDur=1.15;$('pitchinfo').classList.remove('on'),$('plast').classList.remove('on');}
   else if(st==='windup'&&now-windupT0>=1.0){
-    if(MX.pit&&MX.on){MX.pit.obj.updateMatrixWorld(true);MX.pit.hand.getWorldPosition(pitch.rel);}else{pitcher.root.updateMatrixWorld(true);pitcher.handR.getWorldPosition(pitch.rel);}pitch.t0=now;S.state='pitch';SND.pitch();if(pitch.P.sp)sfx('crush',.7,.72);ball.visible=true;ballShadow.visible=true;
+    if(MX.pit&&MX.on){MX.pit.obj.updateMatrixWorld(true);MX.pit.hand.getWorldPosition(pitch.rel);}else{pitcher.root.updateMatrixWorld(true);pitcher.handR.getWorldPosition(pitch.rel);}pitch.t0=now;S.state='pitch';if(S.over&&S.overOn)S.odSeen=true;SND.pitch();if(pitch.P.sp)sfx('crush',.7,.72);ball.visible=true;ballShadow.visible=true;
   }
   else if(st==='result'&&el>=readyDur){if(S.next){const n=S.next;S.next=null;n();}else toReady(S.fresh?PACE.newBatter:PACE.samePitch);}
   else if(st==='walkup'&&el>=WALK.dur)endWalkup();
@@ -3234,7 +3245,8 @@ function updateCamera(rdt){
   if(!DBG.cam)applyCam();
   if(S.state==='flight'&&flight&&!flight.done&&now-flight.t0>.02)camMode='chase';
   if(DBG.cam){camPos.copy(CAM_HOME);camLook.copy(CAM_LOOK);}
-  else if(flight&&flight.trailCam&&!flight.done&&now-flight.t0>.25){const tr=flight.tr,i=Math.min(tr.pts.length-1,Math.floor((now-flight.t0)*120)),q=tr.pts[Math.min(tr.pts.length-1,i+6)],p0=tr.pts[i];
+  else if(flight&&flight.trailCam&&!flight.done&&now-flight.t0>.25&&!(flight.tr.eyeT&&now-flight.t0>flight.tr.eyeT-.25)){const tr=flight.tr, // (the chase camera lets go just before a ball hits the batter's eye, so the carom and the short circuit are watched from the field)
+   i=Math.min(tr.pts.length-1,Math.floor((now-flight.t0)*120)),q=tr.pts[Math.min(tr.pts.length-1,i+6)],p0=tr.pts[i];
     _a.set(q.x-p0.x,q.y-p0.y,q.z-p0.z);if(_a.lengthSq()<1e-6)_a.set(0,0,-1);_a.normalize(); // riding just behind and above the ball, looking where it is going
     camPos.set(p0.x,p0.y,p0.z).addScaledVector(_a,-7).add(_b.set(0,1.7,0));camLook.set(p0.x,p0.y,p0.z).addScaledVector(_a,14);}
   else if(flight&&flight.orb&&!flight.done){ // from just outside the park, watching it climb away toward Earth
