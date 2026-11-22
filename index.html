@@ -347,7 +347,7 @@ body.mob #tip{display:block}body.mob .how{display:none}
 @keyframes tutpf{0%,72%{opacity:0;transform:scale(.7)}76%,100%{opacity:1;transform:scale(1)}}
 /* 'HOW TO PLAY': big in the middle of the screen on the first step, then a smaller header at the top for the rest */
 #tut .htp{left:0;right:0;top:44px;text-align:center;font-size:26px;letter-spacing:.04em;color:var(--volt);-webkit-text-stroke:1px #000;text-shadow:0 3px 0 #000;transform:rotate(-3deg);pointer-events:none}
-#tut.s1 .htp,#tut.s2 .htp,#tut.s3 .htp,#tut.s4 .htp,#tut.s5 .htp,#tut.s6 .htp{display:block}
+#tut.s1 .htp{display:block} /* the title shows on the opening step only, so it never covers the meters */
 #tut.s1 .htp{top:240px;white-space:nowrap;font-size:clamp(30px,10.5vw,56px);line-height:.9;-webkit-text-stroke:2px #000;text-shadow:0 6px 0 #000,0 0 40px rgba(255,229,59,.55);animation:htpin .5s cubic-bezier(.2,1.5,.3,1) both}
 @keyframes htpin{from{transform:rotate(-3deg) scale(2.2);opacity:0}to{transform:rotate(-3deg) scale(1);opacity:1}}
 /* step 2 demo: a ball lands in the green zone and CONTACT lights up, then in the red core and POWER lights up */
@@ -1751,9 +1751,13 @@ function finishPlay(){
     const r=advance(pl.bases);
     pop(['SINGLE!','DOUBLE!','TRIPLE!'][pl.bases-1],[r?`+${r} RUN${r>1?'S':''}`:'',pl.tag||(pl.grd?'GROUND-RULE DOUBLE':pl.infield?'BEAT THE THROW':pl.wall?'OFF THE WALL':'')].filter(Boolean).join(' · '),'');cheer(.25,2);
     S.state='result';S.t=now;readyDur=1.5;f.rbi=r;
-    if(pl.f&&pl.f.thrAct&&!pl.grd){const tb=pl.infield?1:[2,3,0][pl.bases-1];f.thr={t0:now+.15,to:new V3(BASES[tb][0],1.2,BASES[tb][1])};}
+    if(pl.f&&pl.f.thrAct&&!pl.grd){const tb=pl.infield?1:[2,3,0][pl.bases-1];
+      // if he hasn't got to the ball yet (a ball to the wall, say), he runs the rest of the way first and only then throws: no throwing on the move
+      const tfN=now-f.t0,rem=Math.max(0,(pl.tField||pl.endT)-tfN),wait=rem>.05?clamp(rem,.35,.8):0;
+      if(wait){const rp=pl.f.fig.root.position;pl.from=rp.clone();pl.tS=tfN;pl.tField=tfN+wait;}
+      f.thr={t0:now+.15+wait,wait,to:new V3(BASES[tb][0],1.2,BASES[tb][1])};}
   }
-  const cel=S.state==='celebrate'||S.state==='trot';setBatter();if(cel)readyDur=3.1;else readyDur=f.thr?2.0:1.5;S.next=null;hud();
+  const cel=S.state==='celebrate'||S.state==='trot';setBatter();if(cel)readyDur=3.1;else readyDur=f.thr?2.0+(f.thr.wait||0):1.5;S.next=null;hud();
   // Some doubles get a show of their own: once the play is over, cut to him standing on second doing one of the home-run celebrations.
   if(pl.type==='hit'&&pl.bases===2&&S.state==='result'&&WALK.on&&MX.clip&&(DBG.dbl||earlyShow(S.d2||0)||Math.random()<.4)){
     const w=WILD_CEL.filter(k=>k!=='p_loser'&&k!=='w_lift'&&MX.clip.intros[k]); // the lift uses the bat as the barbell, so it is kept for home plate
@@ -2416,7 +2420,7 @@ function updateFielders(dt){
         if(mocap){ // stop where the clip starts him, so its own drift carries the glove to the ball
           const dx=f.startOff.x-f.catchOff.x,dz=f.startOff.z-f.catchOff.z,c=Math.cos(pl.tgt.face),sn=Math.sin(pl.tgt.face);
           const k=f.scale||1;pl.tgt.x+=(dx*c+dz*sn)*k;pl.tgt.z+=(-dx*sn+dz*c)*k;pl.tgt.lead=Math.min(CATCH.t-CATCH.start,pl.endT*.5);}}
-      const g=pl.tgt,u=clamp(tf/Math.max(.2,(pl.tField||pl.endT)-g.lead),0,1);
+      const tS=pl.tS||0,g=pl.tgt,u=clamp((tf-tS)/Math.max(.2,(pl.tField||pl.endT)-tS-g.lead),0,1);
       const px=lerp(pl.from.x,g.x,ease(u)),pz=lerp(pl.from.z,g.z,ease(u));
       const moving=Math.hypot(g.x-pl.from.x,g.z-pl.from.z)>1.2&&u<.97;
       if(moving){const mx=g.x-pl.from.x,mz=g.z-pl.from.z,ml=Math.hypot(mx,mz),face=Math.atan2(-r.position.x,-r.position.z);
