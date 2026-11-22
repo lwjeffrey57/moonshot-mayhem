@@ -1858,13 +1858,13 @@ function endWalkup(){$('walk').hidden=true;$('hud').classList.remove('wk');S.sta
 // re-synced to it before every pitch. On contact they are sent toward where the play will leave them.
 const BASES=[[0,0],[19.4,-19.4],[0,-38.8],[-19.4,-19.4],[0,0]],RUN={list:[],pose:null};
 function basePos(sv,out){const i=clamp(Math.floor(sv),0,3),u=sv-i;return out.set(lerp(BASES[i][0],BASES[i+1][0],u),0,lerp(BASES[i][1],BASES[i+1][1],u));}
-function setupRunners(make,skins){
+function setupRunners(make,skins,cj){
   RUN.pose=pose({y:.88,lean:.22,hL:[-.3,0,.3],kL:.5,hR:[-.3,0,-.3],kR:.5,sL:[-.2,0,.25],eL:-.5,sR:[-.2,0,-.25],eR:-.5}); // a short lead: knees bent, hands loose
   for(let i=0;i<4;i++){const R={fig:mkFielder('RUN',i),s:0,target:0,active:false,jog:false,delay:0};R.fig.root.scale.setScalar(1.25);R.fig.root.visible=false;scene.add(R.fig.root);
-    setupFielder(R,make(['run','jog','turn','c_fist']),skins.home,true);
+    setupFielder(R,make(['run','jog','turn','c_fist','x_limp'].filter(k=>!cj||cj[k])),skins.home,true);
     const still=name=>{const c=R.obj.animations.find(c=>c.name===name);if(!c)return null;c.tracks=c.tracks.filter(t=>/quaternion$/.test(t.name)||/Hips\.position$/.test(t.name));
       const ht=c.tracks.find(t=>/Hips\.position$/.test(t.name));if(ht){const v=ht.values;for(let k=3;k<v.length;k+=3){v[k]=v[0];v[k+2]=v[2];}}const a=R.mixer.clipAction(c);a.dur=c.duration;return a;};
-    R.turnAct=still('turn');R.fistAct=still('c_fist');
+    R.turnAct=still('turn');R.fistAct=still('c_fist');R.hurtAct=still('x_limp');
     const jc=R.obj.animations.find(c=>c.name==='jog');
     if(jc){jc.tracks=jc.tracks.filter(t=>/quaternion$/.test(t.name)||/Hips\.position$/.test(t.name));const ht=jc.tracks.find(t=>/Hips\.position$/.test(t.name));if(ht){const v=ht.values;for(let k=3;k<v.length;k+=3){v[k]=v[0];v[k+2]=v[2];}}
       R.jogAct=R.mixer.clipAction(jc);R.jogDur=jc.duration;}
@@ -1924,13 +1924,14 @@ function updateRunners(dt){
     if(R.delay>0){R.delay-=dt;root.visible=false;continue;}
     const moving=R.s<R.target-1e-4;
     const hold=flight&&flight.admire&&!flight.done&&R.s<=3?3:9; // while the camera is still on the hitter admiring his shot, nobody comes home past him: runners wait at third until he is on his way
-    if(moving)R.s=Math.min(R.target,hold,R.s+(R.raceV?R.raceV*dt:(R.lead?17.5:R.jog?10.5:16)*dt/27.43));else R.raceV=0;
+    if(moving)R.s=Math.min(R.target,hold,R.s+(R.raceV?R.raceV*dt:(R.hurt?6.2:R.lead?17.5:R.jog?10.5:16)*dt/27.43));else{R.raceV=0;R.hurt=false;}
     if(R.s>=4){R.active=false;R.lead=false;root.visible=false;continue;}   // crossed the plate
     root.visible=true;basePos(R.s,_rv);root.position.copy(_rv);
     const i=clamp(Math.floor(R.s),0,3);root.rotation.y=moving?Math.atan2(BASES[i+1][0]-BASES[i][0],BASES[i+1][1]-BASES[i][1]):Math.atan2(-_rv.x,-_rv.z);
-    const mode=moving?(R.jog&&R.jogAct?'jog':'run'):'pose';
-    if(mode!==R.mode){R.mode=mode;R.mixer.stopAllAction();if(mode==='run')R.runAct.reset().play();else if(mode==='jog')R.jogAct.reset().play();}
-    if(mode==='run'){R.runT=(R.runT+dt*1.5)%R.runDur;R.runAct.time=R.runT;R.mixer.update(0);}
+    const mode=moving?(R.hurt&&R.hurtAct?'hurt':R.jog&&R.jogAct?'jog':'run'):'pose';
+    if(mode!==R.mode){R.mode=mode;R.mixer.stopAllAction();if(mode==='run')R.runAct.reset().play();else if(mode==='jog')R.jogAct.reset().play();else if(mode==='hurt')R.hurtAct.reset().play();}
+    if(mode==='hurt'){R.runT=(R.runT+dt)%R.hurtAct.dur;R.hurtAct.time=R.runT;R.mixer.update(0);}
+    else if(mode==='run'){R.runT=(R.runT+dt*1.5)%R.runDur;R.runAct.time=R.runT;R.mixer.update(0);}
     else if(mode==='jog'){R.runT=(R.runT+dt*1.25)%R.jogDur;R.jogAct.time=R.runT;R.mixer.update(0);}
     else{applyPose(R.fig,RUN.pose);retargetFig(R.fig,R.rt);}
   }
@@ -1957,6 +1958,15 @@ function toReady(d){roarOff();showCard();$('hitinfo').hidden=true;S.state='ready
     return;}
   if(WALK.on&&S.fresh&&S.bi>=0&&!S.seen[S.bi%LINEUP.length]&&MX.clip&&MX.clip.intros[WALK.by[curBatter().name]])startWalkup();}
 const BULLPEN=[['STORM',99],['VOLKOV',47],['DIAZ',13]],PCH=2.7,PCW=2.8;
+// HIT BY PITCH. He wears it: down in a heap, a beat on the ground, back to his feet, then he limps to first with an extra bar of Juice for his trouble.
+const HB1=3.0,HBD=5.0;
+function hbpStart(){S.state='hbp';S.t=now;S.hbpN=(S.hbpN||0)+1;S.hbpF=false;ball.visible=false;ballShadow.visible=false;pring.visible=false;swing=null;
+  SND.mitt();tone('sine',120,40,.28,1);noise(.12,'lowpass',500,90,.8);buzz([60,40,120]);shake=Math.max(shake,.4*FX);flash(.5);
+  pop(['DRILLED!','PLUNKED!','WORE IT!'][(Math.random()*3)|0],'HIT BY PITCH','hot',true);roarOff(.5);boo(.75);crowdE=Math.max(crowdE,.6);
+  {const ts=MX.pit?Object.keys(MX.pit.taunts).filter(k=>/clap|threat/.test(k)):[];if(ts.length)S.sTaunt={t:now+1,clip:ts[(Math.random()*ts.length)|0],dur:2.2};} // and the pitcher isn't sorry
+  hud();}
+function hbpEnd(){S.walked=true;S.juice=Math.min(1,S.juice+.5);walkRunners();{const R=RUN.list.find(R=>R.active&&R.target===1&&R.s<1);if(R)R.hurt=true;}
+  const r=advance(1,true);pop('TAKE YOUR BASE',(r?'+1 RUN · ':'')+'+2 JUICE','plain');cheer(.3,2);afterPA(1.6);}
 function pcIntro(){if(S.pcI)return;S.pcI=true;const P=S.pName;
   flash(.45);pop('PITCHING CHANGE','NOW PITCHING: #'+P[1]+' '+P[0],'hot',true);boo(.55);if(organPlay('neenaa',.55))orgNext+=6;buzz([40,60,40]);$('pcap').textContent='PITCHER · '+P[0];
   S.pcS=0;} // (he then throws one warm-up pitch, in updatePitcher, so it is plain there is a new arm out there)
@@ -2036,8 +2046,12 @@ function choosePitch(){
   if(inZone){tx=rand(ZONE.x0+.03,ZONE.x1-.03);ty=rand(ZONE.y0+.04,ZONE.y1-.04);}
   else{const side=(Math.random()*4)|0,o=rand(.1,.26);tx=rand(ZONE.x0,ZONE.x1);ty=rand(ZONE.y0,ZONE.y1);
     if(side===0)tx=ZONE.x0-o;else if(side===1)tx=ZONE.x1+o;else if(side===2)ty=ZONE.y0-o;else ty=ZONE.y1+o;}
+  // Now and then one gets away from him (far more often when he is in Overdrive and throwing with bad intentions): it is headed for the hitter.
+  // Never to the first three hitters of a new player's early games, and at most twice a game.
+  const hbp=S.bi>0&&!(gamesPlayed<=3&&S.bi<3)&&(S.hbpN||0)<2&&(DBG.hbp||Math.random()<(S.pOver?.08:.014));
+  if(hbp){tx=(curBatter().lh?1:-1)*.68;ty=rand(1.05,1.3);}
   const sp=inningSp();
-  return {P,tx,ty,dur:P.dur*sp*rand(.97,1.03),brk:new V3(P.brk[0]*rand(.8,1.15),P.brk[1]*rand(.8,1.15),0),arc:P.arc,rel:new V3(),t0:0,
+  return {P,tx,ty,hbp,dur:P.dur*sp*rand(.97,1.03),brk:new V3(P.brk[0]*rand(.8,1.15),P.brk[1]*rand(.8,1.15),0),arc:P.arc,rel:new V3(),t0:0,
     inZone:tx>=ZONE.x0&&tx<=ZONE.x1&&ty>=ZONE.y0&&ty<=ZONE.y1};
 }
 function pitchPos(pt,u,out){
@@ -2144,7 +2158,7 @@ function judge(tr,bt){const spd=bt&&bt.spd||1; // batter's speed: 0.85 (plodder)
 }
 
 let flight_pop=false;
-function tryContact(){flight_pop=false;
+function tryContact(){flight_pop=false;if(pitch.hbp){swing.done=true;swing.miss=true;return;} // nothing to hit: it is coming at him
   swing.done=true;
   const b=curBatter(),tCross=pitch.t0+pitch.dur,dt=(swing.t0+SW_T)-tCross;
   const pw=swing.type==='power',tb=swing.turbo;
@@ -2363,6 +2377,7 @@ function doSwing(type){
   if(paused||S.state==='title'||S.state==='over')return;
   if(S.state==='trot'){S.t=now-TROT.dur;return;} // skip the trot
   if(S.state==='celly2'){S.t=now-D2.dur;return;}
+  if(S.state==='hbp'){S.t=now-HBD;return;}
   if(S.state==='pdef'){S.t=now-PDEF;return;}
   if(S.state==='pchange'){if(pcWalk()){S.t=now-S.pcW;return;} /* first tap skips the walk-off, the second skips the new arm */S.t=now-PCH-(S.pcW||0);return;}
   if(S.state==='walkup'){S.t=Math.min(S.t,now-WALK.dur);return;} // skip the intro, at once
@@ -2428,7 +2443,7 @@ function cornerTap(x,y){
   for(const id of ['pausebtn','mutebtn']){const b=$(id);if(b.hidden)continue;const r=b.getBoundingClientRect();if(r.width&&x>=r.left-6&&x<=r.right+6&&y>=r.top-6&&y<=r.bottom+6)return false;} // PAUSE and SOUND always work, even mid-cutscene; a tap anywhere else skips
   if(performance.now()<tapBlock)return true;
   if(S.state==='walkup'){doSwing('contact');return true;}
-  if(S.state==='trot'||S.state==='celly2'||S.state==='pdef'||S.state==='pchange'||(flight&&flight.admire&&!flight.done&&S.state==='flight')){doSwing('contact');return true;} // with the buttons away, a touch anywhere skips the cutscene
+  if(S.state==='trot'||S.state==='celly2'||S.state==='hbp'||S.state==='pdef'||S.state==='pchange'||(flight&&flight.admire&&!flight.done&&S.state==='flight')){doSwing('contact');return true;} // with the buttons away, a touch anywhere skips the cutscene
   if(ctlHidden)return false; // during a walk-up nothing is a button: a touch anywhere on the screen skips it, and that is all it does
   const c=id=>{const r=$(id).getBoundingClientRect();return {x:r.left+r.width/2,y:r.top+r.height/2,r:r.width/2,l:r.left,t:r.top};},d=o=>Math.hypot(x-o.x,y-o.y);
   const J=c('tj'),C=c('tc'),P=c('tp');if(!C.r)return false;
@@ -2624,7 +2639,7 @@ function updateClip(dt){
     if(C.swap>=.2&&C.bi!==S.bi&&!waitWalk){C.bi=S.bi;MX.lefty=!!curBatter().lh;C.mode='idle';C.h=0;C.sk=0;C.t=0;}
     batterOpacity(C.swap<.2?1-C.swap/.2:Math.min(1,(C.swap-.2)/.25));
     if(C.swap>=.45){C.swap=null;batterOpacity(1);}}
-  if(S.state==='celly2')batterOpacity(1); // the man who just doubled is on show at second, whatever the box is doing
+  if(S.state==='celly2'||S.state==='hbp')batterOpacity(1); // the man who just doubled is on show at second, whatever the box is doing
   const incoming=S.state==='pitch'||(S.state==='windup'&&now-windupT0>C.loadAt);
   if(swing&&C.sw!==swing){C.sw=swing;C.c0=C.t;C.mode='swing';}
   if(C.mode==='swing'){const ts=now-C.sw.t0;
@@ -2650,6 +2665,8 @@ function updateClip(dt){
   if(S.kOut&&C.bi===S.kOut.bi){const e=now-S.kOut.t,ci=C.intros[S.kOut.clip],k=ci&&e<DEFEAT?ease(clamp(e/.3,0,1))*ease(clamp((DEFEAT-e)/.3,0,1)):0;
     if(k>0){ci.a.time=Math.min(ci.dur-.01,e);ci.a.setEffectiveWeight(k);base=1-k;o.position.x+=ci.off.x*k;o.position.z+=ci.off.z*k;}}
   if(S.state==='celly2'&&C.intros[D2.clip]){const ci=C.intros[D2.clip],e=now-S.t;ci.a.time=ci.loop?e%ci.dur:Math.min(ci.dur-.01,Math.max(0,e));ci.a.setEffectiveWeight(1);base=0;}
+  if(S.state==='hbp'&&C.intros.c_hbpfall){const e=now-S.t,fa=C.intros.c_hbpfall,up=C.intros.c_hbpup; // goes down, then (after the cut) gets back up
+    if(e<HB1||!up){fa.a.time=Math.min(fa.dur-.01,e);fa.a.setEffectiveWeight(1);}else{up.a.time=Math.min(up.dur-.01,(e-HB1)*1.55);up.a.setEffectiveWeight(1);}base=0;}
   if(S.state==='trot'&&TROT.cele&&C.intros[TROT.clip]){const ci=C.intros[TROT.clip],e=now-S.t-TROT.celT; // he has touched home: his celebration, on the plate
     ci.a.time=ci.loop?e%ci.dur:Math.min(ci.dur-.01,Math.max(0,e));ci.a.setEffectiveWeight(1);base=0;}
   if(flight&&flight.admire&&!flight.done&&C.bi===S.bi){if(flight.cel===undefined){flight.cel=C.intros.c_fist&&(DBG.fist||Math.random()<.4)?'c_fist':flight.admire==='show'&&!flight.trot?celClip(WALK.by[curBatter().name]):''; // a single fist pump straight out of the swing, or his routine
@@ -2986,7 +3003,7 @@ function loadPlayers(kind){ // body file = character mesh; clips.json = motion-c
     // fielders are built one at a time so the page doesn't freeze while seven more models are prepared
     fielders.filter(f=>!f.isP).forEach((f,i)=>setTimeout(()=>{if(my!==MX.token)return;
       try{setupFielder(f,makeD(['catch','run','strafe','throw','d_1','d_2','d_3'].filter(k=>cj[k])),defSkin);}catch(e){console.warn('fielder model failed, using built-in figure',e);fallback(f.fig);}},400+i*220));
-    if(skins&&cj.run)setTimeout(()=>{if(my!==MX.token)return;try{setupRunners(make,skins);}catch(e){console.warn('baserunners failed',e);}},2300);
+    if(skins&&cj.run)setTimeout(()=>{if(my!==MX.token)return;try{setupRunners(make,skins,cj);}catch(e){console.warn('baserunners failed',e);}},2300);
     // the umpire has his own model too. It is the least important download in the game, so nothing waits for it: the plate crew (only seen in
     // walk-ups) is built when it arrives, or after a few seconds with the stand-in umpire if it hasn't.
     const umpP=cfg.ump&&canClone?Promise.all([loadBuf(cfg.ump.body),...Object.keys(cfg.ump.tex).map(k=>loadImg(cfg.ump.tex[k]).then(i=>[k,i]))]).catch(()=>null):Promise.resolve(null);
@@ -3173,6 +3190,7 @@ function step(dt){
   else if(st==='result'&&el>=readyDur){if(S.next){const n=S.next;S.next=null;n();}else toReady(S.fresh?PACE.newBatter:PACE.samePitch);}
   else if(st==='walkup'&&el>=WALK.dur)endWalkup();
   else if(st==='celly2'&&el>=D2.dur){toReady(PACE.newBatter);}
+  else if(st==='hbp'){if(!S.hbpF&&el>=HB1){S.hbpF=true;flash(.35);}if(el>=HBD)hbpEnd();}
   else if(st==='pdef'&&el>=PDEF){toReady(PACE.newBatter);}
   else if(st==='pchange'&&S.pcW&&!S.pcI&&el>=S.pcW){pcIntro();}
   else if(st==='pchange'&&el>=PCH+(S.pcW||0)){if(S.pOver)setTimeout(()=>{if(S.pOver){SND.zap();buzz([40,40,40,40,90]);pop('PITCHER OVERDRIVE!','THE NEW ARM CAME IN HOT','hot',true);}},500);toReady(PACE.newBatter);}
@@ -3187,6 +3205,7 @@ function step(dt){
   if(swing&&swing.practice&&now-swing.t0>.55){swing=null;if(S.state==='ready')S.t=Math.max(S.t,now-readyDur+.5);} // bat is back; give him another half second to get set before the windup // practice cut finished: bat is back, he can swing for real
   if(S.state==='pitch'&&pitch){
     const u=(now-pitch.t0)/pitch.dur;pitchPos(pitch,u,ball.position);
+    if(pitch.hbp&&u>=.985)hbpStart();
     {const sp=SPIN[pitch.P.n]||[.7,.7,.1,46];_spin.set(sp[0],sp[1],sp[2]).normalize();ball.rotateOnWorldAxis(_spin,sp[3]*dt);}
     ball.scale.setScalar(1);ballShadow.position.set(ball.position.x,.03,ball.position.z);ballShadow.scale.setScalar(.16);
     const show=u>(pitch.P.sp?.62:.22)&&u<1; // on a Juice pitch the timing ring only appears for the last third of the flight: read the ball firstpring.visible=show;
@@ -3194,10 +3213,10 @@ function step(dt){
       t=(uT-.22)/.78,r=t<=1?lerp(.42,PT_R,clamp(t,0,1)):Math.max(.02,PT_R-(t-1)*.5),hit=Math.abs(r-PT_R)<.012; // closes at a steady speed onto the target, then keeps shrinking: smaller than the ball = late
       pring.scale.setScalar(r);pring.material.color.setHex(hit?0x39ff6a:0xffe53b);ptarget.material.color.setHex(hit?0x39ff6a:0xffffff);ptarget.scale.setScalar(PT_R*(hit?1.3:1));} // flashes white at 'now': red is reserved for the power core
     {const gone=pitch.P.ghost&&u>.36&&u<.7;if(pitch.P.ghost&&u<1)ball.visible=!gone;if(pitch.P.col&&u<1&&!gone)trail(pitch,pitch.P.col,u<.75,true);}
-    if(u>=1&&!pitch.called){pitch.called=true;
+    if(S.state==='pitch'&&u>=1&&!pitch.called){pitch.called=true;
       payHeat();$('mph').textContent=pitchMph(pitch.dur);$('plast').textContent=pitch.P.n+' · '+pitchMph(pitch.dur)+' MPH';
       {const d=$('zdot');d.hidden=false;d.style.left=clamp(50+pitch.tx/.28*33,4,96)+'%';d.style.top=clamp(50-(pitch.ty-.825)/.325*33,4,96)+'%';d.className=pitch.inZone?'':'out';}$('pitchinfo').classList.add('on'),$('plast').classList.add('on');renderRep(pitch.P);}
-    if(u>=1.07){ball.visible=false;ballShadow.visible=false;SND.mitt(clamp((.95-pitch.dur)/.45,0,1));
+    if(S.state==='pitch'&&u>=1.07){ball.visible=false;ballShadow.visible=false;SND.mitt(clamp((.95-pitch.dur)/.45,0,1));
       _p.copy(ball.position);burst(fxS,_p,8,2,.3,[.8,.7,.5],3);
       if(swing){strike('swing');}
       else if(pitch.inZone){strike('look');}
@@ -3289,6 +3308,7 @@ function updateCamera(rdt){
     const e=clamp((now-S.kOut.t)/DEFEAT,0,1);MX.clip.hips.getWorldPosition(_a);const sd=_a.x<0?1:-1;
     camLook.set(_a.x,1.2,_a.z);camPos.set(_a.x+sd*lerp(1.5,1.0,ease(e)),1.25,_a.z-lerp(3.2,2.5,ease(e)));}
   else if(flight&&flight.thr&&flight.thr.safe&&now>flight.thr.t0+.45&&S.state==='result'){camPos.set(25.4,1.5,-16.2);camLook.set(17.6,1.05,-18.6);} // the race: from foul ground past the bag, the runner coming up the line and the first baseman stretching for the throw
+  else if(S.state==='hbp'&&MX.clip){MX.clip.hips.getWorldPosition(_a);const sd=_a.x<0?1:-1;camPos.set(_a.x+sd*1.9,.95,_a.z-2.5);camLook.set(_a.x,Math.max(.4,_a.y*.8),_a.z);} // from the pitcher's side, low, on the man who got hit
   else if(S.state==='celly2'){const B=BASES[D2.base];if(D2.base===3){camPos.set(B[0]+3.6,.8,B[1]+1.2);}else camPos.set(1.7,.8,-35.4);camLook.set(B[0],1.2,B[1]);}
   else if(pcWalk()&&MX.pit){const o=MX.pit.obj.position;camPos.set(o.x-3.1,1.15,o.z+2.2);camLook.set(o.x,1.15,o.z);} // walking toward the camera, which backs away with him
   else if(pitCut()>=0||trotPit()||S.state==='pdef'||S.state==='pchange'){camPos.set(1.3,1.25,-15.4);camLook.set(0,1.25,-18.4);}
@@ -3349,7 +3369,7 @@ try{const b=+localStorage.getItem('mm_best')||0;if(b)$('best').textContent='Best
 const LITE=matchMedia('(pointer:coarse)').matches;
 if(LITE){QS=.85;rim.shadow.mapSize.set(512,512);renderer.shadowMap.type=T.PCFShadowMap;}else initPost();
 resize();hud();
-const DBG={pcut:false,fl:'',rob:false,pc:false,staunt:false,pod:false,trail:false,orbit:false,pdef:false,dbl:false,cam:false,admire:'',trip:false,fist:false,pop:false,loser:false}; // test hook: pin the camera to CAM_HOME/CAM_LOOK
+const DBG={hbp:false,pcut:false,fl:'',rob:false,pc:false,staunt:false,pod:false,trail:false,orbit:false,pdef:false,dbl:false,cam:false,admire:'',trip:false,fist:false,pop:false,loser:false}; // test hook: pin the camera to CAM_HOME/CAM_LOOK
 window.__mm={crowdFx,setE:v=>{crowdE=v;crowdShow=v;},GLOVE,renderer,scene,LODM,camera,zapStart,acState:()=>AC?(zoneLP?"lp="+Math.round(zoneLP.frequency.value)+" ":"")+AC.state+" t="+AC.currentTime.toFixed(1)+" real="+crowdReal+" roar="+!!roarG+" bed="+crowdGain.gain.value.toFixed(2):"none",roar,roarOff,boo,cheer,crowdRise,crowdDrop,S,aim,MX,DBG,landRingOn:()=>landRing.visible,hud,tutAnim,draw:()=>draw(),endGame,TROT,SFX,RUN,ballPos:()=>ball.position,ballVisible:()=>ball.visible,fielders,toReady,CAM_HOME,CAM_LOOK,now:()=>now,simulate,judge,get pitch(){return pitch;},get flight(){return flight;},lastSwing:()=>{const t=swing&&swing.type;swing=null;return t;},lastSwingTurbo:()=>!!(swing&&swing.turbo),doSwing,newGame,V3,
   sim:(dt)=>{hitstop=0;now+=dt;step(dt);},
   step:(n,dt=1/60)=>{for(let i=0;i<n;i++){if(hitstop>0)hitstop=0;now+=dt;step(dt);}updateCamera(dt);draw();}};
