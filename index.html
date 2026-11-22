@@ -2389,7 +2389,7 @@ function tryContact(){flight_pop=false;if(pitch.hbp){swing.done=true;swing.miss=
   if(play.type==='hr'&&MX.clip){const ft=play.dist*3.281,big=tb||ft>=500,r=Math.random(),early=earlyShow(S.hrs),kind=DBG.trail?'':DBG.admire||(early?'show':big?(r<.45?'show':r<.65?'admire':''):ft>=440?(r<.4?'admire':''):'');wildTrot=early;
     if(!kind&&!flight.orbit&&ft>=420&&(DBG.trail||Math.random()<.6))flight.trailCam=true; // some no-doubters are watched from right behind the ball
    
-    if(kind){flight.admire=kind;flight.trot=WALK.on&&RUN.list.length>0;flight.A=Math.max(1.2,Math.min(kind==='show'&&!flight.trot?3.9:2.5,play.endT-1.3));pop(['NO DOUBTER!','SEE YA!','FORGET IT!'][(Math.random()*3)|0],'',tb?'hot':'');}}
+    if(kind){flight.admire=kind;flight.trot=WALK.on&&RUN.list.length>0;flight.A=Math.max(1.2,Math.min(kind==='show'&&!flight.trot?3.9:2.5,play.endT-1.3));pop(['NO DOUBTER!','SEE YA!','CRANKED!'][(Math.random()*3)|0],'',tb?'hot':'');}}
   if(!flight.admire&&q>.82&&pw&&play.type!=='foul')pop(['CRUSHED!','SMOKED!','TATTOOED!','OBLITERATED!'][(Math.random()*4)|0],'',tb?'hot':'');
   if(play.type!=='foul'&&(tb||(S.over&&S.overOn)||(play.type==='hr'&&play.dist*3.281>=420)))sfx('crush',1);
   if(play.type==='hr'&&S.over&&S.overOn){const k=$('tmk');k.classList.add('pf','od');$('tim').dataset.rk=1;}else $('tmk').classList.remove('od'); // an Overdrive homer always gets the rocket, burning blue
