@@ -792,10 +792,13 @@ vec3 col=texture2D(macro,uv).rgb;float m=texture2D(maskT,uv).r;
 vec3 dg=texture2D(gD,vW/2.4).rgb*texture2D(gD,vW/17.0+0.37).rgb*4.0;
 vec3 dd=texture2D(dD,vW/2.0).rgb*texture2D(dD,vW/11.0+0.11).rgb*4.0;
 col=col*mix(mix(dg,vec3(dot(dg,vec3(0.333))),digi),mix(dd,mix(vec3(1.0),dd,0.3),digi),m)*vL;
-if(digi>0.5){vec2 r=vec2(vW.x+vW.y,vW.x-vW.y)*0.70711/5.2;vec2 d=0.5-abs(fract(r)-0.5);vec2 w=fwidth(r);
+if(digi>0.5){
+// a clear lane from the plate out past the mound: everything the strike zone and the bat ring can ever be seen against stays plain
+float hw=1.7+0.23*max(0.0,1.0-vW.y);float clr=1.0-(1.0-smoothstep(hw,hw+2.2,abs(vW.x+0.15)))*(1.0-smoothstep(21.0,28.0,-vW.y));
+vec2 r=vec2(vW.x+vW.y,vW.x-vW.y)*0.70711/5.2;vec2 d=0.5-abs(fract(r)-0.5);vec2 w=fwidth(r);
 vec2 l=1.0-smoothstep(vec2(0.008),vec2(0.008)+w*1.5,d);float fade=clamp(0.03/max(w.x,w.y),0.0,1.0);
-col+=vec3(1.0,0.16,0.86)*max(l.x,l.y)*(0.22+0.55*fade)*(1.0-m)*smoothstep(26.0,42.0,length(vW)); // no grid anywhere near the plate: nothing may cross the strike zone or the bat ring
-col+=vec3(1.0,0.2,0.88)*(1.0-abs(m-0.5)*2.0)*0.45*smoothstep(26.0,42.0,length(vW));}
+col+=vec3(1.0,0.16,0.86)*max(l.x,l.y)*(0.22+0.55*fade)*(1.0-m)*clr; // no grid anywhere near the plate: nothing may cross the strike zone or the bat ring
+col+=vec3(1.0,0.2,0.88)*(1.0-abs(m-0.5)*2.0)*0.45*clr;}
 gl_FragColor=vec4(col,1.0);
 #include <fog_fragment>
 }`});
