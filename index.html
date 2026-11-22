@@ -205,7 +205,7 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 #walk .wrow.sub{background:#000;font-size:13px;color:var(--dim);justify-content:space-between}
 @media (max-width:560px){#walk{min-width:0;width:94vw}#walk .wn{min-width:56px;font-size:30px}#walk .wname{font-size:24px;padding:7px 12px 5px}#walk .wrow{gap:7px;padding:6px 10px;font-size:12px}#walk .wrow.sub{font-size:11px}}
 @media (min-width:900px) and (min-height:560px){#walk{min-width:640px;bottom:9vh}#walk .wn{min-width:112px;font-size:62px}#walk .wname{font-size:46px;padding:10px 22px 7px}#walk .wrow{gap:26px;padding:9px 22px;font-size:23px}#walk .wrow.sub{font-size:16px}}
-#hud.wk #rep,#hud.wk #keys,#hud.wk #pitchinfo,#hud.wk #touch,#hud.mob.wk #pausebtn,#hud.mob.wk #mutebtn{visibility:hidden}
+#hud.wk #rep,#hud.wk #keys,#hud.wk #pitchinfo,#hud.wk #touch,#hud.mob.wk #mutebtn{visibility:hidden}
 .wkopt{pointer-events:auto;background:none;border:1px solid var(--dim);padding:6px 12px;cursor:pointer;font-family:var(--hud)}
 /* centre calls */
 #pop{left:0;right:0;top:26%;text-align:center;opacity:0}
@@ -2210,6 +2210,7 @@ const press=id=>{const e=$(id);e.classList.remove('dn');void e.offsetWidth;e.cla
 let tapBlock=0,lastTapT=0,lastTapX=0,lastTapY=0;
 function cornerTap(x,y){
   if(!MOB||paused||tutHold||!$('title').hidden||!$('over').hidden)return false;
+  for(const id of ['pausebtn','mutebtn']){const b=$(id);if(b.hidden)continue;const r=b.getBoundingClientRect();if(r.width&&x>=r.left-6&&x<=r.right+6&&y>=r.top-6&&y<=r.bottom+6)return false;} // PAUSE and SOUND always work, even mid-cutscene; a tap anywhere else skips
   if(performance.now()<tapBlock)return true;
   if(S.state==='walkup'){doSwing('contact');return true;}
   if(S.state==='trot'||S.state==='celly2'||S.state==='pdef'||S.state==='pchange'||(flight&&flight.admire&&!flight.done&&S.state==='flight')){doSwing('contact');return true;} // with the buttons away, a touch anywhere skips the cutscene
