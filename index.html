@@ -595,7 +595,58 @@ const canvas=$('c');
 const renderer=new T.WebGLRenderer({canvas,antialias:true,powerPreference:'high-performance'});
 let composer=null,fxaa=null;
 const ANISO=renderer.capabilities.getMaxAnisotropy();
-function draw(){if(composer)composer.render();else renderer.render(scene,camera);}
+// Frame-rate savers for the character model, with nothing taken out of the game:
+// weld(): corners that are exactly identical become one shared vertex (same picture, about a quarter of the vertices to animate).
+// liteGeo(): a low-detail copy, used only while a player is small on screen or out of view; close-ups always get the full model.
+const LODM=[],LOD_CELL=2.6;
+function weld(geo){
+  const A=geo.attributes,names=Object.keys(A),n=A.position.count,map=new Map(),idx=new Uint32Array(n),src=[],q={position:1e3,normal:1e2,uv:1e4,skinIndex:1,skinWeight:1e3};
+  for(let i=0;i<n;i++){let k='';
+    for(const nm of names){const a=A[nm],sc=q[nm]||1e3;for(let c=0;c<a.itemSize;c++)k+=Math.round(a.array[i*a.itemSize+c]*sc)+',';}
+    let j=map.get(k);if(j===undefined){j=src.length;map.set(k,j);src.push(i);}
+    idx[i]=j;}
+  const g=new T.BufferGeometry();
+  for(const nm of names){const a=A[nm],arr=new a.array.constructor(src.length*a.itemSize);
+    for(let j=0;j<src.length;j++)for(let c=0;c<a.itemSize;c++)arr[j*a.itemSize+c]=a.array[src[j]*a.itemSize+c];
+    g.setAttribute(nm,new T.BufferAttribute(arr,a.itemSize));}
+  g.setIndex(new T.BufferAttribute(src.length>65535?idx:new Uint16Array(idx),1));
+  return g;}
+function liteGeo(geo,cell){
+  const A=geo.attributes,P=A.position,U=A.uv,SI=A.skinIndex.array,SW=A.skinWeight.array,n=P.count,ix=geo.index.array;
+  const pc=new Map(),PC=[],sub=new Map(),SUB=[],subOf=new Int32Array(n);
+  for(let i=0;i<n;i++){let b=0,bw=-1;
+    for(let c=0;c<4;c++){const w=SW[i*4+c];if(w>bw){bw=w;b=SI[i*4+c];}}
+    const x=P.getX(i),y=P.getY(i),z=P.getZ(i),k=Math.floor(x/cell)+','+Math.floor(y/cell)+','+Math.floor(z/cell)+','+b;
+    let pi=pc.get(k);if(pi===undefined){pi=PC.length;pc.set(k,pi);PC.push({x:0,y:0,z:0,n:0});}
+    const c=PC[pi];c.x+=x;c.y+=y;c.z+=z;c.n++;
+    const k2=pi+','+Math.floor(U.getX(i)*10)+','+Math.floor(U.getY(i)*10);
+    let si=sub.get(k2);if(si===undefined){si=SUB.length;sub.set(k2,si);SUB.push({p:pi,best:-1,bd:1e9});}
+    subOf[i]=si;}
+  PC.forEach(c=>{c.x/=c.n;c.y/=c.n;c.z/=c.n;});
+  for(let i=0;i<n;i++){const sb=SUB[subOf[i]],c=PC[sb.p],d=(P.getX(i)-c.x)**2+(P.getY(i)-c.y)**2+(P.getZ(i)-c.z)**2;if(d<sb.bd){sb.bd=d;sb.best=i;}}
+  const g=new T.BufferGeometry(),m=SUB.length;
+  for(const nm in A){const a=A[nm],arr=new a.array.constructor(m*a.itemSize);
+    for(let j=0;j<m;j++)for(let c=0;c<a.itemSize;c++)arr[j*a.itemSize+c]=a.array[SUB[j].best*a.itemSize+c];
+    g.setAttribute(nm,new T.BufferAttribute(arr,a.itemSize));}
+  const gp=g.attributes.position;for(let j=0;j<m;j++){const c=PC[SUB[j].p];gp.setXYZ(j,c.x,c.y,c.z);}
+  const out=[];
+  for(let t=0;t<ix.length;t+=3){const a=subOf[ix[t]],b=subOf[ix[t+1]],c=subOf[ix[t+2]],pa=SUB[a].p,pb=SUB[b].p,pcc=SUB[c].p;
+    if(pa!==pb&&pb!==pcc&&pa!==pcc)out.push(a,b,c);}
+  g.setIndex(new T.BufferAttribute(m>65535?new Uint32Array(out):new Uint16Array(out),1));
+  return g;}
+const _lv=new V3(),_lf=new V3();
+function lodTick(){
+  if(!LODM.length)return;
+  camera.getWorldDirection(_lf);const k=2*Math.tan(camera.fov*DEG/2);
+  for(const m of LODM){const u=m.userData,e=m.skeleton.bones[0].matrixWorld.elements;
+    _lv.set(e[12]-camera.position.x,e[13]-camera.position.y,e[14]-camera.position.z);
+    const d=_lv.length(),behind=_lv.dot(_lf)<-1.5,frac=1.9/(Math.max(d,.5)*k);
+    let lite=u.isLite;
+    if(DBG.lod)lite=DBG.lod==='lite';
+    else if(behind||frac<.17)lite=true;
+    else if(frac>.21)lite=false;
+    if(lite!==u.isLite){u.isLite=lite;m.geometry=lite?u.lite:u.full;}}}
+function draw(){lodTick();if(composer)composer.render();else renderer.render(scene,camera);}
 const scene=new T.Scene();
 scene.fog=new T.Fog(0x06060c,320,1500); // no atmosphere: distance only fades far-off stands a little
 const camera=new T.PerspectiveCamera(42,16/9,0.1,1600);
@@ -2235,7 +2286,8 @@ function prepModel(obj,tx,custom){ // dress + bulk a Mixamo mannequin; returns i
   const mat=custom?custom.mat:new T.MeshPhongMaterial({map:tx,skinning:true,shininess:18,specular:0x303038});
   meshes.forEach(m=>{let g=m.geometry.index?m.geometry.toNonIndexed():m.geometry;
     if(custom)g=custom.trim?custom.trim(g,D):g;else{dress(g,D);if(MX.bulk)bulk(g,D);}   // a textured character keeps its own UVs and look
-    m.geometry=g;m.material=mat;m.castShadow=true;m.frustumCulled=false;});
+    m.geometry=g;m.material=mat;m.castShadow=true;m.frustumCulled=false;
+    if(g.userData.lite){m.userData.full=g;m.userData.lite=g.userData.lite;m.userData.isLite=false;LODM.push(m);}});
   obj.scale.setScalar(s);
   const K=MX.spineK;if(K!==1){B('Spine').scale.setScalar(K);B('Head').scale.setScalar(1.03/K);}
   return {s,sk,B,D,K};
@@ -2400,7 +2452,9 @@ function makeSkins(im){ // a textured character: its own colour, normal, specula
   const cv3=document.createElement('canvas');cv3.width=w;cv3.height=h;cv3.getContext('2d').putImageData(uo,0,0);const umpT=new T.CanvasTexture(cv3);umpT.anisotropy=ANISO;
   const common={normalMap:mk(n),specularMap:mk(sp),emissiveMap:mk(g),emissive:new T.Color(0xffffff),specular:0x777777,shininess:32,skinning:true};
   // drop the forearm energy blades: their texture island is a thin diagonal strip in the top-left of the sheet
-  const trim=(geo,D)=>{const P=geo.attributes.position,U=geo.attributes.uv,keep=[],ax=80,ay=5,dx=170,dy=190,L2=dx*dx+dy*dy,L=Math.sqrt(L2);
+  let shared=null; // every player uses the same two meshes (full and low detail), built once
+  const trim=(geo,D)=>{if(!shared){shared=weld(trim0(geo,D));shared.userData.lite=liteGeo(shared,LOD_CELL);}return shared;};
+  const trim0=(geo,D)=>{const P=geo.attributes.position,U=geo.attributes.uv,keep=[],ax=80,ay=5,dx=170,dy=190,L2=dx*dx+dy*dy,L=Math.sqrt(L2);
     for(let i=0;i<P.count;i+=3){const u=(U.getX(i)+U.getX(i+1)+U.getX(i+2))/3*1024,v=(1-(U.getY(i)+U.getY(i+1)+U.getY(i+2))/3)*1024;
       const t=((u-ax)*dx+(v-ay)*dy)/L2,dist=Math.abs((u-ax)*dy-(v-ay)*dx)/L;
       if(!(t>-.06&&t<1.06&&dist<30))keep.push(i,i+1,i+2);}
@@ -2764,7 +2818,7 @@ const LITE=matchMedia('(pointer:coarse)').matches;
 if(LITE){QS=.85;rim.shadow.mapSize.set(512,512);renderer.shadowMap.type=T.PCFShadowMap;}else initPost();
 resize();hud();
 const DBG={pcut:false,fl:'',rob:false,pc:false,staunt:false,pod:false,trail:false,orbit:false,pdef:false,dbl:false,cam:false,admire:'',trip:false,fist:false,pop:false,loser:false}; // test hook: pin the camera to CAM_HOME/CAM_LOOK
-window.__mm={renderer,scene,S,aim,MX,DBG,landRingOn:()=>landRing.visible,hud,tutAnim,draw:()=>draw(),endGame,TROT,SFX,RUN,ballPos:()=>ball.position,fielders,toReady,CAM_HOME,CAM_LOOK,now:()=>now,simulate,judge,get pitch(){return pitch;},get flight(){return flight;},lastSwing:()=>{const t=swing&&swing.type;swing=null;return t;},lastSwingTurbo:()=>!!(swing&&swing.turbo),doSwing,newGame,V3,
+window.__mm={renderer,scene,LODM,camera,S,aim,MX,DBG,landRingOn:()=>landRing.visible,hud,tutAnim,draw:()=>draw(),endGame,TROT,SFX,RUN,ballPos:()=>ball.position,fielders,toReady,CAM_HOME,CAM_LOOK,now:()=>now,simulate,judge,get pitch(){return pitch;},get flight(){return flight;},lastSwing:()=>{const t=swing&&swing.type;swing=null;return t;},lastSwingTurbo:()=>!!(swing&&swing.turbo),doSwing,newGame,V3,
   sim:(dt)=>{hitstop=0;now+=dt;step(dt);},
   step:(n,dt=1/60)=>{for(let i=0;i<n;i++){if(hitstop>0)hitstop=0;now+=dt;step(dt);}updateCamera(dt);draw();}};
 if(!window.__mmManual)requestAnimationFrame(frame);
