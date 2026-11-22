@@ -159,6 +159,9 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 #plast.on{opacity:1}
 #hud.wk #plast{visibility:hidden}
 #hud.wk #card,#hud.inplay #card{visibility:hidden}
+#hud.hbpc #card{visibility:visible!important;transform-origin:0 50%;animation:hbpCard 3.6s ease-out both}
+@keyframes hbpCard{0%{scale:1}8%{scale:1.45}16%{scale:1.25}24%{scale:1.4}85%{scale:1.3}100%{scale:1}}
+#card .hbu{color:#39ff6a;font-style:normal;font-size:.7em;margin-left:1px}#card .hbd{color:#ff4d2e;font-style:normal;font-size:.7em;margin-left:1px}
 /* stat grades, S to F, colour-coded */
 #hud>#card .stat em.up{color:#8fe8ff;text-shadow:0 2px 0 #000,0 0 10px #3aa8ff;width:auto;min-width:.9em;animation:statup .5s cubic-bezier(.2,1.6,.4,1)}
 #hud>#card .stat em.up::after{content:'▲';font-size:.5em;vertical-align:.5em;margin-left:1px;color:#58d6ff}
@@ -209,9 +212,9 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 .wkopt{pointer-events:auto;background:none;border:1px solid var(--dim);padding:6px 12px;cursor:pointer;font-family:var(--hud)}
 /* centre calls */
 #pop{left:0;right:0;top:26%;text-align:center;opacity:0}
-#hud.pcut #pop{top:auto!important;bottom:3%}
-#hud.pcut #tbar,#hud.pcut #tim,#hud.pcut #hitinfo,#hud.pcut #pitchinfo,#hud.pcut #sharp{visibility:hidden!important}
-#hud.pcut #pop .t{font-size:clamp(22px,5vw,54px)}
+#hud.pcut #pop{top:auto;bottom:3%}
+#hud.pcut #tbar,#hud.pcut #tim,#hud.pcut #card,#hud.pcut #hitinfo,#hud.pcut #pitchinfo,#hud.pcut #sharp{visibility:hidden!important}
+#hud.pcut #pop .t{font-size:clamp(30px,8vw,84px)}
 #hud.pcut #pop .s{font-size:clamp(12px,2.4vw,22px);margin-top:3px}
 #hud.mob #pop{top:31.5%} /* on phones: clear of the batter card and the buttons above it */
 /* the shout over a player celebrating on the bag */
@@ -469,6 +472,7 @@ body.mob #tip{display:block}body.mob .how{display:none}
 #odp .b{bottom:-3px;transform:scaleY(.34);transform-origin:50% 100%}#odp .t{top:-3px;transform:translateY(-15px) scaleY(-.3);height:44px;opacity:.5}
 #odp .l{left:-3px;transform:scaleX(.34);transform-origin:0 50%}#odp .r{right:-3px;transform:translateX(15px) scaleX(-.34)}
 #hud.pod #odp{opacity:1}#hud.pod.odon #odp{inset:9px}
+#hud.inplay #odv,#hud.inplay #odp{opacity:0!important} /* once the ball is in play the flames get out of the way; a foul brings them back for the rest of the at-bat */
 @media (prefers-reduced-motion:reduce){#odp i{animation:none}}
 @keyframes odvP{to{box-shadow:inset 0 0 46px 6px rgba(120,215,255,.95)}}
 #odv i{position:absolute;filter:blur(1px);opacity:.7;animation:odvF .42s steps(5) infinite}
@@ -746,12 +750,14 @@ function cardTick(){
   _s0.project(camera);const cw=c.offsetWidth||150,ch=c.offsetHeight||44;
   const x=clamp((_s0.x*.5+.5)*W-cw*.5,4,W-cw-4),y=Math.max(150,(-_s0.y*.5+.5)*H-ch-2);
   c.style.transform='translate('+x.toFixed(0)+'px,'+y.toFixed(0)+'px)';}
-let pcutT=-9,pcutOn=false,podOn=false,inplayOn=false;
+const pcutH=new V3(0,2.3,-18.4);let retTb=false,retT=-9,pcutT=-9,pcutOn=false,podOn=false,inplayOn=false;
 // the pitcher's fire border waits until the hitter is in the box; the batter card goes away once the ball is in play
 function podCls(){const st=S.state,on=pOD()&&!(st==='title'||st==='over'||st==='end'||st==='walkup'||st==='pchange');if(on!==podOn){podOn=on;$('hud').classList.toggle('pod',on);}
   const ip=st==='flight'||st==='result'||st==='trot'||st==='celebrate'||st==='celly2';if(ip!==inplayOn){inplayOn=ip;$('hud').classList.toggle('inplay',ip);}}
  // while the camera is close on the pitcher, call-outs drop to a smaller line along the bottom so the words never sit on him
-function draw(){podCls();{const pc=now-pcutT<.06;if(pc!==pcutOn){pcutOn=pc;$('hud').classList.toggle('pcut',pc);}}lodTick();gloveTick();if(composer)composer.render();else renderer.render(scene,camera);sharpTick();tagsTick();cardTick();}
+function draw(){podCls();{const pc=now-pcutT<.06,e=$('pop');if(pc!==pcutOn){pcutOn=pc;$('hud').classList.toggle('pcut',pc);if(!pc){e.style.top='';e.style.bottom='';}}
+  if(pc){_s0.copy(pcutH).project(camera);const H=canvas.clientHeight||innerHeight;e.style.bottom='auto';{const t1=e.querySelector('.t'),s1=e.querySelector('.s');e.style.top=Math.max(6,(-_s0.y*.5+.5)*H-t1.offsetHeight-(s1.textContent?s1.offsetHeight+6:0)).toFixed(0)+'px';}}} // call-outs sit just above the head of whoever the close-up is on
+ lodTick();gloveTick();if(composer)composer.render();else renderer.render(scene,camera);sharpTick();tagsTick();cardTick();}
 const scene=new T.Scene();
 scene.fog=new T.Fog(0x06060c,320,1500); // no atmosphere: distance only fades far-off stands a little
 const camera=new T.PerspectiveCamera(42,16/9,0.1,1600);
@@ -1849,7 +1855,8 @@ function duelEnd(){if(!S.duel)return;S.duel=false;$('hud').classList.remove('due
   setTimeout(()=>pop(won?'DUEL WON!':'DUEL LOST',won?'THE HITTER TAKES IT':'THE PITCHER TAKES IT',won?'cool':'hot',true),500);if(won)cheer(.5,3);else boo(.6);}
 function overCheck(){if(S.over||S.juice<.95||S.state==='title'||S.state==='over')return;S.juice=1;S.over=true;S.overOn=false;juiceArmed=false;hudLater=true; // a bar that looks full IS full: anything from 95% up snaps to full and becomes Overdrive on the spot
  SND.zap();buzz([30,40,30,40,80]);
-  setTimeout(()=>{if(S.over&&!S.overOn)pop('OVERDRIVE READY!','','cool',true);},900);}
+  const call=()=>{if(!(S.over&&!S.overOn))return;if(S.state==='trot'||S.state==='celebrate'||S.state==='celly2'||S.state==='flight'||S.state==='result'){setTimeout(call,350);return;}pop('OVERDRIVE READY!','','cool',true);}; // never over a celebration: it waits for the next hitter
+  setTimeout(call,900);}
 let hudLater=false,ctlHidden=false,jPend=false;
 function hud(){podCls();sbDraw();overCheck();hudLater=false;if(S.cardBi>=0)cardStats(LINEUP[S.cardBi%LINEUP.length]);
   $('runs').textContent=S.runs;$('oruns').textContent=S.opp||0;$('inn').textContent=['1ST','2ND','3RD'][Math.min(S.inning,3)-1];$('count').textContent=S.balls+'-'+S.strikes;
@@ -1876,7 +1883,7 @@ function hud(){podCls();sbDraw();overCheck();hudLater=false;if(S.cardBi>=0)cardS
 let hudOver=false,hudBars=0,ringEcho=null,lastWalk='';
 // Flavour first: the first home run and the first strikeout of every game always get the full, ridiculous treatment
 // (the first two of each for a player's first three games), so nobody plays a whole game without seeing what this game is.
-const WALK_ONLY=['w_milling','w_drive','w_golf']; // routines that are walk-ups only, never celebrations
+const WALK_ONLY=['w_milling','w_drive','w_golf','w_sad']; // routines that are walk-ups only, never celebrations
 const celClip=own=>{if(!WALK_ONLY.includes(own))return own;const C=MX.clip,w=C?WILD_CEL.filter(k=>C.intros[k]):[];return w.length?w[(Math.random()*w.length)|0]:own;}; // the milling routine is a walk-up only
 const earlyShow=n=>n<(gamesPlayed<=3?2:1);let wildTrot=false;
 const WILD_CEL=['w_backflip','w_bboy','w_macarena','w_salsa','w_bdance','w_flair','w_lift','w_pushup','p_loser'],WILD_TAUNT=['p_twerk','p_chicken','p_backflip','p_bboy','p_macarena','p_runman'];
@@ -1889,7 +1896,7 @@ function statGrade(v){const t=(v-.85)/.32;return t>=.9?'S':t>=.72?'A':t>=.52?'B'
 const GRADES=['F','D','C','B','A','S','S+'];
 function cardStats(b){const od=!!(S.over&&S.overOn);$('card').classList.toggle('odc',od);
   [['pw',b.pwr],['co',b.con],['sp',b.spd]].forEach(([k,v])=>{const g0=statGrade(v),g=od?GRADES[Math.min(6,GRADES.indexOf(g0)+1)]:g0,base=g==='S+'?'S':g;
-    $('s'+k).style.width=clamp((v-.85)/.32*100+(od?22:0),6,100)+'%';$('s'+k).style.background=od?'#58d6ff':GRADE_COL[base];const e=$('g'+k);e.textContent=g;e.className='g'+base+(od?' up':'');});}
+    $('s'+k).style.width=clamp((v-.85)/.32*100+(od?22:0),6,100)+'%';$('s'+k).style.background=od?'#58d6ff':GRADE_COL[base];const e=$('g'+k);e.innerHTML=g+(b.hb>0?'<i class="hbu">▲</i>':b.hb<0?'<i class="hbd">▼</i>':'');e.className='g'+base+(od?' up':'');});}
 function setBatter(){
   if(S.over&&S.overOn&&S.walked){} // a walk doesn't use it up: it stays on for the next hitter
   else if(S.over&&S.overOn){S.over=false;S.overOn=false;S.juice=0;}
@@ -2051,7 +2058,8 @@ function hbpEnd(){const b=curBatter(),r0=Math.random(),k=r0<.35?1:r0<.75?-1:0;
   if(k>0){pop('FIRED UP!',run+b.name+' · RATINGS UP · +2 JUICE','hot',true);cheer(.5,3);roar(.9,.3);buzz([30,40,80]);}
   else if(k<0){pop('SHAKEN UP',run+b.name+' · RATINGS DOWN','cool',true);crowdDrop();}
   else{pop('SHOOK IT OFF',run+'TAKE YOUR BASE','plain');cheer(.3,2);}
-  showCard();afterPA(1.9);}
+  showCard();if(k){const H=$('hud');H.classList.remove('hbpc');void H.offsetWidth;H.classList.add('hbpc');setTimeout(()=>H.classList.remove('hbpc'),3600);} // ratings changed: the card comes up and shows it
+  afterPA(1.9);}
 // The pitcher's Overdrive is revealed with a cut to the mound, after the hitter's own entrance is over: he flexes, the screen goes red, then the news.
 const POD=2.1;
 function podReveal(){S.podPending=false;S.state='pod';S.t=now;
@@ -2133,7 +2141,7 @@ function choosePitch(){
   const special=S.pOver||(S.bi>=3&&(due||(S.heat>=.333&&Math.random()<.38+.04*mad))); // new players don't see special pitches in their first inning // the Heat is only deducted once the pitch has been seen (payHeat), so the meter doesn't give it away
   const pool=PITCHES.filter(p=>S.pOver?p.sp:special?p.sp&&!p.od:!p.sp);let tw=0;pool.forEach(p=>tw+=p.w||1);let r=Math.random()*tw,P=pool[0];
   for(const p of pool){r-=p.w||1;if(r<=0){P=p;break;}}
-  const inZone=S.bi===0||Math.random()<.64;let tx,ty; // the first hitter of every game only sees strikes: nobody's first at-bat is a walk
+  const inZone=S.bi===0||(S.strikes===0&&S.balls>=2&&Math.random()<(S.balls===3?.98:.85))||Math.random()<.64; /* behind 2-0 or 3-0 he comes after the hitter: a four-pitch walk almost never happens */let tx,ty; // the first hitter of every game only sees strikes: nobody's first at-bat is a walk
   if(inZone){tx=rand(ZONE.x0+.03,ZONE.x1-.03);ty=rand(ZONE.y0+.04,ZONE.y1-.04);}
   else{const side=(Math.random()*4)|0,o=rand(.1,.26);tx=rand(ZONE.x0,ZONE.x1);ty=rand(ZONE.y0,ZONE.y1);
     if(side===0)tx=ZONE.x0-o;else if(side===1)tx=ZONE.x1+o;else if(side===2)ty=ZONE.y0-o;else ty=ZONE.y1+o;}
@@ -2244,7 +2252,11 @@ function judge0(tr,bt){const spd=bt&&bt.spd||1; // batter's speed: 0.85 (plodder
   outer:for(const q of tr.pts){if(q.y>3.5)continue;
     for(const c of fielders){if(c.isP&&pMiss&&!tr.offP&&q.t<=1.5&&q.y<=2.2&&Math.hypot(c.home.x-q.x,c.home.z-q.z)<=c.reach+c.speed*Math.max(0,q.t-c.react))tr.offP=q.t; // the comebacker he didn't handle: it goes off him
       if(q.y>2.2*(c.scale||1)||(c.isP&&(q.t>1.5||pMiss))||(burned&&c.of&&q.t<tr.wallT))continue;const d=Math.hypot(c.home.x-q.x,c.home.z-q.z),hang=c.of?hangK(q.t):1; // a ball that hangs up there gets run down: past 4.2 s an outfielder covers up to half as much ground again
-      if(d<=c.reach+c.speed*hang*Math.max(0,q.t-c.react)){f=c;p=q;break outer;}}} // the pitcher only handles what comes straight back at him
+      if(d<=c.reach+c.speed*hang*Math.max(0,q.t-c.react)){
+        // now and then a rocket eats an infielder up: it is on him too fast, goes off him and he goes down. Rare, so it keeps its charm.
+        if(!c.isP&&!c.of&&c.dieAct&&!tr.offF&&!tr.offP&&q.t<=1.05&&q.y>.35&&q.y<=1.9&&(DBG.drill||Math.random()<.04)){tr.offF={t:q.t,f:c};continue;}
+        if(tr.offF&&tr.offF.f===c)continue;
+        f=c;p=q;break outer;}}} // the pitcher only handles what comes straight back at him
   if(!f){p=tr.pts[tr.pts.length-1];let bd=1e9;for(const c of fielders){const d=Math.hypot(c.home.x-p.x,c.home.z-p.z);if(d<bd){bd=d;f=c;}}p={x:p.x,y:0,z:p.z,t:p.t};}
   const air=(!tr.land||p.t<tr.land.t)&&!(tr.wall&&p.t>=tr.wallT); // once it has come off the wall it is a live ball, not a catch
   if(air){ // named by how it came off the bat, not by who caught it: under 20 degrees is a line drive wherever it is caught
@@ -2313,7 +2325,7 @@ function tryContact(){flight_pop=false;if(pitch.hbp){swing.done=true;swing.miss=
   const spin={side:phi/40*3.2+gs()*4,lift};
   const p0=new V3(pitch.tx,pitch.ty,clamp(-dt*6,-.7,.3));
   const v0=new V3(Math.sin(phi*DEG)*Math.cos(la*DEG),Math.sin(la*DEG),-Math.cos(phi*DEG)*Math.cos(la*DEG)).multiplyScalar(v);
-  const tr=simulate(p0,v0,spin,fopt),play=judge(tr,S.over&&S.overOn?Object.assign({},b,{spd:b.spd*1.08}):b);play.tag=play.tag||tr.tag||(kind==='TOPSPIN SINKER'?'':kind);if(tr.offP&&play.type==='hit'&&!play.infield)play.tag='OFF THE PITCHER';
+  const tr=simulate(p0,v0,spin,fopt),play=judge(tr,S.over&&S.overOn?Object.assign({},b,{spd:b.spd*1.08}):b);play.tag=play.tag||tr.tag||(kind==='TOPSPIN SINKER'?'':kind);if(tr.offP&&play.type==='hit'&&!play.infield)play.tag='OFF THE PITCHER';if(tr.offF&&play.type==='hit')play.tag='ATE HIM UP';
   flight={tr,play,t0:now,q,pw,tb,od:!!(S.over&&S.overOn),v,done:false,called:false,trailC:S.over&&S.overOn?[.2,.55,1]:tb?[1,.45,.1]:pw&&q>.75?[1,.85,.25]:[.5,.5,.55]}; // Overdrive hits burn blue, Juice hits orange
   // Some Overdrive home runs don't come down: the ball leaves the Moon's orbit, headed for Earth. Always the first one a player ever hits; after that, about a third of them.
   if(flight.od&&play.type==='hr'&&(DBG.orbit||!orbSeen||Math.random()<.35)){S.orbN=(S.orbN||0)+1;orbSeen=true;try{localStorage.setItem('mm_orbit','1');}catch(e){}flight.orbit=true;play.endT+=9;
@@ -2348,7 +2360,7 @@ function tryContact(){flight_pop=false;if(pitch.hbp){swing.done=true;swing.miss=
   if(play.type==='hr'&&MX.clip){const ft=play.dist*3.281,big=tb||ft>=500,r=Math.random(),early=earlyShow(S.hrs),kind=DBG.trail?'':DBG.admire||(early?'show':big?(r<.45?'show':r<.65?'admire':''):ft>=440?(r<.4?'admire':''):'');wildTrot=early;
     if(!kind&&!flight.orbit&&ft>=420&&(DBG.trail||Math.random()<.6))flight.trailCam=true; // some no-doubters are watched from right behind the ball
    
-    if(kind){flight.admire=kind;flight.trot=WALK.on&&RUN.list.length>0;flight.A=Math.max(1.2,Math.min(kind==='show'&&!flight.trot?3.9:2.5,play.endT-1.3));pop(['NO DOUBT!','SEE YA!','FORGET IT!'][(Math.random()*3)|0],'',tb?'hot':'');}}
+    if(kind){flight.admire=kind;flight.trot=WALK.on&&RUN.list.length>0;flight.A=Math.max(1.2,Math.min(kind==='show'&&!flight.trot?3.9:2.5,play.endT-1.3));pop(['NO DOUBTER!','SEE YA!','FORGET IT!'][(Math.random()*3)|0],'',tb?'hot':'');}}
   if(!flight.admire&&q>.82&&pw&&play.type!=='foul')pop(['CRUSHED!','SMOKED!','TATTOOED!','OBLITERATED!'][(Math.random()*4)|0],'',tb?'hot':'');
   if(play.type!=='foul'&&(tb||(S.over&&S.overOn)||(play.type==='hr'&&play.dist*3.281>=420)))sfx('crush',1);
   if(play.type==='hr'&&S.over&&S.overOn){const k=$('tmk');k.classList.add('pf','od');$('tim').dataset.rk=1;}else $('tmk').classList.remove('od'); // an Overdrive homer always gets the rocket, burning blue
@@ -2479,7 +2491,7 @@ function endGame(){
 // The JUICE button. With Overdrive charged it is the OVERDRIVE button: one tap switches Overdrive on for this at-bat.
 let jTapT=0;
 function juiceTap(){const t=performance.now();if(t-jTapT<250)return;jTapT=t; // one press, one toggle, even if the browser reports the touch twice
-  if(S.over){if(!S.overOn){S.overOn=true;SND.zap();buzz([20,30,60]);timing('⚡ OVERDRIVE ON: FREE JUICE SWINGS THIS AT-BAT ⚡','#3ad6ff',4);
+  if(S.over){if(!S.overOn){S.overOn=true;SND.zap();buzz([20,30,60]);
     S.odUses=(S.odUses||0)+1;
     if(S.odUses===1&&!pOD()){S.pOver=false;S.podPending=false;}                         // the first Overdrive of a game is always yours alone: he can't answer it, and if he was in his own he backs off
     else if(!S.pOver&&S.heat>=.33&&podOK())S.pOver=true;   // after that, the pitcher answers
@@ -3007,6 +3019,7 @@ function setupFielder(f,obj,custom,noGlove){
     const ht=tc.tracks.find(t=>/Hips\.position$/.test(t.name));if(ht){const v=ht.values;for(let i=3;i<v.length;i+=3){v[i]=v[0];v[i+2]=v[2];}}
     f.mixer=f.mixer||new T.AnimationMixer(obj);f.thrAct=f.mixer.clipAction(tc);f.thrDur=tc.duration;}
   // the hang-dog reactions (the hitters' strikeout clips) for when a no-doubter leaves the park
+  {const kc=obj.animations.find(c=>c.name==='p_dying');if(kc&&!f.of&&!f.isP){const c2=kc.clone();c2.tracks=c2.tracks.filter(t=>/quaternion$/.test(t.name)||/Hips\.position$/.test(t.name));f.mixer=f.mixer||new T.AnimationMixer(obj);f.dieAct=f.mixer.clipAction(c2);f.dieAct.dur=c2.duration;}}
   f.defActs=obj.animations.filter(c=>/^d_/.test(c.name)).map(c=>{c.tracks=c.tracks.filter(t=>/quaternion$/.test(t.name)||/Hips\.position$/.test(t.name));
     f.mixer=f.mixer||new T.AnimationMixer(obj);const a=f.mixer.clipAction(c);a.dur=c.duration;return a;});
   f.sx=Math.abs(obj.scale.x);
@@ -3034,7 +3047,7 @@ function unloadPlayers(){
   RUN.list.forEach(R=>scene.remove(R.fig.root));RUN.list=[];
   if(MX.crew){scene.remove(MX.crew.cat);scene.remove(MX.crew.uf.fig.root);MX.crew=null;}
   batterOpacity(1);MX.ready=false;MX.clip=null;MX.lefty=false;CAM_HOME.x=-.15;CAM_LOOK.x=.3;batter.root.add(bat);showChunky(batter,true);showChunky(pitcher,true);unfitDriver(batter);
-  fielders.forEach(f=>{if(f.obj){f.fig.root.remove(f.obj);f.obj=f.rt=f.mixer=f.act=f.runAct=f.strAct=f.thrAct=f.defActs=null;f.mode='pose';unfitDriver(f.fig);showChunky(f.fig,true);}});
+  fielders.forEach(f=>{if(f.obj){f.fig.root.remove(f.obj);f.obj=f.rt=f.mixer=f.act=f.runAct=f.strAct=f.thrAct=f.defActs=f.dieAct=null;f.mode='pose';unfitDriver(f.fig);showChunky(f.fig,true);}});
 }
 function retarget(){retargetFig(batter,MX);}
 const loadBuf=url=>fetch(url).then(r=>r.ok?r.text():Promise.reject(new Error(url))).then(b64=>{ // models ship as base64 text
@@ -3124,7 +3137,7 @@ function loadPlayers(kind){ // body file = character mesh; clips.json = motion-c
     try{setupPitcher(makeD(['pitch',...Object.keys(cj).filter(k=>/^[pd]_/.test(k))]),defSkin);}catch(e){console.warn('pitcher model failed, using built-in figure',e);fallback(pitcher);}
     // fielders are built one at a time so the page doesn't freeze while seven more models are prepared
     fielders.filter(f=>!f.isP).forEach((f,i)=>setTimeout(()=>{if(my!==MX.token)return;
-      try{setupFielder(f,makeD(['catch','run','strafe','throw','x_dive','d_1','d_2','d_3'].filter(k=>cj[k])),defSkin);}catch(e){console.warn('fielder model failed, using built-in figure',e);fallback(f.fig);}},400+i*220));
+      try{setupFielder(f,makeD(['catch','run','strafe','throw','x_dive','p_dying','d_1','d_2','d_3'].filter(k=>cj[k])),defSkin);}catch(e){console.warn('fielder model failed, using built-in figure',e);fallback(f.fig);}},400+i*220));
     if(skins&&cj.run)setTimeout(()=>{if(my!==MX.token)return;try{setupRunners(make,skins,cj);}catch(e){console.warn('baserunners failed',e);}},2300);
     // the umpire has his own model too. It is the least important download in the game, so nothing waits for it: the plate crew (only seen in
     // walk-ups) is built when it arrives, or after a few seconds with the stand-in umpire if it hasn't.
@@ -3243,9 +3256,18 @@ function updateFielders(dt){
           {const ex=f.diveE.x*(O.m?-1:1),ez=f.diveE.z;D.ex=D.sx+(ex*cs+ez*sn)*k;D.ez=D.sz+(-ex*sn+ez*cs)*k;}
           pl.tgt={x:D.sx,z:D.sz,face:O.yaw,lead:Math.max(0,(pl.tField||pl.endT)-D.t0)};}} // he has to be at the take-off spot when the dive starts
       const tS=pl.tS||0,g=pl.tgt,u=clamp((tf-tS)/Math.max(.2,(pl.tField||pl.endT)-tS-g.lead),0,1);
-      const px=lerp(pl.from.x,g.x,ease(u)),pz=lerp(pl.from.z,g.z,ease(u));
-      const moving=Math.hypot(g.x-pl.from.x,g.z-pl.from.z)>1.2&&u<.97;
-      if(moving){const mx=g.x-pl.from.x,mz=g.z-pl.from.z,ml=Math.hypot(mx,mz),face=Math.atan2(-r.position.x,-r.position.z);
+      // A ball that is going to drop and then carry on (to the wall, into the gap): he runs at the landing circle first, the way a
+      // fielder reads it, and only then plays the hop. Not a bee-line to where it will end up, as if he knew.
+      let A=pl.from,Bq=g,uu=u;
+      {const L=flight.tr.land,tE=(pl.tField||pl.endT)-g.lead;
+        if(f.of&&pl.type==='hit'&&!pl.air&&!pl.dive&&L&&!tS&&L.t>.8&&L.t<tE-.5){
+          if(pl.via===undefined){const dx=L.x-pl.from.x,dz=L.z-pl.from.z,d=Math.hypot(dx,dz)||1;let k=Math.min(1,f.speed*1.1*Math.max(0,L.t-f.react)/d)*Math.max(0,(d-1.5)/d);
+            for(let i=0;i<6;i++){const vx=pl.from.x+dx*k,vz=pl.from.z+dz*k;if(Math.hypot(g.x-vx,g.z-vz)/(tE-L.t)<=f.speed*1.5)break;k*=.6;}
+            pl.via=k*d>1.5?{x:pl.from.x+dx*k,z:pl.from.z+dz*k}:null;}
+          if(pl.via){if(tf<L.t){Bq=pl.via;uu=clamp(tf/L.t,0,1);}else{A=pl.via;uu=clamp((tf-L.t)/Math.max(.2,tE-L.t),0,1);}}}}
+      const px=lerp(A.x,Bq.x,ease(uu)),pz=lerp(A.z,Bq.z,ease(uu));
+      const moving=Math.hypot(Bq.x-A.x,Bq.z-A.z)>1.2&&uu<.97;
+      if(moving){const mx=Bq.x-A.x,mz=Bq.z-A.z,ml=Math.hypot(mx,mz),face=Math.atan2(-r.position.x,-r.position.z);
         // moving mostly across the field (not in or back) over a shortish distance: shuffle sideways, still facing the plate
         const lat=(mx*Math.cos(face)-mz*Math.sin(face))/ml;
         if(f.strAct&&Math.abs(lat)>.86&&ml<22){strafe=lat>0?1:-1;r.rotation.y=face;}else r.rotation.y=Math.atan2(mx,mz);
@@ -3280,12 +3302,15 @@ function updateFielders(dt){
         r.rotation.y=Math.atan2(flight.thr.to.x-r.position.x,flight.thr.to.z-r.position.z);}}
       // a no-doubter: the outfielders sag as it goes over; during the trot everyone does
       let defT=-1;if(f.defActs&&f.defActs.length&&flight&&flight.play.type==='hr'&&flight.admire&&(f.of||S.state==='trot')){const e=now-flight.t0-1.1-(f.ph%1)*.5;if(e>=0)defT=e;}
-      const mode=defT>=0?'defeat':diving?'dive':thrT>=0?'throw':clipT>=0?'catch':running&&strafe?'strafe':running&&f.runAct?'run':'pose';
+      let drT=-1;if(f.dieAct&&flight&&flight.tr.offF&&flight.tr.offF.f===f&&flight.play.type==='hit'){const e=now-flight.t0-flight.tr.offF.t;if(e>=0){drT=e;const O=flight.tr.offF;if(O.x===undefined){O.x=r.position.x;O.z=r.position.z;O.yaw=Math.atan2(-r.position.x,-r.position.z);}r.position.x=O.x;r.position.z=O.z;r.rotation.y=O.yaw;}}
+      const mode=drT>=0?'drilled':defT>=0?'defeat':diving?'dive':thrT>=0?'throw':clipT>=0?'catch':running&&strafe?'strafe':running&&f.runAct?'run':'pose';
       if(mode!==f.mode){f.mode=mode;if(f.mixer)f.mixer.stopAllAction();f.obj.position.set(0,0,0);
         if(mode==='dive')f.diveAct.reset().play();else if(mode==='catch')f.act.reset().play();else if(mode==='run')f.runAct.reset().play();else if(mode==='strafe')f.strAct.reset().play();else if(mode==='throw')f.thrAct.reset().play();
+        else if(mode==='drilled')f.dieAct.reset().play();
         else if(mode==='defeat'){f.defAct=f.defActs[(Math.random()*f.defActs.length)|0];f.defAct.reset().play();}}
       f.obj.scale.x=f.sx*((mode==='strafe'&&strafe<0)||(mode==='dive'&&dmir)?-1:1);
       if(mode==='dive'){f.diveAct.time=clipT;f.mixer.update(0);}
+      else if(mode==='drilled'){f.dieAct.time=Math.min(f.dieAct.dur-.02,drT);f.mixer.update(0);}
       else if(mode==='catch'){f.act.time=clipT;f.mixer.update(0);f.obj.position.set(-f.startOff.x,0,-f.startOff.z);}
       else if(mode==='defeat'){f.defAct.time=Math.min(f.defAct.dur-.02,defT);f.mixer.update(0);}
       else if(mode==='throw'){f.thrAct.time=thrT;f.mixer.update(0);}
@@ -3378,6 +3403,7 @@ function step(dt){
     if(tr.poleT&&!flight.poleHit&&tf>=tr.poleT){flight.poleHit=true;burst(fxL,ball.position,16,7,.5,[1,.9,.3],5,1);tone('sine',1250,900,.5,.6);tone('triangle',2500,1800,.4,.3);pop(/SCREEN/.test(tr.tag)?'OFF THE SCREEN!':'OFF THE POLE!','FAIR BALL · HOME RUN','hot');poleFlash=now;} // doink
     if(tr.offP&&flight.play.type==='hit'&&!flight.offPd&&tf>=tr.offP){flight.offPd=true; // drilled him: the pitcher goes down in a heap on the mound
       if(MX.pit&&MX.pit.taunts.p_dying)S.sTaunt={t:now,clip:'p_dying',dur:3.3};SND.mitt();tone('sine',110,45,.2,.7);buzz([30,30,60]);shake=Math.max(shake,.25*FX);crowdOut(.9);}
+    if(tr.offF&&flight.play.type==='hit'&&!flight.offFd&&tf>=tr.offF.t){flight.offFd=true;SND.mitt();tone('sine',110,45,.2,.7);buzz([30,30,60]);shake=Math.max(shake,.25*FX);crowdOut(.9);}
     if(tr.hr&&!flight.fenceRoar&&tf>=tr.hrT){flight.fenceRoar=true;roar(flight.roarL||1,.35);} // over the fence: the roar that has been building steps up
     if(tr.seatT&&!flight.orbit&&tf>=tr.seatT){ball.visible=false;if(!flight.seated){flight.seated=true;burst(fxL,ball.position,12,4,.5,[.95,.95,1],4,1);}} /* swallowed by the crowd: somebody up there has a souvenir */
     if(tr.eyeT&&!flight.orbit&&!flight.eyeHit&&tf>=tr.eyeT){flight.eyeHit=true;zapStart(ball.position,false);burst(fxL,ball.position,26,9,.7,[.6,.85,1],7,1);SND.mitt();tone('sine',120,50,.25,.5);} // thud off the batter's eye
@@ -3409,7 +3435,10 @@ function step(dt){
   stickHint();sbTick();zapTick();crowdTick(dt);shoutTick();poleTick();organTick();roarTick();heartTick();zoneTick();
   if(flight&&flight.play.type==='hr'&&!flight.sbHit&&!flight.orbit&&ball.visible&&Math.abs(ball.position.x)<24&&ball.position.y>30&&ball.position.y<48&&ball.position.z<-(fenceR(0)+15)&&ball.position.z>-(fenceR(0)+24)){flight.sbHit=true;zapStart(ball.position,true);burst(fxL,ball.position,26,9,.7,[.6,.85,1],7,1);}
   reticle.position.set(aim.x,aim.y,0);
-  {const ez=easyAB()?1.3:1;retC.scale.setScalar(.17*b.con*1.25*(tb?1.2:1)*ez);retP.scale.setScalar(.17*b.con*(tb?.8:.63)*(tb?1.2:1)*ez);}
+  {const ez=easyAB()?1.3:1;if(!!tb!==retTb){retTb=!!tb;retT=now;}
+   // Juice and Overdrive make both rings bigger, and they visibly swell into it (overshoot, then settle) so nobody misses that it happened
+   const k=clamp((now-retT)/.5,0,1),eo=1+2.9*Math.pow(k-1,3)+1.9*Math.pow(k-1,2),f=retTb?eo:1-eo,kc=lerp(1,1.2,f),kp=lerp(.63,.96,f);
+   retC.scale.setScalar(.17*b.con*1.25*kc*ez);retP.scale.setScalar(.17*b.con*kp*ez);}
   let showRet=(S.state==='ready'||S.state==='windup'||S.state==='pitch')&&!(swing&&swing.done);
   retC.visible=retP.visible=true;echoBall.visible=false;
   if(swing&&!swing.practice){retC.visible=swing.type==='contact';retP.visible=swing.type==='power';} // mid-swing, only the ring that counts for this swing
@@ -3443,15 +3472,17 @@ function updateCamera(rdt){
   else if(flight&&flight.orb&&!flight.done){ // from just outside the park, watching it climb away toward Earth
     camPos.copy(flight.orbFrom).add(_a.set(34,6,62)).addScaledVector(_b.copy(ball.position).sub(flight.orbFrom),.12);camLook.copy(ball.position);camera.position.lerp(camPos,now-flight.orb<.08?1:.2);}
   else if(S.kOut&&S.kOut.taunt&&MX.pit&&now>S.kOut.t+DEF_CUT&&now<S.kOut.t+DEFEAT&&S.state==='result'){ // ...then the pitcher, from the plate side
-    pcutT=now;const e=clamp((now-S.kOut.t-DEF_CUT)/(DEFEAT-DEF_CUT),0,1);camLook.set(0,1.45,-18.4);camPos.set(lerp(1.6,1.1,e),1.35,-18.4+lerp(4.6,3.8,ease(e)));}
+    pcutT=now;pcutH.set(0,2.3,-18.4);const e=clamp((now-S.kOut.t-DEF_CUT)/(DEFEAT-DEF_CUT),0,1);camLook.set(0,1.45,-18.4);camPos.set(lerp(1.6,1.1,e),1.35,-18.4+lerp(4.6,3.8,ease(e)));}
   else if(S.kOut&&MX.clip&&MX.clip.bi===S.kOut.bi&&now>S.kOut.t&&now<S.kOut.t+DEFEAT&&S.state==='result'){ // strikeout: close on the hitter from the pitcher's side
     const e=clamp((now-S.kOut.t)/DEFEAT,0,1);MX.clip.hips.getWorldPosition(_a);const sd=_a.x<0?1:-1;
     camLook.set(_a.x,1.2,_a.z);camPos.set(_a.x+sd*lerp(1.5,1.0,ease(e)),1.25,_a.z-lerp(3.2,2.5,ease(e)));}
   else if(flight&&flight.thr&&flight.thr.safe&&now>flight.thr.t0+.45&&S.state==='result'){camPos.set(25.4,1.5,-16.2);camLook.set(17.6,1.05,-18.6);} // the race: from foul ground past the bag, the runner coming up the line and the first baseman stretching for the throw
   else if(S.state==='hbp'&&MX.clip){MX.clip.hips.getWorldPosition(_a);const sd=_a.x<0?1:-1;camPos.set(_a.x+sd*1.9,.95,_a.z-2.5);camLook.set(_a.x,Math.max(.4,_a.y*.8),_a.z);} // from the pitcher's side, low, on the man who got hit
   else if(S.state==='celly2'){const B=BASES[D2.base];if(D2.base===3){camPos.set(B[0]+3.6,.8,B[1]+1.2);}else camPos.set(1.7,.8,-35.4);camLook.set(B[0],1.2,B[1]);}
-  else if(pcWalk()&&MX.pit){pcutT=now;const o=MX.pit.obj.position;camPos.set(o.x-3.1,1.15,o.z+2.2);camLook.set(o.x,1.15,o.z);} // walking toward the camera, which backs away with him
-  else if(pitCut()>=0||trotPit()||S.state==='pdef'||S.state==='pchange'||S.state==='pod'){pcutT=now;camPos.set(1.3,1.25,-15.4);camLook.set(0,1.25,-18.4);}
+  else if(flight&&flight.tr.offF&&flight.tr.offF.x!==undefined&&flight.play.type==='hit'&&now-flight.t0-flight.tr.offF.t>.25&&now-flight.t0-flight.tr.offF.t<2.7&&(S.state==='flight'||S.state==='result')){ // the infielder who wore one: from the plate side of him, low
+    const O=flight.tr.offF,h=Math.hypot(O.x,O.z)||1,k=(h-4.4)/h;pcutT=now;pcutH.set(O.x,2.3,O.z);camPos.set(O.x*k+1.2,1.2,O.z*k);camLook.set(O.x,.8,O.z);}
+  else if(pcWalk()&&MX.pit){pcutT=now;const o=MX.pit.obj.position;pcutH.set(o.x,2.3,o.z);camPos.set(o.x-3.1,1.15,o.z+2.2);camLook.set(o.x,1.15,o.z);} // walking toward the camera, which backs away with him
+  else if(pitCut()>=0||trotPit()||S.state==='pdef'||S.state==='pchange'||S.state==='pod'){pcutT=now;pcutH.set(0,2.3,-18.4);camPos.set(1.3,1.25,-15.4);camLook.set(0,1.25,-18.4);}
   else if(S.state==='trot'&&TROT.R){camPos.copy(TROT.cam);TROT.R.fig.root.getWorldPosition(_a);camLook.set(_a.x,TROT.cut&&TROT.clip!=='p_loser'?1.15:1.3,_a.z);}
   else if(S.state==='walkup'&&MX.clip){ // from the pitcher's side, across the plate: his front three-quarter, with the stands behind him
     const e=clamp((now-S.t)/WALK.dur,0,1);MX.clip.hips.getWorldPosition(_a);const sd=_a.x<0?1:-1;
@@ -3492,6 +3523,7 @@ function frame(t){
   const rawMs=t-last;
   const rdt=Math.min(.05,(t-last)/1000);last=t;
   if(tutHold)tutAnim(t);
+  if(tutHold&&!tutDemo&&S.state!=='title'){camera.position.copy(CAM_HOME);camera.lookAt(CAM_LOOK);} // the tutorial always sits over the normal view from behind the plate, never over whatever close-up the camera happened to be in
   if(paused||tutHold){draw();requestAnimationFrame(frame);return;}
   qualityWatch(rdt);
   if(hitstop>0){hitstop-=rdt;}
