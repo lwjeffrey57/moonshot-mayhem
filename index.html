@@ -442,14 +442,22 @@ body.mob #tip{display:block}body.mob .how{display:none}
 #odv{inset:0;z-index:2;opacity:0;transition:opacity .35s;overflow:hidden;box-shadow:inset 0 0 30px 3px rgba(60,160,255,.8);background:radial-gradient(ellipse at 50% 52%,rgba(10,30,110,0) 36%,rgba(6,16,70,.4) 72%,rgba(3,8,44,.78) 100%);animation:odvP .6s ease-in-out infinite alternate}
 #hud.odon #odv::after{content:'';position:absolute;inset:0;background:#cfeaff;opacity:0;animation:odvX .55s ease-out}
 @keyframes odvX{from{opacity:.85}to{opacity:0}}
-#hud.odon #odv{opacity:1}#hud.duel #odv{opacity:0}
+#hud.odon #odv{opacity:1}
+/* the pitcher's Overdrive: the same thin flame border, in red. In a duel both burn at once, the red one set just inside the blue. */
+#odp{position:absolute;inset:0;z-index:2;opacity:0;transition:opacity .35s;overflow:hidden;pointer-events:none;box-shadow:inset 0 0 30px 3px rgba(255,70,40,.8);filter:none}
+#odp i{position:absolute;opacity:.75;filter:blur(1px) hue-rotate(155deg) saturate(1.7);animation:odvF .42s steps(5) infinite}
+#odp .b,#odp .t{left:-40px;right:-40px;height:64px}#odp .l,#odp .r{top:-40px;bottom:-40px;width:46px;animation-name:odvS}
+#odp .b{bottom:-3px;transform:scaleY(.34);transform-origin:50% 100%}#odp .t{top:-3px;transform:translateY(-15px) scaleY(-.3);height:44px;opacity:.5}
+#odp .l{left:-3px;transform:scaleX(.34);transform-origin:0 50%}#odp .r{right:-3px;transform:translateX(15px) scaleX(-.34)}
+#hud.pod #odp{opacity:1}#hud.pod.odon #odp{inset:9px}
+@media (prefers-reduced-motion:reduce){#odp i{animation:none}}
 @keyframes odvP{to{box-shadow:inset 0 0 46px 6px rgba(120,215,255,.95)}}
 #odv i{position:absolute;filter:blur(1px);opacity:.7;animation:odvF .42s steps(5) infinite}
-#odv .b,#odv .t{left:-40px;right:-40px;height:64px;background:
+#odv .b,#odv .t,#odp .b,#odp .t{left:-40px;right:-40px;height:64px;background:
   radial-gradient(ellipse 13px 46px at 15px 100%,#fff 0,#9fe8ff 30%,#2e8cff 58%,rgba(30,110,255,0) 76%) 0 100%/30px 100% repeat-x,
   radial-gradient(ellipse 17px 62px at 20px 100%,#eafcff 0,#58c8ff 34%,#1e6fff 60%,rgba(30,90,255,0) 78%) 11px 100%/41px 100% repeat-x}
 #odv .b{bottom:-3px;transform:scaleY(.34);transform-origin:50% 100%}#odv .t{top:-3px;transform:translateY(-15px) scaleY(-.3);height:44px;opacity:.5}
-#odv .l,#odv .r{top:-40px;bottom:-40px;width:46px;background:
+#odv .l,#odv .r,#odp .l,#odp .r{top:-40px;bottom:-40px;width:46px;background:
   radial-gradient(ellipse 34px 13px at 0 15px,#fff 0,#9fe8ff 30%,#2e8cff 58%,rgba(30,110,255,0) 76%) 0 0/100% 30px repeat-y,
   radial-gradient(ellipse 46px 17px at 0 20px,#eafcff 0,#58c8ff 34%,#1e6fff 60%,rgba(30,90,255,0) 78%) 0 11px/100% 41px repeat-y;animation-name:odvS}
 #odv .l{left:-3px;transform:scaleX(.34);transform-origin:0 50%}#odv .r{right:-3px;transform:translateX(15px) scaleX(-.34)}
@@ -578,6 +586,7 @@ body.mob #tip{display:block}body.mob .how{display:none}
     <div id="fps" hidden></div>
     <div id="duelv" aria-hidden="true"></div>
     <div id="odv" aria-hidden="true"><i class="b"></i><i class="t"></i><i class="l"></i><i class="r"></i></div>
+    <div id="odp" class="odp" aria-hidden="true"><i class="b"></i><i class="t"></i><i class="l"></i><i class="r"></i></div>
     <div id="duel" aria-hidden="true"><i class="dl">BATTER</i><i class="dr">PITCHER</i><b>OVERDRIVE<span>DUEL</span></b></div>
     <div id="goal" hidden></div>
   </div>
@@ -698,7 +707,7 @@ function lodTick(){
     else if(behind||frac<.17)lite=true;
     else if(frac>.21)lite=false;
     if(lite!==u.isLite){u.isLite=lite;m.geometry=lite?u.lite:u.full;}}}
-function draw(){lodTick();if(composer)composer.render();else renderer.render(scene,camera);sharpTick();}
+function draw(){lodTick();gloveTick();if(composer)composer.render();else renderer.render(scene,camera);sharpTick();}
 const scene=new T.Scene();
 scene.fog=new T.Fog(0x06060c,320,1500); // no atmosphere: distance only fades far-off stands a little
 const camera=new T.PerspectiveCamera(42,16/9,0.1,1600);
@@ -1539,6 +1548,13 @@ function crowdPump(k=1){if(!AC)return;const t=AC.currentTime;
   if(roarG){const g=roarG.gain;g.cancelScheduledValues(t);g.setValueAtTime(g.value,t);g.linearRampToValueAtTime(Math.min(roarTop?1:1.25,g.value*1.45+.12*k),t+.35);}
   else roar(.95*k,.3);
   sfxSlice('cheer_big',.5*k,rand(1,1.06),rand(0,.3),2.6);cheerBusy=t+2.4;}
+// Overdrive has a pulse: a low 'lub-dub' while it is switched on and the at-bat is live. It quickens when the pitcher is in his too.
+let hbNext=0;
+function heartTick(){
+  if(!AC||!(S.over&&S.overOn)||!(S.state==='ready'||S.state==='windup'||S.state==='pitch'))return;
+  const t=AC.currentTime;if(t<hbNext)return;
+  hbNext=t+(S.pOver?.62:.82);
+  tone('sine',74,40,.13,.95);noise(.05,'lowpass',160,60,.5);tone('sine',62,34,.12,.7,.17);noise(.04,'lowpass',140,50,.35,1,.17);}
 // the home crowd lets the pitcher (and the umpire) hear it
 function boo(vol){const have=['boo1','boo2','boo3'].filter(n=>SFX[n]);if(!AC||!have.length||roarG)return;
   sfxSlice(have[(Math.random()*have.length)|0],vol,rand(.94,1.06),rand(0,2.4),rand(2.4,3.3));cheerBusy=AC.currentTime+2.4;}
@@ -1708,7 +1724,7 @@ function overCheck(){if(S.over||S.juice<.95||S.state==='title'||S.state==='over'
  SND.zap();buzz([30,40,30,40,80]);
   setTimeout(()=>{if(S.over&&!S.overOn)pop('OVERDRIVE READY!','','cool',true);},900);}
 let hudLater=false,ctlHidden=false,jPend=false;
-function hud(){sbDraw();overCheck();hudLater=false;if(S.cardBi>=0)cardStats(LINEUP[S.cardBi%LINEUP.length]);
+function hud(){$('hud').classList.toggle('pod',!!S.pOver&&S.state!=='title'&&S.state!=='over');sbDraw();overCheck();hudLater=false;if(S.cardBi>=0)cardStats(LINEUP[S.cardBi%LINEUP.length]);
   $('runs').textContent=S.runs;$('oruns').textContent=S.opp||0;$('inn').textContent=['1ST','2ND','3RD'][Math.min(S.inning,3)-1];$('count').textContent=S.balls+'-'+S.strikes;
   $('outs').textContent='O: '+S.outs;
   ['b1','b2','b3'].forEach((id,i)=>$(id).classList.toggle('on',!!S.bases[i]));
@@ -2600,7 +2616,7 @@ function updateClip(dt){
 // Gloves, built from shaped leather pieces rather than one blob: a fielder's glove (four finger stalls, thumb, a dark web between
 // thumb and forefinger, heel pad and wrist strap) and a catcher's mitt (round, thick-rimmed, with a deep dark pocket). Each glove is
 // two meshes (leather and dark trim), so eight of them on the field cost almost nothing. Units are the hand bone's (centimetres).
-const GLOVE={};
+const GLOVE={list:[]};let GLOVE_PHI=0;
 function gloveGeo(parts){ // [geometry, x,y,z, sx,sy,sz, rotZ] pieces merged into one geometry
   const pos=[],nor=[],m=new T.Matrix4(),q=new T.Quaternion(),e=new T.Euler(),P=new V3(),Sc=new V3(),n3=new T.Matrix3();
   for(const a of parts){const g=a[0].index?a[0].toNonIndexed():a[0];e.set(a[8]||0,0,a[7]||0);q.setFromEuler(e);m.compose(P.set(a[1],a[2],a[3]),q,Sc.set(a[4],a[5],a[6]));n3.getNormalMatrix(m);
@@ -2609,7 +2625,7 @@ function gloveGeo(parts){ // [geometry, x,y,z, sx,sy,sz, rotZ] pieces merged int
   const out=new T.BufferGeometry();out.setAttribute('position',new T.Float32BufferAttribute(pos,3));out.setAttribute('normal',new T.Float32BufferAttribute(nor,3));return out;}
 function mkGlove(kind){
   if(!GLOVE.sph){GLOVE.sph=new T.SphereGeometry(1,10,8);GLOVE.box=new T.BoxGeometry(1,1,1);GLOVE.tor=new T.TorusGeometry(1,.26,6,16);
-    GLOVE.tan=new T.MeshLambertMaterial({color:0x7a4a24});GLOVE.dark=new T.MeshLambertMaterial({color:0x24150b});
+    GLOVE.vc=new T.MeshLambertMaterial({vertexColors:true,side:T.DoubleSide});GLOVE.tan=new T.MeshLambertMaterial({color:0x7a4a24});GLOVE.dark=new T.MeshLambertMaterial({color:0x24150b});
     GLOVE.mittC=new T.MeshLambertMaterial({color:0x4d2c15}); // matte leather, dark enough that the stadium bloom doesn't make it glow
     const S=GLOVE.sph,B=GLOVE.box,To=GLOVE.tor;
     GLOVE.fa=gloveGeo([[S,0,8,0, 9.6,9,4.4],                                   // palm and pocket
@@ -2621,8 +2637,47 @@ function mkGlove(kind){
       [B,-2.2,13.6,2.9, 13,1,1,0],[B,-2.2,16.2,2.9, 13,1,1,0]]);                // lacing across the fingers
     GLOVE.ma=gloveGeo([[S,0,10.5,0, 12.2,12.6,5.4],[To,0,10.5,-.6, 10.4,10.8,7.5],[S,12,9,0, 3.6,8,3.6,-.45],[B,0,-.6,0, 13,4.4,6.6]]); // round body, thick rim, thumb, heel
     GLOVE.mb=gloveGeo([[S,-.6,11,-3.4, 7.6,7.8,2.2],[B,11,15.5,0, 5.6,8,1.6,-.35],[B,0,-3,0, 11,2.2,7]]);}                             // deep pocket, web, strap
-  const g=new T.Group(),mitt=kind==='mitt',a=new T.Mesh(mitt?GLOVE.ma:GLOVE.fa,mitt?GLOVE.mittC:GLOVE.tan),b=new T.Mesh(mitt?GLOVE.mb:GLOVE.fb,GLOVE.dark);
-  a.castShadow=true;g.add(a,b);return g;}
+  const g=new T.Group(),mitt=kind==='mitt';g.rotation.y=GLOVE_PHI;
+  if(mitt){const a=new T.Mesh(GLOVE.mitt||(GLOVE.mitt=mittGeo()),GLOVE.vc),b=new T.Mesh(GLOVE.mittLace||(GLOVE.mittLace=mittLace()),GLOVE.dark);a.castShadow=true;a.position.z=b.position.z=6.2;g.rotation.y=PI/2;g.add(a,b);return g;} // pocket turned to face the pitcher, hand tucked behind it
+  const a=new T.Mesh(GLOVE.fa,GLOVE.tan),b=new T.Mesh(GLOVE.fb,GLOVE.dark);a.castShadow=true;g.add(a,b);
+  g.userData.simple=[a,b];GLOVE.list.push(g);if(GLOVE.real)gloveReal(g);return g;}
+// The catcher's mitt, sculpted as one surface: a fat rolled rim, a deep dished pocket, a thumb lobe with the web beside it, a rounded
+// back with finger channels, and leather shading painted into the vertices (dark pocket, seam ring, darker web).
+function mittGeo(){
+  const NR=9,NT=30,pos=[],col=[],idx=[],W=.62,TH=.3; // W: where the web sits (radians, up and to the thumb side); TH: thumb lobe
+  const Ro=t=>{const d=Math.atan2(Math.sin(t-W),Math.cos(t-W)),dt=Math.atan2(Math.sin(t-TH+.5),Math.cos(t-TH+.5));
+    return 12.4*(1+.1*Math.exp(-dt*dt/.18)-.07*Math.exp(-d*d/.02)+.05*Math.sin(t)*(Math.sin(t)>0?1:.4));};
+  const V=(r,t,front)=>{const R=Ro(t),x=R*r*Math.cos(t),y=10.5+R*r*Math.sin(t)*1.04,d=Math.atan2(Math.sin(t-W),Math.cos(t-W)),web=Math.exp(-d*d/.05)*clamp((r-.4)/.3,0,1);
+    let z,c;
+    if(front){z=3.4*Math.exp(-(((r-.82)/.2)**2))*(1-.75*web)-3.8*Math.pow(1-r*r,1.4);
+      const L=r<.46?.42:r<.56?.24:.6+.12*Math.sin(t*3+1)*r; c=[.5*L*(1-.45*web)+.02,.29*L*(1-.45*web)+.01,.14*L*(1-.45*web)];}
+    else{z=-(1.3+4.6*Math.sqrt(Math.max(0,1-r*r*.93)))+(.5*Math.cos(t*9)*r*(Math.sin(t)>.1?1:0)); // finger channels across the back of the hand
+      const L=.44+.1*Math.cos(t*9)*(Math.sin(t)>.1?1:0);c=[.5*L,.29*L,.14*L];}
+    pos.push(x,y,z);col.push(c[0],c[1],c[2]);};
+  for(const front of [1,0])for(let i=0;i<=NR;i++)for(let j=0;j<=NT;j++)V(i/NR,j/NT*PI*2,front);
+  const n=(NR+1)*(NT+1),at=(f,i,j)=>f*n+i*(NT+1)+j;
+  for(const f of [0,1])for(let i=0;i<NR;i++)for(let j=0;j<NT;j++){const a=at(f,i,j),b=at(f,i+1,j),c=at(f,i+1,j+1),d=at(f,i,j+1);if(f)idx.push(a,c,b,a,d,c);else idx.push(a,b,c,a,c,d);}
+  for(let j=0;j<NT;j++){const a=at(0,NR,j),b=at(0,NR,j+1),c=at(1,NR,j+1),d=at(1,NR,j);idx.push(a,c,b,a,d,c);} // the rolled edge joining front to back
+  const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(pos,3));g.setAttribute('color',new T.Float32BufferAttribute(col,3));g.setIndex(idx);g.computeVertexNormals();return g;}
+function mittLace(){const parts=[],B=GLOVE.box;
+  for(let k=0;k<22;k++){const t=k/22*PI*2;if(Math.sin(t)<-.55)continue;const R=12.5*(1+.05*Math.max(0,Math.sin(t)));parts.push([B,R*Math.cos(t),10.5+R*Math.sin(t)*1.04,-.2, .8,2.2,2.6,t+PI/2]);} // lacing wrapped round the rim
+  for(let k=0;k<4;k++)parts.push([B,7.2+k*.9,15.2+k*1.5,1.2, 5.4,.8,.8,-.9]);                                                   // the web's cross lacing
+  parts.push([B,0,-2.6,-1.5, 12,2.4,6.4,0]);                                                                                    // wrist strap
+  return gloveGeo(parts);}
+// The real fielder's glove (a free model, see CREDITS.md): leather body, lacing, trim and eyelets as one mesh with painted colours.
+// Shown when a player is close to the camera; the simple code-built glove stands in when he is small on screen.
+function gloveReal(g){const m=new T.Mesh(GLOVE.real,GLOVE.vc);m.rotation.x=-PI/2;m.scale.setScalar(1.12);m.position.set(0,9.5,2.6);m.castShadow=true;m.visible=false;g.add(m);g.userData.real=m;}
+function gloveLoad(){fetch('glove.bin').then(r=>r.ok?r.arrayBuffer():Promise.reject()).then(buf=>{
+  const dv=new DataView(buf),nv=dv.getUint32(0,true),nt=dv.getUint32(4,true),P=new Int16Array(buf,8,nv*3),S=new Uint8Array(buf,8+nv*6,nv),I=new Uint16Array(buf,8+nv*6+nv+(nv%2),nt*3);
+  const pos=new Float32Array(nv*3),col=new Float32Array(nv*3),C=[[.17,.1,.05],[.38,.22,.1],[.52,.31,.15],[.3,.18,.09]]; // laces, trim, body, eyelets
+  for(let i=0;i<nv*3;i++)pos[i]=P[i]/2800;for(let i=0;i<nv;i++){const c=C[S[i]];col[i*3]=c[0];col[i*3+1]=c[1];col[i*3+2]=c[2];}
+  const g=new T.BufferGeometry();g.setAttribute('position',new T.BufferAttribute(pos,3));g.setAttribute('color',new T.BufferAttribute(col,3));g.setIndex(new T.BufferAttribute(new Uint16Array(I),1));g.computeVertexNormals();
+  GLOVE.real=g;GLOVE.list.forEach(gloveReal);}).catch(()=>{});}
+function gloveTick(){
+  for(const g of GLOVE.list){const u=g.userData;if(!u.real)continue;
+    if(!u.own){for(const o of LODM){let q=g;while(q&&q!==o.parent)q=q.parent;if(q){u.own=o;break;}}} // the player this glove belongs to (looked up until his model is ready)
+    const full=DBG.glove==='real'||(DBG.glove!=='simple'&&u.own&&!u.own.userData.isLite);
+    if(full!==u.real.visible){u.real.visible=full;u.simple[0].visible=u.simple[1].visible=!full;}}}
 function prepModel(obj,tx,custom){ // dress + bulk a Mixamo mannequin; returns its skeleton helpers and measurements
   const s=.87/88.9;
   const meshes=[];obj.traverse(n=>{if(n.isSkinnedMesh)meshes.push(n);});if(!meshes.length)throw new Error('no skinned mesh');
@@ -2848,7 +2903,7 @@ function loadPlayers(kind){ // body file = character mesh; clips.json = motion-c
     if(skins&&cj.catch)setTimeout(()=>{if(my!==MX.token)return;try{setupPlateCrew(make,skins);}catch(e){console.warn('catcher/umpire failed',e);}},250);
   }).catch(e=>{console.warn('player models unavailable, using built-in figures',e);if(my===MX.token){figs.forEach(fallback);playersDone();}});
 }
-loadPlayers(MX.kind);
+gloveLoad();loadPlayers(MX.kind);
 // ───────────────────────── per-frame updates
 let camMode='bat';const camPos=CAM_HOME.clone(),camLook=CAM_LOOK.clone();
 const BK={ // bat keys in batter space: X toward pitcher, Z toward plate
@@ -3041,7 +3096,7 @@ function step(dt){
       if(swing){strike('swing');}
       else if(pitch.inZone){strike('look');}
       else{S.balls++;{const n=S.balls;setTimeout(()=>SND.call(true,n),240);}
-        if(S.balls>=4){S.walked=true;S.juice=Math.min(1,S.juice+.25);walkRunners();const r=advance(1,true);pop('WALK',r?'+1 RUN':'TAKE YOUR BASE','plain');afterPA(1.3);}
+        if(S.balls>=4){S.walked=true;S.juice=Math.min(1,S.juice+.25);walkRunners();const r=advance(1,true);pop('WALK',r?'+1 RUN':'TAKE YOUR BASE','plain');boo(.5);afterPA(1.3);}
         else{pop('BALL','','plain');samePA(.95);}}
     }
   }
@@ -3084,7 +3139,7 @@ function step(dt){
   ptarget.visible=pring.visible;if(pring.visible)ptarget.position.copy(pring.position);
   // reticle
   const b=S.bi>=0?curBatter():LINEUP[0],tb=(S.over&&S.overOn)||(!S.over&&juiceOn()&&S.juice>=.25);
-  stickHint();sbTick();zapTick();crowdTick(dt);shoutTick();organTick();roarTick();
+  stickHint();sbTick();zapTick();crowdTick(dt);shoutTick();organTick();roarTick();heartTick();
   if(flight&&flight.play.type==='hr'&&!flight.sbHit&&!flight.orbit&&ball.visible&&Math.abs(ball.position.x)<24&&ball.position.y>22&&ball.position.y<40&&ball.position.z<-(fenceR(0)+15)&&ball.position.z>-(fenceR(0)+24)){flight.sbHit=true;zapStart(ball.position,true);burst(fxL,ball.position,26,9,.7,[.6,.85,1],7,1);}
   reticle.position.set(aim.x,aim.y,0);
   {const ez=easyAB()?1.3:1;retC.scale.setScalar(.17*b.con*1.25*(tb?1.2:1)*ez);retP.scale.setScalar(.17*b.con*(tb?.8:.63)*(tb?1.2:1)*ez);}
@@ -3184,7 +3239,7 @@ const LITE=matchMedia('(pointer:coarse)').matches;
 if(LITE){QS=.85;rim.shadow.mapSize.set(512,512);renderer.shadowMap.type=T.PCFShadowMap;}else initPost();
 resize();hud();
 const DBG={pcut:false,fl:'',rob:false,pc:false,staunt:false,pod:false,trail:false,orbit:false,pdef:false,dbl:false,cam:false,admire:'',trip:false,fist:false,pop:false,loser:false}; // test hook: pin the camera to CAM_HOME/CAM_LOOK
-window.__mm={renderer,scene,LODM,camera,zapStart,acState:()=>AC?AC.state+" t="+AC.currentTime.toFixed(1)+" real="+crowdReal+" roar="+!!roarG+" bed="+crowdGain.gain.value.toFixed(2):"none",roar,roarOff,boo,cheer,crowdRise,crowdDrop,S,aim,MX,DBG,landRingOn:()=>landRing.visible,hud,tutAnim,draw:()=>draw(),endGame,TROT,SFX,RUN,ballPos:()=>ball.position,ballVisible:()=>ball.visible,fielders,toReady,CAM_HOME,CAM_LOOK,now:()=>now,simulate,judge,get pitch(){return pitch;},get flight(){return flight;},lastSwing:()=>{const t=swing&&swing.type;swing=null;return t;},lastSwingTurbo:()=>!!(swing&&swing.turbo),doSwing,newGame,V3,
+window.__mm={GLOVE,renderer,scene,LODM,camera,zapStart,acState:()=>AC?AC.state+" t="+AC.currentTime.toFixed(1)+" real="+crowdReal+" roar="+!!roarG+" bed="+crowdGain.gain.value.toFixed(2):"none",roar,roarOff,boo,cheer,crowdRise,crowdDrop,S,aim,MX,DBG,landRingOn:()=>landRing.visible,hud,tutAnim,draw:()=>draw(),endGame,TROT,SFX,RUN,ballPos:()=>ball.position,ballVisible:()=>ball.visible,fielders,toReady,CAM_HOME,CAM_LOOK,now:()=>now,simulate,judge,get pitch(){return pitch;},get flight(){return flight;},lastSwing:()=>{const t=swing&&swing.type;swing=null;return t;},lastSwingTurbo:()=>!!(swing&&swing.turbo),doSwing,newGame,V3,
   sim:(dt)=>{hitstop=0;now+=dt;step(dt);},
   step:(n,dt=1/60)=>{for(let i=0;i<n;i++){if(hitstop>0)hitstop=0;now+=dt;step(dt);}updateCamera(dt);draw();}};
 if(!window.__mmManual)requestAnimationFrame(frame);
