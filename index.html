@@ -1267,7 +1267,9 @@ function setBatter(){
   // The pitcher has Overdrive too: when his Heat meter is full, every pitch of the next at-bat is a Juice pitch. Then his meter starts over.
   duelEnd();
   if(S.pOver){S.pOver=false;S.heat=0;}
-  else if(S.heat>=.999&&S.bi>=3){S.pOver=true;setTimeout(()=>{if(S.pOver){SND.zap();buzz([40,40,40,40,90]);pop('PITCHER OVERDRIVE!','EVERY PITCH THIS AT-BAT IS A JUICE PITCH','hot',true);}},900);duelCheck();}
+  // He can also just snap: from the second inning on there is a chance each new hitter that he goes into Overdrive whatever his meter says,
+  // and the more runs he has given up the likelier it is (3% with no runs, about 30% once eight are in). Never in the first inning.
+  else if(S.inning>=2&&(S.heat>=.999||DBG.pod||Math.random()<.03+.034*Math.min(S.runs,8))){S.pOver=true;setTimeout(()=>{if(S.pOver){SND.zap();buzz([40,40,40,40,90]);pop('PITCHER OVERDRIVE!','EVERY PITCH THIS AT-BAT IS A JUICE PITCH','hot',true);}},900);duelCheck();}
   aim.x=0;aim.y=.825; // every hitter starts with the ring in the middle of the zone
  
   paintJersey(batter,Object.assign({name:b.name,num:b.num},HOME));paintSkin(batter,b.skin);if(MX.ready)paintAtlas(b);
@@ -1697,7 +1699,7 @@ function juiceTap(){const t=performance.now();if(t-jTapT<250)return;jTapT=t; // 
   if(S.over){if(!S.overOn){S.overOn=true;SND.zap();buzz([20,30,60]);timing('⚡ OVERDRIVE ON: FREE JUICE SWINGS THIS AT-BAT ⚡','#3ad6ff',4);
     S.odUses=(S.odUses||0)+1;
     if(S.odUses===1)S.pOver=false;                         // the first Overdrive of a game is always yours alone: he can't answer it, and if he was in his own he backs off
-    else if(!S.pOver&&S.heat>=.5&&S.bi>=3)S.pOver=true;   // after that, the pitcher answers
+    else if(!S.pOver&&S.heat>=.5&&S.inning>=2)S.pOver=true;   // after that, the pitcher answers
     duelCheck();}}else juiceArmed=!juiceArmed;hud();}
 function doSwing(type){
   if(paused||S.state==='title'||S.state==='over')return;
@@ -2555,7 +2557,7 @@ try{const b=+localStorage.getItem('mm_best')||0;if(b)$('best').textContent='Best
 const LITE=matchMedia('(pointer:coarse)').matches;
 if(LITE){QS=.85;rim.shadow.mapSize.set(512,512);renderer.shadowMap.type=T.PCFShadowMap;}else initPost();
 resize();hud();
-const DBG={trail:false,orbit:false,pdef:false,dbl:false,cam:false,admire:'',trip:false,fist:false,pop:false,loser:false}; // test hook: pin the camera to CAM_HOME/CAM_LOOK
+const DBG={pod:false,trail:false,orbit:false,pdef:false,dbl:false,cam:false,admire:'',trip:false,fist:false,pop:false,loser:false}; // test hook: pin the camera to CAM_HOME/CAM_LOOK
 window.__mm={S,aim,MX,DBG,hud,tutAnim,draw:()=>draw(),endGame,TROT,SFX,RUN,ballPos:()=>ball.position,fielders,toReady,CAM_HOME,CAM_LOOK,now:()=>now,simulate,judge,get pitch(){return pitch;},get flight(){return flight;},lastSwing:()=>{const t=swing&&swing.type;swing=null;return t;},lastSwingTurbo:()=>!!(swing&&swing.turbo),doSwing,newGame,V3,
   sim:(dt)=>{hitstop=0;now+=dt;step(dt);},
   step:(n,dt=1/60)=>{for(let i=0;i<n;i++){if(hitstop>0)hitstop=0;now+=dt;step(dt);}updateCamera(dt);draw();}};
