@@ -1494,6 +1494,12 @@ function organTick(){
   else if(!fresh&&S.strikes===2&&Math.random()<.35)n='rise';
   else if(fresh&&Math.random()<.22)n=pick(['chord','clap','letsgo']);
   if(n)organPlay(n);}
+// A celebration pumps the crowd up past where the play itself left it: whatever is already roaring steps up by about half again,
+// with a fresh burst of cheering on top.
+function crowdPump(k=1){if(!AC)return;const t=AC.currentTime;
+  if(roarG){const g=roarG.gain;g.cancelScheduledValues(t);g.setValueAtTime(g.value,t);g.linearRampToValueAtTime(Math.min(roarTop?1:1.25,g.value*1.45+.12*k),t+.35);}
+  else roar(.95*k,.3);
+  sfxSlice('cheer_big',.5*k,rand(1,1.06),rand(0,.3),2.6);cheerBusy=t+2.4;}
 // the home crowd lets the pitcher (and the umpire) hear it
 function boo(vol){const have=['boo1','boo2','boo3'].filter(n=>SFX[n]);if(!AC||!have.length||roarG)return;
   sfxSlice(have[(Math.random()*have.length)|0],vol,rand(.94,1.06),rand(0,2.4),rand(2.4,3.3));cheerBusy=AC.currentTime+2.4;}
@@ -1784,7 +1790,7 @@ function updateTrot(dt){
     basePos(Math.min(3.999,sv+.3),_a);_b.set(_a.x,0,_a.z+19.4).normalize();TROT.cam.set(_a.x+_b.x*3.5,1.5,_a.z+_b.z*3.5);}
   else{root.position.set(0,0,0);root.rotation.y=PI/4;
     // cut on the action: the frame his foot hits the plate, the camera jumps to a new, low angle and the celebration starts on the cut
-    if(!TROT.cut){TROT.cut=true;flash(.4);cheer(.3,2.5);}
+    if(!TROT.cut){TROT.cut=true;flash(.4);crowdPump();}
     if(TROT.clip==='p_loser')TROT.cam.set(1.1,1.35,-3.6);else TROT.cam.set(1.5,.6,2.7); // camera ahead of him, looking back up the third-base line
     TROT.cele=!!(TROT.clip&&MX.clip&&MX.clip.intros[TROT.clip]);root.visible=!TROT.cele;if(!R.fistAct)mode='jog';} // the batter's own model takes over for the celebration
   if(mode!==R.mode){R.mode=mode;R.mixer.stopAllAction();(mode==='turn'?R.turnAct:mode==='fist'?R.fistAct:R.jogAct).reset().play();}
@@ -2194,7 +2200,7 @@ function finishPlay(){
   // Some doubles get a show of their own: once the play is over, cut to him standing on second doing one of the home-run celebrations.
   if(pl.type==='hit'&&pl.bases===2&&S.state==='result'&&WALK.on&&MX.clip&&(DBG.dbl||earlyShow(S.d2||0)||Math.random()<.4)){
     const w=WILD_CEL.filter(k=>k!=='p_loser'&&k!=='w_lift'&&MX.clip.intros[k]); // the lift uses the bat as the barbell, so it is kept for home plate
-    if(w.length){S.d2=(S.d2||0)+1;S.next=()=>{D2.rbi=f.rbi||0;D2.clip=w[(Math.random()*w.length)|0];RUN.list.forEach(R=>{if(R.active&&R.target===2)R.s=2;});S.state='celly2';S.t=now;flash(.35);cheer(.3,2.5);};}}
+    if(w.length){S.d2=(S.d2||0)+1;S.next=()=>{D2.rbi=f.rbi||0;D2.clip=w[(Math.random()*w.length)|0];RUN.list.forEach(R=>{if(R.active&&R.target===2)R.s=2;});S.state='celly2';S.t=now;flash(.35);crowdPump();};}}
   // Now and then, after a hit that scores a run (or a triple), a quick cut to the pitcher wearing it. Never twice in a row, never on top of another cut.
   if(!S.next&&pl.type==='hit'&&S.state==='result'&&(f.rbi>0||pl.bases===3)&&WALK.on&&MX.pit&&MX.pit.defs.length&&!S.pdLast&&(DBG.pdef||Math.random()<.4)){S.pdLast=true;S.next=()=>{S.state='pdef';S.t=now;};}
   else if(pl.type==='hit')S.pdLast=false;
@@ -2515,7 +2521,7 @@ function updateClip(dt){
   if(flight&&flight.admire&&!flight.done&&C.bi===S.bi){if(flight.cel===undefined){flight.cel=C.intros.c_fist&&(DBG.fist||Math.random()<.4)?'c_fist':flight.admire==='show'&&!flight.trot?celClip(WALK.by[curBatter().name]):''; // a single fist pump straight out of the swing, or his routine
       if(flight.cel==='c_fist')flight.A=Math.max(flight.A,1.25+C.intros.c_fist.dur+.1);}
     const ci=C.intros[flight.cel],tf=now-flight.t0,k=ci?ease(clamp((tf-1.25)/.3,0,1))*ease(clamp((flight.A+.35-tf)/.3,0,1)):0;
-    if(k>0){const e=tf-1.25;ci.a.time=ci.loop&&flight.cel!=='c_fist'?e%ci.dur:Math.min(ci.dur-.01,e);ci.a.setEffectiveWeight(k);base=1-k;if(flight.cel==='c_fist'){o.position.x+=ci.off.x*k;o.position.z+=ci.off.z*k;}}}
+    if(k>0){if(!flight.celP){flight.celP=true;crowdPump(.8);}const e=tf-1.25;ci.a.time=ci.loop&&flight.cel!=='c_fist'?e%ci.dur:Math.min(ci.dur-.01,e);ci.a.setEffectiveWeight(k);base=1-k;if(flight.cel==='c_fist'){o.position.x+=ci.off.x*k;o.position.z+=ci.off.z*k;}}}
   if(intro){const e=now-S.t;intro.a.time=intro.loop?e%intro.dur:clamp(intro.dur-(WALK.dur-.25-e),0,intro.dur-.01);intro.a.setEffectiveWeight(1); // a walk-in is timed to arrive in the box as the intro ends
     o.position.x+=intro.off.x;o.position.z+=intro.off.z;
     const rem=WALK.dur-e;if(rem<.2&&C.swap==null)batterOpacity(Math.max(0,rem/.2));}
