@@ -510,6 +510,10 @@ body.mob #tip{display:block}body.mob .how{display:none}
 @media (prefers-reduced-motion:reduce){#pop.go{animation-timing-function:ease-out}}
 #tags i{position:absolute;left:0;top:0;display:none;transform:translate(-50%,-100%);font-family:var(--hud);font-style:normal;font-weight:800;font-size:11px;letter-spacing:.1em;line-height:1;color:#fff;white-space:nowrap;padding:2px 6px 3px;background:rgba(8,10,26,.72);border-radius:8px;border-bottom:2px solid #0e9aa6;pointer-events:none}
 #tags i.me{border-bottom-color:var(--volt);font-size:12px}
+/* phones: during an at-bat the batter card rides just above the hitter's head, where the eyes already are (compact: name over grades) */
+#hud.mob>#card.hd{left:0;top:0;right:auto;bottom:auto;flex-direction:row;gap:6px;padding:3px 8px 4px;align-items:center}
+#hud.mob>#card.hd #cnum{font-size:20px}#hud.mob>#card.hd #cname{font-size:13px}
+#hud.mob>#card.hd .stats{gap:6px;margin-top:0}#hud.mob>#card.hd .stat{font-size:8px;gap:2px}#hud.mob>#card.hd .stat em{font-size:17px}
 #surge{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none;z-index:0}
 #sharp{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:visible;filter:drop-shadow(0 0 .6px rgba(0,0,0,.9))}
 #rating .res{font-family:var(--display);font-style:italic;font-size:clamp(26px,7vw,48px);line-height:1;color:var(--volt);-webkit-text-stroke:1.5px #000;text-shadow:0 4px 0 #000;margin-bottom:8px}
@@ -725,7 +729,17 @@ function lodTick(){
     else if(behind||frac<.17)lite=true;
     else if(frac>.21)lite=false;
     if(lite!==u.isLite){u.isLite=lite;m.geometry=lite?u.lite:u.full;}}}
-function draw(){lodTick();gloveTick();if(composer)composer.render();else renderer.render(scene,camera);sharpTick();tagsTick();}
+let cardHd=false;
+function cardTick(){
+  if(!MOB)return;
+  const on=camMode==='bat'&&(S.state==='ready'||S.state==='windup'||S.state==='pitch')&&S.cardBi>=0,c=$('card');
+  if(on!==cardHd){cardHd=on;c.classList.toggle('hd',on);if(!on)c.style.transform='';}
+  if(!on)return;
+  const W=canvas.clientWidth||innerWidth,H=canvas.clientHeight||innerHeight,lh=MX.lefty?1:-1;
+  _s0.set(lh*.97,1.66,.12).project(camera);const cw=c.offsetWidth||150,ch=c.offsetHeight||44;
+  const x=clamp((_s0.x*.5+.5)*W-cw*.42,6,W-cw-6),y=Math.max(150,(-_s0.y*.5+.5)*H-ch-2);
+  c.style.transform='translate('+x.toFixed(0)+'px,'+y.toFixed(0)+'px)';}
+function draw(){lodTick();gloveTick();if(composer)composer.render();else renderer.render(scene,camera);sharpTick();tagsTick();cardTick();}
 const scene=new T.Scene();
 scene.fog=new T.Fog(0x06060c,320,1500); // no atmosphere: distance only fades far-off stands a little
 const camera=new T.PerspectiveCamera(42,16/9,0.1,1600);
@@ -1417,7 +1431,7 @@ function tagsTick(){
 function sharpInit(){
   const ns='http://www.w3.org/2000/svg',sv=document.createElementNS(ns,'svg');sv.id='sharp';sv.setAttribute('aria-hidden','true');$('hud').insertBefore(sv,$('hud').firstChild);
   SH.zone=document.createElementNS(ns,'polygon');SH.zone.setAttribute('fill','none');SH.zone.setAttribute('stroke','#ffffff');SH.zone.setAttribute('stroke-width','2.6');SH.zone.style.filter='drop-shadow(0 0 1px #000) drop-shadow(0 0 1px #000)';SH.zone.setAttribute('stroke-linejoin','miter');SH.zone.style.display='none';sv.appendChild(SH.zone);
-  SH.grid=document.createElementNS(ns,'path');SH.grid.setAttribute('fill','none');SH.grid.setAttribute('stroke','rgba(255,255,255,.7)');SH.grid.setAttribute('stroke-width','1.2');SH.grid.style.filter='drop-shadow(0 0 1px rgba(0,0,0,.9))';SH.grid.style.display='none';sv.insertBefore(SH.grid,SH.zone); // the classic nine boxes, drawn faint so they guide the eye without covering the ball
+  SH.grid=document.createElementNS(ns,'path');SH.grid.setAttribute('fill','none');SH.grid.setAttribute('stroke','rgba(16,18,30,.8)');SH.grid.setAttribute('stroke-width','1.3'); // dark, so the white ball never crosses a white lineSH.grid.style.display='none';sv.insertBefore(SH.grid,SH.zone); // the classic nine boxes, drawn faint so they guide the eye without covering the ball
   [[retC,.93],[retP,.9],[pring,.86],[ptarget,.84]].forEach(q=>{const e=document.createElementNS(ns,'ellipse');e.setAttribute('fill','none');e.style.display='none';sv.appendChild(e);SH.rings.push({m:q[0],inner:q[1],e,on:false,col:-1});});}
 const _s0=new V3(),_s1=new V3(),_s2=new V3();
 const shVis=o=>{for(;o;o=o.parent)if(!o.visible)return false;return true;};
