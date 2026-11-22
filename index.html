@@ -1491,8 +1491,8 @@ function gameRating(){const G=S.goal,pts=S.runs*10+S.hits*4+S.hrs*8+(S.longest>=
   const T=[[0,'D','BENCH WARMER'],[20,'C','ROOKIE'],[45,'B','EVERYDAY STARTER'],[75,'A','ALL-STAR'],[110,'S','MOONSHOT LEGEND']];let i=0;T.forEach((t,j)=>{if(pts>=t[0])i=j;});
   return {pts,stars:i+1,grade:T[i][1],title:T[i][2],next:T[i+1]?T[i+1][0]-pts:0,nextTitle:T[i+1]?T[i+1][2]:''};}
 function newGame(){gamesPlayed++;try{localStorage.setItem('mm_games',gamesPlayed);}catch(e){}
-  Object.assign(S,{inning:1,outs:0,balls:0,strikes:0,runs:0,bases:[0,0,0],hits:0,hrs:0,longest:0,streak:0,bestStreak:0,juice:.25,heat:.2,over:false,bi:-1,pitches:0,seen:{},kOut:null});S.goal=pickGoal();S.ks=0;S.d2=0;S.cardBi=-1;S.pChanges=0;S.pRuns0=0;S.pc3=false;S.pcPending=false;S.pName=BULLPEN[0];$('pcap').textContent='PITCHER';S.sTaunt=null;S.stLast=false;jPend=false;S.orbN=0;S.odUses=0;S.duel=false;$('hud').classList.remove('duel');S.pdLast=false;S.pOver=false;S.jSaid=false;S.overOn=false;S.spSeen=false;lastWalk='';
-  $('title').hidden=true;$('over').hidden=true;$('pausebtn').hidden=false;$('mutebtn').hidden=false;setBatter();renderRep();scoreboard('PLAY BALL','INNING 1');toReady(2);pop('PLAY BALL!','GOAL: '+S.goal.label,'plain',true);SND.playball();cheer(.14,1.5);}
+  Object.assign(S,{inning:1,outs:0,balls:0,strikes:0,runs:0,bases:[0,0,0],hits:0,hrs:0,longest:0,streak:0,bestStreak:0,juice:.25,heat:.2,over:false,bi:-1,pitches:0,seen:{},kOut:null});S.goal=null; /* per-game goals are switched off for now: pickGoal() is still here to bring them back */S.ks=0;S.d2=0;S.cardBi=-1;S.pChanges=0;S.pRuns0=0;S.pc3=false;S.pcPending=false;S.pName=BULLPEN[0];$('pcap').textContent='PITCHER';S.sTaunt=null;S.stLast=false;jPend=false;S.orbN=0;S.odUses=0;S.duel=false;$('hud').classList.remove('duel');S.pdLast=false;S.pOver=false;S.jSaid=false;S.overOn=false;S.spSeen=false;lastWalk='';
+  $('title').hidden=true;$('over').hidden=true;$('pausebtn').hidden=false;$('mutebtn').hidden=false;setBatter();renderRep();scoreboard('PLAY BALL','INNING 1');toReady(2);pop('PLAY BALL!','INNING 1','plain');SND.playball();cheer(.14,1.5);}
 
 // ───────────────────────── pitching
 // brk = how far the pitch moves off a straight line (sideways, vertical) by the time it reaches the plate; k = how late that
@@ -1802,7 +1802,7 @@ function endGame(){
   const rows=[['RUNS',S.runs],['HITS',S.hits],['HOMERS',S.hrs],['LONGEST',S.longest?S.longest+' FT':'—'],['BEST STREAK',S.bestStreak],['BEST GAME',Math.max(best,S.runs)]];
   {const R=gameRating(),G=S.goal;STATS.g++;STATS.runs+=S.runs;STATS.hits+=S.hits;STATS.hrs+=S.hrs;STATS.longest=Math.max(STATS.longest,S.longest);try{localStorage.setItem('mm_stats',JSON.stringify(STATS));}catch(e){}
     $('rating').innerHTML='<div class="gr">'+R.grade+'</div><div class="st">'+'★'.repeat(R.stars)+'<i>'+'★'.repeat(5-R.stars)+'</i></div><div class="ti">'+R.title+'</div>'+
-      '<div class="gl'+(G&&G.done?' ok':'')+'">Goal: '+(G?G.label:'')+' — '+(G&&G.done?'complete ✓':'missed')+(R.next?' · '+R.next+' pts to '+R.nextTitle:'')+'</div>';$('goal').hidden=true;}
+      '<div class="gl">'+(R.next?R.next+' pts to '+R.nextTitle:'Top rating')+'</div>';$('goal').hidden=true;}
   $('final').innerHTML=rows.map(r=>`<div class="slab"><span class="lbl">${r[0]}</span><div class="big">${r[1]}</div></div>`).join('');
   $('over').hidden=false;$('pausebtn').hidden=true;$('mutebtn').hidden=true;$('rep').hidden=true;scoreboard('FINAL',S.runs+' RUNS');
 }
