@@ -1391,12 +1391,12 @@ function roar(level,ramp,top){
   if(!AC)return;
   const t=AC.currentTime,b=SFX.cheer_big;
   if(!roarG&&top&&SFX.pop_max){ // the biggest moments: the whole place comes unglued. The recording's own build-up plays once, then its sustained peak loops.
-    const pb=SFX.pop_max,src=AC.createBufferSource();roarG=AC.createGain();roarG.gain.value=.8*level;roarG.connect(master);
+    const pb=SFX.pop_max,src=AC.createBufferSource();roarG=AC.createGain();roarG.gain.value=.6*level;roarG.connect(master);
     src.buffer=pb;src.loop=true;src.loopStart=3.5;src.loopEnd=Math.max(5,pb.duration-1.5);src.connect(roarG);src.start(t,0);roarS=[src];roarTop=true;return;}
   if(!b)return;
   if(!roarG){roarG=AC.createGain();roarG.gain.value=0;roarG.connect(master);
     roarS=[[.8,1],[1.9,1.06]].map(o=>{const src=AC.createBufferSource();src.buffer=b;src.loop=true;src.loopStart=.8;src.loopEnd=Math.max(1.6,Math.min(3,b.duration-.6));src.playbackRate.value=o[1];src.connect(roarG);src.start(t,o[0]);return src;});}
-  const g=roarG.gain;g.cancelScheduledValues(t);g.setValueAtTime(g.value,t);g.linearRampToValueAtTime(Math.min(1.2,(roarTop?.8:.62)*level),t+ramp);}
+  const g=roarG.gain;g.cancelScheduledValues(t);g.setValueAtTime(g.value,t);g.linearRampToValueAtTime(Math.min(roarTop?.86:1.2,(roarTop?.6:.62)*level),t+ramp);}
 function roarOff(){
   if(!roarG)return;
   const t=AC.currentTime,g=roarG.gain,ss=roarS;roarG=null;roarS=[];roarTop=false;
@@ -1429,7 +1429,7 @@ function boo(vol){const have=['boo1','boo2','boo3'].filter(n=>SFX[n]);if(!AC||!h
   sfxSlice(have[(Math.random()*have.length)|0],vol,rand(.94,1.06),rand(0,2.4),rand(2.4,3.3));cheerBusy=AC.currentTime+2.4;}
 function cheer(level,dur){if(!AC)return;const t=AC.currentTime,g=crowdGain.gain;
   if(crowdReal){ // the ambience swells a little; the reaction itself is a recorded cheer on top
-    if(roarG){}else if(level>=.5&&SFX.pop_max){sfxSlice('pop_max',.8,1,0,4.6);cheerBusy=t+4;}
+    if(roarG){}else if(level>=.5&&SFX.pop_max){sfxSlice('pop_max',.6,1,0,4.6);cheerBusy=t+4;}
     else if(level>=.4){sfxSlice('cheer_big',.95,rand(.95,1.06),rand(0,.4),3.4);cheerBusy=t+3;}
     else if(level>=.2&&t>cheerBusy-1.2){sfxSlice('cheer',.45+level,rand(.9,1.12),rand(0,1.6),rand(2.4,3.2));cheerBusy=t+2.6;}
     level=crowdBase*clamp(Math.sqrt(level/.05),.6,2.2);}
