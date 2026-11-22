@@ -311,6 +311,10 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
   opacity:.92;animation:flames .34s ease-in-out infinite alternate}
 @keyframes odglow{from{box-shadow:0 4px 0 #000,0 0 14px 3px rgba(58,170,255,.8),0 0 30px 8px rgba(30,100,255,.45)}to{box-shadow:0 4px 0 #000,0 0 22px 7px rgba(120,220,255,.95),0 0 46px 14px rgba(30,100,255,.6)}}
 .tb.jc.odon{transform:scale(1.06)}.tb.jc.od b{display:none}
+/* charged and waiting: the button throbs, flashes white-hot and throws off a ring, over and over, until it is pressed */
+.tb.jc.od:not(.odon){animation:odCall .8s ease-in-out infinite}
+@keyframes odCall{0%{transform:scale(1);filter:brightness(1);box-shadow:0 4px 0 #000,0 0 0 0 rgba(170,238,255,.95),0 0 22px 7px rgba(120,220,255,.9)}40%{transform:scale(1.15);filter:brightness(1.65) saturate(1.2)}100%{transform:scale(1);filter:brightness(1);box-shadow:0 4px 0 #000,0 0 0 24px rgba(170,238,255,0),0 0 46px 14px rgba(30,100,255,.6)}}
+@media (prefers-reduced-motion:reduce){.tb.jc.od:not(.odon){animation:odglow .45s ease-in-out infinite alternate}}
 .tb.pw.fire.blue{background:radial-gradient(circle at 50% 115%,#e6fbff 0%,#58d6ff 26%,#1e7bff 58%,#0a2a9a 86%);border-color:#020a2a;animation-name:odglow}.tb.pw.fire.blue::after{filter:blur(1.5px) hue-rotate(185deg) saturate(1.4)}
 .tb.jc.on{animation:none;background:radial-gradient(circle at 50% 60%,#ffffff 0%,#bff4ff 30%,#3aa8ff 70%,#1e5fe0 100%);border-color:#fff;box-shadow:0 4px 0 #000,0 0 0 4px rgba(255,255,255,.9),0 0 26px 10px rgba(88,214,255,.95);transform:scale(1.08)} /* armed: white-hot with a white ring */
 /* POWER on fire: Juice armed, or Overdrive */
