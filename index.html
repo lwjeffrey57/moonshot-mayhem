@@ -656,6 +656,7 @@ body.mob #tip{display:block}body.mob .how{display:none}
     <button class="cta alt" id="cambtn" type="button">CAMERA</button>
     <button class="cta alt sens" id="sens2" type="button"></button>
     <button class="cta alt" id="howbtn" type="button">HOW TO PLAY</button>
+    <button class="cta alt" id="shbtn" type="button">FIELD SHADOWS: OFF</button>
     <button class="cta alt" id="fpsbtn" type="button">SHOW SPEED: OFF</button>
     <button class="cta alt" id="restart" type="button">RESTART GAME</button>
     <button class="cta alt" id="quit" type="button">QUIT TO MAIN MENU</button>
@@ -757,7 +758,7 @@ function podCls(){const st=S.state,on=pOD()&&!(st==='title'||st==='over'||st==='
   const ip=st==='flight'||st==='result'||st==='trot'||st==='celebrate'||st==='celly2';if(ip!==inplayOn){inplayOn=ip;$('hud').classList.toggle('inplay',ip);}
   const ce=st==='celly2'||st==='trot';if(ce!==celOn){celOn=ce;$('hud').classList.toggle('cel',ce);}}
  // while the camera is close on the pitcher, call-outs drop to a smaller line along the bottom so the words never sit on him
-function draw(){podCls();{const pc=now-pcutT<.06,e=$('pop');if(pc!==pcutOn){pcutOn=pc;$('hud').classList.toggle('pcut',pc);if(!pc){e.style.top='';e.style.bottom='';e.className='';}}
+function draw(){podCls();shTick();{const pc=now-pcutT<.06,e=$('pop');if(pc!==pcutOn){pcutOn=pc;$('hud').classList.toggle('pcut',pc);if(!pc){e.style.top='';e.style.bottom='';e.className='';}}
   if(pc){_s0.copy(pcutH).project(camera);const H=canvas.clientHeight||innerHeight;e.style.bottom='auto';{const t1=e.querySelector('.t'),s1=e.querySelector('.s');e.style.top=Math.max(6,(-_s0.y*.5+.5)*H-t1.offsetHeight-(s1.textContent?s1.offsetHeight+6:0)).toFixed(0)+'px';}}} // call-outs sit just above the head of whoever the close-up is on
  lodTick();gloveTick();if(composer)composer.render();else renderer.render(scene,camera);sharpTick();tagsTick();cardTick();}
 const scene=new T.Scene();
@@ -793,7 +794,9 @@ const sun=new T.DirectionalLight(0xfff1dc,0.8);sun.position.set(-30,80,60);scene
 const rim=new T.DirectionalLight(0xffc890,0.45);rim.position.set(-9,13,-11);rim.castShadow=true;scene.add(rim);
 rim.shadow.mapSize.set(1024,1024);Object.assign(rim.shadow.camera,{left:-4,right:4,top:4,bottom:-4,near:1,far:40});rim.shadow.bias=-.002;
 renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;
-{const sp=new T.Mesh(new T.PlaneGeometry(12,12),new T.ShadowMaterial({opacity:.45}));sp.rotation.x=-PI/2;sp.position.set(0,.03,0);sp.receiveShadow=true;sp.renderOrder=1;scene.add(sp);}
+const shSmall=new T.Mesh(new T.PlaneGeometry(12,12),new T.ShadowMaterial({opacity:.45}));shSmall.rotation.x=-PI/2;shSmall.position.set(0,.03,0);shSmall.receiveShadow=true;shSmall.renderOrder=1;scene.add(shSmall);
+// FIELD SHADOWS (a quality switch): every player throws a real shadow across the whole field instead of sitting on a soft dark oval
+const shBig=new T.Mesh(new T.PlaneGeometry(280,230),new T.ShadowMaterial({opacity:.5,polygonOffset:true,polygonOffsetFactor:-4,polygonOffsetUnits:-8}));shBig.rotation.x=-PI/2;shBig.position.set(0,.03,-75);shBig.receiveShadow=true;shBig.renderOrder=1;shBig.visible=false;scene.add(shBig);scene.add(rim.target);let shMound=null;
 
 // sky: the park sits on the Moon. Black space, hard stars, a band of the Milky Way; no air, so no sunset and no haze.
 {
@@ -926,6 +929,7 @@ gl_FragColor=vec4(col,1.0);
   const gp=new T.Mesh(new T.PlaneGeometry(900,900),groundMat);gp.rotation.x=-PI/2;gp.position.set(0,0,-150);scene.add(gp);
   // mound: a smooth dome using the same surface shader, with the pitching rubber on top
   {const md=new T.Mesh(new T.LatheGeometry([[.001,.25],[.8,.25],[1.45,.2],[2.1,.1],[2.74,.004]].map(q=>new T.Vector2(q[0],q[1])),28),groundMat);md.position.set(0,0,-18.4);scene.add(md);
+   shMound=new T.Mesh(md.geometry,new T.ShadowMaterial({opacity:.5,side:T.DoubleSide,polygonOffset:true,polygonOffsetFactor:-4,polygonOffsetUnits:-8}));shMound.position.copy(md.position);shMound.receiveShadow=true;shMound.renderOrder=1;shMound.visible=false;scene.add(shMound); /* the mound catches shadows too */
     const rb=new T.Mesh(new T.BoxGeometry(.61,.04,.15),new T.MeshLambertMaterial({color:0xf0f0ea}));rb.position.set(0,.262,-18.4);scene.add(rb);}
   {const S2=1024/14,X2=x=>(x+7)*S2,Z2=z=>(z+8)*S2;
     const home=tex(1024,1024,(g)=>{
@@ -1413,7 +1417,7 @@ const ballTex=tex(256,128,(g,w,h)=>{g.fillStyle='#f6f3e8';g.fillRect(0,0,w,h);
 ballTex.anisotropy=ANISO;
 const ball=new T.Mesh(new T.SphereGeometry(.05,16,12),new T.MeshBasicMaterial({color:0xffffff,map:ballTex,transparent:true}));ball.renderOrder=20;ball.visible=false;{const bg=new T.Group();bg.renderOrder=20;bg.add(ball);scene.add(bg);} // in its own late-drawn group, so it is painted on top of the zone backing and the ring fills instead of being tinted by them
 const SPIN={FASTBALL:[1,0,0,34],CURVEBALL:[-1,0,0,30],SLIDER:[.3,.25,.92,38],CHANGEUP:[.85,.5,.1,17],SCREWBALL:[-.5,.6,.6,26]},_spin=new V3();
-const ballShadow=new T.Mesh(GEO.blob,blobMat);ballShadow.rotation.x=-PI/2;ballShadow.visible=false;scene.add(ballShadow);
+const ballShadow=new T.Mesh(GEO.blob,blobMat.clone());ballShadow.rotation.x=-PI/2;ballShadow.visible=false;scene.add(ballShadow);
 const ballGlow=new T.Sprite(new T.SpriteMaterial({map:glowTex,color:0xffe53b,blending:T.AdditiveBlending,depthWrite:false,transparent:true,opacity:0}));scene.add(ballGlow);
 const overlayMat=(c,o)=>new T.MeshBasicMaterial({color:c,transparent:true,opacity:o,depthTest:false,depthWrite:false,side:T.DoubleSide});
 const ZONE={x0:-.28,x1:.28,y0:.5,y1:1.15};
@@ -1667,7 +1671,7 @@ function organTick(){
 // An ordinary home run's roar is a loop of the steady middle of a cheer, which on its own is flat, like noise. So while it runs, fresh
 // waves of cheering break over it every second or so (the opening shout of the big cheer, at a slightly different pitch each time).
 function roarTick(){
-  if(roarG&&roarG.gain.value>=(roarTop?.84:1.05))shake=Math.max(shake,.055*FX); // at its very loudest the crowd makes the place tremble a little
+  if(roarG&&roarG.gain.value>=(roarTop?.84:1.05))rumble=1; // at its very loudest the crowd shakes the camera itself
   if(!AC||!roarG||!roarHR)return;
   const t=AC.currentTime;if(t<roarWave)return;
   roarWave=t+rand(.8,1.4);
@@ -1728,7 +1732,7 @@ const SND={
 
 // ───────────────────────── game state
 const S={state:'title',t:0,inning:1,outs:0,balls:0,strikes:0,runs:0,bases:[0,0,0],hits:0,hrs:0,longest:0,streak:0,bestStreak:0,juice:.25,heat:.2,over:false,stk:false,opp:0,bi:-1,pitches:0,seen:{},kOut:null};
-let now=0,hitstop=0,timeScale=1,slowT=0,shake=0,fovKick=0;
+let now=0,hitstop=0,timeScale=1,slowT=0,shake=0,fovKick=0,rumble=0;
 const aim={x:0,y:.82};
 const keys={};
 const PACE={samePitch:2.1,newBatter:2.9}; // seconds the pitcher waits before starting his windup
@@ -1867,10 +1871,10 @@ function duelCheck(){if(S.duel||!(S.over&&S.overOn&&S.pOver))return;if((S.odUses
   else if((S.state==='windup'||S.state==='pitch')&&!swing&&!flight){ // he was already into his delivery: that pitch is called off and he comes set again, so the hitter gets a fair look
     if(pitch)S.pitches=Math.max(0,S.pitches-1);S.state='ready';S.t=now;readyDur=2.0;pitch=null;ball.visible=false;ballShadow.visible=false;pring.visible=false;ballGlow.material.opacity=0;}}
 function duelEnd(){if(!S.duel)return;S.duel=false;$('hud').classList.remove('duel');const won=S.hits>S.duelHits||S.walked;
-  setTimeout(()=>pop(won?'DUEL WON!':'DUEL LOST',won?'THE HITTER TAKES IT':'THE PITCHER TAKES IT',won?'cool':'hot',true),500);if(won)cheer(.5,3);else boo(.6);}
+  if(won)cheer(.5,3);else boo(.6);} // no banner: the result of the at-bat says who won it
 function overCheck(){if(S.over||S.juice<.95||S.state==='title'||S.state==='over')return;S.juice=1;S.over=true;S.overOn=false;juiceArmed=false;hudLater=true; // a bar that looks full IS full: anything from 95% up snaps to full and becomes Overdrive on the spot
  SND.zap();buzz([30,40,30,40,80]);
-  const call=()=>{if(!(S.over&&!S.overOn))return;if(S.state==='trot'||S.state==='celebrate'||S.state==='celly2'||S.state==='flight'||S.state==='result'){setTimeout(call,350);return;}pop('OVERDRIVE READY!','','cool',true);}; // never over a celebration: it waits for the next hitter
+  const call=()=>{if(!(S.over&&!S.overOn))return;if(S.state!=='ready'||now-S.t<.3){setTimeout(call,300);return;}pop('OVERDRIVE READY!','','cool',true);}; // never over a celebration: it waits for the next hitter
   setTimeout(call,900);}
 let hudLater=false,ctlHidden=false,jPend=false;
 function hud(){podCls();sbDraw();overCheck();hudLater=false;if(S.cardBi>=0)cardStats(LINEUP[S.cardBi%LINEUP.length]);
@@ -2270,8 +2274,9 @@ function judge0(tr,bt){const spd=bt&&bt.spd||1; // batter's speed: 0.85 (plodder
     for(const c of fielders){if(c.isP&&pMiss&&!tr.offP&&q.t<=1.5&&q.y<=2.2&&Math.hypot(c.home.x-q.x,c.home.z-q.z)<=c.reach+c.speed*Math.max(0,q.t-c.react))tr.offP=q.t; // the comebacker he didn't handle: it goes off him
       if(q.y>2.2*(c.scale||1)||(c.isP&&(q.t>1.5||pMiss))||(burned&&c.of&&q.t<tr.wallT))continue;const d=Math.hypot(c.home.x-q.x,c.home.z-q.z),hang=c.of?hangK(q.t):1; // a ball that hangs up there gets run down: past 4.2 s an outfielder covers up to half as much ground again
       if(d<=c.reach+c.speed*hang*Math.max(0,q.t-c.react)){
-        // now and then a rocket eats an infielder up: it is on him too fast, goes off him and he goes down. Rare, so it keeps its charm.
-        if(!c.isP&&!c.of&&c.dieAct&&!tr.offF&&!tr.offP&&q.t<=1.05&&q.y>.35&&q.y<=1.9&&(DBG.drill||Math.random()<.04)){tr.offF={t:q.t,f:c};continue;}
+        // now and then a rocket eats an infielder up: it is on him too fast, goes off him and he goes down. Rare, so it keeps its charm,
+        // except in Overdrive: a liner hit right at an infielder by a hitter in Overdrive always goes through him.
+        if(!c.isP&&!c.of&&c.dieAct&&!tr.offF&&!tr.offP&&q.t<=1.05&&q.y>.35&&q.y<=1.9&&(DBG.drill||(S.over&&S.overOn)||Math.random()<.04)){tr.offF={t:q.t,f:c};continue;}
         if(tr.offF&&tr.offF.f===c)continue;
         f=c;p=q;break outer;}}} // the pitcher only handles what comes straight back at him
   if(!f){p=tr.pts[tr.pts.length-1];let bd=1e9;for(const c of fielders){const d=Math.hypot(c.home.x-p.x,c.home.z-p.z);if(d<bd){bd=d;f=c;}}p={x:p.x,y:0,z:p.z,t:p.t};}
@@ -2342,7 +2347,10 @@ function tryContact(){flight_pop=false;if(pitch.hbp){swing.done=true;swing.miss=
   const spin={side:phi/40*3.2+gs()*4,lift};
   const p0=new V3(pitch.tx,pitch.ty,clamp(-dt*6,-.7,.3));
   const v0=new V3(Math.sin(phi*DEG)*Math.cos(la*DEG),Math.sin(la*DEG),-Math.cos(phi*DEG)*Math.cos(la*DEG)).multiplyScalar(v);
-  const tr=simulate(p0,v0,spin,fopt),play=judge(tr,S.over&&S.overOn?Object.assign({},b,{spd:b.spd*1.08}):b);play.tag=play.tag||tr.tag||(kind==='TOPSPIN SINKER'?'':kind);if(tr.offP&&play.type==='hit'&&!play.infield)play.tag='OFF THE PITCHER';if(tr.offF&&play.type==='hit')play.tag='ATE HIM UP';
+  let tr=simulate(p0,v0,spin,fopt);
+  // a liner that would die at the foot of the wall carries a touch further and bangs off it instead: more balls off the wall, fewer dropping at its base
+  for(let i=0;i<4&&!tr.hr&&!tr.foul&&tr.land&&!(tr.wall&&tr.wallT<tr.land.t)&&Math.atan2(v0.y,Math.hypot(v0.x,v0.z))<26*DEG;i++){const L=tr.land,gap=fenceR(Math.atan2(L.x,-L.z))-Math.hypot(L.x,L.z);if(gap<0||gap>9)break;v0.multiplyScalar(1.04);tr=simulate(p0,v0,spin,fopt);}
+  const play=judge(tr,S.over&&S.overOn?Object.assign({},b,{spd:b.spd*1.08}):b);play.tag=play.tag||tr.tag||(kind==='TOPSPIN SINKER'?'':kind);if(tr.offP&&play.type==='hit'&&!play.infield)play.tag='OFF THE PITCHER';if(tr.offF&&play.type==='hit')play.tag='ATE HIM UP';
   flight={tr,play,t0:now,q,pw,tb,od:!!(S.over&&S.overOn),v,done:false,called:false,trailC:S.over&&S.overOn?[.2,.55,1]:tb?[1,.45,.1]:pw&&q>.75?[1,.85,.25]:[.5,.5,.55]}; // Overdrive hits burn blue, Juice hits orange
   // Some Overdrive home runs don't come down: the ball leaves the Moon's orbit, headed for Earth. Always the first one a player ever hits; after that, about a third of them.
   if(flight.od&&play.type==='hr'&&(DBG.orbit||!orbSeen||Math.random()<.35)){S.orbN=(S.orbN||0)+1;orbSeen=true;try{localStorage.setItem('mm_orbit','1');}catch(e){}flight.orbit=true;play.endT+=9;
@@ -3374,7 +3382,7 @@ function step(dt){
   else if(st==='pdef'&&el>=PDEF){toReady(PACE.newBatter);}
   else if(st==='pchange'&&S.pcW&&!S.pcI&&el>=S.pcW){pcIntro();}
   else if(st==='pod'&&el>=POD){toReady(1.3);}
-  else if(st==='pchange'&&el>=PCH+(S.pcW||0)){S.podPending=false;if(S.pOver)setTimeout(()=>{if(S.pOver){SND.zap();buzz([40,40,40,40,90]);pop('PITCHER OVERDRIVE!','THE NEW ARM CAME IN HOT','hot',true);}},500);toReady(PACE.newBatter);}
+  else if(st==='pchange'&&el>=PCH+(S.pcW||0)){S.podPending=!!S.pOver; /* a new arm who came in hot is revealed like any other: once the hitter is set in the box */toReady(PACE.newBatter);}
   else if(st==='trot'&&el>=TROT.dur){endTrot();if(S.inning>3)endGame();else toReady(PACE.newBatter);}
   else if(st==='celebrate'&&el>=readyDur){
     if(S.inning>3)endGame();else toReady(PACE.newBatter);}
@@ -3521,6 +3529,8 @@ function updateCamera(rdt){
     camPos.lerp(_p,k);camLook.lerp(bp,1-Math.exp(-9*rdt));
   }
   camera.position.copy(camPos);
+  if(rumble>.02){const t=performance.now()/1000,a=rumble*FX; // the whole picture trembles, like a broadcast camera on a deck that 50,000 people are jumping on: the frame shakes, not the stands
+    camera.rotateZ((Math.sin(t*47)+Math.sin(t*71.3))*.0034*a);camera.rotateX((Math.sin(t*53.7)+Math.sin(t*83.1))*.0022*a);camera.rotateY(Math.sin(t*61.3)*.0018*a);rumble*=Math.exp(-3.5*rdt);}
   if(shake>.002){camera.position.x+=rand(-1,1)*shake;camera.position.y+=rand(-1,1)*shake;shake*=Math.exp(-7*rdt);}
   camera.lookAt(camLook);
   fovKick*=Math.exp(-5*rdt);const f=camera.userData.baseFov+fovKick;if(Math.abs(f-camera.fov)>.01){camera.fov=f;camera.updateProjectionMatrix();}
@@ -3529,7 +3539,7 @@ function updateCamera(rdt){
 let last=performance.now();
 // Keeps the game responsive on slower phones: if frames are slow for a while, drop a quality level (never goes back up).
 let qN=0,qT=0,qLvl=0;function qualityWatch(dt){qN++;qT+=dt;if(qN<90)return;const avg=qT/qN;qN=0;qT=0;if(avg<1/42||qLvl>=2)return;qLvl++;
-  if(qLvl===1){QS*=.84;rim.castShadow=false;}else{QS*=.8;composer=null;fxaa=null;}resize();}
+  if(qLvl===1){QS*=.84;rim.castShadow=false;if(SHQ){SHQ=false;shApply();}}else{QS*=.8;composer=null;fxaa=null;}resize();}
 // optional on-screen readout (pause menu): frames per second, the slowest frame in the last half second, and the current quality level
 let fpsOn=false,fN=0,fT=0,fMax=0,fWork=0;
 $('fpsbtn').addEventListener('click',()=>{fpsOn=!fpsOn;$('fps').hidden=!fpsOn;$('fpsbtn').textContent='SHOW SPEED: '+(fpsOn?'ON':'OFF');});
@@ -3541,6 +3551,7 @@ function frame(t){
   const rdt=Math.min(.05,(t-last)/1000);last=t;
   if(tutHold)tutAnim(t);
   if(tutHold&&!tutDemo&&S.state!=='title'){camera.position.copy(CAM_HOME);camera.lookAt(CAM_LOOK);} // the tutorial always sits over the normal view from behind the plate, never over whatever close-up the camera happened to be in
+  if(tutHold&&S.state==='ready'){try{updateBatter(0);updatePitcher();updateFielders(0);updatePlateCrew();}catch(e){}} // models that finish loading while a guide is up still get put in their stance (otherwise the catcher stands unposed right in front of the camera)
   if(paused||tutHold){draw();requestAnimationFrame(frame);return;}
   qualityWatch(rdt);
   if(hitstop>0){hitstop-=rdt;}
@@ -3557,6 +3568,19 @@ try{const b=+localStorage.getItem('mm_best')||0;if(b)$('best').textContent='Best
 // Phones start on a lighter setup so the controls stay snappy: no bloom/edge-smoothing pass, a smaller and harder-edged shadow, slightly lower resolution.
 const LITE=matchMedia('(pointer:coarse)').matches;
 if(LITE){QS=.85;rim.shadow.mapSize.set(512,512);renderer.shadowMap.type=T.PCFShadowMap;}else initPost();
+// Field shadows: on by default on computers, off on phones (it draws every player a second time); the choice is remembered.
+let SHQ=!LITE,shWide=null;try{const v=localStorage.getItem('mm_shadows');if(v!==null)SHQ=v==='1';}catch(e){}
+const SH_DIR=new V3(-9,13,-11).normalize();
+function shFrame(cx,cz,half){const c=rim.shadow.camera;rim.target.position.set(cx,0,cz);rim.position.set(cx,0,cz).addScaledVector(SH_DIR,150);c.left=-half;c.right=half;c.top=half;c.bottom=-half;c.near=20;c.far=320;c.updateProjectionMatrix();rim.target.updateMatrixWorld();}
+function shApply(){const on=SHQ&&rim.castShadow;shBig.visible=on;if(shMound)shMound.visible=on;shSmall.visible=!on;blobMat.visible=!on;shWide=null;
+  if(on){rim.shadow.mapSize.set(LITE?2048:4096,LITE?2048:4096);rim.shadow.bias=-.0004;rim.shadow.normalBias=.03;}
+  else{rim.shadow.mapSize.set(LITE?512:1024,LITE?512:1024);rim.shadow.bias=0;rim.shadow.normalBias=0;rim.target.position.set(0,0,0);rim.position.set(-9,13,-11);const c=rim.shadow.camera;c.left=-5;c.right=5;c.top=5;c.bottom=-5;c.near=.5;c.far=500;c.updateProjectionMatrix();rim.target.updateMatrixWorld();}
+  if(rim.shadow.map){rim.shadow.map.dispose();rim.shadow.map=null;}
+  $('shbtn').textContent='FIELD SHADOWS: '+(SHQ?'ON':'OFF');}
+// before the pitch the shadow picture is spent on the plate and the infield, where it is seen close up; once the ball is in play it opens out to the whole park
+function shTick(){if(!(SHQ&&rim.castShadow))return;const st=S.state,wide=!(st==='ready'||st==='windup'||st==='pitch'||st==='walkup'||st==='title'||st==='pod'||st==='hbp');if(wide!==shWide){shWide=wide;if(wide)shFrame(0,-52,84);else shFrame(0,-19,34);}}
+$('shbtn').addEventListener('click',()=>{SHQ=!SHQ;if(SHQ&&!rim.castShadow)rim.castShadow=true;try{localStorage.setItem('mm_shadows',SHQ?'1':'0');}catch(e){}shApply();});
+shApply();
 resize();hud();
 const DBG={dive:'',hbp:false,pcut:false,fl:'',rob:false,pc:false,staunt:false,pod:false,trail:false,orbit:false,pdef:false,dbl:false,cam:false,admire:'',trip:false,fist:false,pop:false,loser:false}; // test hook: pin the camera to CAM_HOME/CAM_LOOK
 window.__mm={crowdFx,setE:v=>{crowdE=v;crowdShow=v;},GLOVE,renderer,scene,LODM,camera,zapStart,acState:()=>AC?(zoneLP?"lp="+Math.round(zoneLP.frequency.value)+" ":"")+AC.state+" t="+AC.currentTime.toFixed(1)+" real="+crowdReal+" roar="+(roarG?roarG.gain.value.toFixed(2)+(roarTop?"T":""):"off")+" bed="+crowdGain.gain.value.toFixed(2):"none",roar,roarOff,boo,cheer,crowdRise,crowdDrop,S,aim,MX,DBG,landRingOn:()=>landRing.visible,hud,tutAnim,draw:()=>draw(),endGame,TROT,SFX,RUN,ballPos:()=>ball.position,ballVisible:()=>ball.visible,fielders,toReady,CAM_HOME,CAM_LOOK,now:()=>now,simulate,judge,get pitch(){return pitch;},get flight(){return flight;},lastSwing:()=>{const t=swing&&swing.type;swing=null;return t;},lastSwingTurbo:()=>!!(swing&&swing.turbo),doSwing,newGame,V3,
