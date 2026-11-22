@@ -1421,6 +1421,8 @@ function crowdRise(q,dur){if(!AC||!crowdReal||roarG)return;const t=AC.currentTim
   for(let k=0,at=0;at<dur+.2&&k<4;k++,at+=1.9){const d=Math.min(2.6,dur+.7-at);if(d<.9)break; // the rising 'ohh' on top, re-voiced every couple of seconds on long flies so it carries all the way down
     if(at===0)sfxSlice('cheer',.2+.3*q,rand(1.03,1.15),rand(0,1.5),d);else setTimeout(()=>{if(!roarG&&flight&&!flight.done)sfxSlice('cheer',.16+.24*q,rand(1.0,1.12),rand(0,1.5),d);},at*1000);}
   cheerBusy=t+1.2;crowdNext=t+dur+2;}
+// keep the bed up for d more seconds (a fielder still chasing the ball down, the throw coming in): the play is not over, so neither is the noise
+function crowdHold(d){if(!AC||!crowdReal||roarG)return;const t=AC.currentTime,g=crowdGain.gain;g.cancelScheduledValues(t);g.setTargetAtTime(crowdBase*2,t,.2);g.setTargetAtTime(crowdBase,t+d,.9);crowdNext=t+d+2;}
 function crowdDrop(){if(!AC||!crowdReal||roarG)return;const t=AC.currentTime,g=crowdGain.gain;
   g.cancelScheduledValues(t);g.setTargetAtTime(crowdBase*.45,t,.12);g.setTargetAtTime(crowdBase,t+1.8,.9);
   sfxSlice('cheer',.2,rand(.58,.66),rand(.5,2),1.6);cheerBusy=t+1.6;crowdNext=t+3.2;}
@@ -2108,7 +2110,7 @@ function finishPlay(){
       // if he hasn't got to the ball yet (a ball to the wall, say), he runs the rest of the way first and only then throws: no throwing on the move
       const tfN=now-f.t0,rem=Math.max(0,(pl.tField||pl.endT)-tfN),wait=rem>.05?clamp(rem,.35,.8):0;
       if(wait){const rp=pl.f.fig.root.position;pl.from=rp.clone();pl.tS=tfN;pl.tField=tfN+wait;}
-      f.thr={t0:now+.34+wait,pick:.34,wait,to:new V3(BASES[tb][0],1.2,BASES[tb][1])};}
+      f.thr={t0:now+.34+wait,pick:.34,wait,to:new V3(BASES[tb][0],1.2,BASES[tb][1])};crowdHold(2+wait);}
   }
   const cel=S.state==='celebrate'||S.state==='trot';setBatter();if(cel)readyDur=3.1;else readyDur=f.thr?2.2+(f.thr.wait||0):1.5;S.next=null;hud();
   // Some doubles get a show of their own: once the play is over, cut to him standing on second doing one of the home-run celebrations.
@@ -2897,7 +2899,7 @@ function step(dt){
     if(tr.poleT&&!flight.poleHit&&tf>=tr.poleT){flight.poleHit=true;burst(fxL,ball.position,16,7,.5,[1,.9,.3],5,1);tone('sine',1250,900,.5,.6);tone('triangle',2500,1800,.4,.3);pop('OFF THE POLE!','FAIR BALL','hot');} // doink
     if(tr.hr&&!flight.fenceRoar&&tf>=tr.hrT){flight.fenceRoar=true;roar(flight.roarL||1,.35);} // over the fence: the roar that has been building steps up
     if(tr.eyeT&&!flight.orbit&&!flight.eyeHit&&tf>=tr.eyeT){flight.eyeHit=true;zapStart(ball.position,false);burst(fxL,ball.position,26,9,.7,[.6,.85,1],7,1);SND.mitt();tone('sine',120,50,.25,.5);} // thud off the batter's eye
-    if(tr.land&&!flight.orbit&&!flight.landed&&tf>=tr.land.t){flight.landed=true;_p.set(tr.land.x,.05,tr.land.z);burst(fxL,_p,10,3,.5,[.75,.6,.42],4,2);} // dust where it comes down, so fair or foul is clear
+    if(tr.land&&!flight.orbit&&!flight.landed&&tf>=tr.land.t){flight.landed=true;if(flight.play.type==='hit'&&flight.play.endT-tr.land.t>.7){cheer(.25,flight.play.endT-tr.land.t+.5);} /* it drops in: the cheer starts now, not when the fielder finally gets to it */_p.set(tr.land.x,.05,tr.land.z);burst(fxL,_p,10,3,.5,[.75,.6,.42],4,2);} // dust where it comes down, so fair or foul is clear
     const dc=camera.position.distanceTo(ball.position);ball.scale.setScalar(Math.max(1,dc*.05));
     ballShadow.visible=!flight.orbit;ballShadow.position.set(p.x,.03,p.z);ballShadow.scale.setScalar(.2+Math.min(1.2,p.y*.03));
     trail(flight,flight.trailC,dc>9,flight.tb||(flight.pw&&flight.q>.75));
