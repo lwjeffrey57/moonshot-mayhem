@@ -760,7 +760,7 @@ const pcutH=new V3(0,2.3,-18.4);let retTb=false,retT=-9,pcutT=-9,pcutOn=false,ce
 // the pitcher's fire border waits until the hitter is in the box; the batter card goes away once the ball is in play
 function podCls(){const st=S.state,on=pOD()&&!(st==='title'||st==='over'||st==='end'||st==='walkup'||st==='pchange');if(on!==podOn){podOn=on;$('hud').classList.toggle('pod',on);}
   const ip=st==='flight'||st==='result'||st==='trot'||st==='celebrate'||st==='celly2';if(ip!==inplayOn){inplayOn=ip;$('hud').classList.toggle('inplay',ip);}
-  const ce=st==='celly2'||st==='trot';if(ce!==celOn){celOn=ce;$('hud').classList.toggle('cel',ce);}}
+  const ce=st==='celly2'||st==='trot'||!!(flight&&flight.orb&&!flight.done);if(ce!==celOn){celOn=ce;$('hud').classList.toggle('cel',ce);}}
  // while the camera is close on the pitcher, call-outs drop to a smaller line along the bottom so the words never sit on him
 function draw(){podCls();shTick();{const pc=now-pcutT<.06,e=$('pop');if(pc!==pcutOn){pcutOn=pc;$('hud').classList.toggle('pcut',pc);if(!pc){e.style.top='';e.style.bottom='';e.className='';}}
   if(pc){_s0.copy(pcutH).project(camera);const H=canvas.clientHeight||innerHeight;e.style.bottom='auto';{const t1=e.querySelector('.t'),s1=e.querySelector('.s');e.style.top=Math.max(6,(-_s0.y*.5+.5)*H-t1.offsetHeight-(s1.textContent?s1.offsetHeight+6:0)).toFixed(0)+'px';}}} // call-outs sit just above the head of whoever the close-up is on
@@ -2361,9 +2361,11 @@ function tryContact(){flight_pop=false;if(pitch.hbp){swing.done=true;swing.miss=
   const play=judge(tr,S.over&&S.overOn?Object.assign({},b,{spd:b.spd*1.08}):b);play.tag=play.tag||tr.tag||(kind==='TOPSPIN SINKER'?'':kind);if(tr.offP&&play.type==='hit'&&!play.infield)play.tag='OFF THE PITCHER';if(tr.offF&&play.type==='hit')play.tag='ATE HIM UP';
   flight={tr,play,t0:now,q,pw,tb,od:!!(S.over&&S.overOn),v,done:false,called:false,trailC:S.over&&S.overOn?[.2,.55,1]:tb?[1,.45,.1]:pw&&q>.75?[1,.85,.25]:[.5,.5,.55]}; // Overdrive hits burn blue, Juice hits orange
   // Some Overdrive home runs don't come down: the ball leaves the Moon's orbit, headed for Earth. Always the first one a player ever hits; after that, about a third of them.
-  if(flight.od&&play.type==='hr'&&(DBG.orbit||!orbSeen||Math.random()<.35)){S.orbN=(S.orbN||0)+1;orbSeen=true;try{localStorage.setItem('mm_orbit','1');}catch(e){}flight.orbit=true;play.endT+=9;
+  if(flight.od&&play.type==='hr'&&(DBG.orbit||DBG.sat||!orbSeen||Math.random()<.45)){const sat=DBG.sat||(orbSeen&&!DBG.orbit&&Math.random()<.5);S.orbN=(S.orbN||0)+1;orbSeen=true;try{localStorage.setItem('mm_orbit','1');}catch(e){}flight.orbit=true;play.endT+=9;
     // its own flight from the moment it leaves the bat: one smooth climb out over the wall and away, never the normal arc
-    const hd=Math.hypot(v0.x,v0.z)||1,dx=v0.x/hd,dz=v0.z/hd;flight.orbP=[p0.clone(),new V3(p0.x+dx*46,p0.y+15,p0.z+dz*46),new V3(p0.x+dx*135,96,p0.z+dz*135),ORB_TO.clone()];}
+    const hd=Math.hypot(v0.x,v0.z)||1,dx=v0.x/hd,dz=v0.z/hd;flight.orbP=[p0.clone(),new V3(p0.x+dx*46,p0.y+15,p0.z+dz*46),new V3(p0.x+dx*135,96,p0.z+dz*135),ORB_TO.clone()];
+    // ...or it never gets as far as Earth: there is a satellite in the way
+    if(sat){flight.sat=true;const T0=new V3(p0.x+dx*235,150,p0.z+dz*235);flight.orbP[2].set(p0.x+dx*150,104,p0.z+dz*150);flight.orbP[3]=T0;satPlace(T0,Math.atan2(dx,dz));}}
   pitch.hit=true;pring.visible=false;S.state='flight';payHeat();$('mph').textContent=pitchMph(pitch.dur);$('plast').textContent=pitch.P.n+' · '+pitchMph(pitch.dur)+' MPH';$('pitchinfo').classList.add('on'),$('plast').classList.add('on');renderRep(pitch.P);
   if(tb)juiceArmed=false;
   // ── the payoff
@@ -2508,6 +2510,20 @@ function finishPlay(){
   if(!S.next&&pl.type==='hit'&&S.state==='result'&&(f.rbi>0||pl.bases===3)&&WALK.on&&MX.pit&&MX.pit.defs.length&&!S.pdLast&&(DBG.pdef||Math.random()<.4)){S.pdLast=true;S.next=()=>{S.state='pdef';S.t=now;};}
   else if(pl.type==='hit')S.pdLast=false;
 }
+// A satellite for the Overdrive homer that never makes it to Earth. Built big (it is a long way off) from a gold-foil bus, two solar wings and a dish.
+const SAT={g:new T.Group(),parts:[],t:0};
+{const mb=c=>new T.MeshBasicMaterial({color:c,fog:false}),add=(geo,mat,x,y,z)=>{const m=new T.Mesh(geo,mat);m.position.set(x,y,z);SAT.g.add(m);SAT.parts.push({m,home:m.position.clone(),v:new V3(),w:new V3()});return m;};
+  add(new T.BoxGeometry(9,9,13),mb(0xd9a521),0,0,0);
+  [-1,1].forEach(sd=>{const w=add(new T.BoxGeometry(26,.5,10),mb(0x1f4fd6),sd*18.5,0,0);for(let i=-2;i<=2;i++){const l=new T.Mesh(new T.BoxGeometry(.35,.6,10),mb(0x9fc4ff));l.position.x=i*5;w.add(l);}});
+  {const d=add(new T.ConeGeometry(5,3.2,14,1,true),new T.MeshBasicMaterial({color:0xe8ecf5,fog:false,side:T.DoubleSide}),0,7.5,2);d.rotation.x=PI;}
+  add(new T.CylinderGeometry(.25,.25,9,5),mb(0xcfd6e6),0,-8,-3);
+  {const b=add(new T.SphereGeometry(.9,8,6),mb(0xff3b3b),0,-12.6,-3);}
+  SAT.g.scale.setScalar(2.7);SAT.g.visible=false;scene.add(SAT.g);}
+function satPlace(at,yaw){SAT.g.visible=true;SAT.g.position.copy(at);SAT.g.rotation.set(.35,yaw+.6,.25);SAT.t=now;SAT.parts.forEach(P=>{P.m.position.copy(P.home);P.m.rotation.set(P.m===SAT.parts[3].m?PI:0,0,0);P.v.set(0,0,0);P.w.set(0,0,0);});}
+function satBreak(){SAT.parts.forEach((P,i)=>{P.v.copy(P.home).normalize().multiplyScalar(rand(8,16)).add(_v.set(rand(-5,5),rand(-3,6),rand(-5,5)));if(!i)P.v.set(rand(-3,3),rand(-2,2),-14);P.w.set(rand(-3,3),rand(-3,3),rand(-3,3));});}
+function satTick(){if(!SAT.g.visible)return;if(!(flight&&flight.sat)){SAT.g.visible=false;return;}const dt=Math.min(.05,now-SAT.t);SAT.t=now;
+  if(flight.satHit)SAT.parts.forEach(P=>{P.m.position.addScaledVector(P.v,dt);P.m.rotation.x+=P.w.x*dt;P.m.rotation.y+=P.w.y*dt;P.m.rotation.z+=P.w.z*dt;});
+  else SAT.g.rotation.y+=dt*.12;}
 let orbSeen=false;try{orbSeen=localStorage.getItem('mm_orbit')==='1';}catch(e){} // the very first Overdrive homer a player ever hits always leaves orbit; after that it is about one in three
 const D2={clip:'',dur:2.9,base:2},PDEF=2.0,ORB_TO=new V3(-56,462,-858);
 function endGame(){
@@ -3426,7 +3442,7 @@ function step(dt){
     const tf=now-flight.t0,tr=flight.tr,i=Math.min(tr.pts.length-1,Math.floor(tf*120)),p=tr.pts[i];
     ball.visible=true;ball.position.set(p.x,p.y,p.z);
     if(flight.orbit){const B=flight.orbP,bez=(u,o)=>{const v=1-u;return o.set(0,0,0).addScaledVector(B[0],v*v*v).addScaledVector(B[1],3*v*v*u).addScaledVector(B[2],3*v*u*u).addScaledVector(B[3],u*u*u);};
-      if(!flight.orb&&tf>=1.1&&!(flight.admire&&tf<flight.A)){flight.orb=now;flight.orbFrom=bez(.22,new V3());flight.play.endT=tf+3.1;pop('LEFT ORBIT!','NEXT STOP: EARTH','cool',true);SND.boom();SND.zap();buzz([40,40,40,40,120]);}
+      if(!flight.orb&&tf>=1.1&&!(flight.admire&&tf<flight.A)){flight.orb=now;flight.orbFrom=bez(.22,new V3());flight.play.endT=tf+(flight.sat?4.7:3.1);if(flight.sat)pop('WAY UP THERE!','','cool');else pop('LEFT ORBIT!','NEXT STOP: EARTH','cool',true);SND.boom();SND.zap();buzz([40,40,40,40,120]);}
       bez(flight.orb?.22+.78*Math.pow(clamp((now-flight.orb)/3.1,0,1),1.5):.22*ease(Math.min(1,tf/1.1)),ball.position);}
     if(flight.dShow){const ft=Math.round(flight.dFt*Math.min(1,Math.hypot(p.x,p.z)/(flight.dEnd||1)));if(ft!==flight.dLast){flight.dLast=ft;$('hds').textContent=ft+' FT';}}
     if(flight.play.type==='out'&&flight.play.air&&tf<flight.play.endT){const pl=flight.play,k=1-tf/pl.endT; // every ball that is going to be caught in the air gets the ring, under the spot where it will be caught: liners, pop-ups, foul outs, robberies
@@ -3447,6 +3463,8 @@ function step(dt){
     ballGlow.position.copy(ball.position);ballGlow.material.opacity=flight.tb?.8:flight.q>.75?.4:0;ballGlow.scale.setScalar(Math.max(.3,dc*.04));
     ballGlow.material.color.setHex(flight.od?0x3a9bff:flight.tb?0xff6a1a:0xffe53b);
     if(flight.orb){ballGlow.material.opacity=1;ballGlow.scale.setScalar(Math.max(5,dc*.11));ball.scale.setScalar(Math.max(1,dc*.075));}
+    if(flight.sat&&flight.orb){if(!flight.satHit&&now-flight.orb>=3.1){flight.satHit=now;satBreak();flash(.8);burst(fxL,SAT.g.position,90,95,1.7,[1,.85,.4],0,0);burst(fxL,SAT.g.position,60,50,1.3,[.6,.85,1],0,0);SND.boom();SND.zap();setTimeout(()=>SND.zap(),160);buzz([60,40,60,40,160]);shake=Math.max(shake,.4*FX);rumble=1;pop('DIRECT HIT!','SATELLITE DOWN','hot');}
+      if(flight.satHit){ball.visible=false;ballGlow.material.opacity=0;}}
     if(flight.play.type==='hr'&&!flight.called&&tf>=tr.hrT-.9){flight.called=true;pop("OUTTA HERE!",'','hot');SND.boom();}
     if(tf>=flight.play.endT){
       if(flight.play.type==='hr'){_p.copy(ball.position);burst(fxL,_p,30,14,.9,[1,.9,.6],4,4);SND.boom();}
@@ -3465,7 +3483,7 @@ function step(dt){
   ptarget.visible=pring.visible;if(pring.visible)ptarget.position.copy(pring.position);
   // reticle
   const b=S.bi>=0?curBatter():LINEUP[0],tb=(S.over&&S.overOn)||(!S.over&&juiceOn()&&S.juice>=.25);
-  stickHint();sbTick();zapTick();crowdTick(dt);shoutTick();poleTick();organTick();roarTick();heartTick();zoneTick();
+  stickHint();sbTick();zapTick();crowdTick(dt);shoutTick();poleTick();satTick();organTick();roarTick();heartTick();zoneTick();
   if(flight&&flight.play.type==='hr'&&!flight.sbHit&&!flight.orbit&&ball.visible&&Math.abs(ball.position.x)<24&&ball.position.y>30&&ball.position.y<48&&ball.position.z<-(fenceR(0)+15)&&ball.position.z>-(fenceR(0)+24)){flight.sbHit=true;zapStart(ball.position,true);burst(fxL,ball.position,26,9,.7,[.6,.85,1],7,1);}
   reticle.position.set(aim.x,aim.y,0);
   {const ez=easyAB()?1.3:1;if(!!tb!==retTb){retTb=!!tb;retT=now;}
@@ -3590,7 +3608,7 @@ function shTick(){if(!(SHQ&&rim.castShadow))return;const st=S.state,wide=!(st===
 $('shbtn').addEventListener('click',()=>{SHQ=!SHQ;if(SHQ&&!rim.castShadow)rim.castShadow=true;try{localStorage.setItem('mm_shadows',SHQ?'1':'0');}catch(e){}shApply();});
 shApply();
 resize();hud();
-const DBG={dive:'',hbp:false,pcut:false,fl:'',rob:false,pc:false,staunt:false,pod:false,trail:false,orbit:false,pdef:false,dbl:false,cam:false,admire:'',trip:false,fist:false,pop:false,loser:false}; // test hook: pin the camera to CAM_HOME/CAM_LOOK
+const DBG={dive:'',hbp:false,pcut:false,fl:'',rob:false,pc:false,staunt:false,pod:false,trail:false,orbit:false,sat:false,drill:false,pdef:false,dbl:false,cam:false,admire:'',trip:false,fist:false,pop:false,loser:false}; // test hook: pin the camera to CAM_HOME/CAM_LOOK
 window.__mm={crowdFx,setE:v=>{crowdE=v;crowdShow=v;},GLOVE,renderer,scene,LODM,camera,zapStart,acState:()=>AC?(zoneLP?"lp="+Math.round(zoneLP.frequency.value)+" ":"")+AC.state+" t="+AC.currentTime.toFixed(1)+" real="+crowdReal+" roar="+(roarG?roarG.gain.value.toFixed(2)+(roarTop?"T":""):"off")+" bed="+crowdGain.gain.value.toFixed(2):"none",roar,roarOff,boo,cheer,crowdRise,crowdDrop,S,aim,MX,DBG,landRingOn:()=>landRing.visible,hud,tutAnim,draw:()=>draw(),endGame,TROT,SFX,RUN,ballPos:()=>ball.position,ballVisible:()=>ball.visible,fielders,toReady,CAM_HOME,CAM_LOOK,now:()=>now,simulate,judge,get pitch(){return pitch;},get flight(){return flight;},lastSwing:()=>{const t=swing&&swing.type;swing=null;return t;},lastSwingTurbo:()=>!!(swing&&swing.turbo),doSwing,newGame,V3,
   sim:(dt)=>{hitstop=0;now+=dt;step(dt);},
   step:(n,dt=1/60)=>{for(let i=0;i<n;i++){if(hitstop>0)hitstop=0;now+=dt;step(dt);}updateCamera(dt);draw();}};
