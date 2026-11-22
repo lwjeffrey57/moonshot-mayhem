@@ -1187,6 +1187,7 @@ const POSE={
   pRelease:pose({y:.78,yaw:.55,lean:.55,rz:1.3,hL:[-.9,0,.1],kL:.7,hR:[.75,0,-.1],kR:.7,sL:[.3,0,.4],eL:-2,sR:[-2.7,0,-.3],eR:-.12}),
   pFollow:pose({y:.74,yaw:1.05,lean:.9,rz:1.5,hL:[-.8,0,.1],kL:.85,hR:[1.05,0,-.3],kR:1.25,sL:[.3,0,.4],eL:-2,sR:[-.6,0,.55],eR:-.3}),
   fReady:pose({y:.8,lean:.5,hL:[-.62,0,.36],kL:1.1,hR:[-.62,0,-.36],kR:1.1,sL:[-.7,0,.2],eL:-.7,sR:[-.7,0,-.2],eR:-.7}),
+  fScoop:pose({y:.6,lean:1.05,hL:[-1.15,0,.42],kL:1.75,hR:[-1.15,0,-.42],kR:1.75,sL:[-.5,0,-.12],eL:-.12,sR:[-.5,0,.12],eR:-.12}),
   fCatch:pose({y:.93,lean:-.05,hL:[-.1,0,.12],kL:.2,hR:[-.1,0,-.12],kR:.2,sL:[-2.85,0,.15],eL:-.2,sR:[-.3,0,-.3],eR:-.6}),
 };
 const tmpPose={};
@@ -1578,7 +1579,8 @@ function updateRunners(dt){
 // ── The throw back in after a hit is fielded (visual only): the fielder winds up and the ball flies to the base ahead of the lead runner.
 const THROW_REL=.77;
 function updateThrow(){
-  if(!(flight&&flight.thr))return;const Th=flight.thr;if(Th.bt===undefined)Th.bt=Th.t0+THROW_REL;const e=now-Th.bt;if(e<0)return;
+  if(!(flight&&flight.thr))return;const Th=flight.thr;if(Th.bt===undefined)Th.bt=Th.t0+THROW_REL;const e=now-Th.bt;
+  if(e<0){if(Th.pick&&now>=Th.t0-Th.pick){ball.visible=false;ballShadow.visible=false;}return;} // picked up: the ball is in his glove until he lets it go
   if(!Th.from){const f=flight.play.f,r=f.fig.root;Th.from=new V3(r.position.x,1.75*(f.scale||1),r.position.z);Th.len=Th.from.distanceTo(Th.to);Th.dur=clamp(Th.len/42,.3,1.3);SND.whoosh();}
   const u=e/Th.dur;
   // outfield throws show only the release and the first part of the flight; infield throws (full) are followed all the way to the bag
@@ -1918,9 +1920,9 @@ function finishPlay(){
       // if he hasn't got to the ball yet (a ball to the wall, say), he runs the rest of the way first and only then throws: no throwing on the move
       const tfN=now-f.t0,rem=Math.max(0,(pl.tField||pl.endT)-tfN),wait=rem>.05?clamp(rem,.35,.8):0;
       if(wait){const rp=pl.f.fig.root.position;pl.from=rp.clone();pl.tS=tfN;pl.tField=tfN+wait;}
-      f.thr={t0:now+.15+wait,wait,to:new V3(BASES[tb][0],1.2,BASES[tb][1])};}
+      f.thr={t0:now+.34+wait,pick:.34,wait,to:new V3(BASES[tb][0],1.2,BASES[tb][1])};}
   }
-  const cel=S.state==='celebrate'||S.state==='trot';setBatter();if(cel)readyDur=3.1;else readyDur=f.thr?2.0+(f.thr.wait||0):1.5;S.next=null;hud();
+  const cel=S.state==='celebrate'||S.state==='trot';setBatter();if(cel)readyDur=3.1;else readyDur=f.thr?2.2+(f.thr.wait||0):1.5;S.next=null;hud();
   // Some doubles get a show of their own: once the play is over, cut to him standing on second doing one of the home-run celebrations.
   if(pl.type==='hit'&&pl.bases===2&&S.state==='result'&&WALK.on&&MX.clip&&(DBG.dbl||earlyShow(S.d2||0)||Math.random()<.4)){
     const w=WILD_CEL.filter(k=>k!=='p_loser'&&k!=='w_lift'&&MX.clip.intros[k]); // the lift uses the bat as the barbell, so it is kept for home plate
@@ -2582,7 +2584,7 @@ function updateFielders(dt){
   const tf=flight?now-flight.t0:0;
   for(const f of fielders){if(f.isP)continue;const r=f.fig.root;let clipT=-1,running=false,strafe=0;
     if(flight&&flight.play.f===f){const pl=flight.play,mocap=pl.air&&f.act;
-      if(!pl.tgt){pl.tgt={x:pl.p.x,z:pl.p.z,face:Math.atan2(-pl.p.x,-pl.p.z),lead:0};
+      if(!pl.tgt){pl.tgt={x:pl.p.x,z:pl.p.z,face:Math.atan2(-pl.p.x,-pl.p.z),lead:pl.air?0:Math.min(.3,pl.endT*.3)}; /* on a ball on the ground he gets there a beat early, to set his feet and get down for it */
         if(mocap){ // stop where the clip starts him, so its own drift carries the glove to the ball
           const dx=f.startOff.x-f.catchOff.x,dz=f.startOff.z-f.catchOff.z,c=Math.cos(pl.tgt.face),sn=Math.sin(pl.tgt.face);
           const k=f.scale||1;pl.tgt.x+=(dx*c+dz*sn)*k;pl.tgt.z+=(-dx*sn+dz*c)*k;pl.tgt.lead=Math.min(CATCH.t-CATCH.start,pl.endT*.5);}}
@@ -2594,7 +2596,14 @@ function updateFielders(dt){
         const lat=(mx*Math.cos(face)-mz*Math.sin(face))/ml;
         if(f.strAct&&Math.abs(lat)>.86&&ml<22){strafe=lat>0?1:-1;r.rotation.y=face;}else r.rotation.y=Math.atan2(mx,mz);
         f.ph+=dt*13;applyPose(f.fig,runPose(f.ph));running=true;}
-      else{applyPose(f.fig,pl.air?POSE.fCatch:POSE.fReady);} // glove up only for balls caught in the air; a ball fielded on the ground is taken low
+      else if(pl.air)applyPose(f.fig,POSE.fCatch);
+      else{ // a ball on the ground is fielded: square up to it, get the glove down as it arrives, come up with it, then turn to throw
+        const tA=pl.tField||pl.endT,k=clamp(1-(tA-tf)/.26,0,1)*(1-clamp((tf-tA-.1)/.2,0,1));
+        applyPose(f.fig,lerpPose(POSE.fReady,POSE.fScoop,ease(k),tmpPose));
+        const bx=ball.position.x-r.position.x,bz=ball.position.z-r.position.z;
+        if(tf<tA&&Math.hypot(bx,bz)>.8){let d=Math.atan2(bx,bz)-r.rotation.y;d=Math.atan2(Math.sin(d),Math.cos(d));r.rotation.y+=d*Math.min(1,dt*9);}
+        else if(flight.thr&&tf>tA+.1){let d=Math.atan2(flight.thr.to.x-r.position.x,flight.thr.to.z-r.position.z)-r.rotation.y;d=Math.atan2(Math.sin(d),Math.cos(d));r.rotation.y+=d*Math.min(1,dt*9);}
+      }
       {const rr=Math.hypot(px,pz),fr=fenceR(Math.atan2(px,-pz))-1.1;if(rr>fr){r.position.x=px*fr/rr;r.position.z=pz*fr/rr;}else{r.position.x=px;r.position.z=pz;}} // no fielder ever goes into or through the wall
       if(mocap&&!moving){const ct=CATCH.t-(pl.endT-tf);if(ct>=CATCH.t-g.lead-.001){clipT=clamp(ct,CATCH.start,CATCH.end);r.rotation.y=g.face;}}
     }else if(flight&&!flight.play.f&&f.of&&flight.play.type==='hr'){ // watch it leave
@@ -2818,7 +2827,7 @@ const LITE=matchMedia('(pointer:coarse)').matches;
 if(LITE){QS=.85;rim.shadow.mapSize.set(512,512);renderer.shadowMap.type=T.PCFShadowMap;}else initPost();
 resize();hud();
 const DBG={pcut:false,fl:'',rob:false,pc:false,staunt:false,pod:false,trail:false,orbit:false,pdef:false,dbl:false,cam:false,admire:'',trip:false,fist:false,pop:false,loser:false}; // test hook: pin the camera to CAM_HOME/CAM_LOOK
-window.__mm={renderer,scene,LODM,camera,S,aim,MX,DBG,landRingOn:()=>landRing.visible,hud,tutAnim,draw:()=>draw(),endGame,TROT,SFX,RUN,ballPos:()=>ball.position,fielders,toReady,CAM_HOME,CAM_LOOK,now:()=>now,simulate,judge,get pitch(){return pitch;},get flight(){return flight;},lastSwing:()=>{const t=swing&&swing.type;swing=null;return t;},lastSwingTurbo:()=>!!(swing&&swing.turbo),doSwing,newGame,V3,
+window.__mm={renderer,scene,LODM,camera,S,aim,MX,DBG,landRingOn:()=>landRing.visible,hud,tutAnim,draw:()=>draw(),endGame,TROT,SFX,RUN,ballPos:()=>ball.position,ballVisible:()=>ball.visible,fielders,toReady,CAM_HOME,CAM_LOOK,now:()=>now,simulate,judge,get pitch(){return pitch;},get flight(){return flight;},lastSwing:()=>{const t=swing&&swing.type;swing=null;return t;},lastSwingTurbo:()=>!!(swing&&swing.turbo),doSwing,newGame,V3,
   sim:(dt)=>{hitstop=0;now+=dt;step(dt);},
   step:(n,dt=1/60)=>{for(let i=0;i<n;i++){if(hitstop>0)hitstop=0;now+=dt;step(dt);}updateCamera(dt);draw();}};
 if(!window.__mmManual)requestAnimationFrame(frame);
