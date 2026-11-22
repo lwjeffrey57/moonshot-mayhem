@@ -6,7 +6,7 @@ Third-party assets used in Moonshot Mayhem and the terms they are used under.
 - **Fielder's glove**: "Baseball Gloves" by Karamveer Singh (https://sketchfab.com/Karamgill), from
   https://sketchfab.com/3d-models/baseball-gloves-fb5e5bea26834428884b8e670a7604e8, licensed CC BY 4.0
   (http://creativecommons.org/licenses/by/4.0/). Changes: brand markings and textures removed, recoloured as plain
-  leather, packed into `glove.bin`. **This licence requires the credit to be shown to players** (a credits screen
+  leather, packed into `glove.txt`. **This licence requires the credit to be shown to players** (a credits screen
   or the store page) when the game is released.
 
 ## Audio

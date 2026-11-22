@@ -2667,7 +2667,7 @@ function mittLace(){const parts=[],B=GLOVE.box;
 // The real fielder's glove (a free model, see CREDITS.md): leather body, lacing, trim and eyelets as one mesh with painted colours.
 // Shown when a player is close to the camera; the simple code-built glove stands in when he is small on screen.
 function gloveReal(g){const m=new T.Mesh(GLOVE.real,GLOVE.vc);m.rotation.x=-PI/2;m.scale.setScalar(1.12);m.position.set(0,9.5,2.6);m.castShadow=true;m.visible=false;g.add(m);g.userData.real=m;}
-function gloveLoad(){fetch('glove.bin').then(r=>r.ok?r.arrayBuffer():Promise.reject()).then(buf=>{
+function gloveLoad(){fetch('glove.txt').then(r=>r.ok?r.text():Promise.reject()).then(txt=>{const bin=atob(txt.trim()),buf=new ArrayBuffer(bin.length),u8=new Uint8Array(buf);for(let i=0;i<bin.length;i++)u8[i]=bin.charCodeAt(i);
   const dv=new DataView(buf),nv=dv.getUint32(0,true),nt=dv.getUint32(4,true),P=new Int16Array(buf,8,nv*3),S=new Uint8Array(buf,8+nv*6,nv),I=new Uint16Array(buf,8+nv*6+nv+(nv%2),nt*3);
   const pos=new Float32Array(nv*3),col=new Float32Array(nv*3),C=[[.17,.1,.05],[.38,.22,.1],[.52,.31,.15],[.3,.18,.09]]; // laces, trim, body, eyelets
   for(let i=0;i<nv*3;i++)pos[i]=P[i]/2800;for(let i=0;i<nv;i++){const c=C[S[i]];col[i*3]=c[0];col[i*3+1]=c[1];col[i*3+2]=c[2];}
