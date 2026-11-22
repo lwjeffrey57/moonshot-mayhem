@@ -331,6 +331,7 @@ body.mob #tip{display:block}body.mob .how{display:none}
 @keyframes tutring{0%{transform:scale(6);opacity:0;border-width:.6px}10%{opacity:1}72%{transform:scale(1);border-color:var(--volt);border-width:3px;box-shadow:none}74%,100%{transform:scale(1.12);border-color:#39ff6a;border-width:4px;opacity:1;box-shadow:0 0 14px 4px rgba(57,255,106,.9)}}
 #tut .spot2{display:none;position:absolute;z-index:32;box-sizing:content-box;border:4px solid var(--volt);border-radius:50%;box-shadow:0 0 24px 4px var(--volt);pointer-events:none;animation:jring 1s ease-in-out infinite}#tut.s1 .spot2{display:block}
 #hud.tut1 #apad{z-index:31;pointer-events:none}
+#hud.tut5 #touch{z-index:31;pointer-events:none}#hud.tut5 #tc{opacity:.25}
 /* swing-buttons step: each button is tapped in turn, a light press with a ring where the thumb lands */
 #hud.tut4 #tc{animation:tutTap 2.4s ease-in-out infinite}#hud.tut4 #tp{animation:tutTap 2.4s ease-in-out 1.2s infinite}
 @keyframes tutTap{0%,8%{transform:none;filter:none;box-shadow:0 4px 0 #000}14%{transform:scale(.9);filter:brightness(1.4);box-shadow:0 1px 0 #000,0 0 0 4px rgba(255,255,255,.8)}26%{transform:none;filter:none;box-shadow:0 4px 0 #000,0 0 0 18px rgba(255,255,255,0)}100%{transform:none;filter:none;box-shadow:0 4px 0 #000}}
@@ -499,7 +500,7 @@ body.mob #tip{display:block}body.mob .how{display:none}
       <div class="tz tmz"><b>YELLOW RING = TIMING</b>It shrinks onto a white circle the size of the ball<small>Ring still bigger than the ball: too early. Ring meets the circle and turns <span style="color:#39ff6a">green</span>: swing!</small></div>
       <div class="tz tgz" id="tutg"><span>EARLY</span><div class="trk"><i class="gc"></i><i class="gp"></i><i class="mk"></i></div><span>LATE</span><em>PERFECT!</em></div>
       <div class="tz swz"><b>RIGHT THUMB: SWING</b>Tap a button the moment the ring turns green<small>CONTACT is easier and hits line drives. POWER is harder and hits moonshots.</small></div>
-      <div class="tz jcz"><b>JUICE: MONSTER SWING</b>Tap JUICE, then swing. Costs one quarter<small>Every hit and every walk adds a quarter back. Fill all four for Overdrive.</small></div>
+      <div class="tz jcz"><b>JUICE: MONSTER SWING</b>Tap JUICE and POWER catches fire. Costs one quarter<small>Every hit and every walk adds a quarter back. Fill all four for Overdrive.</small></div>
       <div class="tz ovz"><b>FULL METER = OVERDRIVE</b>Fill this bar all the way and it catches fire<small>JUICE turns into a blue OVERDRIVE button. Tap it and every swing that at-bat is a free Juice swing. Then the bar starts over.</small></div>
       <div class="tz ovz2"><b>OVERDRIVE READY!</b>Tap the blue OVERDRIVE button when you want it<small>Every swing this at-bat becomes a free Juice swing: bigger sweet spot, easier timing, harder contact.</small></div>
       <div class="tz jz"><b>YOUR JUICE IS FULL</b>Tap JUICE, then swing for a monster hit<small>Each Juice swing burns one quarter of the meter.</small></div>
@@ -1190,10 +1191,10 @@ const TUT_EVERY_LAUNCH=true; // testing: show the guide on every launch; set fal
 let tutFirst=false,tutHold=false,tutSeen=!MOB;try{if(!TUT_EVERY_LAUNCH&&localStorage.getItem('mm_tut')==='1')tutSeen=true;}catch(e){}
 let tutOff=false,jtutSeen=!MOB;try{tutOff=localStorage.getItem('mm_tutoff')==='1';if(!TUT_EVERY_LAUNCH&&localStorage.getItem('mm_jtut')==='1')jtutSeen=true;}catch(e){}
 // the first time the Juice meter is full: point at the JUICE button
-let tutStep=0;const TUT_N=6,TUT_ORDER=[1,2,3,4,5,6]; // shown as: left thumb aims, right thumb swings, then the mechanics (zones, timing), then Juice and Overdrive
+let tutWas5=false,tutStep=0;const TUT_N=6,TUT_ORDER=[1,2,3,4,5,6]; // shown as: left thumb aims, right thumb swings, then the mechanics (zones, timing), then Juice and Overdrive
 function tutShow(mode){const T=$('tut');T.className=mode;T.hidden=false;tutHold=true;const n=mode==='j'||mode==='o'?0:+mode.slice(1);tutStep=n;const idx=TUT_ORDER.indexOf(n)+1;$('tutstp').textContent=n?idx+' / '+TUT_N:'';$('tutgo').textContent=n&&idx<TUT_N?'NEXT ▶  '+idx+'/'+TUT_N:'GOT IT — PLAY ▶';
   const sp=T.querySelector('.spot');sp.style.cssText='';T.querySelectorAll('.pcz,.tmz').forEach(c=>c.style.bottom='');
-  $('hud').classList.toggle('tut2',n===2);if(n===1||n===2)tutT0=performance.now();if(n!==1)$('apad').classList.remove('drag');if(n>2||!n){padKnob.style.transform='';padKnob.style.transition='';}
+  $('hud').classList.toggle('tut2',n===2);if(n===1||n===2||n===5)tutT0=performance.now();if(tutWas5&&n!==5){tutWas5=false;$('tj').classList.remove('dn');hud();}if(n===5)tutWas5=true;$('hud').classList.toggle('tut5',n===5);if(n!==1)$('apad').classList.remove('drag');if(n>2||!n){padKnob.style.transform='';padKnob.style.transition='';}
   if(n===2){const H=$('hud').getBoundingClientRect();[['tc','tlc'],['tp','tlp']].forEach(([b,l])=>{const r=$(b).getBoundingClientRect(),e=$(l);e.style.left=(r.left-H.left+r.width/2)+'px';e.style.top=(r.top-H.top-46)+'px';});}
   if(n===5||mode==='j'||mode==='o'){const r=$('tj').getBoundingClientRect(),h=$('hud').getBoundingClientRect(),g=10;sp.style.cssText='left:'+(r.left-h.left-g-4)+'px;top:'+(r.top-h.top-g-4)+'px;right:auto;bottom:auto;width:'+(r.width+2*g)+'px;height:'+(r.height+2*g)+'px;box-sizing:content-box;aspect-ratio:auto';} // ring drawn around the button as it actually is (JUICE and OVERDRIVE are different sizes); 4 = the ring's border
   if(n===6){const r=$('juice').getBoundingClientRect(),h=$('hud').getBoundingClientRect();sp.style.cssText='left:'+(r.left-h.left-10)+'px;top:'+(r.top-h.top-8)+'px;width:'+(r.width+12)+'px;height:'+(r.height+14)+'px';} // the Juice / Overdrive meter
@@ -1223,13 +1224,15 @@ let tutT0=0;function tutAnim(t){if($('tut').hidden)return;
     const e=(t-tutT0)/1000,a=e*2.4,r=(.55+.45*Math.sin(e*1.3))*34,x=Math.cos(a)*r,y=Math.sin(a*1.5)*r*.85;
     padKnob.style.transition='none';padKnob.style.transform='translate('+x.toFixed(1)+'px,'+y.toFixed(1)+'px)';$('apad').classList.add('drag');
     reticle.position.set(x/34*.2,.825-y/34*.22,0);return;}
+  if(tutStep===5){ // Juice demo: the JUICE button is tapped, and POWER catches fire
+    const ph=((t-tutT0)%3200)/3200,lit=ph>.2&&ph<.86,tj=$('tj');tj.classList.toggle('dn',ph>.16&&ph<.22);tj.classList.toggle('on',lit);$('tp').classList.toggle('fire',lit);return;}
   if(tutStep===3){reticle.visible=false;return;} // timing step: just the ball, the closing ring and the gauge // held on the pitch from step 2
   if(tutStep!==2)return;const ph=((t-tutT0)%TUT_LOOP)/TUT_LOOP;
   const u=ph<.08?0:ph<.3?ease((ph-.08)/.22):ph<.93?1:0;
   reticle.position.set(lerp(TUT_S.x,TUT_B.x,u),lerp(TUT_S.y,TUT_B.y,u),0);retP.visible=ph>=.5&&ph<.93;retCfill.visible=!retP.visible;
   const push=ph>=.08&&ph<.3?Math.sin((ph-.08)/.22*PI):0,dx=TUT_B.x-TUT_S.x,dy=TUT_B.y-TUT_S.y,L=Math.hypot(dx,dy); // the stick leans the way the ring is travelling
   padKnob.style.transition='none';padKnob.style.transform='translate('+(push*36*dx/L).toFixed(1)+'px,'+(-push*36*dy/L).toFixed(1)+'px)';}
-function tutClose(){reticle.visible=true;$('hud').classList.remove('tut1','tut4');$('apad').classList.remove('drag');retP.visible=true;retCfill.visible=false;padKnob.style.transform='';padKnob.style.transition='';$('hud').classList.remove('tut2');$('tut').hidden=true;tutHold=false;tapBlock=performance.now()+400;swing=null;if(tutFirst){tutFirst=false;S.t=now-readyDur+1.7;}}
+function tutClose(){$('hud').classList.remove('tut5');if(tutWas5){tutWas5=false;$('tj').classList.remove('dn');setTimeout(hud,0);}reticle.visible=true;$('hud').classList.remove('tut1','tut4');$('apad').classList.remove('drag');retP.visible=true;retCfill.visible=false;padKnob.style.transform='';padKnob.style.transition='';$('hud').classList.remove('tut2');$('tut').hidden=true;tutHold=false;tapBlock=performance.now()+400;swing=null;if(tutFirst){tutFirst=false;S.t=now-readyDur+1.7;}}
 function jtutNeed(){if(tutOff||jtutSeen||window.__mmManual&&!window.__mmTut)return false;jtutSeen=true;tutFirst=true;tutShow('j');try{localStorage.setItem('mm_jtut','1');}catch(e){}return true;}
 let otutSeen=!MOB;try{if(!TUT_EVERY_LAUNCH&&localStorage.getItem('mm_otut')==='1')otutSeen=true;}catch(e){}
 // the first time Overdrive is live: point at the bar and say what it does
