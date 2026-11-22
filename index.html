@@ -750,6 +750,7 @@ const basic=(o)=>new T.MeshBasicMaterial(Object.assign({side:T.DoubleSide},o));
     g.beginPath();g.arc(gx(0),gz(-18.4),29*GS,0,7);dirt();g.restore();                                                             // infield skin
     g.beginPath();g.arc(gx(0),gz(0),3.96*GS,0,7);dirt();
     grass(()=>{g.beginPath();g.moveTo(gx(0),gz(-2.6));g.lineTo(gx(16.8),gz(-19.4));g.lineTo(gx(0),gz(-36.2));g.lineTo(gx(-16.8),gz(-19.4));g.closePath();});
+    g.beginPath();g.rect(gx(-1.25),gz(-17),2.5*GS,14.5*GS);dirt();                                                                   // the keyhole: a path from the plate to the mound, so the strike zone sits on one plain surface
     g.beginPath();g.arc(gx(0),gz(0),3.96*GS,0,7);dirt();
     g.beginPath();g.arc(gx(0),gz(-18.4),2.74*GS,0,7);dirt('#a3a4ac');                                                              // mound
     if(mask)return;
@@ -793,8 +794,8 @@ vec3 dd=texture2D(dD,vW/2.0).rgb*texture2D(dD,vW/11.0+0.11).rgb*4.0;
 col=col*mix(mix(dg,vec3(dot(dg,vec3(0.333))),digi),mix(dd,mix(vec3(1.0),dd,0.3),digi),m)*vL;
 if(digi>0.5){vec2 r=vec2(vW.x+vW.y,vW.x-vW.y)*0.70711/5.2;vec2 d=0.5-abs(fract(r)-0.5);vec2 w=fwidth(r);
 vec2 l=1.0-smoothstep(vec2(0.008),vec2(0.008)+w*1.5,d);float fade=clamp(0.03/max(w.x,w.y),0.0,1.0);
-col+=vec3(1.0,0.16,0.86)*max(l.x,l.y)*(0.22+0.55*fade)*(1.0-m);
-col+=vec3(1.0,0.2,0.88)*(1.0-abs(m-0.5)*2.0)*0.45;}
+col+=vec3(1.0,0.16,0.86)*max(l.x,l.y)*(0.22+0.55*fade)*(1.0-m)*smoothstep(26.0,42.0,length(vW)); // no grid anywhere near the plate: nothing may cross the strike zone or the bat ring
+col+=vec3(1.0,0.2,0.88)*(1.0-abs(m-0.5)*2.0)*0.45*smoothstep(26.0,42.0,length(vW));}
 gl_FragColor=vec4(col,1.0);
 #include <fog_fragment>
 }`});
