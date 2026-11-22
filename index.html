@@ -169,6 +169,8 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 #hud>#card .stat{font-size:12px}
 #walk .wrow b.gr{display:inline-block;margin-left:.12em;font-size:2.1em;line-height:.8;vertical-align:-.14em;font-weight:400;-webkit-text-stroke:1.6px #0b0a1a;paint-order:stroke fill;text-shadow:0 3px 0 #000} /* big coloured grade letters: the grade is the headline, the label is the caption */
 #walk .wrow b.gr u{text-decoration:none;color:inherit}
+/* which side he bats from: as big as the grades so it is easy to read, but plain: upright, grey, no outline or colour, so it never reads as a rating */
+#walk .wrow b.hand{display:inline-block;margin-left:.12em;font-family:var(--hud);font-style:normal;font-weight:700;font-size:2.1em;line-height:.8;vertical-align:-.14em;color:#c9cee0;text-shadow:none;-webkit-text-stroke:0}
 #walk #wrat{align-items:center;color:var(--dim);letter-spacing:.04em}
 #hud.mob>#card{flex-wrap:nowrap}#hud.mob>#card .stats{display:flex;gap:7px;margin-top:1px}#hud.mob>#card .stat b{display:none}#hud.mob>#card .stat{font-size:10px;gap:3px;align-items:center}#hud.mob>#card .stat em{font-size:22px}
 /* contact readout: exit velocity, launch angle and quality while the ball is in flight */
@@ -1361,7 +1363,7 @@ function startWalkup(){
     S.walkClip=forced&&MX.clip.intros[forced]?forced:first?'w_walkin':(gamesPlayed<=3&&S.bi===1&&rare.length)?rare[(Math.random()*rare.length)|0]:r<rare.length?rare[r]:WALK.by[b.name];} // new players: the second hitter always brings one of the surprise walk-ups
   {const I=MX.clip.intros,forcedWalk=DBG.trip===true?'w_trip':DBG.trip;if(S.walkClip===lastWalk&&!(forcedWalk&&I[forcedWalk])){const alt=Object.keys(I).filter(k=>/^w_/.test(k)&&k!==lastWalk&&k!=='w_walkin');if(alt.length)S.walkClip=alt[(Math.random()*alt.length)|0];}lastWalk=S.walkClip;} // never the same walk-up twice in a row
   $('wnum').textContent=b.num;$('wname').textContent=b.name;
-  {const gb=v=>{const g=statGrade(v);return `<b class="gr g${g}"><u>${g}</u></b>`;};$('wrat').innerHTML=`<span>POWER ${gb(b.pwr)}</span><span>CONTACT ${gb(b.con)}</span><span>SPEED ${gb(b.spd)}</span><span>BATS <b>${b.lh?'L':'R'}</b></span>`;}
+  {const gb=v=>{const g=statGrade(v);return `<b class="gr g${g}"><u>${g}</u></b>`;};$('wrat').innerHTML=`<span>POWER ${gb(b.pwr)}</span><span>CONTACT ${gb(b.con)}</span><span>SPEED ${gb(b.spd)}</span><span>BATS <b class="hand">${b.lh?'L':'R'}</b></span>`;}
   $('wspot').textContent='BATTING '+['1ST','2ND','3RD','4TH','5TH','6TH','7TH','8TH','9TH'][i];$('wskip').textContent=MOB?'TAP TO SKIP':'SWING TO SKIP';
   $('walk').hidden=false;$('hud').classList.add('wk');cheer(.16,2);
 }
