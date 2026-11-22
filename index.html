@@ -1502,8 +1502,9 @@ const SND={
   whoosh(){if(!sfx('swing'+(1+(Math.random()*4|0)),.8,rand(.94,1.08)))noise(.2,'bandpass',300,1900,.35,1.5);},
   pitch(){noise(.09,'bandpass',700,2600,.5,1.3);tone('sine',190,80,.09,.4);}, // the ball leaving the hand: one short snap, identical for every pitch. It used to be a long whoosh, and on slow pitches the whoosh ended well before the ball arrived, which read as 'it's there' too early
   playball(n=6){if(sfx('playball',.95))return;if(n>0)setTimeout(()=>SND.playball(n-1),250);else SND.organ();}, // the umpire's call; waits briefly for the file on the first game, falls back to the jingle
-  mitt(k){if(k!=null){noise(.045,'bandpass',2800,1500,.55,1.2);tone('triangle',1100,500,.035,.22);} /* a pitch into the catcher's glove also gets a bright snap on top: the recorded pop is mostly low thud, which phone speakers and the crowd swallow */
-    if(sfx('catch2',k==null?.34:lerp(.8,1,k),k==null?rand(.95,1.05):lerp(.94,1.08,k)))return; // recorded glove pop; pitches play it louder and brighter the faster they are
+  mitt(k){if(k!=null){noise(.055,'bandpass',3000,1500,.85,1.1);noise(.03,'highpass',2500,2500,.35,.7);tone('triangle',1200,480,.04,.34);
+      if(AC&&crowdReal&&!roarG){const t=AC.currentTime,g=crowdGain.gain;g.cancelScheduledValues(t);g.setTargetAtTime(crowdBase*.4,t,.015);g.setTargetAtTime(crowdBase,t+.22,.25);}} // the crowd dips for a fifth of a second under the pop, so it stands on its own /* a pitch into the catcher's glove also gets a bright snap on top: the recorded pop is mostly low thud, which phone speakers and the crowd swallow */
+    if(sfx('catch2',k==null?.34:lerp(1.05,1.2,k),k==null?rand(.95,1.05):lerp(.94,1.08,k)))return; // recorded glove pop; pitches play it louder and brighter the faster they are
     if(k==null){noise(.06,'lowpass',1400,300,.7);tone('sine',190,90,.09,.5);return;}
     // a pitch hitting the catcher's mitt: a sharp leather crack plus a low thud, harder and brighter the faster the pitch (k: 0 = slow, 1 = heat)
     noise(.035,'highpass',lerp(1800,3200,k),900,lerp(.55,1,k));noise(.07,'lowpass',lerp(1100,1900,k),260,lerp(.6,.95,k));tone('sine',lerp(150,230,k),70,lerp(.14,.09,k),lerp(.55,.8,k));},
