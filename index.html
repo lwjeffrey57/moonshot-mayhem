@@ -1630,7 +1630,9 @@ function judge(tr,bt){const spd=bt&&bt.spd||1; // batter's speed: 0.85 (plodder)
     for(const c of fielders){if(q.y>2.2*(c.scale||1)||(c.isP&&(q.t>1.5||pMiss))||(burned&&c.of&&q.t<tr.wallT))continue;const d=Math.hypot(c.home.x-q.x,c.home.z-q.z);if(d<=c.reach+c.speed*Math.max(0,q.t-c.react)){f=c;p=q;break outer;}}} // the pitcher only handles what comes straight back at him
   if(!f){p=tr.pts[tr.pts.length-1];let bd=1e9;for(const c of fielders){const d=Math.hypot(c.home.x-p.x,c.home.z-p.z);if(d<bd){bd=d;f=c;}}p={x:p.x,y:0,z:p.z,t:p.t};}
   const air=(!tr.land||p.t<tr.land.t)&&!(tr.wall&&p.t>=tr.wallT); // once it has come off the wall it is a live ball, not a catch
-  if(air)return {type:'out',label:f.isP?'SNAGGED BY THE PITCHER':f.of?'FLY OUT':(p.t<1.2?'LINE OUT':'POP OUT'),endT:p.t,f,p,air:true};
+  if(air){ // named by how it came off the bat, not by who caught it: under 20 degrees is a line drive wherever it is caught
+    const a=tr.pts[0],b=tr.pts[Math.min(tr.pts.length-1,8)],la=Math.atan2(b.y-a.y,Math.hypot(b.x-a.x,b.z-a.z)||1e-6)/DEG;
+    return {type:'out',label:f.isP?'SNAGGED BY THE PITCHER':la<20?'LINE OUT':f.of?'FLY OUT':'POP OUT',endT:p.t,f,p,air:true};}
   if(!f.of){const tt=p.t+1.0+Math.hypot(p.x-19.4,p.z+19.4)/36; // field it, a second to set and release, then the throw to first
     // the throw has to beat the runner to first: quicker men (and lefties, a step closer) get there sooner
     if(tt<3.35-(spd-1)*1.8-(bt&&bt.lh?.08:0))return {type:'out',label:'GROUND OUT',endT:p.t,f,p};
