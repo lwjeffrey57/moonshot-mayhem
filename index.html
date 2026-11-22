@@ -1206,7 +1206,7 @@ $('tut').addEventListener('pointerdown',e=>{e.preventDefault();const id=e.target
 // Timing meter. x is real time and everything is to scale. A coloured band is the whole window in which that swing can touch the ball
 // (green = CONTACT, the narrower red = POWER), brightest in the middle where timing is best and fading toward the edges; a Juice swing adds
 // gold to both ends of the one you used. A marker in the black means the swing was too early or too late to make contact at all.
-function timeBar(x,pw,jt,perfect){const e=$('tbar');e.className='';$('tpt').textContent=pitch?(pitch.P.sp?'JUICE PITCH · ':'')+pitch.P.n+' · '+pitchMph(pitch.dur)+' MPH':'';const SPAN=2.05,band=(el,half)=>{el.style.left=(50-half)+'%';el.style.width=(half*2)+'%';},hc=1.4/SPAN*50,hp=hc*.85/1.2,used=(pw?hp:hc)*jt;
+function timeBar(x,pw,jt,perfect,sk=1){const e=$('tbar');e.className='';$('tpt').textContent=pitch?(pitch.P.sp?'JUICE PITCH · ':'')+pitch.P.n+' · '+pitchMph(pitch.dur)+' MPH':'';const SPAN=2.05,band=(el,half)=>{el.style.left=(50-half)+'%';el.style.width=(half*2)+'%';},hc=1.4/SPAN*50*sk,hp=hc*.85/1.2,used=(pw?hp:hc)*jt;
   band($('tgc'),hc);band($('tgp'),hp);band($('tjx'),jt>1?used:0);$('tgc').classList.toggle('dim',!!pw);$('tgp').classList.toggle('dim',!pw);
   const mx=clamp(x/SPAN,-1,1)*50,miss=Math.abs(mx)>used;$('tmk').style.left=(50+mx)+'%';$('tmk').style.background=perfect?'#ffe53b':miss?'#ff4d2e':'#fff';void e.offsetWidth;e.className='go';}
 function timing(t,c,l){const e=$('tim');e.className='';e.textContent=t;e.style.color=c;e.dataset.l=l||2;void e.offsetWidth;e.className='go';}
@@ -1560,7 +1560,7 @@ function tryContact(){flight_pop=false;
   swing.done=true;
   const b=curBatter(),tCross=pitch.t0+pitch.dur,dt=(swing.t0+SW_T)-tCross;
   const pw=swing.type==='power',tb=swing.turbo;
-  const ez=easyAB()?1.3:1,JT=tb?1.35:1,win=.118*(pw?.85:1.2)*JT*ez,n=dt/win;
+  const ez=easyAB()?1.3:1,JT=tb?1.35:1,SK=pitch.P.sp?.78:1,win=.118*(pw?.85:1.2)*JT*ez*SK,n=dt/win;
   // chasing: how far outside the strike zone the pitch is (0 in the zone → 1 well off the plate)
   const offX=Math.max(ZONE.x0-pitch.tx,pitch.tx-ZONE.x1,0),offY=Math.max(ZONE.y0-pitch.ty,pitch.ty-ZONE.y1,0),chase=clamp(Math.hypot(offX,offY)/.16,0,1);
   const R=.17*b.con*(pw?(tb?.8:.63):1.25)*(tb?1.2:1)*(1-.3*chase)*ez; // the power core is 10% smaller without Juice; Juice gives the old size back, then its usual boost
@@ -1569,7 +1569,7 @@ function tryContact(){flight_pop=false;
   const cu=(pitch.ty-aim.y)/R,ce=(pitch.tx-aim.x)/R*(MX.lefty?-1:1),cr=Math.hypot(cu,ce);
   const onT=Math.abs(n)<.22,side=onT?(cr<.7?'JUST MISSED THE BARREL':'OFF THE BARREL'):n<0?'OFF THE END':'JAMMED'; // jammed means late and off the end means early, so the words always agree with the timing
   const where=cr<.3?'SQUARED UP':Math.abs(cu)>=Math.abs(ce)?(onT&&cr<.7?(cu>0?'JUST UNDER IT':'JUST ON TOP OF IT'):(cu>0?'UNDER IT':'ON TOP OF IT')):side;
-  timeBar(n*(pw?.85/1.2:1)*JT,pw,JT,Math.abs(n)<.22);
+  timeBar(n*(pw?.85/1.2:1)*JT*SK,pw,JT,Math.abs(n)<.22,SK);
   if(Math.abs(n)>1.4||d>R*1.3){swing.miss=true;
     if(d>R)ringEcho={t:now,x:aim.x,y:aim.y,bx:pitch.tx,by:pitch.ty,pw}; // freeze the ring and mark where the ball was: it has to be inside
     timing(Math.abs(n)>1.4?(n<0?'WAY EARLY':'WAY LATE'):'BALL OUTSIDE THE '+(pw?'RED CORE':'GREEN RING'),pw?'#ff8a70':'#7dffa0');return;}
