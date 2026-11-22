@@ -908,7 +908,7 @@ gl_FragColor=vec4(col,1.0);
   const AW=Math.min(4096,renderer.capabilities.maxTextureSize),ads=tex(AW,128,(g,w,h)=>{
     const X=m=>m/WL*w,k=(w/WL)/(h/WALL_H); // k: horizontal squash so lettering keeps its proportions on the wall
     const text=(str,cx,cy,font,col,maxM)=>{g.save();g.translate(X(cx),cy);g.scale(k,1);g.font=font;g.fillStyle=col;g.textAlign='center';g.textBaseline='middle';g.fillText(str,0,0,X(maxM)/k);g.restore();};
-    const bg=g.createLinearGradient(0,0,0,h);bg.addColorStop(0,'#aab0bd');bg.addColorStop(.5,'#7e8492');bg.addColorStop(1,'#4c515e');g.fillStyle=bg;g.fillRect(0,0,w,h);   // moon-base hull panels
+    const bg=g.createLinearGradient(0,0,0,h);bg.addColorStop(0,'#2f8a4c');bg.addColorStop(.5,'#1f6a3a');bg.addColorStop(1,'#124526');g.fillStyle=bg;g.fillRect(0,0,w,h);   // padded outfield wall in ballpark green (still panelled and riveted)
     for(let m=0;m<WL;m+=2.4){g.fillStyle='rgba(0,0,0,.4)';g.fillRect(X(m),0,2,h);g.fillStyle='rgba(255,255,255,.22)';g.fillRect(X(m)+2,0,2,h);
       g.fillStyle='rgba(20,22,30,.7)';for(const yy of [h*.2,h*.5,h*.8])for(const dx of [7,X(2.4)-7]){g.beginPath();g.arc(X(m)+dx,yy,2.2,0,7);g.fill();}}                     // seams and rivets
     {const sw=X(1.1);for(let x=-h;x<w+h;x+=sw*2){g.fillStyle='#f2c81e';g.beginPath();g.moveTo(x,0);g.lineTo(x+sw,0);g.lineTo(x+sw-14,14);g.lineTo(x-14,14);g.closePath();g.fill();}
