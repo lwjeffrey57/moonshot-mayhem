@@ -459,6 +459,14 @@ body.mob #tip{display:block}body.mob .how{display:none}
 @media (max-height:520px){.how{display:none}}
 @media (max-width:560px){.big{font-size:20px}}
 @media (prefers-reduced-motion:reduce){#pop.go{animation-timing-function:ease-out}}
+/* phone held sideways: the closest thing to the desktop view. Meters tuck in beside the score so the scoreboard and the pitch stay clear. */
+@media (orientation:landscape) and (max-height:520px){
+  #hud.mob #meters{left:132px;transform:none;top:6px;align-items:flex-start;gap:2px}
+  #hud.mob .meter,#hud.mob #juice{width:168px}
+  #hud.mob #pop{top:16%}
+  #hud.mob .tb.ct{margin-bottom:-8px}
+  #hud.mob #mutebtn{top:100px;right:136px}
+}
 </style>
 
 <div id="game">
@@ -736,7 +744,7 @@ const basic=(o)=>new T.MeshBasicMaterial(Object.assign({side:T.DoubleSide},o));
   // mask: where it is dirt) multiplied by tiling close-up detail, so it holds up at the plate and from the upper deck.
   const GM=Math.min(2048,renderer.capabilities.maxTextureSize),GW=260,GX0=-130,GZ0=-240,GS=GM/GW,gx=x=>(x-GX0)*GS,gz=z=>(z-GZ0)*GS;
   const paintField=(g,mask)=>{
-    const DC={'#7c7d86':'#1b0d30','#a3a4ac':'#3b1f66'},dirt=c=>{g.fillStyle=mask?'#fff':DIGI?(DC[c]||'#27123f'):c||'#8f9098';g.fill();}; // moon dust, not clay (digital park: slate deck panels)
+    const DC={'#7c7d86':'#4a2814','#a3a4ac':'#7a4524'},dirt=c=>{g.fillStyle=mask?'#fff':DIGI?(DC[c]||'#63361a'):c||'#8f9098';g.fill();}; // moon dust, not clay (digital park: slate deck panels)
     const arc=(dr,rev)=>{for(let k=0;k<=60;k++){const i=rev?60-k:k,phi=lerp(-PI/4,PI/4,i/60),r=fenceR(phi)+dr;g.lineTo(gx(r*Math.sin(phi)),gz(-r*Math.cos(phi)));}};
     const playable=()=>{g.beginPath();arc(0);[[70,-70],[30,-4],[15.4,10.6],[8,15.5],[0,17],[-8,15.5],[-15.4,10.6],[-30,-4],[-70,-70]].forEach(q=>g.lineTo(gx(q[0]),gz(q[1])));g.closePath();};
     const grass=path=>{g.save();path();g.clip();
@@ -750,7 +758,7 @@ const basic=(o)=>new T.MeshBasicMaterial(Object.assign({side:T.DoubleSide},o));
     g.save();g.beginPath();g.moveTo(gx(0),gz(4.5));g.lineTo(gx(-62),gz(-57.5));g.lineTo(gx(62),gz(-57.5));g.closePath();g.clip();
     g.beginPath();g.arc(gx(0),gz(-18.4),29*GS,0,7);dirt();g.restore();                                                             // infield skin
     g.beginPath();g.arc(gx(0),gz(0),3.96*GS,0,7);dirt();
-    if(!DIGI)grass(()=>{g.beginPath();g.moveTo(gx(0),gz(-2.6));g.lineTo(gx(16.8),gz(-19.4));g.lineTo(gx(0),gz(-36.2));g.lineTo(gx(-16.8),gz(-19.4));g.closePath();}); // the digital park has an all-skin infield: one plain surface behind the strike zone
+    grass(()=>{g.beginPath();g.moveTo(gx(0),gz(-2.6));g.lineTo(gx(16.8),gz(-19.4));g.lineTo(gx(0),gz(-36.2));g.lineTo(gx(-16.8),gz(-19.4));g.closePath();});
     g.beginPath();g.rect(gx(-1.25),gz(-17),2.5*GS,14.5*GS);dirt();                                                                   // the keyhole: a path from the plate to the mound, so the strike zone sits on one plain surface
     g.beginPath();g.arc(gx(0),gz(0),3.96*GS,0,7);dirt();
     g.beginPath();g.arc(gx(0),gz(-18.4),2.74*GS,0,7);dirt('#a3a4ac');                                                              // mound
@@ -794,11 +802,11 @@ vec3 dg=texture2D(gD,vW/2.4).rgb*texture2D(gD,vW/17.0+0.37).rgb*4.0;
 vec3 dd=texture2D(dD,vW/2.0).rgb*texture2D(dD,vW/11.0+0.11).rgb*4.0;
 col=col*mix(mix(dg,vec3(dot(dg,vec3(0.333))),digi),mix(dd,mix(vec3(1.0),dd,0.3),digi),m)*vL;
 if(digi>0.5){
-float clr=1.0;
+float hw=1.7+0.23*max(0.0,1.0-vW.y);float clr=1.0-(1.0-smoothstep(hw,hw+2.2,abs(vW.x+0.15)))*(1.0-smoothstep(21.0,28.0,-vW.y)); // a clear lane from the plate past the mound, behind the strike zone
 vec2 r=vec2(vW.x+vW.y,vW.x-vW.y)*0.70711/5.2;vec2 d=0.5-abs(fract(r)-0.5);vec2 w=fwidth(r);
 vec2 l=1.0-smoothstep(vec2(0.008),vec2(0.008)+w*1.5,d);float fade=clamp(0.03/max(w.x,w.y),0.0,1.0);
 col+=vec3(1.0,0.16,0.86)*max(l.x,l.y)*(0.22+0.55*fade)*(1.0-m)*clr; // no grid anywhere near the plate: nothing may cross the strike zone or the bat ring
-col+=vec3(1.0,0.2,0.88)*(1.0-abs(m-0.5)*2.0)*0.6*smoothstep(4.5,7.0,length(vW));}
+col+=vec3(1.0,0.55,0.18)*(1.0-abs(m-0.5)*2.0)*0.55*clr;}
 gl_FragColor=vec4(col,1.0);
 #include <fog_fragment>
 }`});
