@@ -218,7 +218,7 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 @keyframes tim{0%{opacity:0;transform:translateY(8px)}15%,70%{opacity:1;transform:none}100%{opacity:0}}
 #flash{inset:0;background:radial-gradient(circle at 50% 55%,#fff,rgba(255,240,180,.7) 40%,transparent 75%);opacity:0}
 /* touch */
-#touch,#apad{transition:opacity .18s}#hud.noctl #touch,#hud.noctl #apad,#hud.noctl #jtoast{opacity:0;pointer-events:none}
+#touch,#apad{transition:opacity .18s}#hud.noctl #touch,#hud.noctl #apad{opacity:0;pointer-events:none}#hud.noctl #jtoast{visibility:hidden}
 #hud .rip{position:absolute;z-index:40;width:56px;height:56px;margin:-28px;border:3px solid #fff;border-radius:50%;pointer-events:none;animation:rip .4s ease-out forwards}@keyframes rip{from{transform:scale(.3);opacity:.9}to{transform:scale(1.5);opacity:0}}
 #touch::before{content:'';position:absolute;z-index:-1;inset:-30px -14px -36px -30px} /* near misses around the buttons still count */
 :root{--tbb:max(calc(env(safe-area-inset-bottom,0px) + 70px),13vh);--padl:max(4px,env(safe-area-inset-left,0px));--pad:min(146px,calc(100vw - 272px))} /* --pad: the aim pad fills everything left of CONTACT */ /* how far the swing buttons sit above the bottom edge: thumb height, not the screen edge */
@@ -1213,7 +1213,7 @@ function duelEnd(){if(!S.duel)return;S.duel=false;$('hud').classList.remove('due
 function overCheck(){if(S.over||S.juice<.95||S.state==='title'||S.state==='over')return;S.juice=1;S.over=true;S.overOn=false;juiceArmed=false;hudLater=true; // a bar that looks full IS full: anything from 95% up snaps to full and becomes Overdrive on the spot
  SND.zap();buzz([30,40,30,40,80]);
   setTimeout(()=>{if(S.over&&!S.overOn)pop('OVERDRIVE READY!','','cool',true);},900);}
-let hudLater=false,ctlHidden=false;
+let hudLater=false,ctlHidden=false,jPend=false;
 function hud(){overCheck();hudLater=false;
   $('runs').textContent=S.runs;$('inn').textContent=['1ST','2ND','3RD'][Math.min(S.inning,3)-1];$('count').textContent=S.balls+'-'+S.strikes;
   $('outs').textContent='O: '+S.outs;
@@ -1225,7 +1225,10 @@ function hud(){overCheck();hudLater=false;
   {const bars=Math.round(S.juice*4),tj=$('tj'); // Juice only ever moves a quarter at a time: four quarters, four bars // counted exactly the way a Juice swing is paid for, so the badge never promises a bar that isn't there
    tj.classList.toggle('has',bars>0);tj.classList.toggle('none',bars===0);$('tjn').textContent=S.over?'':bars?'×'+bars:'';tj.firstChild.nodeValue=S.over?'OVER DRIVE':'JUICE';tj.classList.toggle('od',!!S.over);tj.classList.toggle('odon',!!(S.over&&S.overOn));if(S.over){tj.classList.remove('none','has');}$('tp').classList.toggle('blue',!!(S.over&&S.overOn));$('kj').classList.toggle('has',bars>0);
     if(S.over)$('jtoast').classList.remove('go'); // the big OVERDRIVE READY call says it; no pill over the button
-    if(bars>hudBars&&!S.over&&!S.jSaid&&S.state!=='title'&&S.state!=='over'){S.jSaid=true; // the heads-up is given once a game; after that the gold button and its bar count say it quietly
+    if(bars>hudBars&&!S.over&&!S.jSaid&&S.state!=='title'&&S.state!=='over')jPend=true;
+    if(S.over||!bars)jPend=false;
+    // the heads-up waits until the Juice button is actually on screen (the play is over and the next pitch is being set up), and is given once a game
+    if(jPend&&!ctlHidden&&(S.state==='ready'||S.state==='windup')&&$('hud').classList.contains('wk')===false){jPend=false;S.jSaid=true;
       $('jtoast').classList.remove('odt');$('jtoast').innerHTML='JUICE READY!<small>tap it, then swing</small>'; // a new bar just filled: say so, loudly
       tj.classList.remove('gain');void tj.offsetWidth;tj.classList.add('gain');const jt=$('jtoast');jt.classList.remove('go');void jt.offsetWidth;jt.classList.add('go');
       buzz(25);try{tone('triangle',660,990,.12,.25);tone('triangle',990,1320,.14,.22,.1);}catch(e){}
@@ -1393,7 +1396,7 @@ function gameRating(){const G=S.goal,pts=S.runs*10+S.hits*4+S.hrs*8+(S.longest>=
   const T=[[0,'D','BENCH WARMER'],[20,'C','ROOKIE'],[45,'B','EVERYDAY STARTER'],[75,'A','ALL-STAR'],[110,'S','MOONSHOT LEGEND']];let i=0;T.forEach((t,j)=>{if(pts>=t[0])i=j;});
   return {pts,stars:i+1,grade:T[i][1],title:T[i][2],next:T[i+1]?T[i+1][0]-pts:0,nextTitle:T[i+1]?T[i+1][2]:''};}
 function newGame(){gamesPlayed++;try{localStorage.setItem('mm_games',gamesPlayed);}catch(e){}
-  Object.assign(S,{inning:1,outs:0,balls:0,strikes:0,runs:0,bases:[0,0,0],hits:0,hrs:0,longest:0,streak:0,bestStreak:0,juice:.25,heat:.2,over:false,bi:-1,pitches:0,seen:{},kOut:null});S.goal=pickGoal();S.ks=0;S.d2=0;S.orbN=0;S.odUses=0;S.duel=false;$('hud').classList.remove('duel');S.pdLast=false;S.pOver=false;S.jSaid=false;S.overOn=false;S.spSeen=false;lastWalk='';
+  Object.assign(S,{inning:1,outs:0,balls:0,strikes:0,runs:0,bases:[0,0,0],hits:0,hrs:0,longest:0,streak:0,bestStreak:0,juice:.25,heat:.2,over:false,bi:-1,pitches:0,seen:{},kOut:null});S.goal=pickGoal();S.ks=0;S.d2=0;jPend=false;S.orbN=0;S.odUses=0;S.duel=false;$('hud').classList.remove('duel');S.pdLast=false;S.pOver=false;S.jSaid=false;S.overOn=false;S.spSeen=false;lastWalk='';
   $('title').hidden=true;$('over').hidden=true;$('pausebtn').hidden=false;$('mutebtn').hidden=false;setBatter();renderRep();scoreboard('PLAY BALL','INNING 1');toReady(2);pop('PLAY BALL!','GOAL: '+S.goal.label,'plain',true);SND.playball();cheer(.14,1.5);}
 
 // ───────────────────────── pitching
@@ -2362,7 +2365,7 @@ function trail(o,c,far,hot){
 
 function step(dt){
   overCheck();if(hudLater)hud(); // checked every frame, so the bar and the button switch the instant the meter fills
-  {const hide=MOB&&!(S.state==='ready'||S.state==='windup'||S.state==='pitch');if(hide!==ctlHidden){ctlHidden=hide;$('hud').classList.toggle('noctl',hide);}} // the stick and buttons are only on screen while there is a pitch to hit
+  {const hide=MOB&&!(S.state==='ready'||S.state==='windup'||S.state==='pitch');if(hide!==ctlHidden){ctlHidden=hide;$('hud').classList.toggle('noctl',hide);if(!hide&&jPend)hud();}} // the stick and buttons are only on screen while there is a pitch to hit
   landRing.visible=false;
   // aim by keyboard
   const kx=(keys.ArrowRight||keys.KeyD?1:0)-(keys.ArrowLeft||keys.KeyA?1:0),ky=(keys.ArrowUp||keys.KeyW?1:0)-(keys.ArrowDown||keys.KeyS?1:0);
