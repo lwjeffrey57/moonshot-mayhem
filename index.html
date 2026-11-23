@@ -347,7 +347,8 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
 /* THE PLAYER CARD, bigger: who is up and what he can do is information you play off, so it is sized to be read at a glance */
 #hud:not(.mob)>#card{padding:10px 16px 10px 12px;gap:14px}#hud:not(.mob)>#card #cnum{font-size:50px}#hud:not(.mob)>#card #cname{font-size:25px}
 #hud:not(.mob)>#card .stat{font-size:14px;gap:7px}#hud:not(.mob)>#card .stat b{width:86px;height:7px}#hud:not(.mob)>#card .stat em{font-size:24px}
-#hud>#card{background:rgba(6,7,22,.92);border:2px solid #ffe53b;border-radius:10px;box-shadow:0 3px 0 #000,0 0 14px rgba(255,229,59,.35)} /* a solid dark plate with a yellow edge: it stands out from the park behind it */
+#hud>#card{background:linear-gradient(#2436b4,#111a66);border:2px solid #fff;border-left:8px solid #ff8a3a;border-radius:10px;box-shadow:0 3px 0 #000} /* its own look, nothing like the scoreboard behind it: a Comets-blue plate with a white edge and an orange team stripe (the scoreboard is black with yellow bulbs) */
+#hud>#card #cname{color:#fff!important}#hud>#card #cnum{color:#ffb070!important} /* a solid dark plate with a yellow edge: it stands out from the park behind it */
 #hud:not(.mob)>#card #cnum{font-size:58px}#hud:not(.mob)>#card #cname{font-size:30px}#hud:not(.mob)>#card .stat{font-size:16px;color:#fff}#hud:not(.mob)>#card .stat em{font-size:30px}
 #hud.mob>#card .stat{color:#fff}
 #hud.mob>#card,#hud.mob.lh>#card{max-width:52vw;padding:7px 9px 8px;overflow:visible}#hud.mob>#card #cname{font-size:clamp(17px,5.2vw,22px)!important}#hud.mob>#card .stat{font-size:10px!important;gap:2px}#hud.mob>#card .stat em{font-size:22px!important}#hud.mob>#card .stats{gap:4px!important}
@@ -874,7 +875,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 493</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 494</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <button class="tag wkopt sens" id="sens1" type="button"></button>
