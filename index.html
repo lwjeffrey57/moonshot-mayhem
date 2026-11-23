@@ -1277,7 +1277,7 @@ const ZAP={t:-9,p:new V3(),sb:false,bolts:[],glow:null,nb:0};
 function zapLights(lv){hemi.intensity=.85*lv;sun.intensity=.8*lv;ZAP.lv=lv;$('surge').style.opacity=REDUCE?0:Math.max(0,(1-lv)*.6);}
 function zapStart(p,sb){ZAP.t=now;ZAP.p.copy(p);ZAP.sb=sb;ZAP.nb=0;SND.zap();[160,420,900,1500,2200].forEach(ms=>setTimeout(()=>SND.zap(),ms));}
 function zapTick(){
-  const ZD=3.4,e=now-ZAP.t,on=e>=0&&e<ZD;
+  const ZD=3.4,e0=now-ZAP.t,trotOn=e0>=ZD&&e0<16&&S.state==='trot'&&TROT.R&&!TROT.cut,e=trotOn?1.2+(e0%1.2):e0,on=e>=0&&e<ZD; /* a homer that shorted the park out: the lights keep flickering for as long as he is shown rounding the bases */
   if(!on){if(ZAP.glow.visible){ZAP.glow.visible=false;ZAP.bolts.forEach(l=>{l.visible=false;});if(EYE.mat)EYE.mat.color.setScalar(1);sbMat.color.setScalar(1);zapLights(1);}return;}
   const k=1-e/ZD,fl=Math.random();
   if(EYE.mat&&!ZAP.sb)EYE.mat.color.setScalar(fl<.35*k?9:fl<.6?.25:1);
@@ -1895,7 +1895,7 @@ let shoutI=-1,shoutLast='';const _sh=new V3();
 function shoutTick(){
   const el=$('shout');
   if(S.state==='trot'&&TROT.R&&TROT.cut){ // at the plate after a homer: he lets everybody know
-    if(shoutI===-1){shoutI=0;const rbi=flight&&flight.rbi||0;let t;if(rbi>=4)t='GRAND SALAMI!';else do{t=SHOUT_H[(Math.random()*SHOUT_H.length)|0];}while(t===shoutLast);
+    if(shoutI===-1){shoutI=0;const rbi=flight&&flight.rbi||0;let t;if(rbi>=4)t='GRAND SALAMI!';else do{t=SHOUT_H[(Math.random()*SHOUT_H.length)|0];}while(t===shoutLast||(t==='PIMPED IT!'&&flight&&flight.pimp));
       shoutLast=t;el.textContent=t;el.classList.remove('b','go');void el.offsetWidth;el.classList.add('go');buzz([20,30,40]);}
     TROT.R.fig.root.getWorldPosition(_sh);_sh.y=2.35;_sh.project(camera);const w=canvas.clientWidth||innerWidth,h=canvas.clientHeight||innerHeight;
     el.style.left=((_sh.x*.5+.5)*w).toFixed(0)+'px';el.style.top=Math.max(MOB?250:120,(-_sh.y*.5+.5)*h).toFixed(0)+'px';return;}
@@ -2589,7 +2589,7 @@ function tryContact(){flight_pop=false;if(pitch.hbp){swing.done=true;swing.miss=
   if(play.type==='hr'&&MX.clip){const ft=play.dist*3.281,big=tb||ft>=500,r=Math.random(),early=earlyShow(S.hrs),kind=DBG.trail?'':DBG.admire||(early?'show':big?(r<.45?'show':r<.65?'admire':''):ft>=440?(r<.4?'admire':''):'');wildTrot=early;
     if(!kind&&!flight.orbit&&ft>=420&&(DBG.trail||Math.random()<.6))flight.trailCam=true; // some no-doubters are watched from right behind the ball
    
-    if(kind){flight.admire=kind;flight.trot=WALK.on&&RUN.list.length>0;flight.A=Math.max(1.2,Math.min(kind==='show'&&!flight.trot?3.9:2.5,play.endT-1.3));pop(['NO DOUBTER!','SEE YA!','CRANKED!','ABSOLUTE TANK!','MOONSHOT!','ABSOLUTE NUKE!','ABSOLUTE BOMB!'][(Math.random()*7)|0],'',tb?'hot':'');}}
+    if(kind){flight.admire=kind;flight.trot=WALK.on&&RUN.list.length>0;flight.A=Math.max(1.2,Math.min(kind==='show'&&!flight.trot?3.9:2.5,play.endT-1.3));{const c=['NO DOUBTER!','SEE YA!','CRANKED!','ABSOLUTE TANK!','MOONSHOT!','ABSOLUTE NUKE!','ABSOLUTE BOMB!','PIMPED IT!','PIMPED IT!'][(Math.random()*9)|0];flight.pimp=c==='PIMPED IT!';pop(c,'',tb?'hot':'');} /* pimp: said here, so the home-plate shout will not say it again */}}
   if(!flight.admire&&q>.82&&pw&&play.type!=='foul')pop(['CRUSHED!','SMOKED!','TATTOOED!','OBLITERATED!'][(Math.random()*4)|0],'',tb?'hot':'');
   if(play.type!=='foul'&&(tb||(S.over&&S.overOn)||(play.type==='hr'&&play.dist*3.281>=420)))sfx('crush',1);
   if(play.type==='hr'&&S.over&&S.overOn){const k=$('tmk');k.classList.add('pf','od');$('tim').dataset.rk=1;}else $('tmk').classList.remove('od'); // an Overdrive homer always gets the rocket, burning blue
