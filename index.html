@@ -291,6 +291,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
 #pop .s{font-family:var(--display);font-size:clamp(16px,3.2vw,34px);color:var(--chrome);text-shadow:0 3px 0 #000;margin-top:6px;font-variant-numeric:tabular-nums}
 #pop.hot .t{color:var(--heat);text-shadow:0 5px 0 #000,0 0 50px rgba(255,77,46,.8)}
 #pop.cool .t{color:var(--ice);text-shadow:0 5px 0 #000,0 0 40px rgba(58,214,255,.6)}
+#hud.pcut #pop.pod .t{font-size:clamp(22px,5.4vw,52px)}
 #pop.plain .t{color:#fff;text-shadow:0 clamp(4px,.7vw,7px) 0 #05060f}
 /* ── ONE CALLOUT STYLE. Every call is built the same way so it reads instantly over anything: a bright fill, a heavy dark outline that sits
    OUTSIDE the letters, and a hard drop edge under them. The line beneath a call sits on its own dark plate. Colour says what kind of news it is:
@@ -789,7 +790,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button id="qmash" type="button" aria-hidden="true">TAP!</button>
     <div id="odh" aria-hidden="true"></div>
     <div id="orbc" aria-hidden="true"><b>YOU HIT IT INTO ORBIT!</b></div>
-    <div id="bdg" aria-live="polite"><i></i><div><em>BADGE UNLOCKED</em><b></b><span></span></div></div>
+    <div id="bdg" aria-live="polite"><i></i><div><em>ACHIEVEMENT UNLOCKED</em><b></b><span></span></div></div>
     <button id="gobtn" type="button">GO!<small></small></button>
     <div id="qte" hidden><b id="qtt"></b><div id="qtr"></div><div id="qtm"><i id="qtb"></i></div></div>
     <div id="qpad" aria-hidden="true"><button type="button" data-d="U">▲</button><button type="button" data-d="L">◀</button><button type="button" data-d="R">▶</button><button type="button" data-d="D">▼</button></div>
@@ -811,7 +812,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
 <g fill="#fff"><circle cx="58" cy="70" r="2.4"/><circle cx="112" cy="26" r="1.6"/><circle cx="590" cy="150" r="2"/><circle cx="548" cy="238" r="1.5"/><circle cx="84" cy="212" r="1.8"/><circle cx="230" cy="14" r="1.4"/><path d="M40 138l3 8 8 3-8 3-3 8-3-8-8-3 8-3z"/><path d="M600 70l2.4 6.4 6.4 2.4-6.4 2.4-2.4 6.4-2.4-6.4-6.4-2.4 6.4-2.4z"/></g>
 <circle cx="320" cy="146" r="124" fill="url(#lgMoon)" stroke="#0b0a1a" stroke-width="7"/>
 <g fill="#6b7190" opacity=".55"><ellipse cx="268" cy="92" rx="26" ry="20"/><ellipse cx="372" cy="70" rx="15" ry="11"/><ellipse cx="398" cy="124" rx="21" ry="16"/><ellipse cx="236" cy="150" rx="12" ry="9"/><ellipse cx="322" cy="52" rx="8" ry="6"/></g>
-<g fill="none" stroke="#f4f6ff" stroke-width="2.5" opacity=".5"><path d="M246 84a26 20 0 0 1 30-11"/><path d="M360 64a15 11 0 0 1 16-4"/><path d="M380 116a21 16 0 0 1 22-7"/></g>
+<g fill="none" stroke="#e23a22" stroke-linecap="round"><path d="M250 46C292 96 292 196 250 246M390 46C348 96 348 196 390 246" stroke-width="4.5" opacity=".9"/><g stroke-width="3.6" opacity=".9"><path d="M251 60l11 -5"/><path d="M262 82l11 -5"/><path d="M270 104l11 -5"/><path d="M274 126l11 -5"/><path d="M276 144l11 5"/><path d="M274 166l11 5"/><path d="M270 188l11 5"/><path d="M262 210l11 5"/><path d="M251 232l11 5"/><path d="M389 60l-11 -5"/><path d="M378 82l-11 -5"/><path d="M370 104l-11 -5"/><path d="M366 126l-11 -5"/><path d="M364 144l-11 5"/><path d="M366 166l-11 5"/><path d="M370 188l-11 5"/><path d="M378 210l-11 5"/><path d="M389 232l-11 5"/></g></g><g fill="none" stroke="#f4f6ff" stroke-width="2.5" opacity=".5"><path d="M246 84a26 20 0 0 1 30-11"/><path d="M360 64a15 11 0 0 1 16-4"/><path d="M380 116a21 16 0 0 1 22-7"/></g>
 <path d="M96 262C210 250 420 190 548 60L566 80C452 214 250 286 100 284Z" fill="url(#lgTail)" stroke="#0b0a1a" stroke-width="5" stroke-linejoin="round"/>
 <path d="M190 256C290 236 440 168 540 72" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" opacity=".8"/>
 <g transform="translate(560 62)"><circle r="30" fill="#fdfdf6" stroke="#0b0a1a" stroke-width="6"/><path d="M-13-25c10 16 10 34 0 50M13-25c-10 16-10 34 0 50" fill="none" stroke="#e23a22" stroke-width="3.2"/><g stroke="#e23a22" stroke-width="2.4"><path d="M-12-14l-7-2M-9-2l-8 0M-10 10l-7 3M12-14l7-2M9-2l8 0M10 10l7 3"/></g></g>
@@ -839,7 +840,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 452</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 453</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <button class="tag wkopt sens" id="sens1" type="button"></button>
@@ -993,7 +994,7 @@ let dftEl=null,dftOn=false,dftV=-1;function dftDom(){const on=!!(flight&&!flight
   const W=canvas.clientWidth||innerWidth,H=canvas.clientHeight||innerHeight;_s0.copy(ball.position).project(camera);const x=clamp((_s0.x*.5+.5)*W,70,W-70),y=clamp((-_s0.y*.5+.5)*H-H*.11,H*.14,H*.8);
   dftEl.style.transform='translate('+x.toFixed(1)+'px,'+y.toFixed(1)+'px) translate(-50%,-100%)';}
 function draw(){podCls();shTick();hbpPop();markDom();dftDom();{const pc=now-pcutT<.06,e=$('pop');if(pc!==pcutOn){pcutOn=pc;$('hud').classList.toggle('pcut',pc);if(!pc){e.style.top='';e.style.bottom='';e.className='';}}
-  if(pc){_s0.copy(pcutH).project(camera);const H=canvas.clientHeight||innerHeight;e.style.bottom='auto';{const t1=e.querySelector('.t'),s1=e.querySelector('.s');e.style.top=Math.max(/\bs(up|dn)\b/.test(e.className)?(MOB?112:84):6 /* the ratings call stays clear of the scoreboard and the meters */,(-_s0.y*.5+.5)*H-t1.offsetHeight-(s1.textContent?s1.offsetHeight+6:0)).toFixed(0)+'px';}}} // call-outs sit just above the head of whoever the close-up is on
+  if(pc){_s0.copy(pcutH).project(camera);const H=canvas.clientHeight||innerHeight;e.style.bottom='auto';{const t1=e.querySelector('.t'),s1=e.querySelector('.s');e.style.top=Math.max(MOB?112:84 /* every close-up call stays clear of the scoreboard and the meters along the top */,(-_s0.y*.5+.5)*H-t1.offsetHeight-(s1.textContent?s1.offsetHeight+6:0)).toFixed(0)+'px';}}} // call-outs sit just above the head of whoever the close-up is on
  lodTick();gloveTick();if(composer)composer.render();else renderer.render(scene,camera);sharpTick();tagsTick();cardTick();}
 const scene=new T.Scene();
 scene.fog=new T.Fog(0x06060c,320,1500); // no atmosphere: distance only fades far-off stands a little
@@ -2664,7 +2665,7 @@ const POD=2.1;
 function podReveal(){S.podPending=false;S.state='pod';S.t=now;
   {const ts=MX.pit?Object.keys(MX.pit.taunts).filter(k=>/clap|threat/.test(k)):[];if(ts.length)S.sTaunt={t:now+.05,clip:ts[(Math.random()*ts.length)|0],dur:POD-.1};}
   flash(.5);boo(.6);SND.zap();setTimeout(()=>SND.zap(),200);buzz([40,40,40,40,90]);shake=Math.max(shake,.45*FX);
-  pop('PITCHER OVERDRIVE!','EVERY PITCH THIS AT-BAT IS A JUICE PITCH','hot',true);duelCheck();hud();}
+  pop('PITCHER OVERDRIVE!','EVERY PITCH IS A JUICE PITCH','hot pod',true);duelCheck();hud();}
 function pcIntro(){if(S.pcI)return;S.pcI=true;pitcherModel();const P=S.pName;
   flash(.45);pop('PITCHING CHANGE','NOW PITCHING: #'+P[1]+' '+P[0],'hot',true);boo(.55);if(organPlay('neenaa',.55))orgNext+=6;buzz([40,60,40]);$('pcap').textContent='PITCHER · '+P[0];
   S.pcS=0;} // (he then throws one warm-up pitch, in updatePitcher, so it is plain there is a new arm out there)
@@ -3017,7 +3018,7 @@ function tryContact(){flight_pop=false;if(pitch.hbp){swing.done=true;swing.miss=
     flight.noSb=hrShowLast==='board'&&Math.random()<.92;flight.noEye=hrShowLast==='eye'&&Math.random()<.92; /* the scoreboard light-show almost never comes up on two homers running: the second one just sails by */ // some no-doubters are watched from right behind the ball
    
     lasWant=!!(kind&&(DBG.laser||Math.random()<.45)); // a no-doubter: now and then the lasers come on, but never before the ball has actually cleared the wall
-    if(kind){flight.admire=kind;flight.trot=WALK.on&&RUN.list.length>0;flight.A=Math.max(1.2,Math.min(kind==='show'&&!flight.trot?3.9:2.5,play.endT-1.3));{const c=['NO DOUBTER!','SEE YA!','CRANKED!','ABSOLUTE TANK!','MOONSHOT!','ABSOLUTE NUKE!','ABSOLUTE BOMB!','LIFT OFF!','PIMPED IT!','PIMPED IT!'][(Math.random()*10)|0];flight.pimp=c==='PIMPED IT!';pop(c,'',tb?'hot':'');} /* pimp: said here, so the home-plate shout will not say it again */}}
+    if(kind){flight.admire=kind;flight.trot=WALK.on&&RUN.list.length>0;flight.A=Math.max(1.2,Math.min(kind==='show'&&!flight.trot?3.9:2.5,play.endT-1.3));{const c=['NO DOUBTER!','SEE YA!','CRANKED!','ABSOLUTE TANK!','MOONSHOT!','ABSOLUTE NUKE!','ABSOLUTE BOMB!','LIFT OFF!','PIMPED IT!','PIMPED IT!'][(Math.random()*10)|0];flight.pimp=c==='PIMPED IT!';if(flight.pimp){const F=flight,hot=tb?'hot':'';setTimeout(()=>{if(flight===F&&!F.done)pop(c,'',hot);},1000);}else pop(c,'',tb?'hot':'');} /* PIMPED IT waits a second: you see the bat flip first, then the word */ /* pimp: said here, so the home-plate shout will not say it again */}}
   if(!flight.admire&&q>.82&&pw&&play.type!=='foul')pop(['CRUSHED!','SMOKED!','TATTOOED!','OBLITERATED!'][(Math.random()*4)|0],'',tb?'hot':'');
   if(play.type!=='foul'&&(tb||(S.over&&S.overOn)||(play.type==='hr'&&play.dist*3.281>=420)))sfx('crush',1);
   if(play.type==='hr'&&S.over&&S.overOn){const k=$('tmk');k.classList.add('pf','od');$('tim').dataset.rk=1;}else $('tmk').classList.remove('od'); // an Overdrive homer always gets the rocket, burning blue
@@ -3210,11 +3211,11 @@ function callOnce(L){for(const [ok,id,txt] of L)if(ok&&!callShown[id]){callShown
 // feat happens in each new game (marked BADGE rather than BADGE UNLOCKED). After that, in the same game, the ordinary callouts take over.
 function badge(id){const B=BADGES.find(b=>b[0]===id);if(!B)return;const G=S.bdgGame||(S.bdgGame={});if(G[id])return;G[id]=1;const isNew=!bdgGot[id];if(!isNew&&id==='hit')return; /* a first hit is only worth a plate the first time ever */
   if(isNew){bdgGot[id]=1;try{localStorage.setItem('mm_badges3',JSON.stringify(bdgGot));}catch(e){}}const q=B.slice();q.tq=performance.now();q.isNew=isNew;bdgQ.push(q);bdgLabel();}
-function bdgLabel(){const e=$('bdgbtn');if(e)e.textContent='Badges: '+BADGES.filter(b=>bdgGot[b[0]]).length+' / '+BADGES.length;}
+function bdgLabel(){const e=$('bdgbtn');if(e)e.textContent='Achievements: '+BADGES.filter(b=>bdgGot[b[0]]).length+' / '+BADGES.length;}
 setInterval(()=>{if(!bdgQ.length||performance.now()<bdgBusy||S.state==='title')return; /* (plates DO show during the orbit shot: that is exactly when IN ORBIT should drop in) */bdgShow(bdgQ.shift(),false);},250);
-function bdgShow(B,lead){const e=$('bdg');e.querySelector('em').textContent=B.isNew===false?'BADGE':'BADGE UNLOCKED';bdgCur=B;bdgCurEnd=performance.now()+3000;e.querySelector('i').textContent=B[3];e.querySelector('b').textContent=B[1];e.querySelector('span').textContent=B[2];
+function bdgShow(B,lead){const e=$('bdg');e.querySelector('em').textContent=B.isNew===false?'ACHIEVEMENT':'ACHIEVEMENT UNLOCKED';bdgCur=B;bdgCurEnd=performance.now()+3000;e.querySelector('i').textContent=B[3];e.querySelector('b').textContent=B[1];e.querySelector('span').textContent=B[2];
   e.classList.remove('go','lead');void e.offsetWidth;e.classList.add('go');if(lead)e.classList.add('lead');bdgBusy=performance.now()+3300;popUntil=Math.max(popUntil,bdgBusy);buzz([20,40,20,40,90]);[660,880,1100,1320].forEach((f,i)=>tone('triangle',f,f*1.02,.12,.4,i*.07));}
-function bdgOpen(){let e=$('bdgs');if(!e){e=document.createElement('div');e.id='bdgs';e.innerHTML='<h2>BADGES</h2><p></p><div id="bdgl"></div><button class="cta alt" type="button">BACK</button>';document.body.appendChild(e);e.addEventListener('click',ev=>{if(ev.target===e||ev.target.tagName==='BUTTON')e.hidden=true;});}
+function bdgOpen(){let e=$('bdgs');if(!e){e=document.createElement('div');e.id='bdgs';e.innerHTML='<h2>ACHIEVEMENTS</h2><p></p><div id="bdgl"></div><button class="cta alt" type="button">BACK</button>';document.body.appendChild(e);e.addEventListener('click',ev=>{if(ev.target===e||ev.target.tagName==='BUTTON')e.hidden=true;});}
   e.querySelector('p').textContent=BADGES.filter(b=>bdgGot[b[0]]).length+' OF '+BADGES.length+' EARNED';$('bdgl').innerHTML=BADGES.map(b=>'<div class="'+(bdgGot[b[0]]?'got':'')+'"><i>'+b[3]+'</i><p style="margin:0"><b>'+b[1]+'</b><span>'+b[2]+'</span></p></div>').join('');e.hidden=false;}
 let odEver=false;try{odEver=localStorage.getItem('mm_od')==='1';}catch(e){}
 let orbSeen=false;try{orbSeen=localStorage.getItem('mm_orbit')==='1';}catch(e){} // the very first Overdrive homer a player ever hits always leaves orbit; after that it is about one in three
@@ -4334,7 +4335,7 @@ function step(dt){
       if(flight.satHit){ball.visible=false;ballGlow.material.opacity=0;}}
     if(flight.play.type==='hr'&&!flight.called&&tf>=tr.hrT-.9){flight.called=true;pop("OUTTA HERE!",'','hot');SND.boom();}
     if(flight.play.type==='hr'&&!flight.clr&&tf>=tr.hrT){flight.clr=true; /* the instant it is over the wall, and not a frame sooner: the horn (on a good share of them) and, when it was a no-doubter, the lasers */
-      if(DBG.horn||Math.random()<.55)sfx('horn',.6);if(lasWant&&!LAS.on&&!LAMP.on&&!flight.lamp){laserStart();lasWant=false;}}
+      if(DBG.horn||Math.random()<.7)sfx('horn',1.5); /* the home-run horn: loud, and on seven homers in ten */if(lasWant&&!LAS.on&&!LAMP.on&&!flight.lamp){laserStart();lasWant=false;}}
     if(tf>=flight.play.endT){
       if(flight.play.type==='hr'){_p.copy(ball.position);burst(fxL,_p,30,14,.9,[1,.9,.6],4,4);SND.boom();}
       ball.visible=flight.play.type==='foul';ballShadow.visible=false;ballGlow.material.opacity=0;finishPlay();}
