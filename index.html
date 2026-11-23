@@ -343,11 +343,14 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
 #tbar .gp{background:linear-gradient(90deg,rgba(255,77,46,.3),rgba(255,77,46,.8) 36%,#ff8a70 42%,#ff8a70 58%,rgba(255,77,46,.8) 64%,rgba(255,77,46,.3))}
 #tbar .jx{background:#ffd23b;box-shadow:0 0 8px 1px rgba(255,210,59,.8)} /* same colours as the bat: green = CONTACT window, red core = POWER window, gold ends = Juice */
 #tbar .dim{opacity:.22}
+/* while he admires a no-doubter the timing read-out moves up under the top bar, off his head and shoulders */
+#hud.adm #tim{top:13%!important}#hud.adm #tbar{top:calc(13% + 34px)!important}#hud.mob.adm #tim{top:19%!important}#hud.mob.adm #tbar{top:calc(19% + 30px)!important}
 #hud.ttl>#card{display:none!important} /* no batter plate behind the title or the end-of-game screen */
 /* THE PLAYER CARD, bigger: who is up and what he can do is information you play off, so it is sized to be read at a glance */
 #hud:not(.mob)>#card{padding:10px 16px 10px 12px;gap:14px}#hud:not(.mob)>#card #cnum{font-size:50px}#hud:not(.mob)>#card #cname{font-size:25px}
 #hud:not(.mob)>#card .stat{font-size:14px;gap:7px}#hud:not(.mob)>#card .stat b{width:86px;height:7px}#hud:not(.mob)>#card .stat em{font-size:24px}
 #hud>#card{background:linear-gradient(#2436b4,#111a66);border:2px solid #fff;border-left:8px solid #ff8a3a;border-radius:10px;box-shadow:0 3px 0 #000} /* its own look, nothing like the scoreboard behind it: a Comets-blue plate with a white edge and an orange team stripe (the scoreboard is black with yellow bulbs) */
+#hud>#card #cname small{display:block;font-family:var(--hud);font-style:normal;font-weight:800;font-size:.5em;letter-spacing:.1em;color:#ffb070;line-height:1.1;margin-bottom:1px;white-space:nowrap}
 #hud>#card #cname{color:#fff!important}#hud>#card #cnum{color:#ffb070!important} /* a solid dark plate with a yellow edge: it stands out from the park behind it */
 #hud:not(.mob)>#card #cnum{font-size:58px}#hud:not(.mob)>#card #cname{font-size:30px}#hud:not(.mob)>#card .stat{font-size:16px;color:#fff}#hud:not(.mob)>#card .stat em{font-size:30px}
 #hud.mob>#card .stat{color:#fff}
@@ -875,7 +878,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 503</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 507</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <button class="tag wkopt sens" id="sens1" type="button"></button>
@@ -1034,7 +1037,7 @@ let dftEl=null,dftOn=false,dftV=-1;function dftDom(){const on=!!(flight&&!flight
 const _pt=new V3();function podTagPos(){const e=$('podtag');if(!$('hud').classList.contains('podlive')||!MX.pit){if(e._on){e._on=0;e.style.top='';e.style.zoom='';}return;}
   let hi=2.2;const sk=MX.pit._bones||(MX.pit._bones=(()=>{const a=[];MX.pit.obj.traverse(b=>{if(b.isBone&&/Head|Hand$|HandMiddle1|Foot$/.test(b.name))a.push(b);});return a;})());for(const b of sk){b.getWorldPosition(_pt);if(_pt.y>hi)hi=_pt.y;}
   e._hi=Math.max(hi,(e._hi||hi)-.02); /* comes down slowly, so it does not bob with every gesture */
-  _s0.set(0,e._hi+.35,-18.4).project(camera);const H=canvas.clientHeight||innerHeight,head=(-_s0.y*.5+.5)*H,top0=MOB?112:84;e.style.zoom='';const h0=e.offsetHeight||50,k=clamp((head-top0)/h0,.5,1);
+  _s0.set(0,e._hi+(MOB?.75:.35),-18.4).project(camera);const H=canvas.clientHeight||innerHeight,head=(-_s0.y*.5+.5)*H,top0=MOB?112:84;e.style.zoom='';const h0=e.offsetHeight||50,k=clamp((head-top0)/h0,.5,1);
   e.style.zoom=k<1?k.toFixed(3):'';e.style.top=(Math.max(top0,head-h0*k)/k).toFixed(0)+'px';e._on=1;}
 function draw(){podTagPos();{const ad=!!(flight&&flight.admire&&!flight.done&&now-flight.t0<(flight.A||0)+.4);if(ad!==admCls){admCls=ad;$('hud').classList.toggle('adm',ad);}}trackRing.visible=landRing.visible;if(landRing.visible){trackRing.position.set(landRing.position.x,.09,landRing.position.z);trackRing.scale.setScalar(landRing.scale.x*1.15);trackRing.rotation.z=now*1.2;}{const du=!!(S.over&&S.overOn&&pOD());if(du!==duelTag){duelTag=du;const e=$('podtag');e.innerHTML=du?'OVERCHARGED<br>DUEL!':'PITCHER<br>OVERDRIVE ACTIVE';e.classList.toggle('du',du);}}if(HALO.paint){const F=flight&&!flight.done?flight:null,st=S.state,pn=performance.now(),cnt=st==='ready'||st==='windup'||st==='pitch';
     const hm=S.walkoff||st==='end'&&S.runs>S.opp?'walkoff':F&&F.rev&&F.revOn||F&&F.orbit&&F.orb?'orbit':F&&F.play.type==='hr'&&F.clr&&S.bases.filter(Boolean).length===3?'slam':F&&F.play.type==='hr'&&F.admire?'nodoubt':F&&F.play.type==='hr'&&F.clr||st==='trot'?'hr':st==='brawl'?'fight':st==='pchange'?'change':S.kOut&&now<S.kOut.t+3&&st==='result'?'k'
@@ -2307,7 +2310,8 @@ const batS={b:0,h:new V3(-.36,1.36,.36),d:new V3(-.25,1,-.15).normalize(),pose:l
 const SW_T=.07; // tap-to-contact time. Short on purpose: the swing has to feel instant
 const curBatter=()=>LINEUP[S.bi%LINEUP.length];
 // the name-and-ratings card follows the hitter the player is looking at, not the one who is merely due up
-function showCard(){if(S.bi<0)return;S.cardBi=S.bi;const b=curBatter();$('cnum').textContent=b.num;$('cname').innerHTML=b.name+(b.lh?' · L':' · R')+(b.hb>0?' <i class="hbu">▲</i>':b.hb<0?' <i class="hbd">▼</i>':''); /* one arrow by the name says his ratings are up or down for the game; the letters stay clean so nothing overlaps on a phone */cardStats(b);}
+const POS_BY={VASQUEZ:'CF',OKAFOR:'SS',DELACROIX:'2B',BRICKHOUSE:'1B',TANAKA:'RF',MONTOYA:'3B',ABERNATHY:'LF','JACKSON-BELL':'C',KOWALSKI:'DH'}; /* where each Comet plays in the field */
+function showCard(){if(S.bi<0)return;S.cardBi=S.bi;const b=curBatter();$('cnum').textContent=b.num;$('cname').innerHTML='<small>#'+b.num+' · '+(POS_BY[b.name]||'DH')+' · BATS '+(b.lh?'L':'R')+'</small>'+b.name+(b.hb>0?' <i class="hbu">▲</i>':b.hb<0?' <i class="hbd">▼</i>':''); /* one arrow by the name says his ratings are up or down for the game; the letters stay clean so nothing overlaps on a phone */cardStats(b);}
 
 function pop(t,s='',cls='',long=false){
   // A NEW BADGE IS THE CALL: if a feat has just earned one, its badge (icon and name, in gold) goes up as the big callout in place of the
@@ -2315,7 +2319,7 @@ function pop(t,s='',cls='',long=false){
   let _bq=null;try{_bq=bdgQ;}catch(e){}
   // CALLOUT AND BADGE PLATE NEVER SHARE THE SCREEN: a callout always wins. A plate that is up when one arrives is taken down and comes back afterwards.
   if(_bq){const pn=performance.now();if(bdgCur&&pn<bdgCurEnd){$('bdg').classList.remove('go');if(!bdgCur.re&&pn<bdgCurEnd-1900){bdgCur.old=1;bdgCur.re=1;_bq.unshift(bdgCur);}bdgCur=null;} /* it comes back ONCE, and only if it had been up for under a second: never again and again through a run of callouts */popUntil=pn+(long?3300:1700);bdgBusy=Math.max(bdgBusy,popUntil);}
-  if(_bq&&cls!=='logo'&&_bq.some(b=>!b.old&&performance.now()-b.tq<80)){const fresh=_bq.filter(b=>!b.old&&performance.now()-b.tq<80);const R=['slam','b2b','five','hr500','rev','earth','sat','lamp','board','eye','aura','duel','showboat','charge','juicehr','ambush','odhr','hr450','hr','walkoff','jump','brawl','send','heater','ten','win','wore','hit'];
+  if(_bq&&cls!=='logo'&&_bq.some(b=>!b.old&&performance.now()-b.tq<80)){const fresh=_bq.filter(b=>!b.old&&performance.now()-b.tq<80);const R=['slam','b2b','five','hr500','rev','earth','sat','lamp','pole','board','eye','aura','duel','showboat','charge','juicehr','ambush','odhr','hr450','hr','walkoff','jump','brawl','send','heater','ten','win','wore','hit'];
     fresh.sort((a,b)=>R.indexOf(a[0])-R.indexOf(b[0]));const B=fresh[0];bdgQ.splice(bdgQ.indexOf(B),1);$('pop').className='';bdgShow(B,true);return;} /* the badge plate IS the call: the ordinary callout is not shown at all, so the two can never collide */
   const e=$('pop');e.className='';e.querySelector('.t').textContent=t;e.querySelector('.s').textContent=s;void e.offsetWidth;e.className='go '+cls+(long?' long':'');}
 let MOB=false;function setMob(){MOB=matchMedia('(pointer:coarse)').matches||innerWidth<=560;$('hud').classList.toggle('mob',MOB);document.body.classList.toggle('mob',MOB);}setMob();addEventListener('resize',setMob); // narrow a desktop window to preview the phone layout
@@ -2767,7 +2771,7 @@ function qteRisk(k,pl){const from={plate:3,adv3:2,stretch3:2,stretch2:1,tag3:2,t
   const px=pl&&pl.p?pl.p.x:0,pz=pl&&pl.p?pl.p.z:-80,dn=clamp((Math.hypot(px,pz)-45)/60,0,1);let D=1.38-.62*dn+({stretch3:.16,stretch2:.1,plate:.05,tag2:.22,tag3:.05}[k]||0);
   if(k==='adv3'||k==='stretch3'||k==='tag3')D+=clamp(-px/60,-1,1)*.14; /* left field is the short throw to third */
   return clamp(D/Math.pow(sp,1.3),.55,1.6);}
-function goOffer(k,pl){S.goK=k;S.goD=qteRisk(k,pl);const b=$('gobtn');b.firstChild.nodeValue=GO_LABEL[k];b.dataset.r=S.goD<.85?'g':S.goD<1.15?'y':'r';b.querySelector('small').textContent=(S.goD<.85?'GOOD ODDS':S.goD<1.15?'TOSS-UP':'LONG SHOT')+' · ';b.classList.remove('on');void b.offsetWidth;b.classList.add('on');readyDur=Math.max(readyDur,qteSeen?2.3:3.2);S.t=now;buzz(25);} /* up for a little over two seconds; a player who has never taken one gets the full three */
+function goOffer(k,pl){S.goK=k;S.goD=qteRisk(k,pl);const b=$('gobtn');b.firstChild.nodeValue=GO_LABEL[k];b.dataset.r=S.goD<.85?'g':S.goD<1.15?'y':'r';b.querySelector('small').textContent=(S.goD<.85?'GOOD ODDS':S.goD<1.15?'TOSS-UP':'LONG SHOT')+' · ';b.classList.remove('on');void b.offsetWidth;b.classList.add('on');readyDur=Math.max(readyDur,qteSeen?2.8:3.4);S.t=now;buzz(25);} /* up for a little over two seconds; a player who has never taken one gets the full three */
 function goHide(){if(S.goK){S.goK=null;}$('gobtn').classList.remove('on');}
 function goTap(){if(!S.goK||S.state!=='result')return;const k=S.goK;goHide();S.next=()=>qteStart(k,true);S.t=now-readyDur+.2;buzz([20,30,60]);tone('triangle',660,990,.12,.3);}
 function qteStart(kind,noPA){QT.noPA=!!noPA;goHide();const D=QT.D=kind==='dp'?1:clamp(S.goD||1,.55,1.6);S.goD=0;const M=QTE_MOVES[kind],Bp=M.base?[BASES[M.base][0],BASES[M.base][1]]:[0,0],u=M.u;
@@ -3071,7 +3075,9 @@ function judge0(tr,bt){const spd=bt&&bt.spd||1; // batter's speed: 0.85 (plodder
     return {type:'out',label:f.isP?'SNAGGED BY THE PITCHER':la<20?'LINE OUT':f.of?'FLY OUT':'POP OUT',endT:p.t,f,p,air:true};}
   if(!f.of){const tt=p.t+1.0+Math.hypot(p.x-19.4,p.z+19.4)/36; // field it, a second to set and release, then the throw to first
     // the throw has to beat the runner to first: quicker men (and lefties, a step closer) get there sooner
-    if(tt<3.35-(spd-1)*1.8-(bt&&bt.lh?.08:0))return {type:'out',label:'GROUND OUT',endT:p.t,f,p};
+    if(tt<3.35-(spd-1)*1.8-(bt&&bt.lh?.08:0)){ /* a routine grounder is not always an out: about one in twelve, the throw sails or pulls the first baseman off the bag and the runner is safe on the error */
+      if(Math.random()<.085)return {type:'hit',bases:1,endT:p.t,f,p,infield:true,tag:Math.random()<.5?'ERROR · BAD THROW':'ERROR · PULLED HIM OFF THE BAG'};
+      return {type:'out',label:'GROUND OUT',endT:p.t,f,p};}
     return {type:'hit',bases:1,endT:p.t,f,p,infield:tt<4.2};}
   // Extra bases are a race: the runner against the fielder picking the ball up, setting, and throwing to the bag.
   // An average runner needs about 8.2 s to reach second and 11.6 s to reach third; a ball fielded cleanly in front of an outfielder is a single.
@@ -3365,7 +3371,7 @@ let odBag=[],odLastK='';function odPick(){if(!odBag.length){odBag=['rev','lamp',
 const BADGES=[['hit','KNOCK','Get your first hit','🧢'],['hr','WENT YARD','Hit your first home run','💥'],['hr450','TAPE MEASURE','Hit one 450 feet or more','📏'],['hr500','5 HUNNID','Hit one 500 feet or more','🚀'],
   ['odhr','OVERDRIVEN','Homer in Overdrive','🔥'],['juicehr','GOT HEEEM!','Homer off a Juice pitch','😂'],['duel','BEAT THE HEAT','Homer while the pitcher is in Overdrive','🥵'],['charge','BRAWLER','Charge the mound','😤'],['showboat','SHOWBOAT','Admire one and flip the bat','🕺'],['aura','MAX AURA','Take a pitcher deep while he is in Overdrive','✨'],['ambush','AMBUSH','Homer on the first pitch','⚡'],
   ['slam','GRAND SALAMI','Hit a grand slam','🍖'],['b2b','BACK TO BACK','Homers in consecutive at-bats','👯'],['five','DERBY NIGHT','Five homers in one game','🎆'],['heater','ON A HEATER','Five hits in a row','♨️'],
-  ['rev','IN ORBIT','Put one into orbit round the Moon','🌕'],['earth','NEXT STOP: EARTH','Hit one clean off the Moon','🌍'],['sat','SPACE JUNK','Take out the satellite','🛰️'],['lamp','LIGHTS OUT','Smash a light tower','💡'],['board','OFF THE SCOREBOARD','Homer off the scoreboard','📺'],['eye','OFF THE BATTER\'S EYE','Homer off the batter\'s eye','👁️'],
+  ['rev','IN ORBIT','Put one into orbit round the Moon','🌕'],['earth','NEXT STOP: EARTH','Hit one clean off the Moon','🌍'],['sat','SPACE JUNK','Take out the satellite','🛰️'],['lamp','LIGHTS OUT','Smash a light tower','💡'],['pole','DOINK!','Homer off the foul pole','🔔'],['board','OFF THE SCOREBOARD','Homer off the scoreboard','📺'],['eye','OFF THE BATTER\'S EYE','Homer off the batter\'s eye','👁️'],
   ['send','WHEELS','Win a showdown at the bag','👟'],['jump','PERFECT JUMP','Stop the needle on gold','🥇'],['brawl','LAST MAN STANDING','Win a brawl','🥊'],['wore','WORE IT','Get hit by a pitch','🩹'],
   // THE DISTANCE TREE: every home run's feet are added to a career total, kept on the device. Seven rungs, from a thousand feet to a million.
   ['ft1','FIRST THOUSAND','1,000 career feet of home runs','📐'],['ft2','MILE HIGH','5,280 career feet: one mile of homers','🏔️'],['ft3','CRATER HOPPER','26,400 career feet: five miles','🦘'],['ft4','MARATHON','138,336 career feet: a marathon of homers','🏅'],
@@ -4489,7 +4495,7 @@ function step(dt){
       landRing.visible=true;landRing.position.set(pl.p.x,.07,pl.p.z);landRing.scale.setScalar(lerp(1.4,5,k));landRing.material.opacity=1;}
     else if(!tr.hr&&tr.land&&tr.land.t>.45&&tf<tr.land.t){ // fly balls and liners (not home runs): a ring on the grass that tightens as the ball comes down
       const k=1-tf/tr.land.t;landRing.visible=true;landRing.position.set(tr.land.x,.07,tr.land.z);landRing.scale.setScalar(lerp(1.4,5,k));landRing.material.opacity=1;}
-    if(tr.poleT&&!flight.poleHit&&tf>=tr.poleT){flight.poleHit=true;burst(fxL,ball.position,16,7,.5,[1,.9,.3],5,1);tone('sine',1250,900,.5,.6);tone('triangle',2500,1800,.4,.3);pop('OFF THE POLE!','FAIR BALL · HOME RUN','hot');poleFlash=now;} // doink
+    if(tr.poleT&&!flight.poleHit&&tf>=tr.poleT){flight.poleHit=true;badge('pole');burst(fxL,ball.position,16,7,.5,[1,.9,.3],5,1);tone('sine',1250,900,.5,.6);tone('triangle',2500,1800,.4,.3);pop('OFF THE POLE!','FAIR BALL · HOME RUN','hot');poleFlash=now;} // doink
     if(tr.offP&&flight.play.type==='hit'&&!flight.offPd&&tf>=tr.offP){flight.offPd=true; // drilled him: the pitcher goes down in a heap on the mound
       if(MX.pit&&MX.pit.taunts.p_dying)S.sTaunt={t:now-1.15,clip:'p_dying',dur:4.4};SND.mitt();SND.boom();tone('sine',110,45,.2,.7);buzz([30,30,60]);shake=Math.max(shake,.5*FX);flash(.4);burst(fxS,_p.set(0,1.3,-18.2),24,5,.5,[1,.9,.5],2,1);crowdOut(.9);}
     if(tr.offF&&flight.play.type==='hit'&&!flight.offFd&&tf>=tr.offF.t){flight.offFd=true;SND.mitt();SND.boom();tone('sine',110,45,.2,.7);buzz([30,30,60]);shake=Math.max(shake,.5*FX);flash(.4);{const rp=tr.offF.f.fig.root.position;burst(fxS,_p.set(rp.x,1.3,rp.z),24,5,.5,[1,.9,.5],2,1);}crowdOut(.9);}
@@ -4565,7 +4571,11 @@ function updateCamera(rdt){
   if(!DBG.cam)applyCam();
   if(S.state==='flight'&&flight&&!flight.done&&now-flight.t0>.02)camMode='chase';
   if(DBG.cam){camPos.copy(CAM_HOME);camLook.copy(CAM_LOOK);}
-  else if(flight&&flight.aerial&&!flight.done&&flight.clr){if(!flight.aerT)flight.aerT=now;const e=now-flight.aerT,a=.4+e*.22;camPos.set(Math.sin(a)*50,265+e*8,-66+Math.cos(a)*50);camLook.set(0,0,-66); /* almost straight down from high over the mound, turning slowly: the diamond, the bowl of seats all the way round it, the halo board and the Moon outside. (From a low angle the stands showed their thin backs.) */ /* low and close enough that the whole bowl fills the picture: seats, halo board, walls and the diamond, with the Moon beyond */camera.position.lerp(camPos,e<.08?1:.3);} /* a slow sweep high over the stadium, the ball a streak below */
+  else if(flight&&flight.aerial&&!flight.done&&flight.clr){if(!flight.aerT){flight.aerT=now;flight.play.endT=Math.max(flight.play.endT,now-flight.t0+5.2); /* held for a good five seconds */
+      // THE SHOW IS TIMED TO THE SHOT: the lasers come on as the camera goes up, fireworks burst over the bowl through it, and the scoreboard takes a power surge near the end
+      if(!LAS.on&&!LAMP.on)laserStart();for(let i=0;i<14;i++)fireworks.push({t:now+.3+i*.33,p:new V3(rand(-70,70),rand(40,80),rand(-150,-20))});flight.aerZap=now+3.1;crowdPump(1);}
+    if(flight.aerZap&&now>=flight.aerZap){flight.aerZap=0;try{zapStart(_p.set(SBX,39,-(fenceR(0)+17)),true,true);}catch(e){}}
+    const e=now-flight.aerT,a=.4+e*.2;camPos.set(Math.sin(a)*40,188-e*4,-62+Math.cos(a)*40);camLook.set(0,0,-62); /* closer in, drifting lower as it turns: the bowl fills the picture edge to edge */ /* almost straight down from high over the mound, turning slowly: the diamond, the bowl of seats all the way round it, the halo board and the Moon outside. (From a low angle the stands showed their thin backs.) */ /* low and close enough that the whole bowl fills the picture: seats, halo board, walls and the diamond, with the Moon beyond */camera.position.lerp(camPos,e<.08?1:.3);} /* a slow sweep high over the stadium, the ball a streak below */
   else if(flight&&flight.trailCam&&!flight.done&&now-flight.t0>.25&&!(flight.tr.eyeT&&now-flight.t0>flight.tr.eyeT-.25)){const tr=flight.tr, // (the chase camera lets go just before a ball hits the batter's eye, so the carom and the short circuit are watched from the field)
    i=Math.min(tr.pts.length-1,Math.floor((now-flight.t0)*120)),q=tr.pts[Math.min(tr.pts.length-1,i+6)],p0=tr.pts[i];
     _a.set(q.x-p0.x,q.y-p0.y,q.z-p0.z);if(_a.lengthSq()<1e-6)_a.set(0,0,-1);_a.normalize(); // riding just behind and above the ball, looking where it is going
