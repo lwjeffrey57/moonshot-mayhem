@@ -99,7 +99,7 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 #bug .badge{display:flex;align-items:center;justify-content:center;width:44px;background:linear-gradient(135deg,#e23a22,#7a1208);border-right:2px solid var(--pilllo)}
 #bug .badge span{font-size:20px;color:#fff;transform:rotate(-12deg);text-shadow:0 2px 0 #000;letter-spacing:-.04em}
 #bug .rows{width:112px}
-#bug .tm.alt{color:#ff8a70;font-size:17px}
+#bug .tm.alt{color:var(--chrome);font-size:17px}#bug .tm:not(.alt){color:#ff8a3a} /* the side at the plate (the home Comets) carries the hot colour; the visitors are plain */
 #pitchinfo{top:126px;width:84px;background:linear-gradient(#0a2010,#04100a);border-color:#9aa86a}
 #pitchinfo b{font-size:28px;letter-spacing:.04em}
 #meters{top:8px;left:50%;transform:translateX(-50%);display:flex;gap:10px;align-items:flex-start}
@@ -814,7 +814,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 444</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 445</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <button class="tag wkopt sens" id="sens1" type="button"></button>
