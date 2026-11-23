@@ -862,7 +862,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 482</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 484</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <button class="tag wkopt sens" id="sens1" type="button"></button>
@@ -1019,7 +1019,8 @@ let dftEl=null,dftOn=false,dftV=-1;function dftDom(){const on=!!(flight&&!flight
 function draw(){{const ad=!!(flight&&flight.admire&&!flight.done&&now-flight.t0<(flight.A||0)+.4);if(ad!==admCls){admCls=ad;$('hud').classList.toggle('adm',ad);}}trackRing.visible=landRing.visible;if(landRing.visible){trackRing.position.set(landRing.position.x,.09,landRing.position.z);trackRing.scale.setScalar(landRing.scale.x*1.15);trackRing.rotation.z=now*1.2;}{const du=!!(S.over&&S.overOn&&pOD());if(du!==duelTag){duelTag=du;const e=$('podtag');e.innerHTML=du?'OVERCHARGED<br>DUEL!':'PITCHER OVERDRIVE<br>ACTIVE';e.classList.toggle('du',du);}}if(HALO.paint){const F=flight&&!flight.done?flight:null,st=S.state,pn=performance.now(),cnt=st==='ready'||st==='windup'||st==='pitch';
     const hm=S.walkoff||st==='end'&&S.runs>S.opp?'walkoff':F&&F.rev&&F.revOn||F&&F.orbit&&F.orb?'orbit':F&&F.play.type==='hr'&&F.clr&&S.bases.filter(Boolean).length===3?'slam':F&&F.play.type==='hr'&&F.admire?'nodoubt':F&&F.play.type==='hr'&&F.clr||st==='trot'?'hr':st==='brawl'?'fight':st==='pchange'?'change':S.kOut&&now<S.kOut.t+3&&st==='result'?'k'
       :S.over&&S.overOn&&pOD()?'duel':S.over&&S.overOn?'od':pOD()?'pod':F&&F.play.type==='hit'&&F.landed?'hit':cnt&&S.balls===3&&S.strikes===2?'full':cnt&&S.strikes===2?'two':cnt&&(S.bases[1]||S.bases[2])?'rally':'idle'+(((pn/9000)|0)%4);
-    if(hm!==HALO.m){HALO.m=hm;HALO.paint(hm);}const hy=HALO.hype[hm];HALO.t.offset.x=(pn*(hy?.00011:/^idle/.test(hm)?.00003:.00006))%1;
+    /* a message earned by a play stays up for a good few seconds after the moment has passed, so the board is felt, not flickered */
+    {const sticky={hit:6,k:5,hr:7,nodoubt:7,slam:8,change:5,walkoff:12}[HALO.m]||0;if(hm!==HALO.m&&sticky&&pn-HALO.since<sticky*1000&&!(HALO.hype[hm]&&!HALO.hype[HALO.m])){/* hold */}else if(hm!==HALO.m){HALO.m=hm;HALO.since=pn;HALO.paint(hm);}}const hy=HALO.hype[HALO.m];HALO.t.offset.x=(pn*(hy?.00011:/^idle/.test(HALO.m)?.00003:.00006))%1;
     if(HALO.mat)HALO.mat.color.setScalar(hy?1.02+.22*Math.sin(pn*.012):1); /* a smooth pulse about twice a second, never a hard strobe */}
   if(LED_T)LED_T.offset.x=(performance.now()*.000028)%1; /* the ribbon board crawls, like a real park's (moving a texture costs nothing) */podCls();shTick();hbpPop();markDom();dftDom();{const pc=now-pcutT<.06,e=$('pop');if(pc!==pcutOn){pcutOn=pc;$('hud').classList.toggle('pcut',pc);if(!pc){e.style.top='';e.style.bottom='';e.className='';}}
   if(pc){ // CLOSE-UPS: the call sits in the gap between the top bar and the head of whoever is on camera. If the gap is too small for it, the
@@ -1028,7 +1029,14 @@ function draw(){{const ad=!!(flight&&flight.admire&&!flight.done&&now-flight.t0<
     if(e.className.indexOf('go')>=0){if(e._k!==1){e.style.zoom='';e._k=1;}const h0=e.offsetHeight||60,room=head-8-top0;let k=1;
       if(room>=h0*.4){k=Math.min(1,room/h0);e.style.zoom=k<1?k.toFixed(3):'';e._k=k;e.style.top=(Math.max(top0,head-8-h0*k)/k).toFixed(0)+'px';}
       else{k=MOB?.7:.8;e.style.zoom=k;e._k=k;e.style.top=((H-h0*k-(MOB?14:18))/k).toFixed(0)+'px';}}}
-  else if($('pop')._k&&$('pop')._k!==1){$('pop').style.zoom='';$('pop')._k=1;}} // call-outs sit just above the head of whoever the close-up is on
+  else{ // AN OUT IS CALLED OVER THE MAN WHO MADE IT: the call sits above the fielder's head and his name tag (never on them), centred on him,
+    // shrunk if the gap under the top bar is tight. That is where the eyes already are.
+    const F=flight,pf=F&&F.play&&F.play.type==='out'&&F.play.f&&(S.state==='flight'||S.state==='result')&&e.className.indexOf('go')>=0?F.play.f:null;
+    if(pf){const W=canvas.clientWidth||innerWidth,H=canvas.clientHeight||innerHeight,rp=pf.fig.root.position;_s0.set(rp.x,2.5*(pf.scale||1)+.9,rp.z).project(camera);
+      if(_s0.z<1&&Math.abs(_s0.x)<1.1){const head=(-_s0.y*.5+.5)*H,top0=MOB?112:84,dx=clamp(_s0.x*.5*W,-W*.28,W*.28);if(e._k!==1){e.style.zoom='';e._k=1;}const h0=e.offsetHeight||60,room=head-10-top0,k=clamp(room/h0,.45,1);
+        e.style.zoom=k<1?k.toFixed(3):'';e._k=k;e.style.bottom='auto';e.style.top=(Math.max(top0,head-10-h0*k)/k).toFixed(0)+'px';e.style.left=(dx/k).toFixed(0)+'px';e.style.right=(-dx/k).toFixed(0)+'px';e._f=1;}}
+    else if(e._f){e._f=0;e.style.top='';e.style.bottom='';e.style.left='';e.style.right='';e.style.zoom='';e._k=1;}
+    else if(e._k&&e._k!==1){e.style.zoom='';e._k=1;}}} // call-outs sit just above the head of whoever the close-up is on
  lodTick();gloveTick();if(composer)composer.render();else renderer.render(scene,camera);sharpTick();tagsTick();cardTick();}
 const scene=new T.Scene();
 scene.fog=new T.Fog(0x06060c,320,1500); // no atmosphere: distance only fades far-off stands a little
@@ -1110,7 +1118,7 @@ const shBig=new T.Mesh(new T.PlaneGeometry(280,230),new T.ShadowMaterial({opacit
     g.fillStyle='#fff';g.beginPath();g.ellipse(c,c-R*.95,R*.5,R*.12,0,0,PI*2);g.fill();g.beginPath();g.ellipse(c,c+R*.97,R*.45,R*.1,0,0,PI*2);g.fill();
     const sh=g.createRadialGradient(c-R*.55,c-R*.35,R*.5,c-R*.2,c-R*.1,R*1.5);sh.addColorStop(0,'rgba(0,0,10,0)');sh.addColorStop(.62,'rgba(0,0,10,.25)');sh.addColorStop(1,'rgba(0,0,10,.96)');g.fillStyle=sh;g.fillRect(0,0,w,h); // night side
     g.restore();});
-  new T.TextureLoader().load('earth.png',t=>{t.anisotropy=ANISO;earth.material.map=t;earth.material.needsUpdate=true;},undefined,()=>{}); /* the real thing (the Apollo 17 'Blue Marble' photograph) replaces the painted Earth once it has loaded */
+  {let tries=0;const go=()=>new T.TextureLoader().load('earth.png'+(tries?'?r='+tries:''),t=>{t.anisotropy=ANISO;earth.material.map=t;earth.material.needsUpdate=true;},undefined,()=>{if(++tries<5)setTimeout(go,2500*tries);});go();} /* tried again (up to five times) if the download fails: a dropped connection used to leave the painted stand-in Earth up for the whole session */ /* the real thing (the Apollo 17 'Blue Marble' photograph) replaces the painted Earth once it has loaded */
   const earth=new T.Sprite(new T.SpriteMaterial({map:et,fog:false,transparent:true,depthWrite:false}));earth.position.set(150,372,-928);earth.scale.set(350,350,1);earth.renderOrder=-5;scene.add(earth);
 }
 
@@ -2896,13 +2904,14 @@ const G=9.8,DRAG=.0042;
 // measured across to x, and a little grace because the ball is drawn larger than life at distance.
 const LINE_TOL=.3;
 function simulate(p0,v0,spin,opt){spin=spin||{side:0,lift:0};opt=opt||{};const GG=G*(opt.g||1);let tag='',hrY=0,poleT=0,nb=0; // opt.chop: first bounce is a big one; opt.g: a low-gravity pocket; tag: anything unusual that happened to it
-  const p=p0.clone(),v=v0.clone(),pts=[];let t=0,land=null,hr=false,hrT=0,wall=false,wallT=0,foul=false,dist=0,grd=false,eyeT=0,seatT=0,foulT,bagPast=false;const dt=1/120;
+  const p=p0.clone(),v=v0.clone(),pts=[];let t=0,land=null,hr=false,hrT=0,wall=false,wallT=0,foul=false,dist=0,grd=false,eyeT=0,seatT=0,foulT,bagPast=false,foulOver=false;const dt=1/120;
   while(t<9){
     const sp=v.length();v.multiplyScalar(1-DRAG*sp*dt);
     if(p.y>0||v.y>0)v.y-=GG*dt;
     if(!land&&p.y>.3){const h=Math.hypot(v.x,v.z)||1,k=sp/40*dt; // sidespin hooks/slices, backspin carries, topspin dives
       v.x+=-v.z/h*spin.side*k;v.z+=v.x/h*spin.side*k;v.y+=spin.lift*k;}
     p.addScaledVector(v,dt);t+=dt;
+    if(foulOver){pts.push({x:p.x,y:p.y,z:p.z,t});if(p.y<=Math.min(24,4+(Math.hypot(p.x,p.z)-95)*.6)||p.y<=3||t>8.9){seatT=t;break;}continue;} /* comes down onto the bank of seats beyond the wall */
     const r=Math.hypot(p.x,p.z),phi=Math.atan2(p.x,-p.z),fr=fenceR(phi);
     // The walls down the lines and the seats behind them are solid. A ball that reaches the wall below its top comes back off it; one that
     // clears it comes down among the fans and stays there. (Everything beyond those walls is foul ground.)
@@ -2914,7 +2923,7 @@ function simulate(p0,v0,spin,opt){spin=spin||{side:0,lift:0};opt=opt||{};const G
       {const off=Math.abs(p.x)-(.216-p.z); // how far outside the chalk it is as it reaches the fence
         if(!land&&off>LINE_TOL&&off<LINE_TOL+.7&&p.y>WALL_H&&p.y<26){hr=true;hrT=t;hrY=p.y;poleT=t;tag='OFF THE FOUL POLE';v.x*=-.35;v.z*=.25;v.y*=.4;}
         else if(!land&&off<=LINE_TOL&&off>-3.2&&p.y>WALL_H&&p.y<26){hr=true;hrT=t;hrY=p.y;poleT=t;tag='OFF THE FOUL POLE';v.x*=.12;v.z*=-.12;v.y=v.y*.3-1;}} /* the screen that runs up the fair side of the pole: it catches the ball and drops it, and it is a home run */ // the pole is fair: it clangs off and drops
-      if(!hr&&Math.abs(p.x)>.216-p.z+LINE_TOL){if(!land)foul=true;else wall=true;pts.push({x:p.x,y:p.y,z:p.z,t});break;} // out of play down the line: foul only if it never came down fair
+      if(!hr&&Math.abs(p.x)>.216-p.z+LINE_TOL){if(!land)foul=true;else wall=true;if(!land&&p.y>WALL_H+1){foulOver=true;pts.push({x:p.x,y:p.y,z:p.z,t});continue;} /* a foul fly past the pole keeps going: it finishes its flight and drops into the seats, it is never frozen in mid-air */pts.push({x:p.x,y:p.y,z:p.z,t});break;} // out of play down the line: foul only if it never came down fair
       if(hr){}
       else if(p.y>WALL_H&&!land){hr=true;hrT=t;hrY=p.y;}
       else if(!land&&!wall&&p.y>WALL_H-.4&&Math.random()<.5){hr=true;hrT=t;hrY=WALL_H;tag='OFF THE TOP OF THE WALL';v.y=Math.abs(v.y)*.3+4.5;v.x*=.45;v.z*=.45;} // catches the top of the wall and hops over
@@ -4543,14 +4552,14 @@ function updateCamera(rdt){
   else if(camMode==='bat'){camPos.copy(CAM_HOME);camLook.copy(CAM_LOOK);
     if(S.state==='title'||S.state==='over'){const a=performance.now()*.00012;camPos.set(Math.sin(a)*9,3.2+Math.sin(a*2)*.6,7);camLook.set(0,3,-40);}
   }else if(S.state==='celebrate'){
-    const k=1-Math.exp(-3*rdt);camPos.lerp(_p.set(0,18,-12),k);camLook.lerp(_t1.set(8,58,-150),k);
+    const k=1-Math.exp(-3*rdt);if(camPos.y<3||camPos.lengthSq()>250000){camPos.set(0,18,-12);camLook.set(8,58,-150);} /* coming back from a far-off shot (the Moon from space, the blimp): cut straight to the fireworks, never glide up through the ground or the stands */camPos.lerp(_p.set(0,18,-12),k);camLook.lerp(_t1.set(8,58,-150),k);
   }else if(flight&&flight.thr){ // hold the shot on the fielder while he throws; no chasing the ball back in
   }else if(flight){
     const bp=ball.position,h=Math.hypot(bp.x,bp.z)||1,k=1-Math.exp(-2.6*rdt);
     const back=13+h*.14,r=Math.min(72,Math.max(0,h-back));
     _p.set(bp.x/h*r+(-0.1)*(1-Math.min(1,h/30)),Math.max(1.9,3+bp.y*.45+h*.05),bp.z/h*r+3.7*(1-Math.min(1,h/30)));
     if(flight.cut){flight.cut=false;camPos.copy(_p);camLook.copy(bp);} // hard cut from the hitter to the ball
-    camPos.lerp(_p,k);camLook.lerp(bp,1-Math.exp(-9*rdt));
+    if(camPos.y<.4||camPos.distanceToSquared(_p)>90000){camPos.copy(_p);camLook.copy(bp);}camPos.lerp(_p,k);camLook.lerp(bp,1-Math.exp(-9*rdt));
   }
   camera.position.copy(camPos);
   if(shake>.002){camera.position.x+=rand(-1,1)*shake;camera.position.y+=rand(-1,1)*shake;shake*=Math.exp(-7*rdt);}
