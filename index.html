@@ -274,7 +274,7 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 #hud.hbps #pop,#hud.mob.hbps #pop{top:auto!important;bottom:7%} /* the man on the ground fills the middle of the picture: the call goes underneath him */
 #hud.qs #pop{left:4%;right:4%}#hud.qs #pop .t{font-size:clamp(34px,10.5vw,84px)}
 #hud.pcut #pop .s{font-size:clamp(12px,2.4vw,22px);margin-top:3px}
-#hud.mob #pop.logo{top:21%} /* PLAY BALL sits higher, clear of the hitter */
+#hud.mob #pop.logo{top:28%} /* PLAY BALL: below the batter card, above the pitcher */
 #hud.mob #pop{top:31.5%} /* on phones: clear of the batter card and the buttons above it */
 /* the shout over a player celebrating on the bag */
 #shout{position:absolute;left:50%;top:30%;z-index:6;pointer-events:none;white-space:nowrap;opacity:0;font-family:var(--display);font-style:italic;font-size:clamp(34px,9vw,84px);line-height:1;color:var(--volt);-webkit-text-stroke:2px #000;text-shadow:0 4px 0 #000,0 0 22px rgba(255,229,59,.55);transform:translate(-50%,-100%) rotate(-6deg)}
@@ -1264,10 +1264,28 @@ gl_FragColor=vec4(col,1.0);
 }
 // light towers + scoreboard
 const towerGlows=[];
-[-58,-24,24,58].forEach(d=>{const phi=d*DEG,p=pol(fenceR(phi)+66,phi,0);
-  const pole=new T.Mesh(new T.CylinderGeometry(1,1.6,84,6),new T.MeshBasicMaterial({color:0x22203a}));pole.position.set(p.x,42,p.z);scene.add(pole);
-  const bank=new T.Mesh(new T.BoxGeometry(22,10,2),new T.MeshBasicMaterial({color:0xfffbe0,fog:false}));bank.position.set(p.x,86,p.z);bank.lookAt(0,20,0);scene.add(bank);
-  const sp=new T.Sprite(new T.SpriteMaterial({map:glowTex,color:0xcfe0ff,blending:T.AdditiveBlending,depthWrite:false,fog:false,transparent:true,opacity:.9}));sp.position.set(p.x*.98,86,p.z*.98);sp.scale.set(80,80,1);scene.add(sp);towerGlows.push(sp);});
+// Each tower: a tapering steel lattice mast (two crossed panels with a see-through truss painted on them), a service platform, and a
+// framed bank of individual lamps, with a soft glow and a wide lens streak. A handful of flat panels per tower: nothing for a phone.
+{const lat=tex(128,512,(g,w,h)=>{g.clearRect(0,0,w,h);g.strokeStyle='#c9cfe6';g.lineCap='square';
+    g.lineWidth=13;g.beginPath();g.moveTo(8,0);g.lineTo(8,h);g.moveTo(w-8,0);g.lineTo(w-8,h);g.stroke();                              // the two legs
+    g.lineWidth=7;for(let y=0;y<h;y+=64){g.beginPath();g.moveTo(8,y);g.lineTo(w-8,y+64);g.moveTo(w-8,y);g.lineTo(8,y+64);g.stroke();} // cross-bracing
+    g.lineWidth=8;for(let y=0;y<=h;y+=64){g.beginPath();g.moveTo(8,y);g.lineTo(w-8,y);g.stroke();}},[1,1]);                            // rungs
+  lat.anisotropy=ANISO;const latM=new T.MeshBasicMaterial({map:lat,color:0x6f7699,alphaTest:.5,side:T.DoubleSide});
+  const lampT=tex(256,128,(g,w,h)=>{g.fillStyle='#0c0d1c';g.fillRect(0,0,w,h);g.strokeStyle='#2c3052';g.lineWidth=3;for(let c=1;c<7;c++){g.beginPath();g.moveTo(c*w/7,0);g.lineTo(c*w/7,h);g.stroke();}for(let r=1;r<3;r++){g.beginPath();g.moveTo(0,r*h/3);g.lineTo(w,r*h/3);g.stroke();}
+    for(let r=0;r<3;r++)for(let c=0;c<7;c++){const x=(c+.5)*w/7,y=(r+.5)*h/3,gr=g.createRadialGradient(x,y,1,x,y,17);gr.addColorStop(0,'#ffffff');gr.addColorStop(.45,'#fff6c8');gr.addColorStop(.8,'#ffd98a');gr.addColorStop(1,'rgba(255,200,110,0)');
+      g.fillStyle='#3a3d5c';g.beginPath();g.arc(x,y,16,0,7);g.fill();g.fillStyle=gr;g.beginPath();g.arc(x,y,17,0,7);g.fill();}},[1,1]);
+  lampT.anisotropy=ANISO;const lampM=new T.MeshBasicMaterial({map:lampT,fog:false}),dark=new T.MeshBasicMaterial({color:0x14142a}),steel=new T.MeshBasicMaterial({color:0x3b4062});
+  const mast=(bw,tw,h)=>{const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute([-bw/2,0,0,bw/2,0,0,tw/2,h,0,-tw/2,h,0],3));g.setAttribute('uv',new T.Float32BufferAttribute([0,0,1,0,1,1,0,1],2));g.setIndex([0,1,2,0,2,3]);return g;},mg=mast(11,4.2,79);
+  [-58,-24,24,58].forEach(d=>{const phi=d*DEG,p=pol(fenceR(phi)+66,phi,0),T0=new T.Group();T0.position.set(p.x,0,p.z);T0.rotation.y=Math.atan2(-p.x,-p.z);scene.add(T0);
+    [0,PI/2].forEach(a=>{const m=new T.Mesh(mg,latM);m.rotation.y=a;T0.add(m);});
+    {const pf=new T.Mesh(new T.BoxGeometry(9,.7,7),steel);pf.position.y=79;T0.add(pf);const rl=new T.Mesh(new T.BoxGeometry(9,.25,.25),steel);rl.position.set(0,81.2,3.4);T0.add(rl);}
+    const bank=new T.Group();bank.position.set(p.x,87,p.z);bank.lookAt(0,20,0);scene.add(bank);
+    {const fr=new T.Mesh(new T.BoxGeometry(27,12.6,1.4),dark);bank.add(fr);const hood=new T.Mesh(new T.BoxGeometry(28,.8,3.4),steel);hood.position.set(0,6.6,1.2);bank.add(hood);
+      const lamps=new T.Mesh(new T.PlaneGeometry(25.6,11.2),lampM);lamps.position.z=.74;bank.add(lamps);
+      [-9,9].forEach(x=>{const st=new T.Mesh(new T.BoxGeometry(.7,5.5,.7),steel);st.position.set(x,-8.6,-.4);bank.add(st);});}
+    const mk=(sx,sy,op)=>{const sp=new T.Sprite(new T.SpriteMaterial({map:glowTex,color:0xdbe7ff,blending:T.AdditiveBlending,depthWrite:false,fog:false,transparent:true,opacity:op}));sp.position.set(p.x*.975,87,p.z*.975);sp.scale.set(sx,sy,1);scene.add(sp);towerGlows.push(sp);};
+    mk(46,46,.8);mk(150,7,.55);}); // the soft bloom, and a long thin streak across it like a lens flare
+}
 // The scoreboard: a big LED board above the batter's eye in centre field. Normally the line score (runs, inning, outs, count, who is up);
 // big moments take it over for a few seconds ('HOME RUN / 455 FT'), then the score comes back.
 const sbCanvas=document.createElement('canvas');sbCanvas.width=1024;sbCanvas.height=384;
@@ -3864,7 +3882,7 @@ function updateCamera(rdt){
   if(rumble>.02){const t=performance.now()/1000,a=rumble*FX; // the whole picture trembles, like a broadcast camera on a deck that 50,000 people are jumping on: the frame shakes, not the stands (applied after the camera is aimed, or the aim would undo it)
     camera.rotateZ((Math.sin(t*47)+Math.sin(t*71.3))*.007*a);camera.rotateX((Math.sin(t*53.7)+Math.sin(t*83.1))*.0045*a);camera.rotateY(Math.sin(t*61.3)*.0035*a);rumble*=Math.exp(-3.5*rdt);}
   fovKick*=Math.exp(-5*rdt);const f=camera.userData.baseFov+fovKick;if(Math.abs(f-camera.fov)>.01){camera.fov=f;camera.updateProjectionMatrix();}
-  towerGlows.forEach((g,i)=>g.material.opacity=Math.min(1,(.8+.1*Math.sin(performance.now()*.004+i))*(ZAP.lv===undefined?1:ZAP.lv)));
+  towerGlows.forEach((g,i)=>g.material.opacity=Math.min(1,(i%2?.5:.75)*(1+.1*Math.sin(performance.now()*.004+i))*(ZAP.lv===undefined?1:ZAP.lv)));
 }
 let last=performance.now();
 // Keeps the game responsive on slower phones: if frames are slow for a while, drop a quality level (never goes back up).
