@@ -229,6 +229,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
 #hud.mob #gobtn.on{animation:gobtnL .42s ease-in-out infinite alternate}
 @keyframes gobtnL{from{transform:scale(1)}to{transform:scale(1.08)}}
 #hud.mob #gobtn small::after{content:'ADVANCE THE RUNNER'}
+#gobtn[data-r=g]{box-shadow:0 6px 0 #000,0 0 0 4px #39ff6a}#gobtn[data-r=y]{box-shadow:0 6px 0 #000,0 0 0 4px #ffd23b}#gobtn[data-r=r]{box-shadow:0 6px 0 #000,0 0 0 4px #ff4d2e}
 #gobtn small{display:block;font-family:var(--hud);font-style:normal;font-size:11px;letter-spacing:.08em;opacity:.75}
 #hud:not(.mob) #gobtn small::after{content:'PRESS G'}
 #qte{position:absolute;left:50%;top:15%;transform:translateX(-50%);z-index:46;text-align:center;font-family:var(--display);font-style:italic;pointer-events:none}
@@ -291,6 +292,12 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
 #pop.hot .t{color:var(--heat);text-shadow:0 5px 0 #000,0 0 50px rgba(255,77,46,.8)}
 #pop.cool .t{color:var(--ice);text-shadow:0 5px 0 #000,0 0 40px rgba(58,214,255,.6)}
 #pop.plain .t{color:var(--chrome);text-shadow:0 5px 0 #000}
+/* what the fight (or the pitch that hit him) did to his ratings: green is good, red is bad, the same as the arrows. Heavy, outlined, on its own dark plate so it reads over anything. */
+#pop.sup .t,#pop.sdn .t,#hud.pcut #pop.sup .t,#hud.pcut #pop.sdn .t{font-size:clamp(26px,7.4vw,58px);line-height:1.05;-webkit-text-stroke:clamp(4px,.8vw,6px) #000;paint-order:stroke fill;letter-spacing:.02em;white-space:nowrap}
+#hud.pcut #pop.sup,#hud.pcut #pop.sdn{left:2%;right:2%}
+#pop.sup .t{color:#39ff6a;text-shadow:0 5px 0 #000,0 0 34px rgba(57,255,106,.75)}#pop.sdn .t{color:#ff4d2e;text-shadow:0 5px 0 #000,0 0 34px rgba(255,77,46,.75)}
+#pop.sup .s,#pop.sdn .s,#hud.pcut #pop.sup .s,#hud.pcut #pop.sdn .s{display:inline-block;margin-top:8px;padding:5px 14px 4px;font-size:clamp(15px,3.7vw,30px);font-style:italic;letter-spacing:.04em;border-radius:8px;background:rgba(6,7,20,.86);border:2px solid currentColor;box-shadow:0 3px 0 #000;text-shadow:0 2px 0 #000;white-space:nowrap}
+#pop.sup .s{color:#39ff6a}#pop.sdn .s{color:#ff4d2e}#pop.sup .s:empty,#pop.sdn .s:empty{display:none}
 #pop.logo .t{color:var(--volt);font-size:clamp(36px,9.5vw,92px);-webkit-text-stroke:2px #000;text-shadow:0 6px 0 #000,0 0 18px #000,0 0 60px rgba(255,229,59,.55);transform:rotate(-4deg)}
 #pop.logo .s{color:var(--heat);font-size:clamp(15px,3.8vw,28px);-webkit-text-stroke:1.5px #000;text-shadow:0 4px 0 #000,0 0 14px #000;transform:rotate(-4deg);margin-top:10px}
 #pop.go{animation:slam 1.5s cubic-bezier(.2,1.4,.3,1) both}
@@ -875,7 +882,7 @@ function podCls(){const st=S.state,on=pOD()&&!(st==='title'||st==='over'||st==='
   if((st==='hbp')!==hbOn){hbOn=st==='hbp';$('hud').classList.toggle('hbps',hbOn);}}
  // while the camera is close on the pitcher, call-outs drop to a smaller line along the bottom so the words never sit on him
 function draw(){podCls();shTick();{const pc=now-pcutT<.06,e=$('pop');if(pc!==pcutOn){pcutOn=pc;$('hud').classList.toggle('pcut',pc);if(!pc){e.style.top='';e.style.bottom='';e.className='';}}
-  if(pc){_s0.copy(pcutH).project(camera);const H=canvas.clientHeight||innerHeight;e.style.bottom='auto';{const t1=e.querySelector('.t'),s1=e.querySelector('.s');e.style.top=Math.max(6,(-_s0.y*.5+.5)*H-t1.offsetHeight-(s1.textContent?s1.offsetHeight+6:0)).toFixed(0)+'px';}}} // call-outs sit just above the head of whoever the close-up is on
+  if(pc){_s0.copy(pcutH).project(camera);const H=canvas.clientHeight||innerHeight;e.style.bottom='auto';{const t1=e.querySelector('.t'),s1=e.querySelector('.s');e.style.top=Math.max(/\bs(up|dn)\b/.test(e.className)?(MOB?112:84):6 /* the ratings call stays clear of the scoreboard and the meters */,(-_s0.y*.5+.5)*H-t1.offsetHeight-(s1.textContent?s1.offsetHeight+6:0)).toFixed(0)+'px';}}} // call-outs sit just above the head of whoever the close-up is on
  lodTick();gloveTick();if(composer)composer.render();else renderer.render(scene,camera);sharpTick();tagsTick();cardTick();}
 const scene=new T.Scene();
 scene.fog=new T.Fog(0x06060c,320,1500); // no atmosphere: distance only fades far-off stands a little
@@ -2078,7 +2085,7 @@ function stickHint(){
   const live=!S.stk&&!touchLast&&S.inning===1&&S.outs===0&&S.bi===0&&S.balls+S.strikes===0&&(S.state==='ready'||S.state==='windup'||S.state==='pitch');
   if(live!==hintOn){hintOn=live;$('apad').classList.toggle('hint',live);}}
 // Celebrating on second: he shouts, in big letters over his head. Two lines per celebration, the second one about the runs he drove in if any.
-const SHOUT_A=["LET'S GO!!","LET'S GOOO!","YEAH!!","HEATING UP!","YOU'RE SEEING IT!"],SHOUT_B=['TWO BAGS!','KEEP IT ROLLING!'],SHOUT_H=['PIMPED IT!','PIMPED IT!','SEE YA!','WENT YARD!','BIG FLY!','TATER!','GOT ALL OF IT!','NO DOUBTER!','TOUCH \'EM ALL!','ABSOLUTE TANK!'];
+const SHOUT_A=["LET'S GO!!","LET'S GOOO!","YEAH!!","HEATING UP!","YOU'RE SEEING IT!","YOU'RE TEEING OFF!"],SHOUT_B=['TWO BAGS!','KEEP IT ROLLING!'],SHOUT_H=['PIMPED IT!','PIMPED IT!','SEE YA!','WENT YARD!','BIG FLY!','TATER!','GOT ALL OF IT!','NO DOUBTER!','TOUCH \'EM ALL!','ABSOLUTE TANK!'];
 let shoutI=-1,shoutLast='';const _sh=new V3();
 function shoutTick(){
   const el=$('shout');
@@ -2225,7 +2232,7 @@ function runWear(R,k){const b=R.bods&&R.bods[k];if(!b)return false;for(const j i
   RUN_KEYS.forEach(q=>R[q]=b[q]);const d=R.fig,m=b.dm;d.hipW=m.hipW;d.hipDrop=m.hipDrop;d.yOff=m.yOff;d.L1=m.L1;d.L2=m.L2;d.kneeL.position.y=d.kneeR.position.y=m.k;d.footL.position.y=d.footR.position.y=m.f;d.elL.position.y=d.elR.position.y=m.e;d.shL.position.copy(m.sl);d.shR.position.copy(m.sr);
   R.bk=k;R.mode=null;return true;}
 function runBuild(R,k,obj,skin){if(R.bods[k])return;const cur=R.bk,T2={fig:R.fig};dressRunner(T2,obj,skin);R.bods[k]=runSnap(T2);runWear(R,cur);} /* dressed on a stand-in, so the man himself is not disturbed if he is on base right now */
-function runnerWear(R){const k=MX.bcur||0;if(R.bk!==k&&!runWear(R,k))runWear(R,0);} /* the man leaving the box wears the hitter's body (the house body if his isn't ready) */
+function runnerWear(R){R.spd=curBatter().spd||1; /* he carries his own speed round the bases with him */const k=MX.bcur||0;if(R.bk!==k&&!runWear(R,k))runWear(R,0);} /* the man leaving the box wears the hitter's body (the house body if his isn't ready) */
 function dressRunner(R,obj,skin){
     setupFielder(R,obj,skin,true);
     R.obj.traverse(o=>{if(o.isMesh&&o.material&&!Array.isArray(o.material)){o.material=o.material.clone();o.material.transparent=false;o.material.opacity=1;o.material.depthWrite=true;}}); // runners get their own copy of the uniform material: the hitter's fades in and out as batters change, and that was fading the men on base with him
@@ -2392,8 +2399,8 @@ function hbpEnd(fk,title){const b=curBatter(),r0=Math.random(),k=fk!==undefined?
   if(k){if(!b.base)b.base={spd:b.spd,pwr:b.pwr,con:b.con};const m=k>0?1.1:.9;b.spd=clamp(b.spd*m,.7,1.25);b.pwr=clamp(b.pwr*m,.7,1.25);b.con=clamp(b.con*m,.7,1.25);b.hb=(b.hb||0)+k;}
   S.walked=true;S.juice=Math.min(1,S.juice+(k>0?.5:.25));walkRunners();{const R=RUN.list.find(R=>R.active&&R.target===1&&R.s<1);if(R){R.hurt=k<=0;R.s=.5;R.delay=0;R.raceV=k<=0?.085:.12;}} /* after a brawl he was out at the mound, not in the box: he picks it up halfway down the line, and takes his time */
   const r=advance(1,true),run=r?'+1 RUN · ':'';
-  if(k>0){pop(title||'FIRED UP!',run+b.name+' · RATINGS UP · +2 JUICE','hot',true);cheer(.5,3);roar(.9,.3);buzz([30,40,80]);}
-  else if(k<0){pop(title||'SHAKEN UP',run+b.name+' · RATINGS DOWN','cool',true);crowdDrop();}
+  if(k>0){pop(title||'FIRED UP!',run+'▲ RATINGS UP · +2 JUICE','sup',true);cheer(.5,3);roar(.9,.3);buzz([30,40,80]);}
+  else if(k<0){pop(title||'SHAKEN UP',run+'▼ RATINGS DOWN','sdn',true);crowdDrop();}
   else{pop(title||'SHOOK IT OFF',run+'TAKE YOUR BASE','plain');cheer(.3,2);}
   if(k<=0)roarOff(3); // no fight, or a lost one: it settles in a long tail
   showCard();
@@ -2427,11 +2434,18 @@ function qteOK(){return qteParts()&&(DBG.qte||(S.qteN||0)<3&&(!qteSeen||Math.ran
 // GO: after a hit (or a deep fly) that leaves a runner with a base to take, a button comes up for a couple of seconds. Press it and he goes,
 // which means a quick time event at the bag; leave it and he stays put. On a computer: G or Enter.
 const GO_LABEL={adv3:'SEND HIM TO THIRD!',plate:'SEND HIM HOME!',stretch2:'GO FOR TWO!',stretch3:'GO FOR THREE!',tag2:'TAG UP!',tag3:'TAG UP!'};
-function goOffer(k){S.goK=k;const b=$('gobtn');b.firstChild.nodeValue=GO_LABEL[k];b.classList.remove('on');void b.offsetWidth;b.classList.add('on');readyDur=Math.max(readyDur,3.2);S.t=now;buzz(25);}
+// HOW RISKY IS IT? One number for every send: 1 is a fair fight, under 1 favours the runner, over 1 favours the throw. It comes from where the
+// ball was fielded (shallow is a short throw: hard; deep: easy), which side (a ball in left is right behind a man going to third), how far
+// he is trying to go, and the runner's own speed. (A fielder's arm would slot in here too.) Every mini-game reads it.
+function qteRisk(k,pl){const from={plate:3,adv3:2,stretch3:2,stretch2:1,tag3:2,tag2:1}[k]||0,R=RUN.list.find(R=>R.active&&Math.round(R.target)===from),sp=clamp((R&&R.spd)||1,.75,1.2);
+  const px=pl&&pl.p?pl.p.x:0,pz=pl&&pl.p?pl.p.z:-80,dn=clamp((Math.hypot(px,pz)-45)/60,0,1);let D=1.38-.62*dn+({stretch3:.16,stretch2:.1,plate:.05,tag2:.22,tag3:.05}[k]||0);
+  if(k==='adv3'||k==='stretch3'||k==='tag3')D+=clamp(-px/60,-1,1)*.14; /* left field is the short throw to third */
+  return clamp(D/Math.pow(sp,1.3),.55,1.6);}
+function goOffer(k,pl){S.goK=k;S.goD=qteRisk(k,pl);const b=$('gobtn');b.firstChild.nodeValue=GO_LABEL[k];b.dataset.r=S.goD<.85?'g':S.goD<1.15?'y':'r';b.querySelector('small').textContent=(S.goD<.85?'GOOD ODDS':S.goD<1.15?'TOSS-UP':'LONG SHOT')+' · ';b.classList.remove('on');void b.offsetWidth;b.classList.add('on');readyDur=Math.max(readyDur,3.2);S.t=now;buzz(25);}
 function goHide(){if(S.goK){S.goK=null;}$('gobtn').classList.remove('on');}
 function goTap(){if(!S.goK||S.state!=='result')return;const k=S.goK;goHide();S.next=()=>qteStart(k,true);S.t=now-readyDur+.2;buzz([20,30,60]);tone('triangle',660,990,.12,.3);}
-function qteStart(kind,noPA){QT.noPA=!!noPA;goHide();const M=QTE_MOVES[kind],Bp=M.base?[BASES[M.base][0],BASES[M.base][1]]:[0,0],u=M.u;
-  S.state='qte';S.t=now;S.qteN=(S.qteN||0)+1;Object.assign(QT,{ph:'heads',tp:now,kind,M,code:M.code,i:0,mash:DBG.mash||(qteSeen&&Math.random()<.35),fill:0,lt:0,lim:.38*M.code.length+1.0+(qteSeen?0:1.2), /* the clock: enough to punch the whole code in at a brisk pace with room for one slip, and no more */ok:false,bx:Bp[0],bz:Bp[1],ux:u[0],uz:u[1],ball:null,blow:0,fk:0});
+function qteStart(kind,noPA){QT.noPA=!!noPA;goHide();const D=QT.D=kind==='dp'?1:clamp(S.goD||1,.55,1.6);S.goD=0;const M=QTE_MOVES[kind],Bp=M.base?[BASES[M.base][0],BASES[M.base][1]]:[0,0],u=M.u;
+  S.state='qte';S.t=now;S.qteN=(S.qteN||0)+1;Object.assign(QT,{ph:'heads',tp:now,kind,M,code:D<.85?M.code.slice(0,-2):M.code /* a good bet is a shorter code */,i:0,mash:DBG.mash||(qteSeen&&Math.random()<.35),fill:0,lt:0,lim:(.38*(D<.85?M.code.length-2:M.code.length)+1.0)/Math.pow(D,.8)+(qteSeen?0:1.2), /* the clock: enough to punch the whole code in at a brisk pace with room for one slip, and no more */ok:false,bx:Bp[0],bz:Bp[1],ux:u[0],uz:u[1],ball:null,blow:0,fk:0});
   QT.fx=Bp[0]+u[0]*.35;QT.fz=Bp[1]+u[1]*.35;QT.fry=Math.atan2(u[0],u[1]);QT.rry=Math.atan2(-u[0],-u[1]);QT.rx=Bp[0]+u[0]*17;QT.rz=Bp[1]+u[1]*17;
   QT.mx=Bp[0]+u[0]*1.5;QT.mz=Bp[1]+u[1]*1.5;{let nx=u[1],nz=-u[0];if(nx*(0-Bp[0])+nz*(-19.4-Bp[1])<0){nx=-nx;nz=-nz;}QT.nx=nx;QT.nz=nz;} // the side-on camera stands on the infield side of the line
   QT.gold=false;QT.stop=!DBG.mash&&(DBG.stop||(!QT.mash&&qteSeen&&Math.random()<.42));if(QT.stop)QT.mash=false; /* the third kind: one press, on a moving needle */
@@ -2449,7 +2463,7 @@ const QPB={};
 function qteKey(d){if(S.state!=='qte'||QT.ph!=='input')return;
   {const b=QPB[d]||(QPB[d]=document.querySelector('#qpad [data-d='+d+']')),good=QT.mash||d===QT.code[QT.i];if(b){b.className=good?'hit':'miss';clearTimeout(b._t);b._t=setTimeout(()=>{b.className='';},150);}}
   if(QT.stop){const x=QT.sx,ins=z=>x>=z[0]&&x<=z[0]+z[1];QT.gold=ins(QT.so);const ok=QT.gold||ins(QT.sg);buzz(ok?[20,30,60]:[40,30,40]);tone(ok?'triangle':'sawtooth',QT.gold?990:ok?660:150,QT.gold?1480:ok?880:80,.12,.3);const n=$('qsn');if(n)n.className=QT.gold?'au':ok?'ok':'no';qteDone(ok);return;}
-  if(QT.mash){QT.fill+=1/15;buzz(10);tone('triangle',380+520*Math.min(1,QT.fill),420+560*Math.min(1,QT.fill),.05,.25);qteShow();if(QT.fill>=1)qteDone(true);return;}
+  if(QT.mash){QT.fill+=1/(15*Math.pow(QT.D||1,.7));buzz(10);tone('triangle',380+520*Math.min(1,QT.fill),420+560*Math.min(1,QT.fill),.05,.25);qteShow();if(QT.fill>=1)qteDone(true);return;}
   if(d===QT.code[QT.i]){QT.i++;buzz(15);tone('triangle',520+110*QT.i,700+110*QT.i,.07,.3);if(QT.i>=QT.code.length){qteShow();qteDone(true);return;}}
   else{QT.t1-=.3;buzz([30,30,30]);tone('sawtooth',160,90,.12,.3);const r=$('qtr');r.classList.remove('bad');requestAnimationFrame(()=>r.classList.add('bad'));} // a wrong arrow costs a third of a second off the clock; your progress stays
   qteShow();}
@@ -2463,8 +2477,8 @@ function qteTick(){const Q=QT,d0=9.5,d1=2.6,pe=now-Q.tp;
   else if(Q.ph==='run'){const k=clamp(pe/Q.runT,0,1),d=lerp(d0,d1,k);Q.rx=Q.bx+Q.ux*d;Q.rz=Q.bz+Q.uz*d;
     if(k>=1){Q.ph='input';Q.t1=now;
       if(Q.stop){ // STOP THE NEEDLE. Green is safe and its width is the runner's speed; the thin gold strip, set well away from it, is the gamble: safe AND two bars of Juice, with red on both sides of it.
-        const sp=clamp(LINEUP[Math.max(0,S.bi)%LINEUP.length].spd||1,.75,1.2),gw=clamp(.2*Math.pow(sp,1.6),.12,.3),g0=rand(.06,.94-gw),ow=.055;let o0=0;for(let i=0;i<30;i++){o0=rand(.03,.97-ow);if(o0>g0+gw+.1||o0+ow<g0-.1)break;}
-        Object.assign(Q,{lim:3.6+(qteSeen?0:1.2),sg:[g0,gw],so:[o0,ow],sx:Math.random()<.5?0:1,sv:rand(.95,1.25)/Math.sqrt(sp),lt:now});Q.sd=Q.sx?-1:1;$('qtr').innerHTML='';}
+        const D=Q.D||1,gw=clamp(.2/D,.11,.33),g0=rand(.06,.94-gw),ow=.055;let o0=0;for(let i=0;i<30;i++){o0=rand(.03,.97-ow);if(o0>g0+gw+.1||o0+ow<g0-.1)break;}
+        Object.assign(Q,{lim:3.6+(qteSeen?0:1.2),sg:[g0,gw],so:[o0,ow],sx:Math.random()<.5?0:1,sv:rand(.95,1.25)*Math.sqrt(D),lt:now});Q.sd=Q.sx?-1:1;$('qtr').innerHTML='';}
       if(Q.mash){Q.lim=3.1+(qteSeen?0:1.2);Q.fill=0;Q.lt=now;$('qtr').innerHTML='';}Q.b={n:'run',t:now,freeze:((now-Q.b.t)*.5)%.7,loop:true};qteShow();buzz(40);tone('sine',880,880,.1,.3);}}
   else if(Q.ph==='input'){if(Q.stop){const dt=Math.min(.05,now-(Q.lt||now));Q.lt=now;Q.sx+=Q.sd*Q.sv*dt;if(Q.sx>=1){Q.sx=1;Q.sd=-1;Q.sv*=1.13;}else if(Q.sx<=0){Q.sx=0;Q.sd=1;Q.sv*=1.13;}const n=$('qsn');if(n)n.style.left=(Q.sx*100).toFixed(2)+'%';} /* it gets quicker every time it turns round */
     if(Q.mash){const dt=Math.min(.05,now-(Q.lt||now));Q.lt=now;Q.fill=Math.max(0,Q.fill-.11*dt);const f=$('qmf');if(f)f.style.transform='scaleX('+Math.min(1,Q.fill).toFixed(3)+')';} // the bar leaks, so you cannot stop
@@ -2913,7 +2927,7 @@ function finishPlay(){revOff();
       if(!dp&&pl.air&&f.q>.7){crowdOut(lq);setTimeout(()=>boo(.4),700);}else crowdOut(lq);}
     if(qdp){S.state='result';S.t=now;readyDur=1.25;S.next=()=>qteStart('dp');hud();return;}
     {const deep=pl.air&&!dp&&pl.f&&pl.f.of&&Math.hypot(pl.p.x,pl.p.z)>70&&S.outs<3,k=deep?(S.bases[1]&&!S.bases[2]?'tag3':S.bases[0]&&!S.bases[1]?'tag2':''):''; // a deep fly with a man on: he tags up and goes
-      if(k&&S.outs<2&&qteParts()){afterPA(dp?2.7:f.thr?2.1:1.5);if(DBG.qte===k)S.next=()=>qteStart(k,true);else goOffer(k);return;}}
+      if(k&&S.outs<2&&qteParts()){afterPA(dp?2.7:f.thr?2.1:1.5);if(DBG.qte===k){S.goD=qteRisk(k,pl);S.next=()=>qteStart(k,true);}else goOffer(k,pl);return;}}
     afterPA(dp?2.7:f.thr?2.1:1.5);return;}
   S.hits++;S.streak++;S.bestStreak=Math.max(S.bestStreak,S.streak);if(!f.tb)S.juice=Math.min(1,S.juice+(pl.type==='hr'?.5:.25));else if(pl.type==='hr'&&!S.over)S.juice=Math.min(1,S.juice+.25); /* a homer on a Juice swing gives one bar back */ // every hit is worth one quarter; // a Juice hit doesn't refill the bar it just spent
   if(pl.type==='hr'){
@@ -2945,7 +2959,7 @@ function finishPlay(){revOff();
   // Plays that turn into a quick time event: a single with a man on second or a double with a man on first (the runner now on third can be sent home), a double he tries to stretch into a triple, a single he tries to stretch into a double.
   if(pl.type==='hit'&&!pl.infield&&!pl.grd&&pl.bases<3&&S.state==='result'){ // offered on every base hit that leaves somebody a base to take: the lead runner first, otherwise the hitter
     const k=S.bases[2]?'plate':pl.bases===2?'stretch3':S.bases[1]?'adv3':'stretch2';
-    if(k&&qteParts()){if(DBG.qte===true||DBG.qte===k){readyDur=1.3;S.next=()=>qteStart(k,true);}else goOffer(k);}}
+    if(k&&qteParts()){if(DBG.qte===true||DBG.qte===k){readyDur=1.3;S.goD=qteRisk(k,pl);S.next=()=>qteStart(k,true);}else goOffer(k,pl);}}
   // Some doubles get a show of their own: once the play is over, cut to him standing on second doing one of the home-run celebrations.
   // Triples always get one, on third (they are rare, and a triple is the most exciting play there is short of a homer).
   if(pl.type==='hit'&&(pl.bases===2||pl.bases===3)&&S.state==='result'&&WALK.on&&MX.clip&&(pl.bases===3||DBG.dbl||earlyShow(S.d2||0)||Math.random()<.4)){
@@ -4154,7 +4168,7 @@ function updateCamera(rdt){
     camLook.set(_a.x,1.2,_a.z);camPos.set(_a.x+sd*lerp(1.5,1.0,ease(e)),1.25,_a.z-lerp(3.2,2.5,ease(e)));}
   else if(flight&&flight.thr&&flight.thr.safe&&now>flight.thr.t0+.45&&S.state==='result'){camPos.set(28.6,1.6,-20.4);camLook.set(20.6,1.05,-20.6);pcutT=now;pcutH.set(19.4,2.9,-19.4);} // the race: from foul ground past the bag, the runner coming up the line and the first baseman stretching for the throw
   else if(S.state==='hbprun'){const R=RUN.list.find(R=>R.active&&R.target===1); // in front of him, up the first-base line, as he comes
-    if(R){R.fig.root.getWorldPosition(_a);camPos.set(_a.x+3.9,1.25,_a.z-3.1);camLook.set(_a.x,1.05,_a.z);pcutT=now;pcutH.set(_a.x,2.55,_a.z);}} /* the result call sits above his head, never across him */
+    if(R){R.fig.root.getWorldPosition(_a);camPos.set(_a.x+3.9,1.25,_a.z-3.1);camLook.set(_a.x,1.42,_a.z);pcutT=now;pcutH.set(_a.x,2.55,_a.z);}} /* the result call sits above his head, never across him */
   else if(S.state==='qte'){pcutT=now;if(QT.ph==='heads')pcutH.set(QT.rx,2.6,QT.rz);else pcutH.set(QT.mx,2.75,QT.mz); /* calls sit above the players' heads, never across them */
     if(QT.ph==='heads'){camPos.set(QT.rx-QT.ux*5.4+QT.nx*1.3,1.3,QT.rz-QT.uz*5.4+QT.nz*1.3);camLook.set(QT.rx,1.1,QT.rz);} // in front of him as he goes
     else{const k=QT.ph==='run'?ease(clamp((now-QT.tp)/QT.runT,0,1)):1,d=6.6-1.6*k,o=QT.ph==='out'&&QT.ok?ease(clamp((now-QT.t1-.4)/.8,0,1)):0;camPos.set(QT.mx+QT.nx*(d+1.4*o),1.25,QT.mz+QT.nz*(d+1.4*o));camLook.set(QT.mx-QT.ux*1.6*o,1.05-.2*o,QT.mz-QT.uz*1.6*o);}}
