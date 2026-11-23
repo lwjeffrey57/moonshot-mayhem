@@ -1011,24 +1011,28 @@ const basic=(o)=>new T.MeshBasicMaterial(Object.assign({side:T.DoubleSide},o));
     for(let i=0;i<24;i++){const x=rand(0,512),y=rand(0,512),r=rand(2.5,8);wrap(x,y,(px,py)=>{const gr=g.createRadialGradient(px,py,0,px,py,r*1.35);gr.addColorStop(0,'rgba(10,10,18,.5)');gr.addColorStop(.62,'rgba(10,10,18,.3)');gr.addColorStop(.8,'rgba(250,250,255,.42)');gr.addColorStop(1,'rgba(250,250,255,0)');g.fillStyle=gr;g.beginPath();g.arc(px,py,r*1.35,0,7);g.fill();});}
     for(let i=0;i<900;i++){const x=rand(0,512),y=rand(0,512),r=rand(1.4,4.2);wrap(x,y,(px,py)=>{const gr=g.createRadialGradient(px,py,0,px,py,r);gr.addColorStop(0,'rgba(250,250,255,.5)');gr.addColorStop(1,'rgba(250,250,255,0)');g.fillStyle=gr;g.beginPath();g.arc(px,py,r,0,7);g.fill();});}
     for(let i=0;i<15000;i++){const x=rand(0,512),y=rand(0,512),r=rand(.5,1.7);g.fillStyle=Math.random()<.5?`rgba(245,245,252,${rand(.1,.28)})`:`rgba(16,16,26,${rand(.12,.32)})`;wrap(x,y,(px,py)=>{g.beginPath();g.arc(px,py,r,0,7);g.fill();});}});
-  const groundMat=new T.ShaderMaterial({fog:true,side:T.DoubleSide,uniforms:T.UniformsUtils.merge([T.UniformsLib.fog,{macro:{value:null},maskT:{value:null},gD:{value:null},dD:{value:null},digi:{value:DIGI?1:0}}]),extensions:{derivatives:true},
+  const groundMat=new T.ShaderMaterial({fog:true,side:T.DoubleSide,uniforms:T.UniformsUtils.merge([T.UniformsLib.fog,{macro:{value:null},maskT:{value:null},gD:{value:null},dD:{value:null},mD:{value:null},mN:{value:null},mK:{value:0},digi:{value:DIGI?1:0}}]),extensions:{derivatives:true},
     vertexShader:`varying vec2 vW;varying float vL;
 #include <fog_pars_vertex>
 void main(){vec4 wp=modelMatrix*vec4(position,1.0);vW=wp.xz;vec3 n=normalize(mat3(modelMatrix)*normal);vL=0.78+0.22*abs(n.y);vec4 mvPosition=viewMatrix*wp;gl_Position=projectionMatrix*mvPosition;
 #include <fog_vertex>
 }`,
     fragmentShader:`#define GRIDK 0.0
-uniform sampler2D macro,maskT,gD,dD;uniform float digi;varying vec2 vW;varying float vL;
+uniform sampler2D macro,maskT,gD,dD,mD,mN;uniform float digi,mK;varying vec2 vW;varying float vL;
 #include <fog_pars_fragment>
 void main(){vec2 uv=vec2((vW.x+130.0)/260.0,1.0-(vW.y+240.0)/260.0);
 vec3 col=texture2D(macro,uv).rgb;vec4 mk=texture2D(maskT,uv);float m=mk.r;float inside=step(0.5,mk.g);
-vec3 dg=texture2D(gD,vW/2.4).rgb*texture2D(gD,vW/17.0+0.37).rgb*4.0;
-vec3 ddA=texture2D(dD,vW/2.0).rgb,ddB=texture2D(dD,vW/11.0+0.11).rgb;vec3 dd=ddA*ddB*4.0;
-float bump=(ddA.r-texture2D(dD,vW/2.0+vec2(0.0045,0.0035)).r)*1.5+(ddB.r-texture2D(dD,vW/11.0+0.11+vec2(0.004,0.003)).r)*1.1;dd*=1.0+clamp(bump,-0.35,0.45);
-col=col*mix(mix(dg,dd,digi),dd,m)*vL; // moon park: the whole surface is one regolith, so the 'turf' uses the dust detail too
-if(inside<0.5)col=vec3(0.47,0.47,0.5)*dd*vL; // outside the walls it is just the Moon: grey regolith, no turf and no grid
-else if(digi>0.5){
 float hw=1.7+0.23*max(0.0,1.0-vW.y);float clr=1.0-(1.0-smoothstep(hw,hw+2.2,abs(vW.x+0.15)))*(1.0-smoothstep(21.0,28.0,-vW.y)); // a clear lane from the plate past the mound, behind the strike zone
+vec3 ddA=texture2D(dD,vW/2.0).rgb,ddB=texture2D(dD,vW/11.0+0.11).rgb;vec3 dd=mix(ddA*ddB*4.0,mix(vec3(1.0),ddA*2.0,0.5),mK); // close-up grain (lighter once the real surface is in)
+// The real lunar surface: a photographed-style colour map and its normal map, tiled every 64 m (mirrored tile to tile, so there is no seam),
+// lit from the side like the players are. Kept faint in the lane behind the strike zone.
+vec2 mq=(vW+vec2(23.0,41.0))/64.0,mf=fract(mq*0.5)*2.0,mir=step(1.0,mf),mu=mix(mf,2.0-mf,mir);
+vec3 ta=texture2D(mD,mu).rgb/0.49;vec3 tn=texture2D(mN,mu).rgb*2.0-1.0;tn.xy*=(1.0-2.0*mir);
+vec3 Nw=normalize(vec3(tn.x*1.7,tn.z,-tn.y*1.7));float lit=(0.34+1.15*max(dot(Nw,vec3(-0.560,0.611,0.560)),0.0))/1.043;
+float tk=mK*mix(0.3,1.0,clr);vec3 surf=mix(vec3(1.0),ta,0.8*tk)*mix(1.0,lit,tk);
+col=col*dd*surf*vL; // moon park: the whole surface is one regolith
+if(inside<0.5)col=vec3(0.47,0.47,0.5)*dd*surf*vL; // outside the walls it is just the Moon: grey regolith, no turf and no grid
+else if(digi>0.5){
 vec2 r=vec2(vW.x+vW.y,vW.x-vW.y)*0.70711/5.2;vec2 d=0.5-abs(fract(r)-0.5);vec2 w=fwidth(r);
 vec2 l=1.0-smoothstep(vec2(0.008),vec2(0.008)+w*1.5,d);float fade=clamp(0.03/max(w.x,w.y),0.0,1.0);
 col+=vec3(1.0,0.16,0.86)*max(l.x,l.y)*(0.22+0.55*fade)*(1.0-m)*clr*GRIDK; // no grid anywhere near the plate: nothing may cross the strike zone or the bat ring
@@ -1042,6 +1046,9 @@ gl_FragColor=vec4(col,1.0);
 #include <fog_fragment>
 }`});
   Object.assign(groundMat.uniforms,{});groundMat.uniforms.macro.value=macroT;groundMat.uniforms.maskT.value=maskT;groundMat.uniforms.gD.value=grassD;groundMat.uniforms.dD.value=dirtD;
+  {const px=(r,g,b)=>{const t=new T.DataTexture(new Uint8Array([r,g,b,255]),1,1,T.RGBAFormat);t.needsUpdate=true;return t;};groundMat.uniforms.mD.value=px(125,125,125);groundMat.uniforms.mN.value=px(128,128,255);
+    // the real moon-surface maps arrive a moment after the page: until both are in, the painted surface stands in
+    const L=new T.TextureLoader();let got=0;const done=()=>{if(++got===2)groundMat.uniforms.mK.value=1;},ld=(f,k)=>L.load(f,t=>{t.wrapS=t.wrapT=T.ClampToEdgeWrapping;t.anisotropy=ANISO;groundMat.uniforms[k].value=t;done();},undefined,()=>{});ld('moon_d.jpg','mD');ld('moon_n.jpg','mN');}
   const gp=new T.Mesh(new T.PlaneGeometry(900,900),groundMat);gp.rotation.x=-PI/2;gp.position.set(0,0,-150);scene.add(gp);
   // mound: a smooth dome using the same surface shader, with the pitching rubber on top
   {const md=new T.Mesh(new T.LatheGeometry([[.001,.25],[.8,.25],[1.45,.2],[2.1,.1],[2.74,.004]].map(q=>new T.Vector2(q[0],q[1])),28),groundMat);md.position.set(0,0,-18.4);scene.add(md);
