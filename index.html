@@ -3597,7 +3597,21 @@ function loadPlayers(kind){ // body file = character mesh; clips.json = motion-c
   const defP=cfg.def?Promise.all([loadBuf(cfg.def.body),...['d','n','s'].map(k=>loadImg(cfg.def.tex[k]))]).catch(()=>null):Promise.resolve(null);
   Promise.all([loadBuf(cfg.body).then(b=>(loadStep(),b)),clipsP,imgs,own]).then(r=>Promise.race([defP,new Promise(res=>setTimeout(()=>res(null),3500))]).then(df=>r.concat([df]))).then(([bb,cj0,im,oc,df])=>{const cj=Object.assign({},cj0,oc||{});
     if(my!==MX.token)return;                                   // switched again while loading
-    const skins=im?makeSkins(im):null,base=new T.FBXLoader().parse(bb,''),canClone=!!(T.SkeletonUtils&&T.SkeletonUtils.clone); // the character file is read once; every other player is a copy of it
+    const base=new T.FBXLoader().parse(bb,'');
+    // Every clip made on this body is stored as its joints' own angles. Another body's joints rest at different angles and its hips sit at a
+    // different height, so a clip is converted for it once: each joint turns by the same amount from ITS OWN rest pose, and the hips ride at its own height.
+    const restOf=o=>{const R={};let sm=0;o.traverse(n=>{if(n.isSkinnedMesh)sm++;});if(!sm)return R;o.updateMatrixWorld(true); /* measured exactly as the file was read, before anything has moved a joint: that IS its rest pose */
+      o.traverse(n=>{if(n.isBone&&n.parent){const v=new V3();n.getWorldPosition(v);R[n.name.replace(/^mixamorig\d*/,'')]={w:n.getWorldQuaternion(new T.Quaternion()),pw:n.parent.getWorldQuaternion(new T.Quaternion()),y:v.y};}});
+      let fy=1e9;['LeftFoot','RightFoot','LeftToeBase','RightToeBase'].forEach(k=>{if(R[k])fy=Math.min(fy,R[k].y);});R.$leg=R.Hips?R.Hips.y-(fy<1e8?fy:0):1;return R;},
+      refRest=restOf(base),ownSet=oc||{};
+    const fitClips=(o,names)=>{const tr=restOf(o),k=tr.$leg/refRest.$leg,q=new T.Quaternion(),v=new V3();
+      return names.map(n=>{const c=mkClip(cj[n],n),own=false; /* joint angles are copied as they are (these bodies share one joint layout); only the hips' height is fitted to the body's own legs */
+        c.tracks=c.tracks.filter(t=>{const m=/^mixamorig(\w+)\./.exec(t.name);return m&&tr[m[1]];}); /* a body with fewer fingers has no joint for some tracks: left in, the mixer would turn the WHOLE BODY with them */
+        c.tracks.forEach(t=>{const m=/^mixamorig(\w+)\.(quaternion|position)$/.exec(t.name);if(!m)return;const a=refRest[m[1]],b=tr[m[1]];if(!a||!b)return;const V=t.values=Float32Array.from(t.values);
+          if(m[2]==='position'){if(m[1]!=='Hips')return;const op=own?a.pw.clone().invert().multiply(b.pw).invert():null;for(let i=0;i<V.length;i+=3){v.set(V[i],V[i+1],V[i+2]);if(op)v.applyQuaternion(op);v.multiplyScalar(k);V[i]=v.x;V[i+1]=v.y;V[i+2]=v.z;}}
+          else if(own){const op=a.pw.clone().invert().multiply(b.pw).invert(),ob=a.w.clone().invert().multiply(b.w);for(let i=0;i<V.length;i+=4){q.set(V[i],V[i+1],V[i+2],V[i+3]).premultiply(op).multiply(ob);V[i]=q.x;V[i+1]=q.y;V[i+2]=q.z;V[i+3]=q.w;}}});
+        return c;});};
+    const skins=im?makeSkins(im):null,canClone=!!(T.SkeletonUtils&&T.SkeletonUtils.clone); // the character file is read once; every other player is a copy of it
     // space helmets: a clear glass bubble on a metal collar, on every player, so faces and animation stay fully visible
     const glass=new T.MeshPhongMaterial({color:0xcfe6ff,transparent:true,opacity:.34,specular:0xffffff,shininess:140,depthWrite:false}),rimM=new T.MeshBasicMaterial({color:0xdfeaff,transparent:true,opacity:.3,side:T.BackSide,depthWrite:false}),collarM=new T.MeshPhongMaterial({color:0xc9ced8,specular:0x888888,shininess:60});
     const bubbleG=new T.SphereGeometry(17.5,20,14),collarG=new T.TorusGeometry(9.2,1.7,8,22);
@@ -3623,7 +3637,7 @@ function loadPlayers(kind){ // body file = character mesh; clips.json = motion-c
       return pitP[want]=Promise.all([loadBuf(v.body),...keys.map(k=>Promise.all(v.tex[k].map(loadImg)))]).then(r=>{if(my!==MX.token)return;
         const vb=new T.FBXLoader().parse(r[0],''),tx=i=>{const t=new T.Texture(i);t.needsUpdate=true;t.anisotropy=ANISO;return t;},mats={},geos=new Map();
         keys.forEach((k,i)=>{const o={map:tx(r[1+i][0]),color:0xffffff,emissive:0x1c1c22,specular:0x333340,shininess:26,skinning:true};if(r[1+i][1])o.normalMap=tx(r[1+i][1]);mats[k]=new T.MeshPhongMaterial(o);});
-        MX.pitVar[want]={make:()=>{const o=T.SkeletonUtils.clone(vb);o.animations=pitNames.map(n=>mkClip(cj[n],n));return o;},
+        let vclips=null;MX.pitVar[want]={make:()=>{const o=T.SkeletonUtils.clone(vb);o.animations=vclips=vclips||fitClips(o,pitNames);return o;},
           skin:{mat:mats[keys[0]],mats,trim:g=>{let o=geos.get(g.uuid);if(!o){o=weld(g);o.userData.lite=liteGeo(o,LOD_CELL);geos.set(g.uuid,o);}return o;}}};
         if(S.state==='title'||S.state==='over'||S.state==='walkup')pitcherModel();}).catch(e=>console.warn('pitcher body '+v.body+' not loaded',e));};
     setTimeout(()=>{if(my===MX.token)pitcherModel();},3000);
