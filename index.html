@@ -221,6 +221,7 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 @media (orientation:landscape) and (max-height:520px){#hud.mob #podtag{top:36%}}
 /* quick time event: the move's name, its arrow code, a clock that drains; on phones a d-pad where the aim stick usually is */
 #gobtn{position:absolute;left:50%;bottom:max(26px,env(safe-area-inset-bottom,0px));transform:translateX(-50%) scale(.6);opacity:0;pointer-events:none;z-index:47;padding:14px 26px;font-family:var(--display);font-style:italic;font-size:clamp(22px,6.4vw,34px);letter-spacing:.03em;color:#04140a;background:linear-gradient(#7dff9c,#1fd153);border:4px solid #000;border-radius:18px;box-shadow:0 6px 0 #000,0 0 0 4px rgba(255,255,255,.7),0 0 30px 8px rgba(57,255,106,.7);white-space:nowrap;touch-action:none}
+body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
 #gobtn.on{opacity:1;pointer-events:auto;animation:gobtn .42s ease-in-out infinite alternate}
 @keyframes gobtn{from{transform:translateX(-50%) scale(1)}to{transform:translateX(-50%) scale(1.09)}}
 /* on phones it sits on the left, where the aim thumb already is, like an 'advance the runner' control */
@@ -422,7 +423,7 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 @media (prefers-reduced-motion:reduce){#ldbar i,#ldbar i::before{animation:none}}
 #ldbar.done{display:none}#ldtxt:empty{display:none}
 #tip{display:none;max-width:min(340px,86vw);min-height:92px;margin:0 auto;padding:10px 14px;text-align:center;font-size:15px;line-height:1.3;color:var(--chrome);background:rgba(8,9,26,.72);border:1px solid rgba(242,245,255,.25);border-radius:10px}#tip b{display:block;color:var(--volt);font-family:var(--display);font-style:italic;font-size:17px;letter-spacing:.04em;margin-bottom:3px}
-#howbtn,.sens{display:none}body.mob #howbtn,body.mob .sens{display:revert}
+#howbtn{display:none}body.mob #howbtn{display:revert}
 body.mob #tip{display:block}body.mob .how{display:none}
 /* first-game thumb guide */
 #tut{position:absolute;inset:0;z-index:30;overflow:hidden;pointer-events:auto;font-family:var(--display);font-style:italic;color:#fff;text-shadow:0 2px 0 #000}#tut[hidden]{display:none}
@@ -2153,7 +2154,7 @@ function setBatter(){if(MX.pitVar&&S.pName&&MX.pitVar[S.pName[3]||0]&&MX.pitCur!
   // He can also just snap: from the second inning on there is a chance each new hitter that he goes into Overdrive whatever his meter says,
   // and the more runs he has given up the likelier it is (3% with no runs, about 30% once eight are in). Never in the first inning.
   else if(DBG.pod||(podFree()&&(S.heat>=.999||Math.random()<(S.podN?.02*Math.min(S.runs,8):S.runs>=3?.4:S.inning>=2?.3:.04)))){S.pOver=true;S.podPending=true;S.podN++;S.podBi=S.bi;} // not announced yet: once the hitter is in the box the game cuts to the mound for the reveal (podReveal)
-  aim.x=0;aim.y=.825; // every hitter starts with the ring in the middle of the zone
+  aim.x=0;aim.y=.825;mouseKeep(); // every hitter starts with the ring in the middle of the zone (or under the mouse)
  
   paintJersey(batter,Object.assign({name:b.name,num:b.num},HOME));paintSkin(batter,b.skin);if(MX.ready)paintAtlas(b);
   if(S.cardBi===undefined||S.cardBi<0)showCard(); // otherwise the card keeps showing the man who just hit until the next one actually steps in
@@ -2287,7 +2288,7 @@ function updateThrow(){
     if(Th.safe){const r=flight.raceR||0;pop('SAFE!',[r?`+${r} RUN${r>1?'S':''}`:'','BEAT THE THROW'].filter(Boolean).join(' · '),'',true);buzz([30,40,70]);roar(1,.15);sfxSlice('cheer_big',.8,rand(1,1.08),rand(0,.25),2.8);if(AC)cheerBusy=AC.currentTime+2.4;}}}
 }
 function toReady(d){if(S.walkoff&&S.state!=='end'&&S.state!=='over'){S.walkoff=false;roarOff(4);S.state='end';S.t=now;readyDur=1.6;hud();return;} // nobody else needs to bat: that was the ballgame
-  roarOff();showCard();$('hitinfo').hidden=true;S.state='ready';S.t=now;aim.x=0;aim.y=.825; /* ring back to the middle of the zone before every pitch */lampFix();if(d)readyDur=d;swing=null;pitch=null;flight=null;decoy.visible=false;ball.visible=false;ballShadow.visible=false;pring.visible=false;ballGlow.material.opacity=0;
+  roarOff();showCard();$('hitinfo').hidden=true;S.state='ready';S.t=now;aim.x=0;aim.y=.825;mouseKeep(); /* ring back to the middle of the zone before every pitch (or under the mouse) */lampFix();if(d)readyDur=d;swing=null;pitch=null;flight=null;decoy.visible=false;ball.visible=false;ballShadow.visible=false;pring.visible=false;ballGlow.material.opacity=0;
   fielders.forEach(f=>{if(!f.isP){f.fig.root.position.copy(f.home);f.fig.root.rotation.y=Math.atan2(-f.home.x,-f.home.z);}f.run=null;});
   camMode='bat';hud();syncRunners();
   if(S.pcPending){S.pcPending=false;S.state='pchange';S.t=now; // the scene: the man who got knocked out trudges off, then a cut to the mound for the new arm, then the hitter comes up as usual
@@ -2960,19 +2961,25 @@ function pointerAim(e){
   const r=canvas.getBoundingClientRect();
   aimCam.fov=camera.userData.baseFov;aimCam.aspect=camera.aspect;aimCam.near=.1;aimCam.far=100;aimCam.position.copy(CAM_HOME);aimCam.lookAt(CAM_LOOK);aimCam.updateProjectionMatrix();aimCam.updateMatrixWorld();
   ray.setFromCamera({x:(e.clientX-r.left)/r.width*2-1,y:-((e.clientY-r.top)/r.height*2-1)},aimCam);
-  const o=ray.ray.origin,d=ray.ray.direction,t=-o.z/d.z;setAim(o.x+d.x*t,o.y+d.y*t);
+  const o=ray.ray.origin,d=ray.ray.direction,t=-o.z/d.z,g=MOBILE_UI()?1:MSENS[sensI]; /* mouse: the ring travels further than the hand, measured from the middle of the zone, so the corners are a short flick away */
+  setAim(o.x+d.x*t*g,.825+(o.y+d.y*t-.825)*g);mouseLast={x:e.clientX,y:e.clientY,t:performance.now()};
+  canvas.style.cursor=g>1&&/^(ready|pitch|swing|walkup)$/.test(S.state)?'none':''; /* the arrow would sit apart from the ring, so it is hidden while hitting */
 }
+let mouseLast=null;const MOBILE_UI=()=>document.body.classList.contains('mob'),MSENS=[1,1.2,1.4,1.7,2,2.4],
+  mouseKeep=()=>{if(mouseLast&&!MOBILE_UI()&&performance.now()-mouseLast.t<5000)pointerAim({clientX:mouseLast.x,clientY:mouseLast.y});}; /* the ring goes back to where the mouse is, not to the middle, when a new pitch is set up */
 function setAim(x,y){aim.x=clamp(x,-.62,.62);aim.y=clamp(y,.22,1.5);}
 let touchLast=null;
 // aim sensitivity (touch): how far the ring moves per unit of thumb travel. 3 is the default; saved on the device.
-const SENS=[1,1.3,1.6,2,2.5,3.1];let sensI=2;try{const v=localStorage.getItem('mm_sens');if(v!==null)sensI=clamp(+v|0,0,SENS.length-1);}catch(e){}
+const SENS=[1,1.3,1.6,2,2.5,3.1];let sensI=2;const sensKey=()=>MOBILE_UI()?'mm_sens':'mm_msens';try{const v=localStorage.getItem(sensKey());if(v!==null)sensI=clamp(+v|0,0,SENS.length-1);}catch(e){}
 function sensLabel(){$('sens1').textContent='Aim sensitivity: '+(sensI+1)+' / '+SENS.length;$('sens2').textContent='AIM SENSITIVITY: '+(sensI+1)+' / '+SENS.length;}
-['sens1','sens2'].forEach(id=>$(id).addEventListener('click',()=>{sensI=(sensI+1)%SENS.length;try{localStorage.setItem('mm_sens',sensI);}catch(e){}sensLabel();}));sensLabel();
+['sens1','sens2'].forEach(id=>$(id).addEventListener('click',()=>{sensI=(sensI+1)%SENS.length;try{localStorage.setItem(sensKey(),sensI);}catch(e){}sensLabel();}));sensLabel();
 canvas.addEventListener('pointermove',e=>{
   if(e.pointerType==='touch'){if(touchLast&&touchLast.id===e.pointerId){const m=2*CAM_HOME.z*Math.tan(camera.userData.baseFov*DEG/2)/viewH*SENS[sensI];
       setAim(aim.x+(e.clientX-touchLast.x)*m,aim.y-(e.clientY-touchLast.y)*m);touchLast.x=e.clientX;touchLast.y=e.clientY;
       {let dx=e.clientX-touchLast.x0,dy=e.clientY-touchLast.y0;const L=Math.hypot(dx,dy),R=42;if(L>R){dx*=R/L;dy*=R/L;}padKnob.style.transform='translate('+dx+'px,'+dy+'px)';}}}
   else pointerAim(e);});
+// Chrome and Edge can hand over mouse movement the moment it happens rather than once per drawn frame: the ring is then never a frame behind the hand.
+if('onpointerrawupdate' in window)canvas.addEventListener('pointerrawupdate',e=>{if(e.pointerType!=='touch')pointerAim(e);});
 canvas.addEventListener('pointerdown',e=>{audioInit();
   if(e.pointerType==='touch'){touchLast={id:e.pointerId,x:e.clientX,y:e.clientY,x0:e.clientX,y0:e.clientY};$('apad').classList.add('drag');return;}
   pointerAim(e);doSwing(e.button===2?'contact':'power');e.preventDefault();}); // on a computer: left click is the POWER swing, right click is CONTACT
@@ -3037,7 +3044,7 @@ let paused=false;
 const inPlay=()=>S.state!=='title'&&S.state!=='over';
 function setPaused(on){
   if(on&&!inPlay())return;
-  paused=on;$('pause').hidden=!on;for(const k in keys)keys[k]=false;
+  paused=on;$('pause').hidden=!on;document.body.classList.toggle('paused',on);for(const k in keys)keys[k]=false;
   if(AC){try{on?AC.suspend():AC.resume();}catch(e){}}
   if(on)$('resume').focus();
 }
@@ -4091,7 +4098,7 @@ $('shbtn').addEventListener('click',()=>{SHQ=!SHQ;if(SHQ&&!rim.castShadow)rim.ca
 shApply();
 resize();hud();
 const DBG={dive:'',hbp:false,pcut:false,fl:'',rob:false,pc:false,staunt:false,pod:false,trail:false,orbit:false,sat:false,drill:false,brawl:false,qte:false,mash:false,slide:false,pn:'',laser:false,lamp:false,mw:false,pdef:false,dbl:false,cam:false,admire:'',trip:false,fist:false,pop:false,loser:false}; // test hook: pin the camera to CAM_HOME/CAM_LOOK
-window.__bp=k=>BULLPEN[k];window.__mm={pitcherModel,crowdFx,setE:v=>{crowdE=v;crowdShow=v;},GLOVE,renderer,scene,LODM,camera,zapStart,acState:()=>AC?(zoneLP?"lp="+Math.round(zoneLP.frequency.value)+" ":"")+AC.state+" t="+AC.currentTime.toFixed(1)+" real="+crowdReal+" roar="+(roarG?roarG.gain.value.toFixed(2)+(roarTop?"T":""):"off")+" bed="+crowdGain.gain.value.toFixed(2):"none",roar,roarOff,boo,cheer,crowdRise,crowdDrop,S,aim,MX,DBG,landRingOn:()=>landRing.visible,hud,tutAnim,draw:()=>draw(),endGame,TROT,SFX,RUN,ballPos:()=>ball.position,ballVisible:()=>ball.visible,fielders,toReady,CAM_HOME,CAM_LOOK,now:()=>now,simulate,judge,get pitch(){return pitch;},get flight(){return flight;},lastSwing:()=>{const t=swing&&swing.type;swing=null;return t;},lastSwingTurbo:()=>!!(swing&&swing.turbo),doSwing,newGame,V3,
+window.__ret=()=>reticle.position;window.__bp=k=>BULLPEN[k];window.__mm={pitcherModel,crowdFx,setE:v=>{crowdE=v;crowdShow=v;},GLOVE,renderer,scene,LODM,camera,zapStart,acState:()=>AC?(zoneLP?"lp="+Math.round(zoneLP.frequency.value)+" ":"")+AC.state+" t="+AC.currentTime.toFixed(1)+" real="+crowdReal+" roar="+(roarG?roarG.gain.value.toFixed(2)+(roarTop?"T":""):"off")+" bed="+crowdGain.gain.value.toFixed(2):"none",roar,roarOff,boo,cheer,crowdRise,crowdDrop,S,aim,MX,DBG,landRingOn:()=>landRing.visible,hud,tutAnim,draw:()=>draw(),endGame,TROT,SFX,RUN,ballPos:()=>ball.position,ballVisible:()=>ball.visible,fielders,toReady,CAM_HOME,CAM_LOOK,now:()=>now,simulate,judge,get pitch(){return pitch;},get flight(){return flight;},lastSwing:()=>{const t=swing&&swing.type;swing=null;return t;},lastSwingTurbo:()=>!!(swing&&swing.turbo),doSwing,newGame,V3,
   sim:(dt)=>{hitstop=0;now+=dt;step(dt);},
   step:(n,dt=1/60)=>{for(let i=0;i<n;i++){if(hitstop>0)hitstop=0;now+=dt;step(dt);}updateCamera(dt);draw();}};
 if(!window.__mmManual)requestAnimationFrame(frame);
