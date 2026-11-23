@@ -212,9 +212,10 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 #hud.wk #rep,#hud.wk #keys,#hud.wk #pitchinfo,#hud.wk #touch,#hud.mob.wk #mutebtn{visibility:hidden}
 .wkopt{pointer-events:auto;background:none;border:1px solid var(--dim);padding:6px 12px;cursor:pointer;font-family:var(--hud)}
 /* centre calls */
-#pop{left:0;right:0;top:26%;text-align:center;opacity:0}
+#pop{left:0;right:0;top:21%;text-align:center;opacity:0}
 /* why the screen is shaking: a plain label for as long as the pitcher's Overdrive is on and there is a pitch to face */
 #podtag{position:absolute;left:50%;top:27%;transform:translateX(-50%);white-space:nowrap;opacity:0;transition:opacity .25s;pointer-events:none;z-index:40;font-family:var(--display);font-style:italic;font-size:clamp(19px,5.6vw,30px);line-height:1.02;text-align:center;letter-spacing:.06em;color:#ff5a36;-webkit-text-stroke:3px #000;paint-order:stroke fill;text-shadow:0 2px 0 #000,0 0 14px rgba(255,70,40,.8)}
+#podtag{-webkit-text-stroke:clamp(4px,.8vw,6px) #05060f;text-shadow:0 3px 0 #05060f,0 0 16px rgba(255,70,40,.8)}#podtag.du{color:#fff;text-shadow:0 3px 0 #05060f,-3px 0 14px rgba(58,170,255,.95),3px 0 14px rgba(255,70,40,.95)}
 #hud.podlive #podtag{opacity:1;animation:podtag .62s ease-in-out infinite alternate}
 @keyframes podtag{from{filter:brightness(1)}to{filter:brightness(1.5)}}
 #hud.mob #podtag{top:33.5%} /* on the batter's eye, just over the pitcher's head */
@@ -279,7 +280,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
 #hud.hbps #pop,#hud.mob.hbps #pop{bottom:auto} /* the man on the ground fills the middle of the picture: the call goes underneath him */
 #hud.qs #pop{left:4%;right:4%}#hud.qs #pop .t{font-size:clamp(34px,10.5vw,84px)}
 #hud.pcut #pop .s{font-size:clamp(12px,2.4vw,22px);margin-top:3px}
-#hud.mob #pop.logo{top:28%} /* PLAY BALL: below the batter card, above the pitcher */
+#pop.logo{top:17%}#hud.mob #pop.logo{top:21%} /* PLAY BALL: below the batter card, above the pitcher */
 #hud.mob #pop{top:31.5%} /* on phones: clear of the batter card and the buttons above it */
 /* the shout over a player celebrating on the bag */
 #shout{position:absolute;left:50%;top:30%;z-index:6;pointer-events:none;white-space:nowrap;opacity:0;font-family:var(--display);font-style:italic;font-size:clamp(34px,9vw,84px);line-height:1;color:var(--volt);-webkit-text-stroke:2px #000;text-shadow:0 4px 0 #000,0 0 22px rgba(255,229,59,.55);transform:translate(-50%,-100%) rotate(-6deg)}
@@ -291,7 +292,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
 #pop .s{font-family:var(--display);font-size:clamp(16px,3.2vw,34px);color:var(--chrome);text-shadow:0 3px 0 #000;margin-top:6px;font-variant-numeric:tabular-nums}
 #pop.hot .t{color:var(--heat);text-shadow:0 5px 0 #000,0 0 50px rgba(255,77,46,.8)}
 #pop.cool .t{color:var(--ice);text-shadow:0 5px 0 #000,0 0 40px rgba(58,214,255,.6)}
-#hud.pcut #pop.pod .t{font-size:clamp(22px,5.4vw,52px)}
+#pop.pod .t,#hud.pcut #pop.pod .t{font-size:clamp(22px,5.4vw,52px)}
 #pop.plain .t{color:#fff;text-shadow:0 clamp(4px,.7vw,7px) 0 #05060f}
 /* ── ONE CALLOUT STYLE. Every call is built the same way so it reads instantly over anything: a bright fill, a heavy dark outline that sits
    OUTSIDE the letters, and a hard drop edge under them. The line beneath a call sits on its own dark plate. Colour says what kind of news it is:
@@ -340,6 +341,10 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
 #tbar .gp{background:linear-gradient(90deg,rgba(255,77,46,.3),rgba(255,77,46,.8) 36%,#ff8a70 42%,#ff8a70 58%,rgba(255,77,46,.8) 64%,rgba(255,77,46,.3))}
 #tbar .jx{background:#ffd23b;box-shadow:0 0 8px 1px rgba(255,210,59,.8)} /* same colours as the bat: green = CONTACT window, red core = POWER window, gold ends = Juice */
 #tbar .dim{opacity:.22}
+/* THE PLAYER CARD, bigger: who is up and what he can do is information you play off, so it is sized to be read at a glance */
+#hud:not(.mob)>#card{padding:10px 16px 10px 12px;gap:14px}#hud:not(.mob)>#card #cnum{font-size:50px}#hud:not(.mob)>#card #cname{font-size:25px}
+#hud:not(.mob)>#card .stat{font-size:14px;gap:7px}#hud:not(.mob)>#card .stat b{width:86px;height:7px}#hud:not(.mob)>#card .stat em{font-size:24px}
+#hud.mob>#card,#hud.mob.lh>#card{max-width:40vw;padding:6px 9px 7px}#hud.mob>#card #cname{font-size:clamp(15px,4.5vw,19px)}#hud.mob>#card .stat{font-size:10px;gap:3px}#hud.mob>#card .stat em{font-size:24px}#hud.mob>#card .stats{gap:6px}
 #dft{position:absolute;left:0;top:0;z-index:5;display:none;pointer-events:none;white-space:nowrap;will-change:transform;font-family:var(--display);font-style:italic;line-height:1;color:#fff;-webkit-text-stroke:5px #000;paint-order:stroke fill;text-shadow:0 4px 0 #000}
 #dft b{font-weight:400;font-size:clamp(34px,9vw,76px);font-variant-numeric:tabular-nums}#dft i{font-style:italic;font-size:clamp(15px,3.6vw,30px);margin-left:6px;color:var(--volt)}
 #dft.big b{color:var(--volt)}#dft.huge b{color:#ff7a1e;text-shadow:0 4px 0 #000,0 0 26px rgba(255,120,30,.9)}
@@ -381,9 +386,9 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
 @keyframes odhB{from{margin-left:0}to{margin-left:10px}}@keyframes odhM{from{margin-top:0}to{margin-top:-9px}}
 #hud.rv>*:not(#bdg):not(#orbc){visibility:hidden!important}
 /* the one line on the orbit shot: across the top, above the Moon, burning Overdrive blue (a new badge drops in just under it) */
-#hud.rv #bdg{top:clamp(96px,17vh,150px)}#hud.mob.rv #bdg{top:clamp(84px,12vh,120px)}
-#orbc{position:absolute;left:3%;right:3%;top:max(4%,calc(env(safe-area-inset-top,0px) + 12px));z-index:61;display:none;text-align:center;pointer-events:none;font-family:var(--display);font-style:italic;font-size:clamp(24px,6.4vw,62px);line-height:1;letter-spacing:.02em;white-space:nowrap}
-#hud.rv #orbc{display:block}#orbc b{position:relative;display:inline-block;font-weight:400;color:#eaffff;-webkit-text-stroke:clamp(4px,.8vw,7px) #02103a;paint-order:stroke fill;text-shadow:0 4px 0 #000,0 0 18px #3ad6ff,0 0 42px #1e7bff;animation:orbcIn .6s cubic-bezier(.2,1.5,.3,1) .55s both,orbcF .16s steps(2) .55s infinite}
+#hud.rv #bdg{top:85%}#hud.mob.rv #bdg{top:20%} /* on a wide screen the plate goes under the Moon; on a phone there is room between the line and the Moon */
+#orbc{position:absolute;left:3%;right:3%;top:max(8%,calc(env(safe-area-inset-top,0px) + 12px));z-index:61;display:none;text-align:center;pointer-events:none;font-family:var(--display);font-style:italic;font-size:clamp(24px,6.4vw,62px);line-height:1;letter-spacing:.02em;white-space:nowrap}
+#hud.rv #orbc{display:block}#hud.mob #orbc{top:12.5%}#orbc b{position:relative;display:inline-block;font-weight:400;color:#eaffff;-webkit-text-stroke:clamp(4px,.8vw,7px) #02103a;paint-order:stroke fill;text-shadow:0 4px 0 #000,0 0 18px #3ad6ff,0 0 42px #1e7bff;animation:orbcIn .6s cubic-bezier(.2,1.5,.3,1) .55s both,orbcF .16s steps(2) .55s infinite}
 #orbc b::before{content:'';position:absolute;z-index:-1;left:-2%;right:-2%;bottom:38%;height:150%;pointer-events:none;transform-origin:50% 100%;filter:blur(1.2px);mix-blend-mode:screen;opacity:.9;
   background:radial-gradient(ellipse 9px 100% at 50% 100%,#f2fdff 0,#8fe6ff 26%,rgba(40,130,255,.85) 52%,rgba(30,90,255,0) 72%) 0 100%/21px 100% repeat-x,radial-gradient(ellipse 13px 72% at 50% 100%,#c9f4ff 0,#55c8ff 34%,rgba(30,100,255,.7) 58%,rgba(30,90,255,0) 76%) 9px 100%/33px 100% repeat-x;animation:orbcIn .6s ease-out .55s both,odzLick .4s linear .55s infinite}
 @keyframes orbcIn{0%{opacity:0;transform:scale(1.6)}100%{opacity:1;transform:scale(1)}}@keyframes orbcF{0%{filter:brightness(1)}100%{filter:brightness(1.25)}} /* the orbit shot plays clean: nothing on the glass */
@@ -418,7 +423,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
 @keyframes mkFlame{0%{transform:translateY(0) scale(.2);opacity:0}18%{opacity:1;transform:translateY(2px) scale(1.2)}100%{transform:translateY(-12px) scale(1);opacity:.95}}
 @keyframes mkFlick{from{width:16px}to{width:12px;margin-left:-6px}}
 @keyframes mkRocket{0%{transform:translate(-50%,-30%) rotate(-45deg) scale(.2)}18%{transform:translate(-50%,-55%) rotate(-45deg) scale(1.45)}32%{transform:translate(-50%,-55%) rotate(-45deg) scale(1)}100%{transform:translate(-50%,-110%) rotate(-45deg) scale(1.05)}}
-#tbar.go{animation:tim 1.7s ease-out both}#hud.mob #tbar{top:calc(41% + 32px);margin-left:-130px;width:260px}#hud.wk #tbar{visibility:hidden}
+#tbar.go{animation:tim 1.7s ease-out both}#tbar.go.qk,#tim.go.qk{animation-duration:.6s} /* a ball hit on the ground or on a line at the infield: the read-out is gone in half a second, before it can sit across a fielder */#hud.mob #tbar{top:calc(41% + 32px);margin-left:-130px;width:260px}#hud.wk #tbar{visibility:hidden}
 @keyframes tim{0%{opacity:0;transform:translateY(8px)}15%,70%{opacity:1;transform:none}100%{opacity:0}}
 #flash{inset:0;background:radial-gradient(circle at 50% 55%,#fff,rgba(255,240,180,.7) 40%,transparent 75%);opacity:0}
 /* touch */
@@ -841,7 +846,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 458</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 461</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <button class="tag wkopt sens" id="sens1" type="button"></button>
@@ -994,9 +999,15 @@ let dftEl=null,dftOn=false,dftV=-1;function dftDom(){const on=!!(flight&&!flight
   const v=flight.dLast|0;if(v!==dftV){dftV=v;dftEl.firstChild.textContent=v;dftEl.classList.toggle('big',v>=450);dftEl.classList.toggle('huge',v>=500);}
   const W=canvas.clientWidth||innerWidth,H=canvas.clientHeight||innerHeight;_s0.copy(ball.position).project(camera);const x=clamp((_s0.x*.5+.5)*W,70,W-70),y=clamp((-_s0.y*.5+.5)*H-H*.11,H*.14,H*.8);
   dftEl.style.transform='translate('+x.toFixed(1)+'px,'+y.toFixed(1)+'px) translate(-50%,-100%)';}
-function draw(){if(HALO.paint){const hm=flight&&!flight.done&&flight.play.type==='hr'&&flight.clr||S.state==='trot'?'hr':S.over&&S.overOn?'od':pOD()?'pod':'idle';if(hm!==HALO.m){HALO.m=hm;HALO.paint(hm);}HALO.t.offset.x=(performance.now()*(hm==='idle'?.00003:.00009))%1;}
+function draw(){{const du=!!(S.over&&S.overOn&&pOD());if(du!==duelTag){duelTag=du;const e=$('podtag');e.innerHTML=du?'OVERCHARGED<br>DUEL!':'PITCHER OVERDRIVE<br>ACTIVE';e.classList.toggle('du',du);}}if(HALO.paint){const hm=flight&&!flight.done&&flight.play.type==='hr'&&flight.clr||S.state==='trot'?'hr':S.over&&S.overOn?'od':pOD()?'pod':'idle';if(hm!==HALO.m){HALO.m=hm;HALO.paint(hm);}HALO.t.offset.x=(performance.now()*(hm==='idle'?.00003:.00009))%1;}
   if(LED_T)LED_T.offset.x=(performance.now()*.000028)%1; /* the ribbon board crawls, like a real park's (moving a texture costs nothing) */podCls();shTick();hbpPop();markDom();dftDom();{const pc=now-pcutT<.06,e=$('pop');if(pc!==pcutOn){pcutOn=pc;$('hud').classList.toggle('pcut',pc);if(!pc){e.style.top='';e.style.bottom='';e.className='';}}
-  if(pc){_s0.copy(pcutH).project(camera);const H=canvas.clientHeight||innerHeight;e.style.bottom='auto';{const t1=e.querySelector('.t'),s1=e.querySelector('.s');e.style.top=Math.max(MOB?112:84 /* every close-up call stays clear of the scoreboard and the meters along the top */,(-_s0.y*.5+.5)*H-t1.offsetHeight-(s1.textContent?s1.offsetHeight+6:0)).toFixed(0)+'px';}}} // call-outs sit just above the head of whoever the close-up is on
+  if(pc){ // CLOSE-UPS: the call sits in the gap between the top bar and the head of whoever is on camera. If the gap is too small for it, the
+    // call is SHRUNK to fit (down to 40%); it is never slid down across him. Only if there is no usable gap at all does it go to the foot of the screen.
+    _s0.copy(pcutH).project(camera);const H=canvas.clientHeight||innerHeight,head=(-_s0.y*.5+.5)*H,top0=MOB?112:84;e.style.bottom='auto';
+    if(e.className.indexOf('go')>=0){if(e._k!==1){e.style.zoom='';e._k=1;}const h0=e.offsetHeight||60,room=head-8-top0;let k=1;
+      if(room>=h0*.4){k=Math.min(1,room/h0);e.style.zoom=k<1?k.toFixed(3):'';e._k=k;e.style.top=(Math.max(top0,head-8-h0*k)/k).toFixed(0)+'px';}
+      else{k=MOB?.7:.8;e.style.zoom=k;e._k=k;e.style.top=((H-h0*k-(MOB?14:18))/k).toFixed(0)+'px';}}}
+  else if($('pop')._k&&$('pop')._k!==1){$('pop').style.zoom='';$('pop')._k=1;}} // call-outs sit just above the head of whoever the close-up is on
  lodTick();gloveTick();if(composer)composer.render();else renderer.render(scene,camera);sharpTick();tagsTick();cardTick();}
 const scene=new T.Scene();
 scene.fog=new T.Fog(0x06060c,320,1500); // no atmosphere: distance only fades far-off stands a little
@@ -1304,7 +1315,7 @@ gl_FragColor=vec4(col,1.0);
   // run, Overdrive blue when you switch it on, danger red when the pitcher is in his. One canvas, repainted only when the message changes.
   {const hc=document.createElement('canvas');hc.width=2048;hc.height=128;const ht=new T.CanvasTexture(hc);ht.wrapS=T.RepeatWrapping;ht.anisotropy=ANISO;
     let HL=0;for(let i=1;i<fca.length;i++)HL+=fca[i].distanceTo(fca[i-1]);ht.repeat.set(3/HL,1);
-    const MSG={idle:[['MOONSHOT MAYHEM','#ffe53b'],['LUNAR LEAGUE','#eaf8ff'],['GO COMETS','#ff8a3a'],['SEA OF TRANQUILITY','#7fe6ff']],hr:[['HOME RUN!','#ffe53b'],['GONE!','#ff8a3a'],['HOME RUN!','#ffe53b'],['SEE YA!','#fff']],
+    const MSG={idle:[['COMETS','#ff8a3a'],['VS','#eaf8ff'],['KRAKENS','#7fe6ff'],['MOONSHOT MAYHEM','#ffe53b']],hr:[['HOME RUN!','#ffe53b'],['GONE!','#ff8a3a'],['HOME RUN!','#ffe53b'],['SEE YA!','#fff']],
       od:[['OVERDRIVE','#eaffff'],['OVERDRIVE','#7fe6ff'],['OVERDRIVE','#eaffff'],['OVERDRIVE','#7fe6ff']],pod:[['DANGER','#ff5a36'],['PITCHER OVERDRIVE','#ffd0c0'],['DANGER','#ff5a36'],['PITCHER OVERDRIVE','#ffd0c0']]},BG={idle:'#070b1e',hr:'#2a1602',od:'#031436',pod:'#2a0504'},EDGE={idle:'#ff4d2e',hr:'#ffd23b',od:'#3ad6ff',pod:'#ff2a1e'};
     HALO.paint=m=>{const g=hc.getContext('2d'),w=hc.width,h=hc.height;g.shadowBlur=0;g.fillStyle=BG[m];g.fillRect(0,0,w,h);
       g.textAlign='center';g.textBaseline='middle';g.font='italic 400 78px "Russo One",Arial Black,Arial';MSG[m].forEach((q,i)=>{g.shadowColor=q[1];g.shadowBlur=18;g.fillStyle=q[1];g.fillText(q[0],w*(.125+.25*i),h*.54,w*.2);});g.shadowBlur=0;
@@ -2188,7 +2199,7 @@ function pop(t,s='',cls='',long=false){
   let _bq=null;try{_bq=bdgQ;}catch(e){}
   // CALLOUT AND BADGE PLATE NEVER SHARE THE SCREEN: a callout always wins. A plate that is up when one arrives is taken down and comes back afterwards.
   if(_bq){const pn=performance.now();if(bdgCur&&pn<bdgCurEnd){$('bdg').classList.remove('go');if(!bdgCur.re&&pn<bdgCurEnd-1900){bdgCur.old=1;bdgCur.re=1;_bq.unshift(bdgCur);}bdgCur=null;} /* it comes back ONCE, and only if it had been up for under a second: never again and again through a run of callouts */popUntil=pn+(long?3300:1700);bdgBusy=Math.max(bdgBusy,popUntil);}
-  if(_bq&&cls!=='logo'&&_bq.some(b=>!b.old&&performance.now()-b.tq<80)){const fresh=_bq.filter(b=>!b.old&&performance.now()-b.tq<80);const R=['slam','b2b','five','hr500','rev','earth','sat','lamp','board','eye','duel','juicehr','ambush','odhr','hr450','hr','walkoff','jump','brawl','send','heater','ten','win','wore','hit'];
+  if(_bq&&cls!=='logo'&&_bq.some(b=>!b.old&&performance.now()-b.tq<80)){const fresh=_bq.filter(b=>!b.old&&performance.now()-b.tq<80);const R=['slam','b2b','five','hr500','rev','earth','sat','lamp','board','eye','aura','duel','juicehr','ambush','odhr','hr450','hr','walkoff','jump','brawl','send','heater','ten','win','wore','hit'];
     fresh.sort((a,b)=>R.indexOf(a[0])-R.indexOf(b[0]));const B=fresh[0];bdgQ.splice(bdgQ.indexOf(B),1);$('pop').className='';bdgShow(B,true);return;} /* the badge plate IS the call: the ordinary callout is not shown at all, so the two can never collide */
   const e=$('pop');e.className='';e.querySelector('.t').textContent=t;e.querySelector('.s').textContent=s;void e.offsetWidth;e.className='go '+cls+(long?' long':'');}
 let MOB=false;function setMob(){MOB=matchMedia('(pointer:coarse)').matches||innerWidth<=560;$('hud').classList.toggle('mob',MOB);document.body.classList.toggle('mob',MOB);}setMob();addEventListener('resize',setMob); // narrow a desktop window to preview the phone layout
@@ -2540,7 +2551,7 @@ function toReady(d){if(S.walkoff&&S.state!=='end'&&S.state!=='over'){S.walkoff=f
   camMode='bat';hud();syncRunners();
   if(S.pcPending){S.pcPending=false;S.state='pchange';S.t=now; // the scene: the man who got knocked out trudges off, then a cut to the mound for the new arm, then the hitter comes up as usual
     S.pcI=false;S.pcW=WALK.on&&MX.pit&&MX.pit.taunts.p_sadwalk?PCW:0;
-    if(S.pcW){const old=BULLPEN[(S.pChanges+BULLPEN.length-1)%BULLPEN.length];flash(.3);pop(old[0]+' IS DONE','HIT THE SHOWERS','cool',true);cheer(.3,2.4);}else pcIntro();
+    if(S.pcW){const old=BULLPEN[(S.pChanges+BULLPEN.length-1)%BULLPEN.length];flash(.3);pop('HIT THE SHOWERS, SCRUB!',old[0]+' IS DONE','cool',true);cheer(.3,2.4);}else pcIntro();
     return;}
   if(WALK.on&&S.fresh&&S.bi>=0&&!S.seen[S.bi%LINEUP.length]&&MX.clip&&MX.clip.intros[WALK.by[curBatter().name]])startWalkup();}
 const BULLPEN=[['STORM',99,'',0],['VOLKOV',47,'L',1],['DIAZ',13,'',2],['NITRO',7,'',3],['ZLORP',50,'L',4],['DRAKE',25,'',5],['MAYNAR',30,'',6],['JONES',4,'L',7],['PARKER',21,'',8],['RIPTIDE',54,'L',9],['ROMERO',66,'',10],['ASTRA',48,'L',11],['BRADY',40,'',12],['DEMON',6,'',13]] /* name, number, 'L' = left-hander (the same delivery mirrored), which body he wears */,PCH=2.7,PCW=2.8;
@@ -2625,7 +2636,7 @@ function qteParts(){const C=MX.clip,P=MX.pit;return !!(WALK.on&&C&&P&&MX.on&&C.i
 function qteOK(){return qteParts()&&(DBG.qte||(S.qteN||0)<3&&(!qteSeen||Math.random()<.5));} // the double play decides for itself; the rest are the player's call (the GO button)
 // GO: after a hit (or a deep fly) that leaves a runner with a base to take, a button comes up for a couple of seconds. Press it and he goes,
 // which means a quick time event at the bag; leave it and he stays put. On a computer: G or Enter.
-const GO_LABEL={adv3:'SEND HIM TO THIRD!',plate:'SEND HIM HOME!',stretch2:'GO FOR TWO!',stretch3:'GO FOR THREE!',tag2:'TAG UP!',tag3:'TAG UP!'};
+const GO_LABEL={adv3:'SEND HIM TO THIRD?',plate:'SEND HIM HOME?',stretch2:'GO FOR TWO?',stretch3:'GO FOR THREE?',tag2:'TAG UP?',tag3:'TAG UP?'};
 // HOW RISKY IS IT? One number for every send: 1 is a fair fight, under 1 favours the runner, over 1 favours the throw. It comes from where the
 // ball was fielded (shallow is a short throw: hard; deep: easy), which side (a ball in left is right behind a man going to third), how far
 // he is trying to go, and the runner's own speed. (A fielder's arm would slot in here too.) Every mini-game reads it.
@@ -3041,8 +3052,10 @@ function tryContact(){flight_pop=false;if(pitch.hbp){swing.done=true;swing.miss=
     chase>.3?'#ff4d2e':Math.abs(n)<.22&&cr<.3?'#ffe53b':flight.lvl===1?'#9aa3c7':'#f2f5ff',flight.lvl); // timing, then where the barrel met it
   // No-doubters: sometimes stay on the hitter instead of the ball. 'admire' = he holds his finish, watches it and drops the bat;
   // 'show' = the same, then his own walk-up routine as a celebration. Decided here because we already know where the ball lands.
+  {const la0=Math.atan2(v0.y,Math.hypot(v0.x,v0.z))/DEG;if(la0<14&&play.type!=='hr'&&play.type!=='foul'){$('tbar').classList.add('qk');$('tim').classList.add('qk');}}
   if(play.type==='hr'&&MX.clip){const ft=play.dist*3.281,big=tb||ft>=500,r=Math.random(),early=earlyShow(S.hrs),kind=DBG.trail?'':DBG.admire||(early?'show':big?(r<.34?'show':r<.5?'admire':''):ft>=440?(r<.3?'admire':''):'');wildTrot=early;
     if(!kind&&!flight.orbit&&ft>=385&&(DBG.trail||Math.random()<.82))flight.trailCam=true; /* most homers that stay on the ball are now watched from behind it, with the distance running up above it */
+    if(!kind&&!flight.orbit&&(DBG.aerial||(hrCamLast!=='aerial'&&Math.random()<.22))){flight.aerial=true;flight.trailCam=false;}hrCamLast=flight.aerial?'aerial':''; /* THE BLIMP SHOT: now and then, once it is over the wall, the homer is seen from high above the whole park */
     flight.noSb=hrShowLast==='board'&&Math.random()<.92;flight.noEye=hrShowLast==='eye'&&Math.random()<.92; /* the scoreboard light-show almost never comes up on two homers running: the second one just sails by */ // some no-doubters are watched from right behind the ball
    
     lasWant=!!(kind&&(DBG.laser||Math.random()<.45)); // a no-doubter: now and then the lasers come on, but never before the ball has actually cleared the wall
@@ -3140,7 +3153,7 @@ function finishPlay(){revOff();
   badge('hit');if(S.streak>=4)badge('heater');if(false)setTimeout(()=>{const e=$('shout');if(S.state==='result'||S.state==='flight'){e.textContent='ON A HEATER!';e.style.left='50%';e.style.top=(MOB?'30%':'24%');e.classList.remove('b','go');void e.offsetWidth;e.classList.add('go');}},700);
   S.hits++;S.streak++;S.bestStreak=Math.max(S.bestStreak,S.streak);if(!f.tb)S.juice=Math.min(1,S.juice+(pl.type==='hr'?.5:.25));else if(pl.type==='hr'&&!S.over)S.juice=Math.min(1,S.juice+.25); /* a homer on a Juice swing gives one bar back */ // every hit is worth one quarter; // a Juice hit doesn't refill the bar it just spent
   if(pl.type==='hr'){
-    {const ft0=Math.round(pl.dist*3.281);badge('hr');if(ft0>=450)badge('hr450');if(ft0>=500)badge('hr500');if(f.od)badge('odhr');if(f.jp)badge('juicehr');if(f.pod)badge('duel');if(f.fp)badge('ambush');if(S.bases.filter(Boolean).length===3)badge('slam');
+    {const ft0=Math.round(pl.dist*3.281);badge('hr');if(ft0>=450)badge('hr450');if(ft0>=500)badge('hr500');if(f.od)badge('odhr');if(f.jp)badge('juicehr');if(f.pod){badge('aura');badge('duel');}if(f.fp)badge('ambush');if(S.bases.filter(Boolean).length===3)badge('slam');
       S.b2b=S.lastHRbi===S.bi-1;if(S.b2b)badge('b2b');S.lastHRbi=S.bi;if(S.hrs>=4)badge('five');if(f.sat)badge('sat');else if(f.lamp)badge('lamp');else if(f.rev)badge('rev');else if(f.orbit)badge('earth');else if(f.sbHit)badge('board');else if(f.tr.eyeT)badge('eye');}
     const ft=Math.round(pl.dist*3.281);S.hrs++;S.longest=Math.max(S.longest,ft);const r=advance(4);f.rbi=r;
     // The badge feats double as the call, ONCE EACH: the first time a feat happens its badge name is what goes up. After that (and once every
@@ -3225,13 +3238,13 @@ let odBag=[],odLastK='';function odPick(){if(!odBag.length){odBag=['rev','lamp',
   let r=Math.random()*c.reduce((a,k)=>a+W[k],0),k=c[0];for(const q of c){r-=W[q];if(r<=0){k=q;break;}}odBag.splice(odBag.indexOf(k),1);odLastK=k;return k;}
 // BADGES. Earned once, kept on the device. Each has a name (ballplayer talk), what it takes, and an icon. badge(id) is called from wherever the feat happens.
 const BADGES=[['hit','KNOCK','Get your first hit','🧢'],['hr','WENT YARD','Hit your first home run','💥'],['hr450','TAPE MEASURE','Hit one 450 feet or more','📏'],['hr500','FIVE HUNDRED CLUB','Hit one 500 feet or more','🚀'],
-  ['odhr','OVERDRIVEN','Homer in Overdrive','🔥'],['juicehr','GOT HEEEM!','Homer off a Juice pitch','😂'],['duel','BEAT THE HEAT','Homer while the pitcher is in Overdrive','🥵'],['ambush','AMBUSH','Homer on the first pitch','⚡'],
+  ['odhr','OVERDRIVEN','Homer in Overdrive','🔥'],['juicehr','GOT HEEEM!','Homer off a Juice pitch','😂'],['duel','BEAT THE HEAT','Homer while the pitcher is in Overdrive','🥵'],['aura','MAX AURA','Take a pitcher deep while he is in Overdrive','✨'],['ambush','AMBUSH','Homer on the first pitch','⚡'],
   ['slam','GRAND SALAMI','Hit a grand slam','🍖'],['b2b','BACK TO BACK','Homers in consecutive at-bats','👯'],['five','DERBY NIGHT','Five homers in one game','🎆'],['heater','ON A HEATER','Five hits in a row','♨️'],
   ['rev','IN ORBIT','Put one into orbit round the Moon','🌕'],['earth','NEXT STOP: EARTH','Hit one clean off the Moon','🌍'],['sat','SPACE JUNK','Take out the satellite','🛰️'],['lamp','LIGHTS OUT','Smash a light tower','💡'],['board','OFF THE SCOREBOARD','Homer off the scoreboard','📺'],['eye','OFF THE BATTER\'S EYE','Homer off the batter\'s eye','👁️'],
   ['send','WHEELS','Win a showdown at the bag','👟'],['jump','PERFECT JUMP','Stop the needle on gold','🥇'],['brawl','LAST MAN STANDING','Win a brawl','🥊'],['wore','WORE IT','Get hit by a pitch','🩹'],
   ['walkoff','WALK-OFF','Win it in your last at-bat','🏃'],['win','IN THE WIN COLUMN','Win a game','🏆'],['ten','DOUBLE DIGITS','Score ten runs in a game','🔟']];
 let bdgGot={};try{bdgGot=JSON.parse(localStorage.getItem('mm_badges3')||'{}')||{};}catch(e){}
-let hrShowLast='';
+let duelTag=false,hrShowLast='',hrCamLast='';
 const bdgQ=[];let bdgBusy=0,bdgCur=null,bdgCurEnd=0,popUntil=0;
 let callShown={};try{callShown=JSON.parse(localStorage.getItem('mm_calls')||'{}')||{};}catch(e){}
 function callOnce(L){for(const [ok,id,txt] of L)if(ok&&!callShown[id]){callShown[id]=1;try{localStorage.setItem('mm_calls',JSON.stringify(callShown));}catch(e){}return txt;}return '';} /* the first applicable feat whose call has never been shown, or nothing */
@@ -4297,7 +4310,7 @@ function step(dt){
   else if(st==='hbprun'&&el>=HBR)hbpRunEnd();
   else if(st==='pdef'&&el>=PDEF){toReady(PACE.newBatter);}
   else if(st==='pchange'&&S.pcW&&!S.pcI&&el>=S.pcW){pcIntro();}
-  else if(st==='pod'&&el>=POD){toReady(1.3);}
+  else if(st==='pod'&&el>=POD){$('pop').className='';toReady(1.3);} /* the reveal's callout goes with the close-up: it never hangs over the batter afterwards */
   else if(st==='pchange'&&el>=PCH+(S.pcW||0)){S.podPending=!!S.pOver; /* a new arm who came in hot is revealed like any other: once the hitter is set in the box */toReady(PACE.newBatter);}
   else if(st==='trot'&&el>=TROT.dur){endTrot();if(S.inning>3)endGame();else toReady(PACE.newBatter);}
   else if(st==='celebrate'&&el>=readyDur){
@@ -4419,6 +4432,7 @@ function updateCamera(rdt){
   if(!DBG.cam)applyCam();
   if(S.state==='flight'&&flight&&!flight.done&&now-flight.t0>.02)camMode='chase';
   if(DBG.cam){camPos.copy(CAM_HOME);camLook.copy(CAM_LOOK);}
+  else if(flight&&flight.aerial&&!flight.done&&flight.clr){if(!flight.aerT)flight.aerT=now;const e=now-flight.aerT,a=.55+e*.16;camPos.set(Math.sin(a)*230,150+e*7,-62+Math.cos(a)*230);camLook.set(ball.position.x*.3,12,-62+(ball.position.z+62)*.3);camera.position.lerp(camPos,e<.08?1:.3);} /* a slow sweep high over the stadium, the ball a streak below */
   else if(flight&&flight.trailCam&&!flight.done&&now-flight.t0>.25&&!(flight.tr.eyeT&&now-flight.t0>flight.tr.eyeT-.25)){const tr=flight.tr, // (the chase camera lets go just before a ball hits the batter's eye, so the carom and the short circuit are watched from the field)
    i=Math.min(tr.pts.length-1,Math.floor((now-flight.t0)*120)),q=tr.pts[Math.min(tr.pts.length-1,i+6)],p0=tr.pts[i];
     _a.set(q.x-p0.x,q.y-p0.y,q.z-p0.z);if(_a.lengthSq()<1e-6)_a.set(0,0,-1);_a.normalize(); // riding just behind and above the ball, looking where it is going
@@ -4548,7 +4562,7 @@ let qteTouch=false;
 $('shbtn').addEventListener('click',()=>{SHQ=!SHQ;if(SHQ&&!rim.castShadow)rim.castShadow=true;try{localStorage.setItem('mm_shadows',SHQ?'1':'0');}catch(e){}shApply();});
 shApply();
 resize();hud();
-const DBG={dive:'',hbp:false,pcut:false,fl:'',rob:false,pc:false,staunt:false,pod:false,trail:false,orbit:false,sat:false,drill:false,brawl:false,qte:false,mash:false,slide:false,pn:'',laser:false,lamp:false,mw:false,rev:false,stop:false,pdef:false,dbl:false,cam:false,admire:'',trip:false,fist:false,pop:false,loser:false}; // test hook: pin the camera to CAM_HOME/CAM_LOOK
+const DBG={dive:'',hbp:false,pcut:false,fl:'',rob:false,pc:false,staunt:false,pod:false,trail:false,orbit:false,sat:false,drill:false,brawl:false,qte:false,mash:false,slide:false,pn:'',laser:false,lamp:false,mw:false,rev:false,stop:false,aerial:false,pdef:false,dbl:false,cam:false,admire:'',trip:false,fist:false,pop:false,loser:false}; // test hook: pin the camera to CAM_HOME/CAM_LOOK
 window.__ret=()=>reticle.position;window.__jt=juiceTap;window.__pop=pop;window.__bdg=id=>{delete bdgGot[id];if(S.bdgGame)delete S.bdgGame[id];badge(id);pop('GONE!','512 FT · +1 RUN','hot',true);};window.__lu=LINEUP;window.__bp=k=>BULLPEN[k];window.__mm={pitcherModel,crowdFx,setE:v=>{crowdE=v;crowdShow=v;},GLOVE,renderer,scene,LODM,camera,zapStart,acState:()=>AC?(zoneLP?"lp="+Math.round(zoneLP.frequency.value)+" ":"")+AC.state+" t="+AC.currentTime.toFixed(1)+" real="+crowdReal+" roar="+(roarG?roarG.gain.value.toFixed(2)+(roarTop?"T":""):"off")+" bed="+crowdGain.gain.value.toFixed(2):"none",roar,roarOff,boo,cheer,crowdRise,crowdDrop,S,aim,MX,DBG,landRingOn:()=>landRing.visible,hud,tutAnim,draw:()=>draw(),endGame,TROT,SFX,RUN,ballPos:()=>ball.position,ballVisible:()=>ball.visible,fielders,toReady,CAM_HOME,CAM_LOOK,now:()=>now,simulate,judge,get pitch(){return pitch;},get flight(){return flight;},lastSwing:()=>{const t=swing&&swing.type;swing=null;return t;},lastSwingTurbo:()=>!!(swing&&swing.turbo),doSwing,newGame,V3,
   sim:(dt)=>{hitstop=0;now+=dt;step(dt);},
   step:(n,dt=1/60)=>{for(let i=0;i<n;i++){if(hitstop>0)hitstop=0;now+=dt;step(dt);}updateCamera(dt);draw();}};
