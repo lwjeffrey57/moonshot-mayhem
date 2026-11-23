@@ -28,6 +28,22 @@ Recordings to find or make (the game currently fakes most of these by reshaping 
 - Electrical zap and power-down hum for the short circuit; an Overdrive activation sting.
 - More organ riffs and a chant or two.
 
+## Home-run show (the soul of the game)
+North star for these: the over-the-top screen animations a bowling alley plays after a strike. Loud, silly, instantly readable, a
+different one each time, and a reason to want the next one. Reserved for no-doubters and Overdrive homers so they stay a reward.
+- Built so far: power surge / short circuit, ball leaves orbit, satellite knocked out, laser show, walk-off.
+- Ideas to pick from:
+  - The scoreboard takes over with a full-screen cartoon: a ball smashing through the glass, a rocket launching, an alien abducting
+    the outfielder, a slot machine landing on three baseballs.
+  - A UFO drifts over the park and beams the ball up.
+  - The Earth in the sky gets a ring of fireworks, or the ball visibly lands on it with a tiny puff.
+  - The crater behind the wall erupts like a geyser; a moon buggy does a victory lap on the warning track.
+  - The crowd does a card stunt that spells the hitter's name or number.
+  - The mascot (to be designed) rides the rocket, or the rocket actually launches.
+  - Low-gravity confetti that falls in slow motion across the whole field.
+  - A giant foam-finger blimp, a marching band of astronauts, a disco-ball moon.
+- Rules of thumb: under four seconds, skippable, never the same one twice in a row, and each one gets its own sound.
+
 ## Modes
 - Home Run Derby (reuses everything; best value).
 - Easy mode and exhibition (today's game plus a difficulty dial).
