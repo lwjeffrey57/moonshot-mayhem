@@ -814,7 +814,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 445</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 447</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <button class="tag wkopt sens" id="sens1" type="button"></button>
@@ -2646,7 +2646,7 @@ function gameRating(){const G=S.goal,pts=S.runs*10+S.hits*4+S.hrs*8+(S.longest>=
   const T=[[0,'D','BENCH WARMER'],[20,'C','ROOKIE'],[45,'B','EVERYDAY STARTER'],[75,'A','ALL-STAR'],[110,'S','MOONSHOT LEGEND']];let i=0;T.forEach((t,j)=>{if(pts>=t[0])i=j;});
   return {pts,stars:i+1,grade:T[i][1],title:T[i][2],next:T[i+1]?T[i+1][0]-pts:0,nextTitle:T[i+1]?T[i+1][2]:''};}
 function newGame(){LINEUP.forEach(b=>{if(b.base)Object.assign(b,b.base);b.hb=0;}); /* stat changes from getting hit last only for the game */gamesPlayed++;try{localStorage.setItem('mm_games',gamesPlayed);}catch(e){}
-  Object.assign(S,{inning:1,outs:0,balls:0,strikes:0,runs:0,bases:[0,0,0],hits:0,hrs:0,longest:0,streak:0,bestStreak:0,juice:.75 /* three bars: a hit in the very first at-bat fills the fourth and unlocks Overdrive */,heat:.2,over:false,stk:false,opp:0,bi:-1,pitches:0,seen:{},kOut:null});S.podN=0;S.podBi=-9;S.goal=null; /* per-game goals are switched off for now: pickGoal() is still here to bring them back */S.ks=0;S.d2=0;S.cardBi=-1;S.pChanges=0;S.pRuns0=0;S.pc3=false;S.pcPending=false;S.lastHRbi=-9;S.pStart=gamesPlayed%BULLPEN.length;S.pName=BULLPEN[S.pStart];setTimeout(pitcherModel,0); /* a different starter each game, so left-handers start some of them */$('pcap').textContent='PITCHER';S.sTaunt=null;S.stLast=false;jPend=false;S.orbN=0;S.odUses=0;S.brawled=false;S.qteN=0;S.goK=null;S.retalBi=-9;S.forceHbpBi=-9;S.walkoff=false;S.duel=false;$('hud').classList.remove('duel');S.pdLast=false;S.pOver=false;S.podPending=false;S.jSaid=false;S.overOn=false;S.spSeen=false;lastWalk='';
+  Object.assign(S,{inning:1,outs:0,balls:0,strikes:0,runs:0,bases:[0,0,0],hits:0,hrs:0,longest:0,streak:0,bestStreak:0,juice:.75 /* three bars: a hit in the very first at-bat fills the fourth and unlocks Overdrive */,heat:.2,over:false,stk:false,opp:0,bi:-1,pitches:0,seen:{},kOut:null});S.podN=0;S.podBi=-9;S.goal=null; /* per-game goals are switched off for now: pickGoal() is still here to bring them back */S.ks=0;S.d2=0;S.cardBi=-1;S.pChanges=0;S.pRuns0=0;S.pc3=false;S.pcPending=false;S.lastHRbi=-9;S.bdgGame={};S.pStart=gamesPlayed%BULLPEN.length;S.pName=BULLPEN[S.pStart];setTimeout(pitcherModel,0); /* a different starter each game, so left-handers start some of them */$('pcap').textContent='PITCHER';S.sTaunt=null;S.stLast=false;jPend=false;S.orbN=0;S.odUses=0;S.brawled=false;S.qteN=0;S.goK=null;S.retalBi=-9;S.forceHbpBi=-9;S.walkoff=false;S.duel=false;$('hud').classList.remove('duel');S.pdLast=false;S.pOver=false;S.podPending=false;S.jSaid=false;S.overOn=false;S.spSeen=false;lastWalk='';
   $('title').hidden=true;$('over').hidden=true;$('pausebtn').hidden=false;$('mutebtn').hidden=false;setBatter();renderRep();scoreboard('PLAY BALL','INNING 1');S.opp=0;toReady(2);pop('PLAY BALL!','','logo');hud();SND.playball();cheer(.14,1.5);}
 
 // ───────────────────────── pitching
@@ -3153,10 +3153,13 @@ let hrShowLast='';
 const bdgQ=[];let bdgBusy=0,bdgCur=null,bdgCurEnd=0,popUntil=0;
 let callShown={};try{callShown=JSON.parse(localStorage.getItem('mm_calls')||'{}')||{};}catch(e){}
 function callOnce(L){for(const [ok,id,txt] of L)if(ok&&!callShown[id]){callShown[id]=1;try{localStorage.setItem('mm_calls',JSON.stringify(callShown));}catch(e){}return txt;}return '';} /* the first applicable feat whose call has never been shown, or nothing */
-function badge(id){if(bdgGot[id])return;const B=BADGES.find(b=>b[0]===id);if(!B)return;bdgGot[id]=1;try{localStorage.setItem('mm_badges3',JSON.stringify(bdgGot));}catch(e){}const q=B.slice();q.tq=performance.now();bdgQ.push(q);bdgLabel();}
+// A badge is UNLOCKED once, for good. But its plate is also the game's way of calling the feat, so it comes up again the first time that
+// feat happens in each new game (marked BADGE rather than BADGE UNLOCKED). After that, in the same game, the ordinary callouts take over.
+function badge(id){const B=BADGES.find(b=>b[0]===id);if(!B)return;const G=S.bdgGame||(S.bdgGame={});if(G[id])return;G[id]=1;const isNew=!bdgGot[id];if(!isNew&&id==='hit')return; /* a first hit is only worth a plate the first time ever */
+  if(isNew){bdgGot[id]=1;try{localStorage.setItem('mm_badges3',JSON.stringify(bdgGot));}catch(e){}}const q=B.slice();q.tq=performance.now();q.isNew=isNew;bdgQ.push(q);bdgLabel();}
 function bdgLabel(){const e=$('bdgbtn');if(e)e.textContent='Badges: '+BADGES.filter(b=>bdgGot[b[0]]).length+' / '+BADGES.length;}
 setInterval(()=>{if(!bdgQ.length||performance.now()<bdgBusy||S.state==='title')return; /* (plates DO show during the orbit shot: that is exactly when IN ORBIT should drop in) */bdgShow(bdgQ.shift(),false);},250);
-function bdgShow(B,lead){const e=$('bdg');bdgCur=B;bdgCurEnd=performance.now()+3000;e.querySelector('i').textContent=B[3];e.querySelector('b').textContent=B[1];e.querySelector('span').textContent=B[2];
+function bdgShow(B,lead){const e=$('bdg');e.querySelector('em').textContent=B.isNew===false?'BADGE':'BADGE UNLOCKED';bdgCur=B;bdgCurEnd=performance.now()+3000;e.querySelector('i').textContent=B[3];e.querySelector('b').textContent=B[1];e.querySelector('span').textContent=B[2];
   e.classList.remove('go','lead');void e.offsetWidth;e.classList.add('go');if(lead)e.classList.add('lead');bdgBusy=performance.now()+3300;popUntil=Math.max(popUntil,bdgBusy);buzz([20,40,20,40,90]);[660,880,1100,1320].forEach((f,i)=>tone('triangle',f,f*1.02,.12,.4,i*.07));}
 function bdgOpen(){let e=$('bdgs');if(!e){e=document.createElement('div');e.id='bdgs';e.innerHTML='<h2>BADGES</h2><p></p><div id="bdgl"></div><button class="cta alt" type="button">BACK</button>';document.body.appendChild(e);e.addEventListener('click',ev=>{if(ev.target===e||ev.target.tagName==='BUTTON')e.hidden=true;});}
   e.querySelector('p').textContent=BADGES.filter(b=>bdgGot[b[0]]).length+' OF '+BADGES.length+' EARNED';$('bdgl').innerHTML=BADGES.map(b=>'<div class="'+(bdgGot[b[0]]?'got':'')+'"><i>'+b[3]+'</i><p style="margin:0"><b>'+b[1]+'</b><span>'+b[2]+'</span></p></div>').join('');e.hidden=false;}
@@ -3211,13 +3214,14 @@ function doSwing(type){
   if(turbo&&!od){S.juice=Math.max(0,S.juice-.25);juiceArmed=false;hud();} // every Juice swing costs a full bar, hit or miss
 }
 const ray=new T.Raycaster(),aimCam=new T.PerspectiveCamera();
+let cvRect=null,cvRectT=0;addEventListener('resize',()=>{cvRect=null;});
 function pointerAim(e){
-  const r=canvas.getBoundingClientRect();
+  const tn=performance.now();if(!cvRect||tn-cvRectT>1000){cvRect=canvas.getBoundingClientRect();cvRectT=tn;}const r=cvRect;
   aimCam.fov=camera.userData.baseFov;aimCam.aspect=camera.aspect;aimCam.near=.1;aimCam.far=100;aimCam.position.copy(CAM_HOME);aimCam.lookAt(CAM_LOOK);aimCam.updateProjectionMatrix();aimCam.updateMatrixWorld();
   ray.setFromCamera({x:(e.clientX-r.left)/r.width*2-1,y:-((e.clientY-r.top)/r.height*2-1)},aimCam);
   const o=ray.ray.origin,d=ray.ray.direction,t=-o.z/d.z,g=MOBILE_UI()?1:MSENS[sensI]; /* mouse: the ring travels further than the hand, measured from the middle of the zone, so the corners are a short flick away */
   setAim(o.x+d.x*t*g,.825+(o.y+d.y*t-.825)*g);mouseLast={x:e.clientX,y:e.clientY,t:performance.now()};
-  canvas.style.cursor=g>1&&/^(ready|pitch|swing|walkup)$/.test(S.state)?'none':''; /* the arrow would sit apart from the ring, so it is hidden while hitting */
+  {const cur=g>1&&/^(ready|pitch|swing|walkup)$/.test(S.state)?'none':'';if(cur!==canvas._cur){canvas._cur=cur;canvas.style.cursor=cur;}} /* the arrow would sit apart from the ring, so it is hidden while hitting */
 }
 let mouseLast=null;const MOBILE_UI=()=>document.body.classList.contains('mob'),MSENS=[1,1.2,1.4,1.7,2,2.4],
   mouseKeep=()=>{if(mouseLast&&!MOBILE_UI()&&performance.now()-mouseLast.t<5000)pointerAim({clientX:mouseLast.x,clientY:mouseLast.y});}; /* the ring goes back to where the mouse is, not to the middle, when a new pitch is set up */
@@ -3243,7 +3247,9 @@ canvas.addEventListener('pointermove',e=>{
   if(e.pointerType==='touch'){if('onpointerrawupdate' in window)return; /* already had every sample, the moment it happened */const L=e.getCoalescedEvents?e.getCoalescedEvents():null;if(L&&L.length>1)L.forEach(touchAim);else touchAim(e);}
   else pointerAim(e);});
 // Chrome and Edge can hand over mouse movement the moment it happens rather than once per drawn frame: the ring is then never a frame behind the hand.
-if('onpointerrawupdate' in window)canvas.addEventListener('pointerrawupdate',e=>{if(e.pointerType!=='touch')pointerAim(e);else touchAim(e);});
+// (A gaming mouse reports up to a thousand times a second. Working the aim out on every one of those reports choked the game on computers,
+// so a report now only notes where the mouse is; the aim is worked out from the newest position once per frame, which is just as immediate.)
+let rawMouse=null;if('onpointerrawupdate' in window)canvas.addEventListener('pointerrawupdate',e=>{if(e.pointerType!=='touch'){rawMouse=rawMouse||{};rawMouse.clientX=e.clientX;rawMouse.clientY=e.clientY;rawMouse.d=1;}else touchAim(e);});
 canvas.addEventListener('pointerdown',e=>{audioInit();
   if(e.pointerType==='touch'){TL.lx=TL.ly=TL.vx=TL.vy=0;touchLast={id:e.pointerId,x:e.clientX,y:e.clientY,x0:e.clientX,y0:e.clientY,ts:e.timeStamp};$('apad').classList.add('drag');return;}
   pointerAim(e);doSwing(e.button===2?'contact':'power');e.preventDefault();}); // on a computer: left click is the POWER swing, right click is CONTACT
@@ -4297,6 +4303,7 @@ function step(dt){
   stickHint();sbTick();zapTick();crowdTick(dt);shoutTick();poleTick();satTick();lampTick(dt);laserTick(dt);organTick();vendorTick();roarTick();heartTick();zoneTick();
   if(flight&&flight.play.type==='hr'&&!flight.sbHit&&!flight.noSb&&!flight.orbit&&ball.visible&&Math.abs(ball.position.x-SBX)<24&&ball.position.y>30&&ball.position.y<48&&ball.position.z<-(fenceR(0)+15)&&ball.position.z>-(fenceR(0)+24)){flight.sbHit=true;badge('board');pop('OFF THE SCOREBOARD!','','hot');zapStart(ball.position,true);burst(fxL,ball.position,26,9,.7,[.6,.85,1],7,1);}
   if(!!MX.lefty!==lhCls){lhCls=!!MX.lefty;$('hud').classList.toggle('lh',lhCls);}
+  if(rawMouse&&rawMouse.d){rawMouse.d=0;pointerAim(rawMouse);}
   touchSettle();reticle.position.set(aim.x,aim.y,0);
   {const ez=(easyAB()?1.3:1)*DIFF[diffI].ring;if(!!tb!==retTb){retTb=!!tb;retT=now; /* the rings answer the press at once: no wait for the flash to clear */retOd=!!(tb&&S.over&&S.overOn);} /* Overdrive lights the whole screen for a moment as it comes on: the rings wait for that to clear, then swell where you can see it */
    // Juice and Overdrive make both rings bigger, and they visibly swell into it (overshoot, then settle) so nobody misses that it happened
@@ -4460,7 +4467,7 @@ $('shbtn').addEventListener('click',()=>{SHQ=!SHQ;if(SHQ&&!rim.castShadow)rim.ca
 shApply();
 resize();hud();
 const DBG={dive:'',hbp:false,pcut:false,fl:'',rob:false,pc:false,staunt:false,pod:false,trail:false,orbit:false,sat:false,drill:false,brawl:false,qte:false,mash:false,slide:false,pn:'',laser:false,lamp:false,mw:false,rev:false,stop:false,pdef:false,dbl:false,cam:false,admire:'',trip:false,fist:false,pop:false,loser:false}; // test hook: pin the camera to CAM_HOME/CAM_LOOK
-window.__ret=()=>reticle.position;window.__jt=juiceTap;window.__bdg=id=>{delete bdgGot[id];badge(id);pop('GONE!','512 FT · +1 RUN','hot',true);};window.__lu=LINEUP;window.__bp=k=>BULLPEN[k];window.__mm={pitcherModel,crowdFx,setE:v=>{crowdE=v;crowdShow=v;},GLOVE,renderer,scene,LODM,camera,zapStart,acState:()=>AC?(zoneLP?"lp="+Math.round(zoneLP.frequency.value)+" ":"")+AC.state+" t="+AC.currentTime.toFixed(1)+" real="+crowdReal+" roar="+(roarG?roarG.gain.value.toFixed(2)+(roarTop?"T":""):"off")+" bed="+crowdGain.gain.value.toFixed(2):"none",roar,roarOff,boo,cheer,crowdRise,crowdDrop,S,aim,MX,DBG,landRingOn:()=>landRing.visible,hud,tutAnim,draw:()=>draw(),endGame,TROT,SFX,RUN,ballPos:()=>ball.position,ballVisible:()=>ball.visible,fielders,toReady,CAM_HOME,CAM_LOOK,now:()=>now,simulate,judge,get pitch(){return pitch;},get flight(){return flight;},lastSwing:()=>{const t=swing&&swing.type;swing=null;return t;},lastSwingTurbo:()=>!!(swing&&swing.turbo),doSwing,newGame,V3,
+window.__ret=()=>reticle.position;window.__jt=juiceTap;window.__bdg=id=>{delete bdgGot[id];if(S.bdgGame)delete S.bdgGame[id];badge(id);pop('GONE!','512 FT · +1 RUN','hot',true);};window.__lu=LINEUP;window.__bp=k=>BULLPEN[k];window.__mm={pitcherModel,crowdFx,setE:v=>{crowdE=v;crowdShow=v;},GLOVE,renderer,scene,LODM,camera,zapStart,acState:()=>AC?(zoneLP?"lp="+Math.round(zoneLP.frequency.value)+" ":"")+AC.state+" t="+AC.currentTime.toFixed(1)+" real="+crowdReal+" roar="+(roarG?roarG.gain.value.toFixed(2)+(roarTop?"T":""):"off")+" bed="+crowdGain.gain.value.toFixed(2):"none",roar,roarOff,boo,cheer,crowdRise,crowdDrop,S,aim,MX,DBG,landRingOn:()=>landRing.visible,hud,tutAnim,draw:()=>draw(),endGame,TROT,SFX,RUN,ballPos:()=>ball.position,ballVisible:()=>ball.visible,fielders,toReady,CAM_HOME,CAM_LOOK,now:()=>now,simulate,judge,get pitch(){return pitch;},get flight(){return flight;},lastSwing:()=>{const t=swing&&swing.type;swing=null;return t;},lastSwingTurbo:()=>!!(swing&&swing.turbo),doSwing,newGame,V3,
   sim:(dt)=>{hitstop=0;now+=dt;step(dt);},
   step:(n,dt=1/60)=>{for(let i=0;i<n;i++){if(hitstop>0)hitstop=0;now+=dt;step(dt);}updateCamera(dt);draw();}};
 if(!window.__mmManual)requestAnimationFrame(frame);
