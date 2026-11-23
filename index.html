@@ -1111,9 +1111,11 @@ gl_FragColor=vec4(col,1.0);
   const cm=basic({map:crowd});EYE.cm=cm;EYE.crowd=crowd;
   // the upper deck and its roof are open from left-centre (25 degrees) round to right-centre (15 degrees): the Earth hangs over the scoreboard,
   // and the rocket on its pad and the crater rim stand in the opening to its left. The deck is kept in right field and down both lines.
-  const GAP0=8,GAP1=24,split=a=>[a.slice(0,GAP0+1),a.slice(GAP1)];
+  // UPPER: the outfield's upper deck and its roof. Switched off: the outfield is one low bowl, so the crater rim, the rocket, the
+  // Earth and the stars stand clear above it and the place reads as the Moon at a glance. (The decks down the foul lines stay.)
+  const UPPER=false,GAP0=8,GAP1=24,split=a=>[a.slice(0,GAP0+1),a.slice(GAP1)];
   scene.add(new T.Mesh(ribbon(fb,s1a,1),basic({color:0x14183a}))); // the top of the wall runs straight into the first row: no gap for a ball to drop down
-  scene.add(new T.Mesh(ribbon(s1a,s1b,1),cm));split(s2a).forEach((a,k)=>scene.add(new T.Mesh(ribbon(a,split(s2b)[k],1),cm)));
+  scene.add(new T.Mesh(ribbon(s1a,s1b,1),cm));if(UPPER)split(s2a).forEach((a,k)=>scene.add(new T.Mesh(ribbon(a,split(s2b)[k],1),cm)));
   // luxury boxes between the decks
   const boxes=tex(256,32,(g,w,h)=>{g.fillStyle='#14122c';g.fillRect(0,0,w,h);for(let x=2;x<w;x+=16){g.fillStyle=Math.random()<.75?'#ffd98a':'#3a4a7a';g.fillRect(x,7,12,15);g.fillStyle='rgba(0,0,0,.3)';g.fillRect(x,16,12,6);}g.fillStyle='#ff4d2e';g.fillRect(0,26,w,6);g.fillStyle='#e8e8f0';g.fillRect(0,0,w,3);});
   boxes.wrapS=T.RepeatWrapping;boxes.repeat.set(1/40,1);
@@ -1121,14 +1123,20 @@ gl_FragColor=vec4(col,1.0);
   // roof over the upper deck: back wall, canopy, white fascia, columns, lights, flags
   const ra=[],rb=[],rc=[],bw=[];
   for(let i=0;i<=N;i++){const phi=lerp(-PI/4,PI/4,i/N),r=fenceR(phi);bw.push(pol(r+54,phi,48));ra.push(pol(r+63,phi,57));rb.push(pol(r+47,phi,60));rc.push(pol(r+47,phi,58.4));
+    if(!UPPER){ // with no upper deck, the rim of the bowl carries the lights and the flags
+      if(i%2===0){const sp=new T.Sprite(new T.SpriteMaterial({map:glowTex,color:0xfff2c8,blending:T.AdditiveBlending,depthWrite:false,transparent:true,opacity:.8,fog:false}));sp.position.copy(pol(r+30.5,phi,33.2));sp.scale.set(7,7,1);scene.add(sp);}
+      if(i%4===2){const fp=pol(r+31,phi,36.5);const pole=new T.Mesh(new T.BoxGeometry(.3,8,.3),new T.MeshBasicMaterial({color:0xdddddd}));pole.position.copy(fp);scene.add(pole);
+        const fl=new T.Mesh(new T.PlaneGeometry(6,3.4),basic({color:[0xff4d2e,0xffe53b,0x3ad6ff,0xffffff][(i/4|0)%4]}));fl.position.copy(fp).add(new V3(3.2,2.2,0));scene.add(fl);}
+      continue;}
     if(i>GAP0&&i<GAP1)continue;
     if(i%3===0){const c=new T.Mesh(new T.BoxGeometry(.8,13,.8),new T.MeshBasicMaterial({color:0x2c2a4a}));c.position.copy(pol(r+50,phi,52));scene.add(c);}
     if(i%2===0){const sp=new T.Sprite(new T.SpriteMaterial({map:glowTex,color:0xfff2c8,blending:T.AdditiveBlending,depthWrite:false,transparent:true,opacity:.85,fog:false}));sp.position.copy(pol(r+48,phi,57.6));sp.scale.set(9,9,1);scene.add(sp);}
     if(i%6===3){const fp=pol(r+48,phi,64);const pole=new T.Mesh(new T.BoxGeometry(.3,8,.3),new T.MeshBasicMaterial({color:0xdddddd}));pole.position.copy(fp);scene.add(pole);
       const fl=new T.Mesh(new T.PlaneGeometry(6,3.4),basic({color:[0xff4d2e,0xffe53b,0x3ad6ff,0xffffff][(i/6|0)%4]}));fl.position.copy(fp).add(new V3(3.2,2.2,0));scene.add(fl);}}
-  [0,1].forEach(k=>{const B=split(bw)[k],A=split(ra)[k],Rb=split(rb)[k],Rc=split(rc)[k];
+  if(UPPER)[0,1].forEach(k=>{const B=split(bw)[k],A=split(ra)[k],Rb=split(rb)[k],Rc=split(rc)[k];
     scene.add(new T.Mesh(ribbon(B,A),basic({color:0x1a1838})));scene.add(new T.Mesh(ribbon(A,Rb),basic({color:0x2a2848})));scene.add(new T.Mesh(ribbon(Rc,Rb),basic({color:0xe8e8f0})));});
-  [GAP0,GAP1].forEach(i=>{ // the cut ends of the deck: a dark end wall with a magenta light bar down its edge
+  if(!UPPER){const back=[],top=[];for(let i=0;i<=N;i++){const phi=lerp(-PI/4,PI/4,i/N),r=fenceR(phi);top.push(pol(r+30,phi,32));back.push(pol(r+34,phi,0));}scene.add(new T.Mesh(ribbon(fcb,back.map((b,i)=>pol(fenceR(lerp(-PI/4,PI/4,i/N))+34,lerp(-PI/4,PI/4,i/N),32))),basic({color:0x1a1838})));} // a flat cap along the top of the bowl
+  if(UPPER)[GAP0,GAP1].forEach(i=>{ // the cut ends of the deck: a dark end wall with a magenta light bar down its edge
     scene.add(new T.Mesh(ribbon([s2a[i],s2b[i]],[rc[i],ra[i]]),basic({color:0x15132a})));
     const bar=new T.Mesh(new T.BoxGeometry(.9,27,.9),new T.MeshBasicMaterial({color:0xff3ad8,fog:false}));bar.position.copy(s2a[i]).lerp(rc[i],.5);scene.add(bar);});
   // batter's eye in dead centre
@@ -1616,7 +1624,7 @@ const SH={zone:null,rings:[],zon:false,W:0,H:0};
 let crowdE=0,crowdShow=0;const FLASH={pts:null,n:64,life:new Float32Array(64)};
 function standPt(o){const k=Math.random();
   if(k<.42){const phi=rand(-PI/4,PI/4),u=Math.random(),r=fenceR(phi);return o.copy(pol(r+2+32*u,phi,WALL_H+1.2+21*u));}
-  if(k<.6){let phi=rand(-PI/4,PI/4);if(phi>-25*DEG&&phi<15*DEG)phi=phi<-5*DEG?rand(-45,-26)*DEG:rand(16,45)*DEG;const u=Math.random(),r=fenceR(phi);return o.copy(pol(r+31+22*u,phi,33+15*u));}
+  if(k<.6){const phi=rand(-PI/4,PI/4),u=Math.random(),r=fenceR(phi);return o.copy(pol(r+2+32*u,phi,WALL_H+1.2+21*u));} // (the outfield upper deck is gone: these flashes go to the lower bowl too)
   const sd=Math.random()<.5?1:-1,t=Math.random(),u=Math.random(),ax=lerp(70,30,t),az=lerp(-70,-4,t);return o.set(sd*(ax+.866*(2+31*u)),2.6+20.5*u,az+.5*(2+31*u));}
 function crowdFx(dt){
   if(REDUCE||!EYE.cm)return;
@@ -1835,8 +1843,8 @@ function lampTick(dt){LAMP.k=clamp(LAMP.k+(LAMP.on&&now-LAMP.t>.7?dt*2.2:LAMP.on
 const LAS={beams:[],t:-99,k:0,on:false};
 function laserBuild(){const cols=[0xff2bd6,0x2bf0ff,0x5bff3a,0xffe53b,0xff2bd6,0x2bf0ff],geo=new T.CylinderGeometry(.3,.3,520,4,1,true);geo.rotateX(PI/2);geo.translate(0,0,260); /* pencil-thin and the same width end to end: a laser, not a spotlight */
   LAS.dim=new T.Mesh(new T.PlaneGeometry(2,2),new T.MeshBasicMaterial({color:0x02030c,transparent:true,opacity:0,depthTest:false,depthWrite:false,fog:false}));LAS.dim.renderOrder=3.5;LAS.dim.frustumCulled=false;LAS.dim.visible=false;scene.add(LAS.dim); // a dark veil drawn over the park but under the beams: the house lights go down, the lasers do not
-  for(let i=0;i<12;i++){const d=(-62+i*11.3)*DEG,r=fenceR(d)+52,m=new T.Mesh(geo,new T.MeshBasicMaterial({color:cols[i%6],transparent:true,opacity:0,blending:T.AdditiveBlending,depthWrite:false,fog:false,side:T.DoubleSide}));
-    m.position.set(r*Math.sin(d),50,-r*Math.cos(d));m.visible=false;m.renderOrder=4;scene.add(m);LAS.beams.push(m);}}
+  for(let i=0;i<12;i++){const d=(-62+i*11.3)*DEG,r=fenceR(d)+(Math.abs(d)<PI/4?31:52),m=new T.Mesh(geo,new T.MeshBasicMaterial({color:cols[i%6],transparent:true,opacity:0,blending:T.AdditiveBlending,depthWrite:false,fog:false,side:T.DoubleSide}));
+    m.position.set(r*Math.sin(d),Math.abs(d)<PI/4?34:50,-r*Math.cos(d));m.visible=false;m.renderOrder=4;scene.add(m);LAS.beams.push(m);}}
 function laserStart(){if(!LAS.beams.length)laserBuild();LAS.t=now;LAS.on=true;SND.zap();}
 function laserTick(dt){if(!LAS.beams.length)return;
   const want=LAS.on&&(now-LAS.t<5.5||S.state==='trot'||S.state==='celebrate'||(S.state==='flight'&&flight&&flight.play.type==='hr'));if(LAS.on&&!want&&now-LAS.t>1)LAS.on=false;
@@ -2543,9 +2551,9 @@ function simulate(p0,v0,spin,opt){spin=spin||{side:0,lift:0};opt=opt||{};const G
       if(d>1.3&&d<9&&p.y<hy){const nx=p.x/r,nz=p.z/r,n3x=-.897*nx,n3y=.443,n3z=-.897*nz,vn=v.x*n3x+v.y*n3y+v.z*n3z;
         if(vn<0){if(!eyeT){eyeT=t;const q=p.clone(),w=v.clone();let n=0;while(q.y>0&&n++<2000){const sp2=w.length();w.multiplyScalar(1-DRAG*sp2*dt);w.y-=G*dt;q.addScaledVector(w,dt);}dist=Math.hypot(q.x,q.z);} // distance is where it would have come down
           v.x-=1.62*vn*n3x;v.y-=1.62*vn*n3y;v.z-=1.62*vn*n3z;v.multiplyScalar(.8);p.y=hy+.03;}}} // comes off the panel up and back toward the field
-    if(hr||grd){const d=r-fr,deck=phi<-25*DEG||phi>15*DEG; // it comes down among the fans: stopped at head height on the lower deck, or by the upper deck and its facade where there is one
-      const sy=d>1.5?WALL_H+.3+(d-1.5)*.667+.9:WALL_H+.2*Math.max(0,d)/1.5+.25; // the first metre and a half behind the wall is the ledge in front of row one: it stops there too
-      if(p.y<=sy||d>58||(deck&&d>=30&&p.y>25&&p.y<=32+(d-30)*.667+.9)){pts.push({x:p.x,y:p.y,z:p.z,t});seatT=t;break;}}
+    if(hr||grd){const d=r-fr,deck=false; // it comes down among the fans: stopped at head height on the lower deck, or by the upper deck and its facade where there is one
+      const sy=d>34?0:d>1.5?WALL_H+.3+(d-1.5)*.667+.9:WALL_H+.2*Math.max(0,d)/1.5+.25; // beyond the back row there is nothing: it has left the ballpark and comes down on the Moon // the first metre and a half behind the wall is the ledge in front of row one: it stops there too
+      if(p.y<=sy||d>190||(deck&&d>=30&&p.y>25&&p.y<=32+(d-30)*.667+.9)){pts.push({x:p.x,y:p.y,z:p.z,t});seatT=t;break;}}
     else if(p.y<=0){
       if(!land){land={x:p.x,z:p.z,t};if(Math.abs(p.x)>.216-p.z+LINE_TOL)foul=true;} // fair or foul is settled by where it first lands, measured from the chalked lines
       p.y=0;if(v.y<-1.6){const big=opt.chop&&!nb;nb++;v.y*=big?-.45:-.42;v.x*=big?.84:.8;v.z*=big?.84:.8;
@@ -3869,7 +3877,7 @@ function step(dt){
   }
   // fireworks + crowd camera flashes during a homer
   for(let i=fireworks.length-1;i>=0;i--){const f=fireworks[i];if(now>=f.t){const c=[[1,.3,.25],[1,.9,.3],[.3,.85,1],[.5,1,.5],[1,.5,.9]][(Math.random()*5)|0];burst(fxL,f.p,70,26,1.5,c,7);SND.boom();fireworks.splice(i,1);}}
-  if(S.state==='celebrate'||(flight&&flight.play.type==='hr'&&!flight.done)){for(let i=0;i<3;i++){const phi=rand(-PI/4,PI/4),r=fenceR(phi)+rand(4,56);_p.copy(pol(r,phi,WALL_H+(r-fenceR(phi))*.66+1));_v.set(0,0,0);fxL.emit(_p,_v,.12,1,1,1);}}
+  if(S.state==='celebrate'||(flight&&flight.play.type==='hr'&&!flight.done)){for(let i=0;i<3;i++){const phi=rand(-PI/4,PI/4),r=fenceR(phi)+rand(4,33);_p.copy(pol(r,phi,WALL_H+(r-fenceR(phi))*.66+1));_v.set(0,0,0);fxL.emit(_p,_v,.12,1,1,1);}}
   // shock ring
   if(shock.userData.t!==undefined&&shock.userData.t<.3){shock.userData.t+=dt;const k=shock.userData.t/.3;shock.scale.setScalar(.06+k*shock.userData.s*.9);shock.material.opacity=(1-k)*.9;}else shock.material.opacity=0;
 
