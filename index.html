@@ -1864,7 +1864,7 @@ function stickHint(){
   const live=!S.stk&&!touchLast&&S.inning===1&&S.outs===0&&S.bi===0&&S.balls+S.strikes===0&&(S.state==='ready'||S.state==='windup'||S.state==='pitch');
   if(live!==hintOn){hintOn=live;$('apad').classList.toggle('hint',live);}}
 // Celebrating on second: he shouts, in big letters over his head. Two lines per celebration, the second one about the runs he drove in if any.
-const SHOUT_A=["LET'S GO!!","LET'S GOOO!","YEAH!!","HEATING UP!"],SHOUT_B=['TWO BAGS!','KEEP IT ROLLING!'],SHOUT_H=['SEE YA!','WENT YARD!','BIG FLY!','TATER!','GOT ALL OF IT!','NO DOUBTER!','TOUCH \'EM ALL!','ABSOLUTE TANK!'];
+const SHOUT_A=["LET'S GO!!","LET'S GOOO!","YEAH!!","HEATING UP!","YOU'RE SEEING IT!"],SHOUT_B=['TWO BAGS!','KEEP IT ROLLING!'],SHOUT_H=['SEE YA!','WENT YARD!','BIG FLY!','TATER!','GOT ALL OF IT!','NO DOUBTER!','TOUCH \'EM ALL!','ABSOLUTE TANK!'];
 let shoutI=-1,shoutLast='';const _sh=new V3();
 function shoutTick(){
   const el=$('shout');
