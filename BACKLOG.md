@@ -21,6 +21,7 @@ Recordings to find or make (the game currently fakes most of these by reshaping 
 - A real surprised gasp for hard-hit balls that get caught.
 - Medium cheers for singles and doubles, three or four different ones.
 - Bat cracks in three tiers: weak, solid, crushed.
+- Hit-by-pitch: a real ball-off-the-body thud and a grunt (the current one is synthesised), plus punch and kick impacts for the brawl.
 - Juice pitch sounds, a different one per pitch (the crushed-contact effect, pitched down, is the placeholder for all of them).
 - A pitch-release sound and a catcher's-mitt pop that cut through on a phone speaker.
 - Electrical zap and power-down hum for the short circuit; an Overdrive activation sting.
