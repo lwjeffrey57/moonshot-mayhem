@@ -291,7 +291,24 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
 #pop .s{font-family:var(--display);font-size:clamp(16px,3.2vw,34px);color:var(--chrome);text-shadow:0 3px 0 #000;margin-top:6px;font-variant-numeric:tabular-nums}
 #pop.hot .t{color:var(--heat);text-shadow:0 5px 0 #000,0 0 50px rgba(255,77,46,.8)}
 #pop.cool .t{color:var(--ice);text-shadow:0 5px 0 #000,0 0 40px rgba(58,214,255,.6)}
-#pop.plain .t{color:var(--chrome);text-shadow:0 5px 0 #000}
+#pop.plain .t{color:#fff;text-shadow:0 clamp(4px,.7vw,7px) 0 #05060f}
+/* ── ONE CALLOUT STYLE. Every call is built the same way so it reads instantly over anything: a bright fill, a heavy dark outline that sits
+   OUTSIDE the letters, and a hard drop edge under them. The line beneath a call sits on its own dark plate. Colour says what kind of news it is:
+   yellow = the play, orange = big, ice blue = the other side / cold facts, white = neutral, green/red = good/bad for your ratings. ── */
+#pop .t,#shout{-webkit-text-stroke:clamp(5px,1vw,9px) #05060f;paint-order:stroke fill;letter-spacing:.02em}
+#pop .t{color:#ffe53b;text-shadow:0 clamp(4px,.7vw,7px) 0 #05060f,0 0 34px rgba(255,229,59,.5)}
+#pop.hot .t{color:#ff8a2e;text-shadow:0 clamp(4px,.7vw,7px) 0 #05060f,0 0 38px rgba(255,110,40,.75)}
+#pop.cool .t{color:#7fe6ff;text-shadow:0 clamp(4px,.7vw,7px) 0 #05060f,0 0 34px rgba(58,214,255,.6)}
+#pop .s{display:inline-block;margin-top:9px;padding:4px 14px 3px;font-size:clamp(15px,3.3vw,30px);letter-spacing:.04em;color:#fff;background:rgba(6,7,20,.84);border:2px solid rgba(242,245,255,.28);border-radius:8px;box-shadow:0 3px 0 #000;text-shadow:0 2px 0 #000}
+#pop .s:empty{display:none}#hud.pcut #pop .s{font-size:clamp(13px,2.6vw,22px);margin-top:6px}
+#shout{color:#ffe53b;text-shadow:0 clamp(4px,.6vw,6px) 0 #05060f,0 0 24px rgba(255,229,59,.5)}#shout.b{color:#7fe6ff;text-shadow:0 clamp(4px,.6vw,6px) 0 #05060f,0 0 24px rgba(58,214,255,.6)}
+/* BRAWL: comic-book hits. The word sits on a spiky burst (yours gold, his blue) with a black edge, in the same spot the shouts already use, clear of both men. */
+#hud.brw #bdg{display:none} /* nothing else on the glass during the fight */
+#hud.brw #shout{isolation:isolate;color:#fff;font-size:clamp(30px,8vw,70px);-webkit-text-stroke:clamp(6px,1.1vw,10px) #05060f;text-shadow:0 clamp(4px,.6vw,6px) 0 #05060f;padding:.1em .2em}
+#hud.brw #shout::before,#hud.brw #shout::after{content:'';position:absolute;z-index:-1;inset:-42% -13%;clip-path:polygon(50.0% 1.8%,57.3% 20.2%,73.9% 4.4%,70.0% 27.4%,91.4% 21.4%,80.0% 38.6%,95.2% 44.5%,82.8% 54.0%,92.4% 66.1%,76.8% 68.5%,80.3% 84.2%,64.1% 76.8%,61.8% 97.8%,50.0% 85.2%,38.9% 94.9%,35.5% 77.6%,16.0% 88.4%,20.4% 70.4%,2.5% 68.0%,17.9% 53.9%,-4.4% 43.4%,21.9% 39.4%,5.9% 19.6%,29.0% 26.3%,28.4% 8.9%,42.7% 20.4%);-webkit-clip-path:polygon(50.0% 1.8%,57.3% 20.2%,73.9% 4.4%,70.0% 27.4%,91.4% 21.4%,80.0% 38.6%,95.2% 44.5%,82.8% 54.0%,92.4% 66.1%,76.8% 68.5%,80.3% 84.2%,64.1% 76.8%,61.8% 97.8%,50.0% 85.2%,38.9% 94.9%,35.5% 77.6%,16.0% 88.4%,20.4% 70.4%,2.5% 68.0%,17.9% 53.9%,-4.4% 43.4%,21.9% 39.4%,5.9% 19.6%,29.0% 26.3%,28.4% 8.9%,42.7% 20.4%)}
+#hud.brw #shout::after{background:radial-gradient(ellipse at 50% 50%,#fffbd0 0,#ffe53b 38%,#ff9a1e 72%,#ff4d2e 100%)}
+#hud.brw #shout::before{z-index:-2;inset:-50% -16%;background:#05060f}
+#hud.brw #shout.b::after{background:radial-gradient(ellipse at 50% 50%,#f2fdff 0,#8fe6ff 38%,#3aa8ff 72%,#1e5fe0 100%)}
 /* a new badge as the callout: the same gold oval plate as the badge case, big */
 #pop.bdgp .t,#hud.pcut #pop.bdgp .t{display:inline-block;padding:clamp(8px,1.6vw,14px) clamp(20px,4vw,40px);border-radius:999px;background:linear-gradient(#3a2f0a,#0e0b02);border:clamp(3px,.5vw,5px) solid #ffd23b;box-shadow:0 5px 0 #000,0 0 34px 6px rgba(255,210,59,.6);
   color:#fff;font-size:clamp(24px,6.6vw,60px);line-height:1.05;text-shadow:0 3px 0 #000;-webkit-text-stroke:0;white-space:nowrap;transform:none}
@@ -814,7 +831,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 447</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 448</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <button class="tag wkopt sens" id="sens1" type="button"></button>
@@ -939,13 +956,13 @@ function cardTick(){
   _s0.project(camera);const cw=c.offsetWidth||150,ch=c.offsetHeight||44;
   const x=clamp((_s0.x*.5+.5)*W-cw*.5,4,W-cw-4),y=Math.max(150,(-_s0.y*.5+.5)*H-ch-2);
   c.style.transform='translate('+x.toFixed(0)+'px,'+y.toFixed(0)+'px)';}
-const pcutH=new V3(0,2.3,-18.4);let lhCls=false,retOdC=false,retTb=false,retT=-9,retOd=false,pcutT=-9,pcutOn=false,celOn=false,qsOn=false,hbOn=false,podOn=false,podLv=false,podKs=0,inplayOn=false;
+const pcutH=new V3(0,2.3,-18.4);let brwOn=false,lhCls=false,retOdC=false,retTb=false,retT=-9,retOd=false,pcutT=-9,pcutOn=false,celOn=false,qsOn=false,hbOn=false,podOn=false,podLv=false,podKs=0,inplayOn=false;
 // the pitcher's fire border waits until the hitter is in the box; the batter card goes away once the ball is in play
 function podCls(){const st=S.state,on=pOD()&&!(st==='title'||st==='over'||st==='end'||st==='walkup'||st==='pchange');if(on!==podOn){podOn=on;$('hud').classList.toggle('pod',on);}
   {const np=(S.balls|0)+(S.strikes|0),ks=on&&!(S.over&&S.overOn)?((S.strikes|0)>=2||np>=3?2:np>=1?1:0):0; /* it closes in with every pitch he throws, ball or strike: no waiting him out */if(ks!==podKs){podKs=ks;$('hud').classList.toggle('ks1',ks===1);$('hud').classList.toggle('ks2',ks===2);}}
   {const lv=on&&(st==='ready'||st==='windup'||st==='pitch')&&$('tut').hidden;if(lv!==podLv){podLv=lv;$('hud').classList.toggle('podlive',lv);}}
   const ip=st==='flight'||st==='result'||st==='trot'||st==='celebrate'||st==='celly2';if(ip!==inplayOn){inplayOn=ip;$('hud').classList.toggle('inplay',ip);}
-  const ce=st==='celly2'||st==='trot'||st==='qte'||st==='brawl'||st==='hbprun'||!!(flight&&flight.orb&&!flight.done);if(ce!==celOn){celOn=ce;$('hud').classList.toggle('cel',ce);}
+  const ce=st==='celly2'||st==='trot'||st==='qte'||st==='brawl'||st==='hbprun'||!!(flight&&flight.orb&&!flight.done);if(ce!==celOn){celOn=ce;$('hud').classList.toggle('cel',ce);}if((st==='brawl')!==brwOn){brwOn=st==='brawl';$('hud').classList.toggle('brw',brwOn);}
   if((st==='qte')!==qsOn){qsOn=st==='qte';$('hud').classList.toggle('qs',qsOn);}
   if((st==='hbp')!==hbOn){hbOn=st==='hbp';$('hud').classList.toggle('hbps',hbOn);}}
  // while the camera is close on the pitcher, call-outs drop to a smaller line along the bottom so the words never sit on him
@@ -2480,7 +2497,7 @@ function brawlStart(){S.state='brawl';S.t=now;S.brawled=true;brawlSeen=true;try{
   BRW.b={n:'run',t:now,loop:true};BRW.p={n:'b_stance',t:now,loop:true};
   pop('CHARGING THE MOUND!','','hot',true);roar(1.05,.4);crowdE=1;buzz([40,40,40,40,120]);shake=Math.max(shake,.3*FX);}
 // every call in the brawl sits in the strip of sky above the two heads, never on a body
-function brawlShoutPos(e){_s0.set(0,2.3,BR_Z-.6).project(camera);const H=canvas.clientHeight||innerHeight,y=(-_s0.y*.5+.5)*H;e.style.left='50%';e.style.top=Math.max(MOB?178:110,y-6).toFixed(0)+'px';$('pop').className='';}
+function brawlShoutPos(e){_s0.set(0,2.3,BR_Z-.6).project(camera);const H=canvas.clientHeight||innerHeight,y=(-_s0.y*.5+.5)*H;e.style.left='50%';e.style.top=Math.max(MOB?196:176,y-6).toFixed(0)+'px';$('pop').className='';} /* low enough that the burst behind the word is wholly on screen */
 function brawlTick(el){const B=BRW;
   if(el<B.ch){const k=ease(el/B.ch);B.bx=lerp(B.x0,0,k);B.bz=lerp(B.z0,BR_Z,k);}
   else{B.bx=0;B.bz=BR_Z;if(B.b.n==='run')B.b=B.cur&&B.cur.wait?B.cur.wait:{n:'b_stance',t:now,loop:true};}
@@ -2844,7 +2861,7 @@ function judge0(tr,bt){const spd=bt&&bt.spd||1; // batter's speed: 0.85 (plodder
       if(d<=c.reach+c.speed*hang*Math.max(0,q.t-c.react)){
         // now and then a rocket eats an infielder up: it is on him too fast, goes off him and he goes down. Rare, so it keeps its charm,
         // except in Overdrive: a liner hit right at an infielder by a hitter in Overdrive always goes through him.
-        if(!c.isP&&!c.of&&c.dieAct&&!tr.offF&&!tr.offP&&q.t<=1.7&&q.y>.15&&q.y<=2.0&&(DBG.drill||(S.over&&S.overOn)||Math.random()<.6)){tr.offF={t:q.t,f:c};continue;}
+        if(!c.isP&&!c.of&&c.dieAct&&!tr.offF&&!tr.offP&&(odH||(q.t<=1.7&&q.y>.15&&q.y<=2.0&&(DBG.drill||Math.random()<.6)))){tr.offF={t:q.t,f:c};continue;} /* OVERDRIVE: no infielder ever handles one. Liner or grounder, the first man it reaches wears it and goes down */
         if(tr.offF&&tr.offF.f===c)continue;
         f=c;p=q;break outer;}}} // the pitcher only handles what comes straight back at him
   if(!f){p=tr.pts[tr.pts.length-1];let bd=1e9;for(const c of fielders){const d=Math.hypot(c.home.x-p.x,c.home.z-p.z);if(d<bd){bd=d;f=c;}}p={x:p.x,y:0,z:p.z,t:p.t};}
@@ -4467,7 +4484,7 @@ $('shbtn').addEventListener('click',()=>{SHQ=!SHQ;if(SHQ&&!rim.castShadow)rim.ca
 shApply();
 resize();hud();
 const DBG={dive:'',hbp:false,pcut:false,fl:'',rob:false,pc:false,staunt:false,pod:false,trail:false,orbit:false,sat:false,drill:false,brawl:false,qte:false,mash:false,slide:false,pn:'',laser:false,lamp:false,mw:false,rev:false,stop:false,pdef:false,dbl:false,cam:false,admire:'',trip:false,fist:false,pop:false,loser:false}; // test hook: pin the camera to CAM_HOME/CAM_LOOK
-window.__ret=()=>reticle.position;window.__jt=juiceTap;window.__bdg=id=>{delete bdgGot[id];if(S.bdgGame)delete S.bdgGame[id];badge(id);pop('GONE!','512 FT · +1 RUN','hot',true);};window.__lu=LINEUP;window.__bp=k=>BULLPEN[k];window.__mm={pitcherModel,crowdFx,setE:v=>{crowdE=v;crowdShow=v;},GLOVE,renderer,scene,LODM,camera,zapStart,acState:()=>AC?(zoneLP?"lp="+Math.round(zoneLP.frequency.value)+" ":"")+AC.state+" t="+AC.currentTime.toFixed(1)+" real="+crowdReal+" roar="+(roarG?roarG.gain.value.toFixed(2)+(roarTop?"T":""):"off")+" bed="+crowdGain.gain.value.toFixed(2):"none",roar,roarOff,boo,cheer,crowdRise,crowdDrop,S,aim,MX,DBG,landRingOn:()=>landRing.visible,hud,tutAnim,draw:()=>draw(),endGame,TROT,SFX,RUN,ballPos:()=>ball.position,ballVisible:()=>ball.visible,fielders,toReady,CAM_HOME,CAM_LOOK,now:()=>now,simulate,judge,get pitch(){return pitch;},get flight(){return flight;},lastSwing:()=>{const t=swing&&swing.type;swing=null;return t;},lastSwingTurbo:()=>!!(swing&&swing.turbo),doSwing,newGame,V3,
+window.__ret=()=>reticle.position;window.__jt=juiceTap;window.__pop=pop;window.__bdg=id=>{delete bdgGot[id];if(S.bdgGame)delete S.bdgGame[id];badge(id);pop('GONE!','512 FT · +1 RUN','hot',true);};window.__lu=LINEUP;window.__bp=k=>BULLPEN[k];window.__mm={pitcherModel,crowdFx,setE:v=>{crowdE=v;crowdShow=v;},GLOVE,renderer,scene,LODM,camera,zapStart,acState:()=>AC?(zoneLP?"lp="+Math.round(zoneLP.frequency.value)+" ":"")+AC.state+" t="+AC.currentTime.toFixed(1)+" real="+crowdReal+" roar="+(roarG?roarG.gain.value.toFixed(2)+(roarTop?"T":""):"off")+" bed="+crowdGain.gain.value.toFixed(2):"none",roar,roarOff,boo,cheer,crowdRise,crowdDrop,S,aim,MX,DBG,landRingOn:()=>landRing.visible,hud,tutAnim,draw:()=>draw(),endGame,TROT,SFX,RUN,ballPos:()=>ball.position,ballVisible:()=>ball.visible,fielders,toReady,CAM_HOME,CAM_LOOK,now:()=>now,simulate,judge,get pitch(){return pitch;},get flight(){return flight;},lastSwing:()=>{const t=swing&&swing.type;swing=null;return t;},lastSwingTurbo:()=>!!(swing&&swing.turbo),doSwing,newGame,V3,
   sim:(dt)=>{hitstop=0;now+=dt;step(dt);},
   step:(n,dt=1/60)=>{for(let i=0;i<n;i++){if(hitstop>0)hitstop=0;now+=dt;step(dt);}updateCamera(dt);draw();}};
 if(!window.__mmManual)requestAnimationFrame(frame);
