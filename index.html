@@ -212,6 +212,12 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 .wkopt{pointer-events:auto;background:none;border:1px solid var(--dim);padding:6px 12px;cursor:pointer;font-family:var(--hud)}
 /* centre calls */
 #pop{left:0;right:0;top:26%;text-align:center;opacity:0}
+/* why the screen is shaking: a plain label for as long as the pitcher's Overdrive is on and there is a pitch to face */
+#podtag{position:absolute;left:50%;top:13%;transform:translateX(-50%);white-space:nowrap;opacity:0;transition:opacity .25s;pointer-events:none;z-index:40;font-family:var(--display);font-style:italic;font-size:clamp(15px,4.4vw,24px);letter-spacing:.06em;color:#ff5a36;-webkit-text-stroke:3px #000;paint-order:stroke fill;text-shadow:0 2px 0 #000,0 0 14px rgba(255,70,40,.8)}
+#hud.podlive #podtag{opacity:1;animation:podtag .62s ease-in-out infinite alternate}
+@keyframes podtag{from{filter:brightness(1)}to{filter:brightness(1.5)}}
+#hud.mob #podtag{top:27.5%}
+@media (orientation:landscape) and (max-height:520px){#hud.mob #podtag{top:24%}}
 #hud.pcut #pop{top:auto;bottom:3%}
 #hud.cel #tbar,#hud.cel #tim,#hud.cel #sharp,#hud.pcut #tbar,#hud.pcut #tim,#hud.pcut #card,#hud.pcut #hitinfo,#hud.pcut #pitchinfo,#hud.pcut #sharp{visibility:hidden!important}
 #hud.pcut #pop .t{font-size:clamp(24px,6.2vw,64px)}
@@ -624,6 +630,7 @@ body.mob #tip{display:block}body.mob .how{display:none}
     <div id="duelv" aria-hidden="true"></div>
     <div id="odv" aria-hidden="true"><i class="b"></i><i class="t"></i><i class="l"></i><i class="r"></i></div>
     <div id="odp" class="odp" aria-hidden="true"><i class="b"></i><i class="t"></i><i class="l"></i><i class="r"></i></div>
+    <div id="podtag" aria-hidden="true">PITCHER OVERDRIVE ACTIVE</div>
     <div id="duel" aria-hidden="true"><i class="dl">BATTER</i><i class="dr">PITCHER</i><b>OVERDRIVE<span>DUEL</span></b></div>
     <div id="goal" hidden></div>
   </div>
@@ -756,9 +763,10 @@ function cardTick(){
   _s0.project(camera);const cw=c.offsetWidth||150,ch=c.offsetHeight||44;
   const x=clamp((_s0.x*.5+.5)*W-cw*.5,4,W-cw-4),y=Math.max(150,(-_s0.y*.5+.5)*H-ch-2);
   c.style.transform='translate('+x.toFixed(0)+'px,'+y.toFixed(0)+'px)';}
-const pcutH=new V3(0,2.3,-18.4);let retTb=false,retT=-9,pcutT=-9,pcutOn=false,celOn=false,podOn=false,inplayOn=false;
+const pcutH=new V3(0,2.3,-18.4);let retTb=false,retT=-9,pcutT=-9,pcutOn=false,celOn=false,podOn=false,podLv=false,inplayOn=false;
 // the pitcher's fire border waits until the hitter is in the box; the batter card goes away once the ball is in play
 function podCls(){const st=S.state,on=pOD()&&!(st==='title'||st==='over'||st==='end'||st==='walkup'||st==='pchange');if(on!==podOn){podOn=on;$('hud').classList.toggle('pod',on);}
+  {const lv=on&&(st==='ready'||st==='windup'||st==='pitch')&&$('tut').hidden;if(lv!==podLv){podLv=lv;$('hud').classList.toggle('podlive',lv);}}
   const ip=st==='flight'||st==='result'||st==='trot'||st==='celebrate'||st==='celly2';if(ip!==inplayOn){inplayOn=ip;$('hud').classList.toggle('inplay',ip);}
   const ce=st==='celly2'||st==='trot'||!!(flight&&flight.orb&&!flight.done);if(ce!==celOn){celOn=ce;$('hud').classList.toggle('cel',ce);}}
  // while the camera is close on the pitcher, call-outs drop to a smaller line along the bottom so the words never sit on him
@@ -1675,7 +1683,7 @@ function organTick(){
 // An ordinary home run's roar is a loop of the steady middle of a cheer, which on its own is flat, like noise. So while it runs, fresh
 // waves of cheering break over it every second or so (the opening shout of the big cheer, at a slightly different pitch each time).
 function roarTick(){
-  if(roarG&&roarG.gain.value>=(roarTop?.84:1.05))rumble=1; // at its very loudest the crowd shakes the camera itself
+  if(roarG&&roarG.gain.value>=(roarTop?.66:.95))rumble=1; // at its very loudest the crowd shakes the camera itself
   if(!AC||!roarG||!roarHR)return;
   const t=AC.currentTime;if(t<roarWave)return;
   roarWave=t+rand(.8,1.4);
@@ -2068,6 +2076,30 @@ function toReady(d){roarOff();showCard();$('hitinfo').hidden=true;S.state='ready
 const BULLPEN=[['STORM',99],['VOLKOV',47,'L'],['DIAZ',13],['RIPTIDE',54,'L']] /* 'L': a left-hander, the same delivery mirrored */,PCH=2.7,PCW=2.8;
 // HIT BY PITCH. He wears it: down in a heap, a beat on the ground, back to his feet, then he limps to first with an extra bar of Juice for his trouble.
 const HB1=3.0,HBD=5.0;
+// THE BRAWL. Some hit-by-pitches don't end with a trot to first: the hitter charges the mound. He runs out, the pitcher squares up,
+// they trade three blows, and the third one puts somebody on the ground. Who wins is a coin flip. Win and the hitter's ratings go up
+// (and he gets two bars of Juice); lose and they may go down. Either way he takes his base. A new player's first hit-by-pitch is always one.
+const BRW={ch:1.7,st:1.0,rd:1.75,n:3,hold:2.3,dur:0,b:null,p:null,cur:null,r:-1,win:false,seq:[],bx:0,bz:0,x0:0,z0:0,ko:false};BRW.f0=BRW.ch+BRW.st;BRW.f1=BRW.f0+BRW.rd*BRW.n;BRW.dur=BRW.f1+BRW.hold;
+const BR_ATT={b_jab:.36,b_jabstep:.62,b_quad:.42,b_kickl:.95,b_kickr:.62,b_butt:.8},BR_Z=-17.2;
+let brawlSeen=false;try{brawlSeen=localStorage.getItem('mm_brawl')==='1';}catch(e){}
+function brawlNeed(){const C=MX.clip,P=MX.pit;if(!WALK.on||!C||!P||!MX.on||!C.intros.b_stance||!C.intros.run||!C.intros.p_dying||!P.taunts.b_stance||!P.taunts.p_dying||S.brawled)return false;return DBG.brawl||!brawlSeen||Math.random()<.3;}
+function brawlStart(){S.state='brawl';S.t=now;S.brawled=true;brawlSeen=true;try{localStorage.setItem('mm_brawl','1');}catch(e){}
+  MX.clip.hips.getWorldPosition(_p);BRW.x0=_p.x;BRW.z0=_p.z;BRW.bx=_p.x;BRW.bz=_p.z;BRW.win=DBG.brawl==='lose'?false:DBG.brawl==='win'?true:Math.random()<.5;BRW.r=-1;BRW.cur=null;BRW.ko=false;
+  const W=BRW.win?'b':'p',L=BRW.win?'p':'b',att=Math.random()<.5?[L,W,W]:[W,L,W],pool=Object.keys(BR_ATT).sort(()=>Math.random()-.5);
+  BRW.seq=att.map((a,i)=>({att:a,clip:pool[i],react:i===2?'p_dying':/kick|butt/.test(pool[i])?'b_gut':Math.random()<.5?'b_hit2':'b_gut'}));
+  BRW.b={n:'run',t:now,loop:true};BRW.p={n:'b_stance',t:now,loop:true};
+  pop('CHARGING THE MOUND!','','hot',true);roar(1.05,.4);crowdE=1;buzz([40,40,40,40,120]);shake=Math.max(shake,.3*FX);}
+function brawlTick(el){const B=BRW;
+  if(el<B.ch){const k=ease(el/B.ch);B.bx=lerp(B.x0,0,k);B.bz=lerp(B.z0,BR_Z,k);}
+  else{B.bx=0;B.bz=BR_Z;if(B.b.n==='run')B.b={n:'b_stance',t:now,loop:true};}
+  const r=el<B.f0?-1:Math.min(B.n-1,Math.floor((el-B.f0)/B.rd));
+  if(r!==B.r&&r>=0&&el<B.f1){B.r=r;const q=B.seq[r];B.cur={q,t:now,hit:false};const a={n:q.clip,t:now};if(q.att==='b')B.b=a;else B.p=a;}
+  if(B.cur&&!B.cur.hit&&now-B.cur.t>=BR_ATT[B.cur.q.clip]){B.cur.hit=true;const q=B.cur.q,last=B.r===B.n-1,d={n:q.react,t:now,hold:last};if(q.att==='b')B.p=d;else B.b=d;
+    SND.mitt();tone('sine',120,45,.2,.7);noise(.1,'lowpass',500,90,.7);buzz(last?[60,40,120]:[40]);shake=Math.max(shake,(last?.5:.3)*FX);flash(last?.6:.25);burst(fxS,_p.set(0,1.35,BR_Z-.6),last?26:12,4,.45,[1,.9,.5],2,1);
+    {const e=$('shout'),ws=last?['LIGHTS OUT!','GOOD NIGHT!','DOWN HE GOES!']:['POW!','WHAM!','BAM!','OOF!','CRACK!'];e.textContent=ws[(Math.random()*ws.length)|0];e.style.left='50%';e.style.top=(MOB?'38%':'30%');e.classList.toggle('b',q.att==='p');e.classList.remove('go');void e.offsetWidth;e.classList.add('go');}
+    if(q.att==='b')crowdPump(last?1:.6);else if(!roarG)boo(.6);if(last){B.ko=true;rumble=1;}}
+  if(el>=B.f1+.9&&B.ko&&!B.taunt){B.taunt=true;const w={n:'p_fist',t:now,loop:true};if(B.win)B.b=w;else B.p=w;}
+  if(el>=B.dur){B.taunt=false;const k=B.win?1:Math.random()<.6?-1:0;hbpEnd(k,B.win?'WON THE BRAWL!':'LOST THE BRAWL');}}
 function hbpStart(){S.state='hbp';S.t=now;S.hbpN=(S.hbpN||0)+1;S.hbpF=false;ball.visible=false;ballShadow.visible=false;pring.visible=false;swing=null;
   SND.mitt();tone('sine',120,40,.28,1);noise(.12,'lowpass',500,90,.8);buzz([60,40,120]);shake=Math.max(shake,.4*FX);flash(.5);
   pop(['DRILLED!','PLUNKED!','WORE IT!'][(Math.random()*3)|0],'HIT BY PITCH','hot',true);roarOff(.5);boo(.75);crowdE=Math.max(crowdE,.6);
@@ -2076,13 +2108,13 @@ function hbpStart(){S.state='hbp';S.t=now;S.hbpN=(S.hbpN||0)+1;S.hbpF=false;ball
 // Getting hit is a gamble for both sides. The hitter takes his base either way, but how he takes it is a roll of the dice:
 // 35% it fires him up (all three ratings up for the rest of the game, two bars of Juice), 40% it shakes him up (ratings down, one bar),
 // 25% he shrugs it off (no change, one bar). So plunking a man can hand the hitters a better player than the one who got hit.
-function hbpEnd(){const b=curBatter(),r0=Math.random(),k=r0<.35?1:r0<.75?-1:0;
+function hbpEnd(fk,title){const b=curBatter(),r0=Math.random(),k=fk!==undefined?fk:r0<.35?1:r0<.75?-1:0;
   if(k){if(!b.base)b.base={spd:b.spd,pwr:b.pwr,con:b.con};const m=k>0?1.1:.9;b.spd=clamp(b.spd*m,.7,1.25);b.pwr=clamp(b.pwr*m,.7,1.25);b.con=clamp(b.con*m,.7,1.25);b.hb=(b.hb||0)+k;}
   S.walked=true;S.juice=Math.min(1,S.juice+(k>0?.5:.25));walkRunners();{const R=RUN.list.find(R=>R.active&&R.target===1&&R.s<1);if(R)R.hurt=k<=0;}
   const r=advance(1,true),run=r?'+1 RUN · ':'';
-  if(k>0){pop('FIRED UP!',run+b.name+' · RATINGS UP · +2 JUICE','hot',true);cheer(.5,3);roar(.9,.3);buzz([30,40,80]);}
-  else if(k<0){pop('SHAKEN UP',run+b.name+' · RATINGS DOWN','cool',true);crowdDrop();}
-  else{pop('SHOOK IT OFF',run+'TAKE YOUR BASE','plain');cheer(.3,2);}
+  if(k>0){pop(title||'FIRED UP!',run+b.name+' · RATINGS UP · +2 JUICE','hot',true);cheer(.5,3);roar(.9,.3);buzz([30,40,80]);}
+  else if(k<0){pop(title||'SHAKEN UP',run+b.name+' · RATINGS DOWN','cool',true);crowdDrop();}
+  else{pop(title||'SHOOK IT OFF',run+'TAKE YOUR BASE','plain');cheer(.3,2);}
   showCard();if(k){const H=$('hud');H.classList.remove('hbpc');void H.offsetWidth;H.classList.add('hbpc');setTimeout(()=>H.classList.remove('hbpc'),3600);} // ratings changed: the card comes up and shows it
   afterPA(1.9);}
 // The pitcher's Overdrive is revealed with a cut to the mound, after the hitter's own entrance is over: he flexes, the screen goes red, then the news.
@@ -2119,7 +2151,7 @@ function gameRating(){const G=S.goal,pts=S.runs*10+S.hits*4+S.hrs*8+(S.longest>=
   const T=[[0,'D','BENCH WARMER'],[20,'C','ROOKIE'],[45,'B','EVERYDAY STARTER'],[75,'A','ALL-STAR'],[110,'S','MOONSHOT LEGEND']];let i=0;T.forEach((t,j)=>{if(pts>=t[0])i=j;});
   return {pts,stars:i+1,grade:T[i][1],title:T[i][2],next:T[i+1]?T[i+1][0]-pts:0,nextTitle:T[i+1]?T[i+1][2]:''};}
 function newGame(){LINEUP.forEach(b=>{if(b.base)Object.assign(b,b.base);b.hb=0;}); /* stat changes from getting hit last only for the game */gamesPlayed++;try{localStorage.setItem('mm_games',gamesPlayed);}catch(e){}
-  Object.assign(S,{inning:1,outs:0,balls:0,strikes:0,runs:0,bases:[0,0,0],hits:0,hrs:0,longest:0,streak:0,bestStreak:0,juice:.25,heat:.2,over:false,stk:false,opp:0,bi:-1,pitches:0,seen:{},kOut:null});S.podN=0;S.podBi=-9;S.goal=null; /* per-game goals are switched off for now: pickGoal() is still here to bring them back */S.ks=0;S.d2=0;S.cardBi=-1;S.pChanges=0;S.pRuns0=0;S.pc3=false;S.pcPending=false;S.pStart=gamesPlayed%BULLPEN.length;S.pName=BULLPEN[S.pStart]; /* a different starter each game, so left-handers start some of them */$('pcap').textContent='PITCHER';S.sTaunt=null;S.stLast=false;jPend=false;S.orbN=0;S.odUses=0;S.duel=false;$('hud').classList.remove('duel');S.pdLast=false;S.pOver=false;S.podPending=false;S.jSaid=false;S.overOn=false;S.spSeen=false;lastWalk='';
+  Object.assign(S,{inning:1,outs:0,balls:0,strikes:0,runs:0,bases:[0,0,0],hits:0,hrs:0,longest:0,streak:0,bestStreak:0,juice:.25,heat:.2,over:false,stk:false,opp:0,bi:-1,pitches:0,seen:{},kOut:null});S.podN=0;S.podBi=-9;S.goal=null; /* per-game goals are switched off for now: pickGoal() is still here to bring them back */S.ks=0;S.d2=0;S.cardBi=-1;S.pChanges=0;S.pRuns0=0;S.pc3=false;S.pcPending=false;S.pStart=gamesPlayed%BULLPEN.length;S.pName=BULLPEN[S.pStart]; /* a different starter each game, so left-handers start some of them */$('pcap').textContent='PITCHER';S.sTaunt=null;S.stLast=false;jPend=false;S.orbN=0;S.odUses=0;S.brawled=false;S.duel=false;$('hud').classList.remove('duel');S.pdLast=false;S.pOver=false;S.podPending=false;S.jSaid=false;S.overOn=false;S.spSeen=false;lastWalk='';
   $('title').hidden=true;$('over').hidden=true;$('pausebtn').hidden=false;$('mutebtn').hidden=false;setBatter();renderRep();scoreboard('PLAY BALL','INNING 1');S.opp=0;toReady(2);pop('PLAY BALL!','','logo');hud();SND.playball();cheer(.14,1.5);}
 
 // ───────────────────────── pitching
@@ -2556,6 +2588,7 @@ function doSwing(type){
   if(S.state==='trot'){S.t=now-TROT.dur;return;} // skip the trot
   if(S.state==='celly2'){S.t=now-D2.dur;return;}
   if(S.state==='hbp'){S.t=now-HBD;return;}
+  if(S.state==='brawl'){S.t=now-BRW.dur;return;}
   if(S.state==='pod'){S.t=now-POD;return;}
   if(S.state==='pdef'){S.t=now-PDEF;return;}
   if(S.state==='pchange'){if(pcWalk()){S.t=now-S.pcW;return;} /* first tap skips the walk-off, the second skips the new arm */S.t=now-PCH-(S.pcW||0);return;}
@@ -2622,7 +2655,7 @@ function cornerTap(x,y){
   for(const id of ['pausebtn','mutebtn']){const b=$(id);if(b.hidden)continue;const r=b.getBoundingClientRect();if(r.width&&x>=r.left-6&&x<=r.right+6&&y>=r.top-6&&y<=r.bottom+6)return false;} // PAUSE and SOUND always work, even mid-cutscene; a tap anywhere else skips
   if(performance.now()<tapBlock)return true;
   if(S.state==='walkup'){doSwing('contact');return true;}
-  if(S.state==='trot'||S.state==='celly2'||S.state==='hbp'||S.state==='pod'||S.state==='pdef'||S.state==='pchange'||(flight&&flight.admire&&!flight.done&&S.state==='flight')){doSwing('contact');return true;} // with the buttons away, a touch anywhere skips the cutscene
+  if(S.state==='trot'||S.state==='celly2'||S.state==='hbp'||S.state==='brawl'||S.state==='pod'||S.state==='pdef'||S.state==='pchange'||(flight&&flight.admire&&!flight.done&&S.state==='flight')){doSwing('contact');return true;} // with the buttons away, a touch anywhere skips the cutscene
   if(ctlHidden)return false; // during a walk-up nothing is a button: a touch anywhere on the screen skips it, and that is all it does
   const c=id=>{const r=$(id).getBoundingClientRect();return {x:r.left+r.width/2,y:r.top+r.height/2,r:r.width/2,l:r.left,t:r.top};},d=o=>Math.hypot(x-o.x,y-o.y);
   const J=c('tj'),C=c('tc'),P=c('tp');if(!C.r)return false;
@@ -2798,7 +2831,7 @@ function setupClip(obj,clip,B,sk){
   if(sc){C.strike=mixer.clipAction(sc);C.strike.play();C.strike.setEffectiveWeight(0);}
   // intros stay in the batter's box: work out how far each clip sits (or finishes) from where he stands in his stance
   const hipsAt=(c,ts)=>{const v=new V3(),sum=new V3();probe(c,at=>ts.forEach(t=>{at(t);C.hips.getWorldPosition(v);sum.add(v);}));return sum.multiplyScalar(1/ts.length);},home=hipsAt(ic||clip,[0]);
-  C.intros={};obj.animations.filter(c=>/^[wdc]_/.test(c.name)||/^p_(loser|twerk|chicken|runman|fist|clap|threat)$/.test(c.name)).forEach(c=>{keep(c);const loop=c.duration<2.5,ref=hipsAt(c,loop?[0,1,2,3,4,5,6,7].map(k=>k/8*c.duration):[c.duration-.02]);
+  C.intros={};obj.animations.filter(c=>/^[wdcb]_/.test(c.name)||c.name==='run'||/^p_(loser|twerk|chicken|runman|fist|clap|threat|dying)$/.test(c.name)).forEach(c=>{keep(c);const loop=c.duration<2.5,ref=hipsAt(c,loop?[0,1,2,3,4,5,6,7].map(k=>k/8*c.duration):[c.duration-.02]);
     const a=mixer.clipAction(c);a.play();a.setEffectiveWeight(0);C.intros[c.name]={a,dur:c.duration,loop,off:{x:home.x-ref.x,z:home.z-ref.z},loc:{x:-(ref.x-obj.position.x),z:-(ref.z-obj.position.z)}};}); // loc: where the routine sits relative to the model's own origin
 }
 const WHIFF_HOLD=1.15; // seconds of the swing-and-miss clip shown after the miss before he resets
@@ -2818,7 +2851,7 @@ function updateClip(dt){
     if(C.swap>=.2&&C.bi!==S.bi&&!waitWalk){C.bi=S.bi;MX.lefty=!!curBatter().lh;C.mode='idle';C.h=0;C.sk=0;C.t=0;}
     batterOpacity(C.swap<.2?1-C.swap/.2:Math.min(1,(C.swap-.2)/.25));
     if(C.swap>=.45){C.swap=null;batterOpacity(1);}}
-  if(S.state==='celly2'||S.state==='hbp')batterOpacity(1); // the man who just doubled is on show at second, whatever the box is doing
+  if(S.state==='celly2'||S.state==='hbp'||S.state==='brawl')batterOpacity(1); // the man who just doubled is on show at second, whatever the box is doing
   const incoming=S.state==='pitch'||(S.state==='windup'&&now-windupT0>C.loadAt);
   if(swing&&C.sw!==swing){C.sw=swing;C.c0=C.t;C.mode='swing';}
   if(C.mode==='swing'){const ts=now-C.sw.t0;
@@ -2846,6 +2879,9 @@ function updateClip(dt){
   if(S.state==='celly2'&&C.intros[D2.clip]){const ci=C.intros[D2.clip],e=now-S.t;ci.a.time=ci.loop?e%ci.dur:Math.min(ci.dur-.01,Math.max(0,e));ci.a.setEffectiveWeight(1);base=0;}
   if(S.state==='hbp'&&C.intros.c_hbpfall){const e=now-S.t,fa=C.intros.c_hbpfall,up=C.intros.c_hbpup; // goes down, then (after the cut) gets back up
     if(e<HB1||!up){fa.a.time=Math.min(fa.dur-.01,e);fa.a.setEffectiveWeight(1);}else{up.a.time=Math.min(up.dur-.01,(e-HB1)*1.55);up.a.setEffectiveWeight(1);}base=0;}
+  if(S.state==='brawl'&&BRW.b){const Bq=BRW.b,st=C.intros.b_stance;let ci=C.intros[Bq.n]||st,te=now-Bq.t,loop=!!Bq.loop;if(!loop&&!Bq.hold&&te>ci.dur-.05){ci=st;loop=true;}
+    ci.a.time=loop?te%ci.dur:Math.min(ci.dur-.01,te);ci.a.setEffectiveWeight(1);base=0;o.rotation.y=PI;o.position.x=BRW.bx;o.position.z=BRW.bz;o.position.y=.25*clamp(1-(Math.hypot(BRW.bx,BRW.bz+18.4)-.8)/1.9,0,1);}
+  else if(o.position.y)o.position.y=0;
   if(S.state==='trot'&&TROT.cele&&C.intros[TROT.clip]){const ci=C.intros[TROT.clip],e=now-S.t-TROT.celT; // he has touched home: his celebration, on the plate
     ci.a.time=ci.loop?e%ci.dur:Math.min(ci.dur-.01,Math.max(0,e));ci.a.setEffectiveWeight(1);base=0;}
   if(flight&&flight.admire&&!flight.done&&C.bi===S.bi){if(flight.cel===undefined){flight.cel=C.intros.c_fist&&(DBG.fist||Math.random()<.4)?'c_fist':flight.admire==='show'&&!flight.trot?celClip(WALK.by[curBatter().name]):''; // a single fist pump straight out of the swing, or his routine
@@ -2992,7 +3028,7 @@ function setupPitcher(obj,custom){
   // glove on the non-throwing hand
   {const gl=mkGlove('fielder');gl.position.set(0,1,0);(th===hand?lh:hand).add(gl);}
   mixer.setTime(0);
-  const taunts={};obj.animations.filter(c=>/^p_/.test(c.name)).forEach(c=>{c.tracks=c.tracks.filter(t=>/quaternion$/.test(t.name)||/Hips\.position$/.test(t.name));const a=mixer.clipAction(c);a.play();a.setEffectiveWeight(0);taunts[c.name]={a,dur:c.duration};});
+  const taunts={};obj.animations.filter(c=>/^[pb]_/.test(c.name)).forEach(c=>{c.tracks=c.tracks.filter(t=>/quaternion$/.test(t.name)||/Hips\.position$/.test(t.name));const a=mixer.clipAction(c);a.play();a.setEffectiveWeight(0);taunts[c.name]={a,dur:c.duration};});
   const defs=obj.animations.filter(c=>/^d_/.test(c.name)).map(c=>{c.tracks=c.tracks.filter(t=>/quaternion$/.test(t.name)||/Hips\.position$/.test(t.name));const a=mixer.clipAction(c);a.play();a.setEffectiveWeight(0);a.dur=c.duration;return a;});
   MX.pit={obj,mixer,pact,taunts,defs,hand:th,tRel,dur:clip.duration};
   showChunky(pitcher,false);
@@ -3183,9 +3219,9 @@ function loadPlayers(kind){ // body file = character mesh; clips.json = motion-c
         trim:g=>{let o=geos.get(g.uuid);if(!o){o=weld(g);o.userData.lite=liteGeo(o,LOD_CELL);geos.set(g.uuid,o);}return o;}}; // shared full and low-detail meshes, as for the hitters
       makeD=names=>{const o=T.SkeletonUtils.clone(dbase);o.animations=names.map(n=>mkClip(cj[n],n));return o;}; // his suit has its own sealed helmet: no glass bubble
     }catch(e){console.warn('defence model failed, using the hitters model',e);makeD=make;defSkin=skins&&skins.away;}
-    try{setupModel(make(['hit','idle','idle2','strike'].filter(k=>cj[k]).concat(Object.keys(cj).filter(k=>/^[wdc]_/.test(k)||/^p_(loser|twerk|chicken|runman|fist|clap|threat)$/.test(k)))),skins&&skins.home);}catch(e){console.warn('batter model failed, using built-in figure',e);fallback(batter);}
+    try{setupModel(make(['hit','idle','idle2','strike'].filter(k=>cj[k]).concat(Object.keys(cj).filter(k=>/^[wdcb]_/.test(k)||k==='run'||/^p_(loser|twerk|chicken|runman|fist|clap|threat|dying)$/.test(k)))),skins&&skins.home);}catch(e){console.warn('batter model failed, using built-in figure',e);fallback(batter);}
     playersDone();
-    try{setupPitcher(makeD(['pitch',...Object.keys(cj).filter(k=>/^[pd]_/.test(k))]),defSkin);}catch(e){console.warn('pitcher model failed, using built-in figure',e);fallback(pitcher);}
+    try{setupPitcher(makeD(['pitch',...Object.keys(cj).filter(k=>/^[pdb]_/.test(k))]),defSkin);}catch(e){console.warn('pitcher model failed, using built-in figure',e);fallback(pitcher);}
     // fielders are built one at a time so the page doesn't freeze while seven more models are prepared
     fielders.filter(f=>!f.isP).forEach((f,i)=>setTimeout(()=>{if(my!==MX.token)return;
       try{setupFielder(f,makeD(['catch','run','strafe','throw','x_dive','p_dying','d_1','d_2','d_3'].filter(k=>cj[k])),defSkin);}catch(e){console.warn('fielder model failed, using built-in figure',e);fallback(f.fig);}},400+i*220));
@@ -3268,6 +3304,8 @@ function updatePitcher(){
       k=ease(clamp(te/.35,0,1))*ease(clamp((DEFEAT-te)/.35,0,1));tn.a.time=tn.dur<2.5?te%tn.dur:Math.min(tn.dur-.01,te);tn.a.setEffectiveWeight(k);}
     if(S.sTaunt&&!S.kOut){const T=S.sTaunt,te=now-T.t,tn=P.taunts[T.clip];if(te>T.dur||S.state==='windup'||!tn)S.sTaunt=null;
       else if(te>0){k=ease(clamp(te/.3,0,1))*ease(clamp((T.dur-te)/.3,0,1));tn.a.time=tn.dur<2.5?te%tn.dur:Math.min(tn.dur-.01,te);tn.a.setEffectiveWeight(k);}}
+    if(S.state==='brawl'&&BRW.p){const Bq=BRW.p,st=P.taunts.b_stance;let tn=P.taunts[Bq.n]||st,te=now-Bq.t,loop=!!Bq.loop;if(!loop&&!Bq.hold&&te>tn.dur-.05){tn=st;loop=true;}
+      tn.a.time=loop?te%tn.dur:Math.min(tn.dur-.01,te);tn.a.setEffectiveWeight(1);k=1;}
     {const o=P.obj;if(!P.home)P.home={x:o.position.x,z:o.position.z,ry:o.rotation.y};
       if(pcWalk()){const tn=P.taunts.p_sadwalk,te=now-S.t,dx=-.94,dz=.34,d=.75*te; // off the mound toward the third-base dugout, head down, at the pace his feet are moving
         tn.a.time=te%tn.dur;tn.a.setEffectiveWeight(1);k=1;o.position.x=P.home.x+dx*d;o.position.z=P.home.z+dz*d;o.rotation.y=Math.atan2(dx,dz);P.away=true;}
@@ -3332,6 +3370,7 @@ function updateFielders(dt){
         else if(flight.thr&&tf>tA+.1){let d=Math.atan2(flight.thr.to.x-r.position.x,flight.thr.to.z-r.position.z)-r.rotation.y;d=Math.atan2(Math.sin(d),Math.cos(d));r.rotation.y+=d*Math.min(1,dt*9);}
       }
       {const rr=Math.hypot(px,pz),fr=fenceR(Math.atan2(px,-pz))-1.1;if(rr>fr){r.position.x=px*fr/rr;r.position.z=pz*fr/rr;}else{r.position.x=px;r.position.z=pz;}} // no fielder ever goes into or through the wall
+      {const sd=r.position.x<0?-1:1,d=(r.position.x*sd-70)*-.855+(r.position.z+70)*-.518;if(d<1.1){r.position.x+=sd*-.855*(1.1-d);r.position.z+=-.518*(1.1-d);}} // ...nor through the side walls down the lines: a ball that hops out of play is left for the umpire
       if(mocap&&!moving){const ct=CATCH.t-(pl.endT-tf);if(ct>=CATCH.t-g.lead-.001){clipT=clamp(ct,CATCH.start,CATCH.end);r.rotation.y=g.face;}}
       if(pl.dive&&pl.dive.f===f&&pl.dive.t0!==undefined){const D=pl.dive,dT=tf-D.t0;
         if(dT>=0&&dT<DIVE.end){diving=true;dmir=D.mir;clipT=dT;running=false;r.position.x=D.sx;r.position.z=D.sz;r.rotation.y=D.yaw;
@@ -3404,7 +3443,8 @@ function step(dt){
   else if(st==='result'&&el>=readyDur){if(S.next){const n=S.next;S.next=null;n();}else toReady(S.fresh?PACE.newBatter:PACE.samePitch);}
   else if(st==='walkup'&&el>=WALK.dur)endWalkup();
   else if(st==='celly2'&&el>=D2.dur){toReady(PACE.newBatter);}
-  else if(st==='hbp'){if(!S.hbpF&&el>=HB1){S.hbpF=true;flash(.35);}if(el>=HBD)hbpEnd();}
+  else if(st==='hbp'){if(!S.hbpF&&el>=HB1){S.hbpF=true;flash(.35);}if(el>=HBD){if(brawlNeed())brawlStart();else hbpEnd();}}
+  else if(st==='brawl')brawlTick(el);
   else if(st==='pdef'&&el>=PDEF){toReady(PACE.newBatter);}
   else if(st==='pchange'&&S.pcW&&!S.pcI&&el>=S.pcW){pcIntro();}
   else if(st==='pod'&&el>=POD){toReady(1.3);}
@@ -3479,7 +3519,7 @@ function step(dt){
   if(shock.userData.t!==undefined&&shock.userData.t<.3){shock.userData.t+=dt;const k=shock.userData.t/.3;shock.scale.setScalar(.06+k*shock.userData.s*.9);shock.material.opacity=(1-k)*.9;}else shock.material.opacity=0;
 
   updateBatter(dt);updatePitcher();updateFielders(dt);updatePlateCrew();updateRunners(dt);updateTrot(dt);updateThrow();
-  if(MX.ready&&MX.clip&&MX.obj){const v=S.state!=='trot';MX.obj.visible=v||TROT.cele;bat.visible=v||(TROT.cele&&TROT.clip==='w_lift');} // the man at the plate is the one trotting
+  if(MX.ready&&MX.clip&&MX.obj){const v=S.state!=='trot';MX.obj.visible=v||TROT.cele;bat.visible=(v||(TROT.cele&&TROT.clip==='w_lift'))&&S.state!=='brawl';} // the man at the plate is the one trotting
   fxS.update(dt);fxL.update(dt);fxT.update(dt);
 
   ptarget.visible=pring.visible;if(pring.visible)ptarget.position.copy(pring.position);
@@ -3531,6 +3571,10 @@ function updateCamera(rdt){
     const e=clamp((now-S.kOut.t)/DEFEAT,0,1);MX.clip.hips.getWorldPosition(_a);const sd=_a.x<0?1:-1;
     camLook.set(_a.x,1.2,_a.z);camPos.set(_a.x+sd*lerp(1.5,1.0,ease(e)),1.25,_a.z-lerp(3.2,2.5,ease(e)));}
   else if(flight&&flight.thr&&flight.thr.safe&&now>flight.thr.t0+.45&&S.state==='result'){camPos.set(25.4,1.5,-16.2);camLook.set(17.6,1.05,-18.6);} // the race: from foul ground past the bag, the runner coming up the line and the first baseman stretching for the throw
+  else if(S.state==='brawl'){const el=now-S.t;pcutT=now;pcutH.set(0,2.75,BR_Z-.6);
+    if(el<BRW.ch){camPos.set(BRW.bx+1.5,1.55,BRW.bz+3.4);camLook.set(0,1.2,-18.4);}                       // behind him as he goes
+    else if(el<BRW.f0){camPos.set(-1.5,1.5,BR_Z+1.9);camLook.set(.1,1.35,-18.4);}                          // over the hitter's shoulder: the pitcher is ready for him
+    else{const a=.25*Math.sin((el-BRW.f0)*.5),ko=BRW.ko?ease(clamp((el-BRW.f1+.6)/1.2,0,1)):0,d=4.1+2.6*ko,cz=BR_Z-.6+(BRW.win?-1.1:1.1)*ko;camPos.set(d*Math.cos(a),1.3+.5*ko,cz+d*Math.sin(a));camLook.set(0,1.2-.35*ko,cz);}} /* after the knockdown it pulls back to keep the man on the ground in the picture */ // side-on for the fight, drifting a little
   else if(S.state==='hbp'&&MX.clip){MX.clip.hips.getWorldPosition(_a);const sd=_a.x<0?1:-1;camPos.set(_a.x+sd*1.9,.95,_a.z-2.5);camLook.set(_a.x,Math.max(.4,_a.y*.8),_a.z);} // from the pitcher's side, low, on the man who got hit
   else if(S.state==='celly2'){const B=BASES[D2.base];if(D2.base===3){camPos.set(B[0]+3.6,.8,B[1]+1.2);}else camPos.set(1.7,.8,-35.4);camLook.set(B[0],1.2,B[1]);}
   else if(flight&&flight.tr.offF&&flight.tr.offF.x!==undefined&&flight.play.type==='hit'&&now-flight.t0-flight.tr.offF.t>.25&&now-flight.t0-flight.tr.offF.t<2.7&&(S.state==='flight'||S.state==='result')){ // the infielder who wore one: from the plate side of him, low
@@ -3560,10 +3604,10 @@ function updateCamera(rdt){
     camPos.lerp(_p,k);camLook.lerp(bp,1-Math.exp(-9*rdt));
   }
   camera.position.copy(camPos);
-  if(rumble>.02){const t=performance.now()/1000,a=rumble*FX; // the whole picture trembles, like a broadcast camera on a deck that 50,000 people are jumping on: the frame shakes, not the stands
-    camera.rotateZ((Math.sin(t*47)+Math.sin(t*71.3))*.0034*a);camera.rotateX((Math.sin(t*53.7)+Math.sin(t*83.1))*.0022*a);camera.rotateY(Math.sin(t*61.3)*.0018*a);rumble*=Math.exp(-3.5*rdt);}
   if(shake>.002){camera.position.x+=rand(-1,1)*shake;camera.position.y+=rand(-1,1)*shake;shake*=Math.exp(-7*rdt);}
   camera.lookAt(camLook);
+  if(rumble>.02){const t=performance.now()/1000,a=rumble*FX; // the whole picture trembles, like a broadcast camera on a deck that 50,000 people are jumping on: the frame shakes, not the stands (applied after the camera is aimed, or the aim would undo it)
+    camera.rotateZ((Math.sin(t*47)+Math.sin(t*71.3))*.007*a);camera.rotateX((Math.sin(t*53.7)+Math.sin(t*83.1))*.0045*a);camera.rotateY(Math.sin(t*61.3)*.0035*a);rumble*=Math.exp(-3.5*rdt);}
   fovKick*=Math.exp(-5*rdt);const f=camera.userData.baseFov+fovKick;if(Math.abs(f-camera.fov)>.01){camera.fov=f;camera.updateProjectionMatrix();}
   towerGlows.forEach((g,i)=>g.material.opacity=Math.min(1,(.8+.1*Math.sin(performance.now()*.004+i))*(ZAP.lv===undefined?1:ZAP.lv)));
 }
@@ -3609,11 +3653,11 @@ function shApply(){const on=SHQ&&rim.castShadow;shBig.visible=on;if(shMound)shMo
   if(rim.shadow.map){rim.shadow.map.dispose();rim.shadow.map=null;}
   $('shbtn').textContent='FIELD SHADOWS: '+(SHQ?'ON':'OFF');}
 // before the pitch the shadow picture is spent on the plate and the infield, where it is seen close up; once the ball is in play it opens out to the whole park
-function shTick(){if(!(SHQ&&rim.castShadow))return;const st=S.state,wide=!(st==='ready'||st==='windup'||st==='pitch'||st==='walkup'||st==='title'||st==='pod'||st==='hbp');if(wide!==shWide){shWide=wide;if(wide)shFrame(0,-52,84);else shFrame(0,-19,34);}}
+function shTick(){if(!(SHQ&&rim.castShadow))return;const st=S.state,wide=!(st==='ready'||st==='windup'||st==='pitch'||st==='walkup'||st==='title'||st==='pod'||st==='hbp'||st==='brawl');if(wide!==shWide){shWide=wide;if(wide)shFrame(0,-52,84);else shFrame(0,-19,34);}}
 $('shbtn').addEventListener('click',()=>{SHQ=!SHQ;if(SHQ&&!rim.castShadow)rim.castShadow=true;try{localStorage.setItem('mm_shadows',SHQ?'1':'0');}catch(e){}shApply();});
 shApply();
 resize();hud();
-const DBG={dive:'',hbp:false,pcut:false,fl:'',rob:false,pc:false,staunt:false,pod:false,trail:false,orbit:false,sat:false,drill:false,pdef:false,dbl:false,cam:false,admire:'',trip:false,fist:false,pop:false,loser:false}; // test hook: pin the camera to CAM_HOME/CAM_LOOK
+const DBG={dive:'',hbp:false,pcut:false,fl:'',rob:false,pc:false,staunt:false,pod:false,trail:false,orbit:false,sat:false,drill:false,brawl:false,pdef:false,dbl:false,cam:false,admire:'',trip:false,fist:false,pop:false,loser:false}; // test hook: pin the camera to CAM_HOME/CAM_LOOK
 window.__mm={crowdFx,setE:v=>{crowdE=v;crowdShow=v;},GLOVE,renderer,scene,LODM,camera,zapStart,acState:()=>AC?(zoneLP?"lp="+Math.round(zoneLP.frequency.value)+" ":"")+AC.state+" t="+AC.currentTime.toFixed(1)+" real="+crowdReal+" roar="+(roarG?roarG.gain.value.toFixed(2)+(roarTop?"T":""):"off")+" bed="+crowdGain.gain.value.toFixed(2):"none",roar,roarOff,boo,cheer,crowdRise,crowdDrop,S,aim,MX,DBG,landRingOn:()=>landRing.visible,hud,tutAnim,draw:()=>draw(),endGame,TROT,SFX,RUN,ballPos:()=>ball.position,ballVisible:()=>ball.visible,fielders,toReady,CAM_HOME,CAM_LOOK,now:()=>now,simulate,judge,get pitch(){return pitch;},get flight(){return flight;},lastSwing:()=>{const t=swing&&swing.type;swing=null;return t;},lastSwingTurbo:()=>!!(swing&&swing.turbo),doSwing,newGame,V3,
   sim:(dt)=>{hitstop=0;now+=dt;step(dt);},
   step:(n,dt=1/60)=>{for(let i=0;i<n;i++){if(hitstop>0)hitstop=0;now+=dt;step(dt);}updateCamera(dt);draw();}};

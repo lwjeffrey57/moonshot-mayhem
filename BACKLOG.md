@@ -36,7 +36,8 @@ Recordings to find or make (the game currently fakes most of these by reshaping 
 ## Gameplay
 - Difficulty levels: hide the timing target, later ring, pitch-colour cues, smaller power core, tighter windows.
 - Give CONTACT a real job (two-strike protection, contact builds Juice, and so on).
-- Hit by pitch: animation, strategy around it, possible brawl.
+- Hit by pitch: done, including the brawl (charge, three exchanges, knockdown). Still open: benches clearing, ejections, a quick time event to decide it.
+- Unused clips already imported: `w_hurricane` (hurricane kick, meant for a walk-up), `q_flykick` (flying kick, for the play at the plate), `b_block`, `b_hit1`.
 - Stealing bases (needs a one-tap control design first).
 - Pitching, not only hitting (effectively a second game).
 - Fielder alignment and depth, dives and jumping catches.
