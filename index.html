@@ -314,6 +314,10 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
 #tbar .gp{background:linear-gradient(90deg,rgba(255,77,46,.3),rgba(255,77,46,.8) 36%,#ff8a70 42%,#ff8a70 58%,rgba(255,77,46,.8) 64%,rgba(255,77,46,.3))}
 #tbar .jx{background:#ffd23b;box-shadow:0 0 8px 1px rgba(255,210,59,.8)} /* same colours as the bat: green = CONTACT window, red core = POWER window, gold ends = Juice */
 #tbar .dim{opacity:.22}
+#odh{position:absolute;display:none;z-index:49;pointer-events:none;white-space:nowrap;font-family:var(--display);font-style:italic;font-size:clamp(17px,4.6vw,24px);color:#9fe6ff;-webkit-text-stroke:4px #000;paint-order:stroke fill;text-shadow:0 0 14px rgba(58,170,255,.95);transform:translate(0,-50%);animation:odhB .45s ease-in-out infinite alternate}
+#odh.m{transform:translate(-50%,-50%);animation-name:odhM}#hud.odhint #odh{display:block}
+#hud.odhint #kj{transform-origin:0 50%;background:linear-gradient(#bff4ff,#3aa8ff 55%,#1e5fe0);color:#02103a;border-color:#fff;animation:kjod .4s ease-in-out infinite alternate;z-index:5}@keyframes kjod{from{transform:scale(1.08);box-shadow:0 0 12px 3px rgba(88,214,255,.8)}to{transform:scale(1.3);box-shadow:0 0 30px 12px rgba(88,214,255,1),0 0 0 4px #fff}}
+@keyframes odhB{from{margin-left:0}to{margin-left:10px}}@keyframes odhM{from{margin-top:0}to{margin-top:-9px}}
 #hud.rv>*{visibility:hidden!important} /* the orbit shot plays clean: nothing on the glass */
 /* OVERDRIVE CONTACT: the timing window burns as a live blue flame (a white-hot bar with tongues of fire licking up off it) */
 #tbar.odz .trk i.jx,#tbar.odz .trk i.gc:not(.dim),#tbar.odz .trk i.gp:not(.dim){background:linear-gradient(90deg,rgba(30,110,255,.5),#1e7bff 22%,#7fe0ff 40%,#f2fdff 50%,#7fe0ff 60%,#1e7bff 78%,rgba(30,110,255,.5));box-shadow:0 0 9px 2px rgba(80,180,255,.95),0 0 22px 6px rgba(30,100,255,.6);animation:odzGlow .13s steps(2) infinite}
@@ -715,6 +719,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <div id="odp" class="odp" aria-hidden="true"><i class="b"></i><i class="t"></i><i class="l"></i><i class="r"></i></div>
     <div id="statfx" aria-hidden="true"></div>
     <button id="qmash" type="button" aria-hidden="true">TAP!</button>
+    <div id="odh" aria-hidden="true"></div>
     <button id="gobtn" type="button">GO!<small></small></button>
     <div id="qte" hidden><b id="qtt"></b><div id="qtr"></div><div id="qtm"><i id="qtb"></i></div></div>
     <div id="qpad" aria-hidden="true"><button type="button" data-d="U">▲</button><button type="button" data-d="L">◀</button><button type="button" data-d="R">▶</button><button type="button" data-d="D">▼</button></div>
@@ -2180,7 +2185,7 @@ let hudOver=false,hudBars=0,ringEcho=null,lastWalk='';
 // Flavour first: the first home run and the first strikeout of every game always get the full, ridiculous treatment
 // (the first two of each for a player's first three games), so nobody plays a whole game without seeing what this game is.
 const WALK_ONLY=['w_milling','w_drive','w_golf','w_sad']; // routines that are walk-ups only, never celebrations
-const CEL_FAV=['w_bboy','w_backflip','p_twerk','w_macarena'];let celLast='';const celClip=own=>{if(!WALK_ONLY.includes(own))return own;const C=MX.clip,w=C?WILD_CEL.filter(k=>C.intros[k]):[];return w.length?w[(Math.random()*w.length)|0]:own;}; // the milling routine is a walk-up only
+const CEL_FAV=['w_bboy','w_backflip','p_twerk','w_macarena','w_flair'];let celLast='';const celClip=own=>{if(!WALK_ONLY.includes(own))return own;const C=MX.clip,w=C?WILD_CEL.filter(k=>C.intros[k]):[];return w.length?w[(Math.random()*w.length)|0]:own;}; // the milling routine is a walk-up only
 const earlyShow=n=>n<(gamesPlayed<=3?2:1);let wildTrot=false;
 const WILD_CEL=['w_backflip','w_bboy','w_macarena','w_salsa','w_bdance','w_flair','w_lift','w_pushup','p_loser','p_twerk','p_chicken','p_runman','p_fist','p_clap','p_threat','w_boxing','w_arrow','w_wave','w_hurricane'],WILD_TAUNT=['p_twerk','p_chicken','p_backflip','p_bboy','p_macarena','p_runman'];
 const juiceOn=()=>juiceArmed||keys.ShiftLeft||keys.ShiftRight;
@@ -2272,7 +2277,7 @@ function startTrot(){const R=RUN.list.find(R=>!R.active)||null;if(!R||!R.jogAct)
   {const C=MX.clip,own=celClip(WALK.by[curBatter().name]);const wild=wildTrot&&C?WILD_CEL.filter(k=>C.intros[k]):[];wildTrot=false;
     const all0=C?WILD_CEL.filter(k=>C.intros[k]&&k!=='p_loser'&&k!==celLast):[],all=all0.concat(all0.filter(k=>CEL_FAV.includes(k)),all0.filter(k=>CEL_FAV.includes(k))),pick=a=>a[(Math.random()*a.length)|0], /* the crowd-pleasers (break dance, backflip, twerk, macarena) come up three times as often as the rest */w2=wild.filter(k=>k!=='p_loser'&&k!==celLast);
     // his own routine about a third of the time, the 'loser' sign at the pitcher now and then, otherwise anything from the whole book (dances, flexes, the pitcher's own strikeout taunts thrown back at him), never the same one twice running
-    TROT.clip=w2.length&&!DBG.loser?pick(w2):C&&C.intros.w_bboy&&celLast!=='w_bboy'&&!DBG.loser&&Math.random()<.3?'w_bboy': /* the break dance is the house favourite: three times in ten, never twice running */C&&C.intros.p_loser&&(DBG.loser||Math.random()<.22)?'p_loser':C&&C.intros[own]&&own!==celLast&&Math.random()<.35?own:all.length?pick(all):C&&C.intros[own]?own:'';celLast=TROT.clip;} // sometimes he turns and gives the pitcher the 'loser' sign instead // his own routine once he has touched home
+    TROT.clip=w2.length&&!DBG.loser?pick(w2):C&&C.intros.w_flair&&celLast!=='w_flair'&&!DBG.loser&&Math.random()<.24?'w_flair': /* the flair (Okafor's walk-up) is a house favourite at the plate too: about one homer in four */C&&C.intros.w_bboy&&celLast!=='w_bboy'&&!DBG.loser&&Math.random()<.3?'w_bboy': /* the break dance is the house favourite: three times in ten, never twice running */C&&C.intros.p_loser&&(DBG.loser||Math.random()<.22)?'p_loser':C&&C.intros[own]&&own!==celLast&&Math.random()<.35?own:all.length?pick(all):C&&C.intros[own]?own:'';celLast=TROT.clip;} // sometimes he turns and gives the pitcher the 'loser' sign instead // his own routine once he has touched home
   // men already on base stay ahead of him: when the highlight cuts in, each is at least three-quarters of a base in front of the man behind, and they keep that lead home
   RUN.list.filter(o=>o!==R&&o.active&&o.target>=4).sort((a,b)=>a.s-b.s).forEach((o,k)=>{o.s=Math.max(o.s,Math.min(3.7,1.7+.75*(k+1)));o.lead=true;o.delay=0;});
  if(DBG.cel)TROT.clip=DBG.cel;
@@ -4038,7 +4043,14 @@ function step(dt){
   if(st==='ready'&&el>=.25&&S.over&&!S.overOn&&otutNeed())return;
   if(st==='ready'&&el>=.25&&S.juice>=.999&&!S.over&&jtutNeed())return;
   if(st==='ready'&&S.podPending){if(S.pOver){podReveal();return;}S.podPending=false;}
-  if(st==='ready'&&el>=readyDur&&!swing){S.state='windup'; /* the pitcher waits for a practice cut to finish: no quick pitches */windupT0=now;released=false;S.fresh=false;pitch=choosePitch();S.pitches++;readyDur=1.15;$('pitchinfo').classList.remove('on'),$('plast').classList.remove('on');}
+  // OVERDRIVE IS READY AND HE HASN'T PRESSED IT: the pitcher waits. A player who has never used it gets seven seconds and a pointer at the
+  // button; anyone else gets a couple of seconds, once per charge. Pressing it (or swinging) ends the wait at once.
+  if(!S.over)S.odHeld=false;
+  if(st==='ready'&&S.over&&!S.overOn&&!S.odHeld&&!S.odHolding&&el>.25){S.odHeld=true;S.odHolding=true;S.odHoldT=now;S.odHoldD=odEver?2.4:7;
+    const e=$('odh'),tg=MOB?$('tj'):$('kj'),r=tg.getBoundingClientRect(),hr=$('hud').getBoundingClientRect();e.textContent=MOB?'TAP IT! ▼':'';e.className=MOB?'m':''; /* on a computer the key pill itself swells and flashes: nothing is written across the hitter */
+    if(MOB){e.style.left=(r.left+r.width/2-hr.left)+'px';e.style.top=(r.top-hr.top-34)+'px';}else{e.style.left=(r.right-hr.left+12)+'px';e.style.top=(r.top+r.height/2-hr.top)+'px';}$('kj').firstChild.nodeValue='OVERDRIVE';$('hud').classList.add('odhint');}
+  if(S.odHolding&&(st!=='ready'||!S.over||S.overOn||swing||now-S.odHoldT>=S.odHoldD)){S.odHolding=false;$('kj').firstChild.nodeValue='JUICE';$('hud').classList.remove('odhint');if(st==='ready'&&now-S.t>readyDur-.7)S.t=now-(readyDur-.7);} /* a beat to settle, then the pitch */
+  if(st==='ready'&&el>=readyDur&&!swing&&!S.odHolding){S.state='windup'; /* the pitcher waits for a practice cut to finish: no quick pitches */windupT0=now;released=false;S.fresh=false;pitch=choosePitch();S.pitches++;readyDur=1.15;$('pitchinfo').classList.remove('on'),$('plast').classList.remove('on');}
   else if(st==='windup'&&now-windupT0>=1.0){
     if(MX.pit&&MX.on){MX.pit.obj.updateMatrixWorld(true);MX.pit.hand.getWorldPosition(pitch.rel);}else{pitcher.root.updateMatrixWorld(true);pitcher.handR.getWorldPosition(pitch.rel);}pitch.t0=now;S.state='pitch';if(S.over&&S.overOn)S.odSeen=true;SND.pitch();if(pitch.P.sp)sfx('crush',.7,.72);ball.visible=true;ballShadow.visible=true;
   }
