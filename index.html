@@ -840,7 +840,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 453</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 454</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <button class="tag wkopt sens" id="sens1" type="button"></button>
@@ -993,7 +993,7 @@ let dftEl=null,dftOn=false,dftV=-1;function dftDom(){const on=!!(flight&&!flight
   const v=flight.dLast|0;if(v!==dftV){dftV=v;dftEl.firstChild.textContent=v;dftEl.classList.toggle('big',v>=450);dftEl.classList.toggle('huge',v>=500);}
   const W=canvas.clientWidth||innerWidth,H=canvas.clientHeight||innerHeight;_s0.copy(ball.position).project(camera);const x=clamp((_s0.x*.5+.5)*W,70,W-70),y=clamp((-_s0.y*.5+.5)*H-H*.11,H*.14,H*.8);
   dftEl.style.transform='translate('+x.toFixed(1)+'px,'+y.toFixed(1)+'px) translate(-50%,-100%)';}
-function draw(){podCls();shTick();hbpPop();markDom();dftDom();{const pc=now-pcutT<.06,e=$('pop');if(pc!==pcutOn){pcutOn=pc;$('hud').classList.toggle('pcut',pc);if(!pc){e.style.top='';e.style.bottom='';e.className='';}}
+function draw(){if(LED_T)LED_T.offset.x=(performance.now()*.000028)%1; /* the ribbon board crawls, like a real park's (moving a texture costs nothing) */podCls();shTick();hbpPop();markDom();dftDom();{const pc=now-pcutT<.06,e=$('pop');if(pc!==pcutOn){pcutOn=pc;$('hud').classList.toggle('pcut',pc);if(!pc){e.style.top='';e.style.bottom='';e.className='';}}
   if(pc){_s0.copy(pcutH).project(camera);const H=canvas.clientHeight||innerHeight;e.style.bottom='auto';{const t1=e.querySelector('.t'),s1=e.querySelector('.s');e.style.top=Math.max(MOB?112:84 /* every close-up call stays clear of the scoreboard and the meters along the top */,(-_s0.y*.5+.5)*H-t1.offsetHeight-(s1.textContent?s1.offsetHeight+6:0)).toFixed(0)+'px';}}} // call-outs sit just above the head of whoever the close-up is on
  lodTick();gloveTick();if(composer)composer.render();else renderer.render(scene,camera);sharpTick();tagsTick();cardTick();}
 const scene=new T.Scene();
@@ -1028,7 +1028,7 @@ const TEXR=[];try{document.fonts.load('400 40px "Russo One"').then(()=>{TEXR.for
 function tex(w,h,draw,rep){const c=document.createElement('canvas');c.width=w;c.height=h;draw(c.getContext('2d'),w,h);
   const t=new T.CanvasTexture(c);if(/\.font\s*=|font\b/.test(String(draw)))TEXR.push({c,w,h,draw,t});if(rep){t.wrapS=t.wrapT=T.RepeatWrapping;t.repeat.set(rep[0],rep[1]);}return t;}
 
-let STAND_LIT=null;const SKYG=[]; /* the sky and its stars: they travel with the camera, like anything infinitely far away */
+let STAND_LIT=null,LED_T=null;const SKYG=[]; /* the sky and its stars: they travel with the camera, like anything infinitely far away */
 const hemi=new T.HemisphereLight(0xdde4ff,0x4a4a55,0.85);scene.add(hemi);
 const sun=new T.DirectionalLight(0xfff1dc,0.8);sun.position.set(-30,80,60);scene.add(sun);
 const rim=new T.DirectionalLight(0xffc890,0.45);rim.position.set(-9,13,-11);rim.castShadow=true;scene.add(rim);
@@ -1485,7 +1485,10 @@ gl_FragColor=vec4(col,1.0);
       moon(w*.515);moon(w*.015);moon(w*1.015);g.shadowBlur=0;
       g.fillStyle='#ff4d2e';g.fillRect(0,0,w,12);g.fillRect(0,h-12,w,12);});
     led.wrapS=T.RepeatWrapping;led.repeat.set(2/FL,1);led.anisotropy=ANISO;
-    scene.add(new T.Mesh(ribbon(arc(30,23),arc(30,30),1),basic({map:led})));
+    scene.add(new T.Mesh(ribbon(arc(30,23),arc(30,30),1),basic({map:led})));LED_T=led;
+    // ...and it carries on down both lines, across the face of the grandstand's upper deck: one continuous ribbon of light round the park
+    [-1,1].forEach(sd=>{const ln=[[BK_R/Math.SQRT2,BK_Z+BK_R/Math.SQRT2],[30,-4],[70,-70]].map(q=>new V3(q[0]*sd,0,q[1])),nn=new V3(.866*sd,0,.5),a=ln.map(q=>q.clone().addScaledVector(nn,29.85).setY(23)),b=ln.map(q=>q.clone().addScaledVector(nn,29.85).setY(30));
+      scene.add(new T.Mesh(ribbon(sd>0?a.slice().reverse():a,sd>0?b.slice().reverse():b,1),basic({map:led,side:T.DoubleSide})));});
     // airlock tunnels into the lower deck, one per section
     const lock=tex(128,128,(g,w,h)=>{g.fillStyle='#9aa0b0';g.fillRect(0,0,w,h);
       for(let x=-h;x<w;x+=24){g.fillStyle='#f2c81e';g.beginPath();g.moveTo(x,0);g.lineTo(x+12,0);g.lineTo(x+12+h,h);g.lineTo(x+h,h);g.closePath();g.fill();}
@@ -1568,6 +1571,17 @@ function sbTick(){if(sbMsgT<0)sbMsgT=now+4.5;else if(sbMsgT&&now>sbMsgT&&S.state
   sb.position.set(SBX,39,-(fenceR(0)+17));sb.lookAt(SBX*.4,16,0);scene.add(sb); /* set off to the right of centre, so it is not sitting behind the batter card on a phone */
   const leg=new T.MeshBasicMaterial({color:0x15132a});
   [-19,19].forEach(x=>{const m=new T.Mesh(new T.BoxGeometry(1.6,22,1.6),leg);m.position.set(SBX+x,20,-(fenceR(0)+18));scene.add(m);});
+  // LIT LIKE A PS2 JUMBOTRON: a bright bezel with a row of bulbs, a soft halo of its own light behind it, and a glassy sheen with scan
+  // lines across the face. All painted textures on flat panels, so it is free to draw.
+  {const face=tex(512,192,(g,w,h)=>{g.clearRect(0,0,w,h);g.fillStyle='rgba(0,0,0,.16)';for(let y=0;y<h;y+=4)g.fillRect(0,y,w,1.4);
+      const sh=g.createLinearGradient(0,0,w*.7,h);sh.addColorStop(0,'rgba(255,255,255,.2)');sh.addColorStop(.32,'rgba(255,255,255,.05)');sh.addColorStop(.33,'rgba(255,255,255,0)');sh.addColorStop(1,'rgba(0,0,0,.2)');g.fillStyle=sh;g.fillRect(0,0,w,h);
+      const vg=g.createRadialGradient(w/2,h/2,h*.3,w/2,h/2,w*.62);vg.addColorStop(0,'rgba(0,0,0,0)');vg.addColorStop(1,'rgba(0,0,0,.42)');g.fillStyle=vg;g.fillRect(0,0,w,h);},[1,1]);
+    const sheen=new T.Mesh(new T.PlaneGeometry(47.6,17.6),new T.MeshBasicMaterial({map:face,transparent:true,depthWrite:false,fog:false}));sheen.position.set(0,0,1.3);sb.add(sheen);
+    const bez=tex(512,192,(g,w,h)=>{g.clearRect(0,0,w,h);const B=13;g.fillStyle='#2a2f52';g.fillRect(0,0,w,h);g.clearRect(B,B,w-2*B,h-2*B);g.strokeStyle='#ffd23b';g.lineWidth=3;g.strokeRect(B-2,B-2,w-2*B+4,h-2*B+4);g.strokeStyle='rgba(255,255,255,.35)';g.lineWidth=2;g.strokeRect(2,2,w-4,h-4);
+      const bulb=(x,y)=>{const r=g.createRadialGradient(x,y,0,x,y,6);r.addColorStop(0,'#fff');r.addColorStop(.4,'#ffe9a0');r.addColorStop(1,'rgba(255,200,80,0)');g.fillStyle=r;g.fillRect(x-6,y-6,12,12);};
+      for(let x=10;x<w;x+=19){bulb(x,B/2);bulb(x,h-B/2);}for(let y=24;y<h-12;y+=19){bulb(B/2,y);bulb(w-B/2,y);}},[1,1]);
+    const frame=new T.Mesh(new T.PlaneGeometry(51.5,21),new T.MeshBasicMaterial({map:bez,transparent:true,depthWrite:false,fog:false}));frame.position.set(0,0,1.34);sb.add(frame);
+    const halo=new T.Sprite(new T.SpriteMaterial({map:glowTex,color:0x6fb8ff,blending:T.AdditiveBlending,depthWrite:false,transparent:true,opacity:.42,fog:false}));halo.scale.set(120,58,1);halo.position.set(0,0,-2.5);sb.add(halo);}
   scoreboard('MOONSHOT','MAYHEM');
 }
 // A ball off the batter's eye (a solar array) or the scoreboard shorts it out: the panel flickers, arcs crawl over it, sparks rain down.
@@ -3197,7 +3211,7 @@ let odBag=[],odLastK='';function odPick(){if(!odBag.length){odBag=['rev','lamp',
   let r=Math.random()*c.reduce((a,k)=>a+W[k],0),k=c[0];for(const q of c){r-=W[q];if(r<=0){k=q;break;}}odBag.splice(odBag.indexOf(k),1);odLastK=k;return k;}
 // BADGES. Earned once, kept on the device. Each has a name (ballplayer talk), what it takes, and an icon. badge(id) is called from wherever the feat happens.
 const BADGES=[['hit','KNOCK','Get your first hit','🧢'],['hr','WENT YARD','Hit your first home run','💥'],['hr450','TAPE MEASURE','Hit one 450 feet or more','📏'],['hr500','FIVE HUNDRED CLUB','Hit one 500 feet or more','🚀'],
-  ['odhr','OVERDRIVEN','Homer in Overdrive','🔥'],['juicehr','TOOK HIS BEST','Homer off a Juice pitch','🧃'],['duel','BEAT THE HEAT','Homer while the pitcher is in Overdrive','🥵'],['ambush','AMBUSH','Homer on the first pitch','⚡'],
+  ['odhr','OVERDRIVEN','Homer in Overdrive','🔥'],['juicehr','GOT HEEEM!','Homer off a Juice pitch','🧃'],['duel','BEAT THE HEAT','Homer while the pitcher is in Overdrive','🥵'],['ambush','AMBUSH','Homer on the first pitch','⚡'],
   ['slam','GRAND SALAMI','Hit a grand slam','🍖'],['b2b','BACK TO BACK','Homers in consecutive at-bats','👯'],['five','DERBY NIGHT','Five homers in one game','🎆'],['heater','ON A HEATER','Five hits in a row','♨️'],
   ['rev','IN ORBIT','Put one into orbit round the Moon','🌕'],['earth','NEXT STOP: EARTH','Hit one clean off the Moon','🌍'],['sat','SPACE JUNK','Take out the satellite','🛰️'],['lamp','LIGHTS OUT','Smash a light tower','💡'],['board','OFF THE SCOREBOARD','Homer off the scoreboard','📺'],['eye','OFF THE BATTER\'S EYE','Homer off the batter\'s eye','👁️'],
   ['send','WHEELS','Win a showdown at the bag','👟'],['jump','PERFECT JUMP','Stop the needle on gold','🥇'],['brawl','LAST MAN STANDING','Win a brawl','🥊'],['wore','WORE ONE','Get hit by a pitch','🩹'],
