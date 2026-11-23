@@ -257,6 +257,16 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 /* walk-off: gold light pours in from the edges and pulses */
 #hud.woff::after{content:'';position:absolute;inset:0;z-index:3;pointer-events:none;box-shadow:inset 0 0 90px 30px rgba(255,214,60,.75);animation:woff .5s ease-in-out infinite alternate}
 @keyframes woff{from{opacity:.35}to{opacity:1}}
+/* ratings went up or down: a wash of colour round the edges and a stream of arrows down both sides (kept to the sides so they never cross the player) */
+#statfx{position:absolute;inset:0;pointer-events:none;z-index:4;opacity:0;overflow:hidden}
+#hud #statfx.up,#hud #statfx.dn{opacity:1!important;visibility:visible!important}
+#statfx.up{box-shadow:inset 0 0 110px 34px rgba(57,255,106,.42);background:radial-gradient(ellipse at 50% 50%,rgba(57,255,106,0) 56%,rgba(20,140,60,.26) 100%)}
+#statfx.dn{box-shadow:inset 0 0 110px 34px rgba(255,60,40,.42);background:radial-gradient(ellipse at 50% 50%,rgba(255,60,40,0) 56%,rgba(150,20,10,.28) 100%)}
+#statfx i{position:absolute;font-style:normal;font-family:var(--display);line-height:1;-webkit-text-stroke:3px #000;paint-order:stroke fill;animation:sfxUp 1.5s linear infinite both}
+#statfx.up i{color:#39ff6a;text-shadow:0 0 14px rgba(57,255,106,.9)}#statfx.dn i{color:#ff4d2e;text-shadow:0 0 14px rgba(255,77,46,.9);animation-name:sfxDn}
+@keyframes sfxUp{0%{transform:translateY(60vh);opacity:0}15%{opacity:1}80%{opacity:1}100%{transform:translateY(-45vh);opacity:0}}
+@keyframes sfxDn{0%{transform:translateY(-45vh);opacity:0}15%{opacity:1}80%{opacity:1}100%{transform:translateY(60vh);opacity:0}}
+@media (prefers-reduced-motion:reduce){#statfx i{animation:none;opacity:.8}}
 #hud.pcut #pop{top:auto;bottom:3%}
 #hud.cel #tbar,#hud.cel #tim,#hud.cel #sharp,#hud.pcut #tbar,#hud.pcut #tim,#hud.pcut #card,#hud.pcut #hitinfo,#hud.pcut #pitchinfo,#hud.pcut #sharp{visibility:hidden!important}
 #hud.pcut #pop .t{font-size:clamp(24px,6.2vw,64px)}
@@ -676,6 +686,7 @@ body.mob #tip{display:block}body.mob .how{display:none}
     <div id="duelv" aria-hidden="true"></div>
     <div id="odv" aria-hidden="true"><i class="b"></i><i class="t"></i><i class="l"></i><i class="r"></i></div>
     <div id="odp" class="odp" aria-hidden="true"><i class="b"></i><i class="t"></i><i class="l"></i><i class="r"></i></div>
+    <div id="statfx" aria-hidden="true"></div>
     <button id="qmash" type="button" aria-hidden="true">TAP!</button>
     <button id="gobtn" type="button">GO!<small></small></button>
     <div id="qte" hidden><b id="qtt"></b><div id="qtr"></div><div id="qtm"><i id="qtb"></i></div></div>
@@ -2187,6 +2198,7 @@ function hbpEnd(fk,title){const b=curBatter(),r0=Math.random(),k=fk!==undefined?
   {const gb=v=>{const g=statGrade(v);return `<b class="gr g${g}"><u>${g}</u></b>`;},ch=(lab,o,n)=>`<span>${lab} ${gb(o)}${k?` <i class="${k>0?'hbu':'hbd'}">➜</i> ${gb(n)}`:''}</span>`;
     $('wnum').textContent=b.num;$('wname').textContent=b.name;$('wrat').innerHTML=ch(MOB?'PWR':'POWER',was.pwr,b.pwr)+ch(MOB?'CON':'CONTACT',was.con,b.con)+ch(MOB?'SPD':'SPEED',was.spd,b.spd);$('shout').classList.remove('go');
     $('wspot').textContent=k>0?'RATINGS UP · +2 JUICE':k<0?'RATINGS DOWN FOR THE GAME':'NO HARM DONE';$('wskip').textContent='';$('walk').hidden=false;$('hud').classList.add('wk');}
+  {const e=$('statfx');e.className='';e.innerHTML='';if(k){let h='';for(let i=0;i<12;i++){const left=i%2,x=left?rand(2,17):rand(83,96);h+=`<i style="left:${x.toFixed(1)}%;top:45%;font-size:${rand(26,50).toFixed(0)}px;animation-delay:${(-rand(0,1.5)).toFixed(2)}s;animation-duration:${rand(1.1,1.8).toFixed(2)}s">${k>0?'▲':'▼'}</i>`;}e.innerHTML=h;e.className=k>0?'up':'dn';}}
   S.state='hbprun';S.t=now;hud();}
 const HBR=3.2;
 // QUICK TIME EVENTS. At a play that could go either way the picture slows, then stops, and a short arrow code comes up. Enter it before
@@ -2253,7 +2265,7 @@ function qteTick(){const Q=QT,d0=9.5,d1=2.6,pe=now-Q.tp;
     if(Q.ball){const t=now-Q.ball.t;ball.visible=t<1.6;ball.scale.setScalar(1.6);ball.position.set(Q.ball.x-Q.ux*1.4*t+Q.nx*.9*t,1.1+4.2*t-4.9*t*t,Q.ball.z-Q.uz*1.4*t+Q.nz*.9*t);if(ball.position.y<.06)ball.position.y=.06;}
     if(e>=2.4){Q.hid.forEach(r=>{r.visible=true;});Q.hid=[];ball.visible=false;ball.scale.setScalar(1);$('qte').hidden=true;syncRunners();
       if(Q.M.pa&&!Q.noPA)afterPA(.9);else toReady(PACE.newBatter);}}}
-function hbpRunEnd(){$('walk').hidden=true;$('hud').classList.remove('wk');afterPA(.5);}
+function hbpRunEnd(){$('statfx').className='';$('walk').hidden=true;$('hud').classList.remove('wk');afterPA(.5);}
 // The pitcher's Overdrive is revealed with a cut to the mound, after the hitter's own entrance is over: he flexes, the screen goes red, then the news.
 const POD=2.1;
 function podReveal(){S.podPending=false;S.state='pod';S.t=now;
