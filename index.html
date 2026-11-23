@@ -371,6 +371,14 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
 .tb.jc.has{animation:jpulse .7s ease-in-out infinite alternate}
 @keyframes jpulse{from{box-shadow:0 4px 0 #000,0 0 10px 3px rgba(120,210,255,.7),0 0 0 2px rgba(190,240,255,.5);transform:scale(1)}to{box-shadow:0 4px 0 #000,0 0 34px 14px rgba(120,210,255,1),0 0 0 4px rgba(210,245,255,.95);transform:scale(1.08)}}
 .tb.jc b{position:absolute;right:-7px;top:-7px;min-width:28px;height:28px;padding:0 5px;border-radius:14px;background:var(--heat);color:#fff;font-size:15px;line-height:24px;border:2px solid #000;font-weight:400;text-shadow:none}.tb.jc.none b{display:none}
+/* JUICE IN THE TANK: the button is on fire for as long as there is a charge to spend, so it never reads as just another button */
+.tb.jc.has:not(.od):not(.on){background:radial-gradient(circle at 50% 112%,#fff6c8 0%,#ffd23b 22%,#ff7a1e 52%,#d81e0a 84%);border-color:#3a0a02;color:#fff;text-shadow:0 2px 0 #000,0 0 6px rgba(0,0,0,.8);animation:jfire .5s ease-in-out infinite alternate}
+.tb.jc.has:not(.od):not(.on)::after{content:'';position:absolute;z-index:-1;left:-14%;right:-14%;top:-66%;bottom:-2%;pointer-events:none;border-radius:0 0 50% 50%/0 0 30% 30%;filter:blur(1px) drop-shadow(0 0 6px rgba(255,140,40,.9));transform-origin:50% 100%;
+  background:radial-gradient(ellipse 15% 58% at 12% 100%,#fff3b0 0,#ffb02e 34%,#ff5a1e 58%,transparent 76%),radial-gradient(ellipse 17% 82% at 30% 100%,#ffffff 0,#ffd866 30%,#ff7a1e 56%,transparent 76%),radial-gradient(ellipse 19% 100% at 50% 100%,#ffffff 0,#ffe98a 28%,#ff8a1e 54%,transparent 76%),radial-gradient(ellipse 17% 86% at 70% 100%,#fff6c8 0,#ffc23b 32%,#ff641e 56%,transparent 76%),radial-gradient(ellipse 15% 60% at 88% 100%,#fff3b0 0,#ffb02e 34%,#ff5a1e 58%,transparent 76%);
+  opacity:.95;animation:flames .3s ease-in-out infinite alternate}
+@keyframes jfire{from{box-shadow:0 4px 0 #000,0 0 12px 3px rgba(255,150,40,.8),0 0 0 2px rgba(255,220,120,.5);transform:scale(1)}to{box-shadow:0 4px 0 #000,0 0 34px 13px rgba(255,120,30,1),0 0 0 4px rgba(255,235,150,.95);transform:scale(1.07)}}
+@media (prefers-reduced-motion:reduce){.tb.jc.has:not(.od):not(.on),.tb.jc.has:not(.od):not(.on)::after{animation:none}}
+#kj.has{background:linear-gradient(#ffd23b,#ff7a1e);color:#1a0a02}
 .tb.jc.gain{animation:jgain .5s cubic-bezier(.2,1.6,.4,1)}@keyframes jgain{0%{transform:scale(1)}40%{transform:scale(1.45)}100%{transform:scale(1)}}
 #jtoast{display:none;right:max(10px,env(safe-area-inset-right,0px));bottom:calc(var(--tbb) + min(128px,32vw) + min(76px,19vw) + 34px);padding:7px 14px;text-align:center;font-family:var(--display);font-style:italic;font-size:19px;color:var(--ink);background:#58d6ff;border:3px solid #000;border-radius:14px;box-shadow:0 4px 0 #000;opacity:0}
 #jtoast small{display:block;font-family:var(--hud);font-style:normal;font-weight:800;font-size:12px;letter-spacing:.08em;text-transform:uppercase}
@@ -1988,7 +1996,7 @@ const SND={
 };
 
 // ───────────────────────── game state
-const S={state:'title',t:0,inning:1,outs:0,balls:0,strikes:0,runs:0,bases:[0,0,0],hits:0,hrs:0,longest:0,streak:0,bestStreak:0,juice:.5,heat:.2,over:false,stk:false,opp:0,bi:-1,pitches:0,seen:{},kOut:null};
+const S={state:'title',t:0,inning:1,outs:0,balls:0,strikes:0,runs:0,bases:[0,0,0],hits:0,hrs:0,longest:0,streak:0,bestStreak:0,juice:.75,heat:.2,over:false,stk:false,opp:0,bi:-1,pitches:0,seen:{},kOut:null};
 let now=0,hitstop=0,timeScale=1,slowT=0,shake=0,fovKick=0,rumble=0;
 const aim={x:0,y:.82};
 const keys={};
@@ -2527,7 +2535,7 @@ function gameRating(){const G=S.goal,pts=S.runs*10+S.hits*4+S.hrs*8+(S.longest>=
   const T=[[0,'D','BENCH WARMER'],[20,'C','ROOKIE'],[45,'B','EVERYDAY STARTER'],[75,'A','ALL-STAR'],[110,'S','MOONSHOT LEGEND']];let i=0;T.forEach((t,j)=>{if(pts>=t[0])i=j;});
   return {pts,stars:i+1,grade:T[i][1],title:T[i][2],next:T[i+1]?T[i+1][0]-pts:0,nextTitle:T[i+1]?T[i+1][2]:''};}
 function newGame(){LINEUP.forEach(b=>{if(b.base)Object.assign(b,b.base);b.hb=0;}); /* stat changes from getting hit last only for the game */gamesPlayed++;try{localStorage.setItem('mm_games',gamesPlayed);}catch(e){}
-  Object.assign(S,{inning:1,outs:0,balls:0,strikes:0,runs:0,bases:[0,0,0],hits:0,hrs:0,longest:0,streak:0,bestStreak:0,juice:odEver?.5:1 /* until a player has switched Overdrive on once, every game opens with it charged and waiting */,heat:.2,over:false,stk:false,opp:0,bi:-1,pitches:0,seen:{},kOut:null});S.podN=0;S.podBi=-9;S.goal=null; /* per-game goals are switched off for now: pickGoal() is still here to bring them back */S.ks=0;S.d2=0;S.cardBi=-1;S.pChanges=0;S.pRuns0=0;S.pc3=false;S.pcPending=false;S.pStart=gamesPlayed%BULLPEN.length;S.pName=BULLPEN[S.pStart];setTimeout(pitcherModel,0); /* a different starter each game, so left-handers start some of them */$('pcap').textContent='PITCHER';S.sTaunt=null;S.stLast=false;jPend=false;S.orbN=0;S.odUses=0;S.brawled=false;S.qteN=0;S.goK=null;S.retalBi=-9;S.forceHbpBi=-9;S.walkoff=false;S.duel=false;$('hud').classList.remove('duel');S.pdLast=false;S.pOver=false;S.podPending=false;S.jSaid=false;S.overOn=false;S.spSeen=false;lastWalk='';
+  Object.assign(S,{inning:1,outs:0,balls:0,strikes:0,runs:0,bases:[0,0,0],hits:0,hrs:0,longest:0,streak:0,bestStreak:0,juice:.75 /* three bars: a hit in the very first at-bat fills the fourth and unlocks Overdrive */,heat:.2,over:false,stk:false,opp:0,bi:-1,pitches:0,seen:{},kOut:null});S.podN=0;S.podBi=-9;S.goal=null; /* per-game goals are switched off for now: pickGoal() is still here to bring them back */S.ks=0;S.d2=0;S.cardBi=-1;S.pChanges=0;S.pRuns0=0;S.pc3=false;S.pcPending=false;S.pStart=gamesPlayed%BULLPEN.length;S.pName=BULLPEN[S.pStart];setTimeout(pitcherModel,0); /* a different starter each game, so left-handers start some of them */$('pcap').textContent='PITCHER';S.sTaunt=null;S.stLast=false;jPend=false;S.orbN=0;S.odUses=0;S.brawled=false;S.qteN=0;S.goK=null;S.retalBi=-9;S.forceHbpBi=-9;S.walkoff=false;S.duel=false;$('hud').classList.remove('duel');S.pdLast=false;S.pOver=false;S.podPending=false;S.jSaid=false;S.overOn=false;S.spSeen=false;lastWalk='';
   $('title').hidden=true;$('over').hidden=true;$('pausebtn').hidden=false;$('mutebtn').hidden=false;setBatter();renderRep();scoreboard('PLAY BALL','INNING 1');S.opp=0;toReady(2);pop('PLAY BALL!','','logo');hud();SND.playball();cheer(.14,1.5);}
 
 // ───────────────────────── pitching
