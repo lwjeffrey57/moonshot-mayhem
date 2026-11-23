@@ -406,7 +406,7 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 .overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;
   background:radial-gradient(ellipse at 50% 40%,rgba(11,10,26,.55),rgba(11,10,26,.92));
   padding-block:20px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
-.logo{font-family:var(--display);font-style:italic;line-height:.86;transform:rotate(-4deg);-webkit-text-stroke:2px #000}
+.logo{width:min(600px,94vw,54vh);margin:0 auto -6px;filter:drop-shadow(0 8px 0 rgba(0,0,0,.55)) drop-shadow(0 0 34px rgba(58,150,255,.35))}.logo svg{display:block;width:100%;height:auto;overflow:visible}
 .logo .a{display:block;font-size:clamp(44px,11vw,120px);color:var(--volt);text-shadow:0 6px 0 #000,0 0 60px rgba(255,229,59,.5)}
 .logo .b{display:block;font-size:clamp(30px,7.4vw,82px);color:var(--heat);text-shadow:0 5px 0 #000}
 .tag{font-size:clamp(14px,2vw,18px);font-weight:700;letter-spacing:.2em;color:var(--dim);text-transform:uppercase}
@@ -696,7 +696,35 @@ body.mob #tip{display:block}body.mob .how{display:none}
     <div id="goal" hidden></div>
   </div>
   <div class="overlay" id="title">
-    <div class="logo"><span class="a">MOONSHOT</span><span class="b">MAYHEM</span></div>
+    <div class="logo" role="img" aria-label="Moonshot Mayhem"><svg viewBox="0 0 640 372" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<radialGradient id="lgMoon" cx="38%" cy="32%" r="78%"><stop offset="0" stop-color="#f4f6ff"/><stop offset=".55" stop-color="#aab0c8"/><stop offset="1" stop-color="#565b78"/></radialGradient>
+<linearGradient id="lgTop" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff8a8"/><stop offset=".5" stop-color="#ffe53b"/><stop offset="1" stop-color="#ff9a1e"/></linearGradient>
+<linearGradient id="lgSlab" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff6a3c"/><stop offset="1" stop-color="#c21a0e"/></linearGradient>
+<linearGradient id="lgTail" x1="1" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset=".18" stop-color="#bff0ff"/><stop offset=".5" stop-color="#3aa8ff"/><stop offset="1" stop-color="#1e4bff" stop-opacity="0"/></linearGradient>
+<radialGradient id="lgGlow" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#3ad6ff" stop-opacity=".55"/><stop offset="1" stop-color="#3ad6ff" stop-opacity="0"/></radialGradient>
+</defs>
+<g transform="rotate(-5 320 190)">
+<circle cx="320" cy="150" r="190" fill="url(#lgGlow)"/>
+<g fill="#fff"><circle cx="58" cy="70" r="2.4"/><circle cx="112" cy="26" r="1.6"/><circle cx="590" cy="150" r="2"/><circle cx="548" cy="238" r="1.5"/><circle cx="84" cy="212" r="1.8"/><circle cx="230" cy="14" r="1.4"/><path d="M40 138l3 8 8 3-8 3-3 8-3-8-8-3 8-3z"/><path d="M600 70l2.4 6.4 6.4 2.4-6.4 2.4-2.4 6.4-2.4-6.4-6.4-2.4 6.4-2.4z"/></g>
+<circle cx="320" cy="146" r="124" fill="url(#lgMoon)" stroke="#0b0a1a" stroke-width="7"/>
+<g fill="#6b7190" opacity=".55"><ellipse cx="268" cy="92" rx="26" ry="20"/><ellipse cx="372" cy="70" rx="15" ry="11"/><ellipse cx="398" cy="124" rx="21" ry="16"/><ellipse cx="236" cy="150" rx="12" ry="9"/><ellipse cx="322" cy="52" rx="8" ry="6"/></g>
+<g fill="none" stroke="#f4f6ff" stroke-width="2.5" opacity=".5"><path d="M246 84a26 20 0 0 1 30-11"/><path d="M360 64a15 11 0 0 1 16-4"/><path d="M380 116a21 16 0 0 1 22-7"/></g>
+<path d="M96 262C210 250 420 190 548 60L566 80C452 214 250 286 100 284Z" fill="url(#lgTail)" stroke="#0b0a1a" stroke-width="5" stroke-linejoin="round"/>
+<path d="M190 256C290 236 440 168 540 72" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" opacity=".8"/>
+<g transform="translate(560 62)"><circle r="30" fill="#fdfdf6" stroke="#0b0a1a" stroke-width="6"/><path d="M-13-25c10 16 10 34 0 50M13-25c-10 16-10 34 0 50" fill="none" stroke="#e23a22" stroke-width="3.2"/><g stroke="#e23a22" stroke-width="2.4"><path d="M-12-14l-7-2M-9-2l-8 0M-10 10l-7 3M12-14l7-2M9-2l8 0M10 10l7 3"/></g></g>
+<g font-family="'Russo One','Arial Black',Impact,sans-serif" font-style="italic" text-anchor="middle" transform="skewX(-8)">
+<text x="350" y="212" font-size="100" textLength="548" lengthAdjust="spacingAndGlyphs" fill="#0b0a1a" stroke="#0b0a1a" stroke-width="22" stroke-linejoin="round">MOONSHOT</text>
+<text x="350" y="221" font-size="100" textLength="548" lengthAdjust="spacingAndGlyphs" fill="#1b2a8c" stroke="#1b2a8c" stroke-width="10" stroke-linejoin="round">MOONSHOT</text>
+<text x="350" y="212" font-size="100" textLength="548" lengthAdjust="spacingAndGlyphs" fill="url(#lgTop)" stroke="#fff" stroke-width="2.5" paint-order="stroke">MOONSHOT</text>
+<path d="M176 240H570L554 318H160Z" fill="#0b0a1a" stroke="#0b0a1a" stroke-width="12" stroke-linejoin="round"/>
+<path d="M176 240H570L554 318H160Z" fill="url(#lgSlab)"/>
+<path d="M176 240H570L567 254H173Z" fill="#fff" opacity=".22"/>
+<text x="366" y="302" font-size="64" textLength="340" lengthAdjust="spacing" fill="#0b0a1a" stroke="#0b0a1a" stroke-width="9" stroke-linejoin="round">MAYHEM</text>
+<text x="366" y="302" font-size="64" textLength="340" lengthAdjust="spacing" fill="#f6f8ff">MAYHEM</text>
+</g>
+<g font-family="'Saira Condensed','Arial Narrow',Arial,sans-serif" font-weight="800" text-anchor="middle"><text x="320" y="352" font-size="19" letter-spacing="7" fill="#9fd9ff">LUNAR LEAGUE BASEBALL</text></g>
+</g></svg></div>
     <div class="tag">Arcade batting · 3 innings · swing for the lights</div>
     <div class="how">
       <div><b>Aim</b>Move the mouse (or drag) to put the bat ring on the pitch.</div>
@@ -1986,7 +2014,7 @@ let hudOver=false,hudBars=0,ringEcho=null,lastWalk='';
 const WALK_ONLY=['w_milling','w_drive','w_golf','w_sad']; // routines that are walk-ups only, never celebrations
 const CEL_FAV=['w_bboy','w_backflip','p_twerk','w_macarena'];let celLast='';const celClip=own=>{if(!WALK_ONLY.includes(own))return own;const C=MX.clip,w=C?WILD_CEL.filter(k=>C.intros[k]):[];return w.length?w[(Math.random()*w.length)|0]:own;}; // the milling routine is a walk-up only
 const earlyShow=n=>n<(gamesPlayed<=3?2:1);let wildTrot=false;
-const WILD_CEL=['w_backflip','w_bboy','w_macarena','w_salsa','w_bdance','w_flair','w_lift','w_pushup','p_loser','p_twerk','p_chicken','p_runman','p_fist','p_clap','p_threat','w_boxing','w_arrow','w_wave'],WILD_TAUNT=['p_twerk','p_chicken','p_backflip','p_bboy','p_macarena','p_runman'];
+const WILD_CEL=['w_backflip','w_bboy','w_macarena','w_salsa','w_bdance','w_flair','w_lift','w_pushup','p_loser','p_twerk','p_chicken','p_runman','p_fist','p_clap','p_threat','w_boxing','w_arrow','w_wave','w_hurricane'],WILD_TAUNT=['p_twerk','p_chicken','p_backflip','p_bboy','p_macarena','p_runman'];
 const juiceOn=()=>juiceArmed||keys.ShiftLeft||keys.ShiftRight;
 // ratings shown as grades: S is elite, F is a liability. The same scale for power, contact and speed.
 const GRADE_COL={S:'#ffd23b',A:'#3ddc6a',B:'#3ad6ff',C:'#f2f5ff',D:'#ff9a3b',F:'#ff4d2e'};
@@ -2027,7 +2055,7 @@ function startWalkup(){
   S.seen[i]=1;S.state='walkup';S.t=now;
   // now and then a surprise replaces his usual routine: he eats dirt on the way in, chips a golf shot with the bat,
   // gives the pitcher a friendly wave, drops and does push-ups, or squares up like he wants a fight. Each has the same small chance.
-  {const rare=['w_trip','w_golf','w_wave','w_pushup','w_fight','w_threat','w_bboy','w_backflip','w_lift'].filter(k=>MX.clip.intros[k]),r=Math.random()/.031|0,forced=DBG.trip===true?'w_trip':DBG.trip;
+  {const rare=['w_trip','w_golf','w_wave','w_pushup','w_fight','w_threat','w_bboy','w_backflip','w_lift','w_hurricane'].filter(k=>MX.clip.intros[k]),r=Math.random()/.031|0,forced=DBG.trip===true?'w_trip':DBG.trip;
     const first=Object.keys(S.seen).length===1&&MX.clip.intros.w_walkin; // the game always opens with a plain walk to the plate; the silliness starts with the second hitter
     S.walkClip=forced&&MX.clip.intros[forced]?forced:first?'w_walkin':(gamesPlayed<=3&&S.bi===1&&rare.length)?rare[(Math.random()*rare.length)|0]:r<rare.length?rare[r]:WALK.by[b.name];} // new players: the second hitter always brings one of the surprise walk-ups
   {const I=MX.clip.intros,forcedWalk=DBG.trip===true?'w_trip':DBG.trip;if(S.walkClip===lastWalk&&!(forcedWalk&&I[forcedWalk])){const alt=Object.keys(I).filter(k=>/^w_/.test(k)&&k!==lastWalk&&k!=='w_walkin');if(alt.length)S.walkClip=alt[(Math.random()*alt.length)|0];}lastWalk=S.walkClip;} // never the same walk-up twice in a row
@@ -2159,21 +2187,25 @@ const BR_ATT={b_jab:.36,b_jabstep:.62,b_quad:.42,b_kickl:.95,b_kickr:.62,b_butt:
 let brawlSeen=false;try{brawlSeen=localStorage.getItem('mm_brawl')==='1';}catch(e){}
 function brawlNeed(){const C=MX.clip,P=MX.pit;if(!WALK.on||!C||!P||!MX.on||!C.intros.b_stance||!C.intros.run||!C.intros.p_dying||!P.taunts.b_stance||!P.taunts.p_dying)return false;return DBG.brawl||(S.hbpN||0)<=1||Math.random()<.3;} // the first hit-by-pitch of every game is a brawl; after that it is a roll of the dice
 function brawlStart(){S.state='brawl';S.t=now;S.brawled=true;brawlSeen=true;try{localStorage.setItem('mm_brawl','1');}catch(e){}
-  MX.clip.hips.getWorldPosition(_p);BRW.x0=_p.x;BRW.z0=_p.z;BRW.bx=_p.x;BRW.bz=_p.z;BRW.win=DBG.brawl==='lose'?false:DBG.brawl==='win'?true:Math.random()<.5;BRW.r=-1;BRW.cur=null;BRW.ko=false;BRW.hits=0;BRW.zd=4.1;
+  MX.clip.hips.getWorldPosition(_p);BRW.x0=_p.x;BRW.z0=_p.z;BRW.bx=_p.x;BRW.bz=_p.z;BRW.win=DBG.brawl==='lose'?false:DBG.brawl==='win'?true:Math.random()<.5;BRW.r=-1;BRW.cur=null;BRW.ko=false;BRW.brth=false;BRW.hits=0;BRW.zd=4.1;
   const W=BRW.win?'b':'p',L=BRW.win?'p':'b',att=Math.random()<.5?[L,W,W]:[W,L,W],pool=Object.keys(BR_ATT).sort(()=>Math.random()-.5);
-  BRW.seq=att.map((a,i)=>({att:a,clip:pool[i],react:i===2?'p_dying':/kick|butt/.test(pool[i])?'b_gut':Math.random()<.5?'b_hit2':'b_gut'}));
+  // the first two blows: sometimes one is blocked (the eventual loser's are blocked more often); reactions are drawn from all three hit clips
+  BRW.seq=att.map((a,i)=>({att:a,clip:pool[i],block:i<2&&Math.random()<(a===L?.45:.15),react:i===2?'p_dying':/kick|butt/.test(pool[i])?'b_gut':['b_hit2','b_gut','b_hit1'][(Math.random()*3)|0]}));
   BRW.b={n:'run',t:now,loop:true};BRW.p={n:'b_stance',t:now,loop:true};
   pop('CHARGING THE MOUND!','','hot',true);roar(1.05,.4);crowdE=1;buzz([40,40,40,40,120]);shake=Math.max(shake,.3*FX);}
 function brawlTick(el){const B=BRW;
   if(el<B.ch){const k=ease(el/B.ch);B.bx=lerp(B.x0,0,k);B.bz=lerp(B.z0,BR_Z,k);}
   else{B.bx=0;B.bz=BR_Z;if(B.b.n==='run')B.b={n:'b_stance',t:now,loop:true};}
   const r=el<B.f0?-1:Math.min(B.n-1,Math.floor((el-B.f0)/B.rd));
-  if(r!==B.r&&r>=0&&el<B.f1){B.r=r;const q=B.seq[r];B.cur={q,t:now,hit:false};const a={n:q.clip,t:now};if(q.att==='b')B.b=a;else B.p=a;}
-  if(B.cur&&!B.cur.hit&&now-B.cur.t>=BR_ATT[B.cur.q.clip]){B.cur.hit=true;const q=B.cur.q,last=B.r===B.n-1,d={n:q.react,t:now,hold:last};if(q.att==='b')B.p=d;else B.b=d;
+  if(r!==B.r&&r>=0&&el<B.f1){B.r=r;const q=B.seq[r];B.cur={q,t:now,hit:false};const a={n:q.clip,t:now};if(q.att==='b')B.b=a;else B.p=a;if(q.block){const g={n:'b_block',t:now-.35};if(q.att==='b')B.p=g;else B.b=g;}}
+  if(B.cur&&!B.cur.hit&&now-B.cur.t>=BR_ATT[B.cur.q.clip]){B.cur.hit=true;const q=B.cur.q,last=B.r===B.n-1,d={n:q.react,t:now,hold:last};
+    if(q.block){noise(.08,'bandpass',900,400,.6);tone('triangle',300,180,.08,.4);buzz(25);shake=Math.max(shake,.18*FX);const e=$('shout');e.textContent='BLOCKED!';e.style.left='50%';e.style.top=(MOB?'38%':'30%');e.classList.toggle('b',q.att==='b');e.classList.remove('go');void e.offsetWidth;e.classList.add('go');return;}
+    if(q.att==='b')B.p=d;else B.b=d;
     SND.mitt();tone('sine',120,45,.2,.7);noise(.1,'lowpass',500,90,.7);buzz(last?[60,40,120]:[40]);B.hits=(B.hits||0)+1;shake=Math.max(shake,(.3+.17*B.hits)*FX);rumble=Math.max(rumble,.7+.4*B.hits);flash(last?.6:.25); /* every blow hits harder than the one before */burst(fxS,_p.set(0,1.35,BR_Z-.6),last?26:12,4,.45,[1,.9,.5],2,1);
     {const e=$('shout'),ws=last?['LIGHTS OUT!','GOOD NIGHT!','DOWN HE GOES!']:['POW!','WHAM!','BAM!','OOF!','CRACK!'];e.textContent=ws[(Math.random()*ws.length)|0];e.style.left='50%';e.style.top=(MOB?'38%':'30%');e.classList.toggle('b',q.att==='p');e.classList.remove('go');void e.offsetWidth;e.classList.add('go');}
     if(q.att==='b')crowdPump(last?1:.6);else if(!roarG)boo(.6);if(last){B.ko=true;rumble=1;}}
-  if(el>=B.f1+.9&&B.ko&&!B.taunt){B.taunt=true;const w={n:'p_fist',t:now,loop:true};if(B.win)B.b=w;else B.p=w;}
+  if(B.ko&&!B.brth&&el>=B.f1+.1){B.brth=true;const w={n:'b_breath',t:now,loop:true};if(B.win)B.b=w;else B.p=w;} // the winner stands over him getting his breath back, then lets him hear about it
+  if(el>=B.f1+1.1&&B.ko&&!B.taunt){B.taunt=true;const w={n:'p_fist',t:now,loop:true};if(B.win)B.b=w;else B.p=w;}
   if(el>=B.dur){B.taunt=false;const k=B.win?1:Math.random()<.6?-1:0;hbpEnd(k,B.win?'WON THE BRAWL!':'LOST THE BRAWL');}}
 function hbpStart(){S.state='hbp';S.t=now;S.hbpN=(S.hbpN||0)+1;S.hbpF=false;S.hbpR=false;S.hbpWill=undefined;ball.visible=false;ballShadow.visible=false;pring.visible=false;swing=null;
   // a ball off the body, not off leather: a dull, dead thump with a short slap on the front of it, then the air going out of him (no mitt pop)
@@ -3026,7 +3058,7 @@ function setupClip(obj,clip,B,sk){
   // intros stay in the batter's box: work out how far each clip sits (or finishes) from where he stands in his stance
   const hipsAt=(c,ts)=>{const v=new V3(),sum=new V3();probe(c,at=>ts.forEach(t=>{at(t);C.hips.getWorldPosition(v);sum.add(v);}));return sum.multiplyScalar(1/ts.length);},home=hipsAt(ic||clip,[0]);
   C.intros={};obj.animations.filter(c=>/^[wdcbq]_/.test(c.name)||c.name==='run'||/^p_(loser|twerk|chicken|runman|fist|clap|threat|dying)$/.test(c.name)).forEach(c=>{keep(c);
-    if(c.name==='q_flykick'||c.name==='q_slide'||c.name==='run'){const ht=c.tracks.find(t=>/Hips\.position$/.test(t.name));if(ht){const v=ht.values;for(let k=3;k<v.length;k+=3){v[k]=v[0];v[k+2]=v[2];}}} /* these two play on the spot: the game moves him, so the kick lands him on the bag instead of carrying him past it */
+    if(c.name==='q_flykick'||c.name==='q_slide'||c.name==='run'||c.name==='w_hurricane'){const ht=c.tracks.find(t=>/Hips\.position$/.test(t.name));if(ht){const v=ht.values;for(let k=3;k<v.length;k+=3){v[k]=v[0];v[k+2]=v[2];}}} /* these two play on the spot: the game moves him, so the kick lands him on the bag instead of carrying him past it */
     const loop=c.duration<2.5,ref=hipsAt(c,loop?[0,1,2,3,4,5,6,7].map(k=>k/8*c.duration):[c.duration-.02]);
     const a=mixer.clipAction(c);a.play();a.setEffectiveWeight(0);C.intros[c.name]={a,dur:c.duration,loop,off:{x:home.x-ref.x,z:home.z-ref.z},loc:{x:-(ref.x-obj.position.x),z:-(ref.z-obj.position.z)}};}); // loc: where the routine sits relative to the model's own origin
 }
