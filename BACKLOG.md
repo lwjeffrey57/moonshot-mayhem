@@ -115,3 +115,6 @@ different one each time, and a reason to want the next one. Reserved for no-doub
 - Audio has never been listened to by the developer side; all levels and mixes need a human ear.
 - Real-phone frame rate and feel are only checked on the owner's iPhone XR.
 - Many cutscenes and effects have only been checked as stills, not in motion.
+
+## Quick time event audio
+- Proper sound cues for getting it right: a ding per correct arrow (rising), a build-up for the mash meter, a tick/tension loop and a hit sound for the needle game. Synth tones are in as placeholders (made louder 2026-11-23); replace with recorded sounds.

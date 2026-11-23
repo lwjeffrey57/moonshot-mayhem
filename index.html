@@ -276,7 +276,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
 #hud.cel #tbar,#hud.cel #tim,#hud.cel #sharp,#hud.pcut #tbar,#hud.pcut #tim,#hud.pcut #card,#hud.pcut #hitinfo,#hud.pcut #pitchinfo,#hud.pcut #sharp{visibility:hidden!important}
 #hud.pcut #pop .t{font-size:clamp(24px,6.2vw,64px)}
 #hud.pcut #pop{left:14%;right:14%}
-#hud.hbps #pop,#hud.mob.hbps #pop{top:auto!important;bottom:7%} /* the man on the ground fills the middle of the picture: the call goes underneath him */
+#hud.hbps #pop,#hud.mob.hbps #pop{bottom:auto} /* the man on the ground fills the middle of the picture: the call goes underneath him */
 #hud.qs #pop{left:4%;right:4%}#hud.qs #pop .t{font-size:clamp(34px,10.5vw,84px)}
 #hud.pcut #pop .s{font-size:clamp(12px,2.4vw,22px);margin-top:3px}
 #hud.mob #pop.logo{top:28%} /* PLAY BALL: below the batter card, above the pitcher */
@@ -889,7 +889,10 @@ function podCls(){const st=S.state,on=pOD()&&!(st==='title'||st==='over'||st==='
   if((st==='qte')!==qsOn){qsOn=st==='qte';$('hud').classList.toggle('qs',qsOn);}
   if((st==='hbp')!==hbOn){hbOn=st==='hbp';$('hud').classList.toggle('hbps',hbOn);}}
  // while the camera is close on the pitcher, call-outs drop to a smaller line along the bottom so the words never sit on him
-function draw(){podCls();shTick();{const pc=now-pcutT<.06,e=$('pop');if(pc!==pcutOn){pcutOn=pc;$('hud').classList.toggle('pcut',pc);if(!pc){e.style.top='';e.style.bottom='';e.className='';}}
+// Hit by a pitch: the call sits just under the man on the ground (never across him), as high as that allows, and always wholly on screen.
+let hbTop=false;function hbpPop(){const e=$('pop');if(S.state==='hbp'&&MX.clip&&MX.clip.hips){MX.clip.hips.getWorldPosition(_s0);_s0.y=-.12;_s0.project(camera);const H=canvas.clientHeight||innerHeight,y=(-_s0.y*.5+.5)*H,eh=e.offsetHeight||80;
+    e.style.bottom='auto';e.style.top=Math.min(H-eh-10,Math.max(y+14,H*.4)).toFixed(0)+'px';hbTop=true;}else if(hbTop){hbTop=false;e.style.top='';e.style.bottom='';}}
+function draw(){podCls();shTick();hbpPop();{const pc=now-pcutT<.06,e=$('pop');if(pc!==pcutOn){pcutOn=pc;$('hud').classList.toggle('pcut',pc);if(!pc){e.style.top='';e.style.bottom='';e.className='';}}
   if(pc){_s0.copy(pcutH).project(camera);const H=canvas.clientHeight||innerHeight;e.style.bottom='auto';{const t1=e.querySelector('.t'),s1=e.querySelector('.s');e.style.top=Math.max(/\bs(up|dn)\b/.test(e.className)?(MOB?112:84):6 /* the ratings call stays clear of the scoreboard and the meters */,(-_s0.y*.5+.5)*H-t1.offsetHeight-(s1.textContent?s1.offsetHeight+6:0)).toFixed(0)+'px';}}} // call-outs sit just above the head of whoever the close-up is on
  lodTick();gloveTick();if(composer)composer.render();else renderer.render(scene,camera);sharpTick();tagsTick();cardTick();}
 const scene=new T.Scene();
@@ -1593,9 +1596,9 @@ const HOME={base:'#1b2a6b',trim:'#f26a1b',ink:'#f4f4f0',word:'Comets'};
 const AWAY={base:'#f4f4f0',trim:'#0e7c86',ink:'#0e3c46',pin:'rgba(14,60,70,.35)',word:'Krakens'};
 const LINEUP=[
   {name:'VASQUEZ',num:27,spd:1.0,pwr:1.0,con:1.05,skin:0xb9794f},{name:'OKAFOR',body:1,lh:true,num:8,spd:1.14,pwr:.96,con:1.12,skin:0x6b4226},
-  {name:'DELACROIX',num:3,crouch:true,spd:1.02,pwr:1.06,con:1.0,skin:0xe2b08a},{name:'BRICKHOUSE',body:2,num:44,spd:0.78,pwr:1.16,con:.82,skin:0xd9a47c},
+  {name:'DELACROIX',body:7,num:3,crouch:true,spd:1.02,pwr:1.06,con:1.0,skin:0xe2b08a},{name:'BRICKHOUSE',body:2,num:44,spd:0.78,pwr:1.16,con:.82,skin:0xd9a47c},
   {name:'TANAKA',body:6,lh:true,num:51,spd:1.1,pwr:1.02,con:1.08,skin:0xe6bd94},{name:'MONTOYA',body:3,num:19,crouch:true,spd:0.95,pwr:1.1,con:.95,skin:0xa8683e},
-  {name:'ABERNATHY',body:4,lh:true,num:12,spd:1.15,pwr:.94,con:1.1,skin:0xf0c4a0},{name:'JACKSON-BELL',num:35,crouch:true,spd:0.81,pwr:1.12,con:.93,skin:0x5a3820},
+  {name:'ABERNATHY',body:4,lh:true,num:12,spd:1.15,pwr:.94,con:1.1,skin:0xf0c4a0},{name:'JACKSON-BELL',body:8,num:35,crouch:true,spd:0.81,pwr:1.12,con:.93,skin:0x5a3820},
   {name:'KOWALSKI',body:5,num:6,spd:1.04,pwr:.98,con:1.04,skin:0xe8b690},
 ];
 const batter=makeFigure({skin:0xb9794f,pants:0xb9bcc8,stripe:0x1b2a6b,trimC:0xf26a1b,sleeve:0x1b2a6b,cap:0x14204a,helmet:true,bglove:0xf26a1b,jersey:Object.assign({name:'VASQUEZ',num:27},HOME)});
@@ -1966,8 +1969,9 @@ function heartTick(){
   const t=AC.currentTime;if(t<hbNext)return;
   hbNext=t+(S.pOver&&S.over&&S.overOn?.52:S.pOver?.62:.82);
   // two thumps. The low sine is the chest-felt part on headphones; the higher triangle and the click are what a phone speaker can actually play
-  tone('sine',74,40,.14,1.3);tone('triangle',170,85,.11,.85);noise(.05,'lowpass',420,120,.8);
-  tone('sine',62,34,.13,1,.17);tone('triangle',150,75,.1,.6,.17);noise(.04,'lowpass',360,100,.55,1,.17);}
+  const hv=pOD()?1+.3*Math.min(4,(S.balls|0)+(S.strikes|0)):1; /* his Overdrive: the pulse pounds harder with every pitch of the at-bat */
+  tone('sine',74,40,.14,1.3*hv);tone('triangle',170,85,.11,.85*hv);noise(.05,'lowpass',420,120,.8*hv);
+  tone('sine',62,34,.13,1*hv,.17);tone('triangle',150,75,.1,.6*hv,.17);noise(.04,'lowpass',360,100,.55*hv,1,.17);}
 // the home crowd lets the pitcher (and the umpire) hear it
 function boo(vol){const have=['boo1','boo2','boo3'].filter(n=>SFX[n]);if(!AC||!have.length||roarG)return;
   sfxSlice(have[(Math.random()*have.length)|0],vol,rand(.94,1.06),rand(0,2.4),rand(2.4,3.3));cheerBusy=AC.currentTime+2.4;}
@@ -2360,7 +2364,7 @@ function toReady(d){if(S.walkoff&&S.state!=='end'&&S.state!=='over'){S.walkoff=f
     if(S.pcW){const old=BULLPEN[(S.pChanges+BULLPEN.length-1)%BULLPEN.length];flash(.3);pop(old[0]+' IS DONE','HIT THE SHOWERS','cool',true);cheer(.3,2.4);}else pcIntro();
     return;}
   if(WALK.on&&S.fresh&&S.bi>=0&&!S.seen[S.bi%LINEUP.length]&&MX.clip&&MX.clip.intros[WALK.by[curBatter().name]])startWalkup();}
-const BULLPEN=[['STORM',99,'',0],['VOLKOV',47,'L',1],['DIAZ',13,'',2],['NITRO',7,'',3],['ZLORP',50,'L',4],['DRAKE',25,'',5],['MAYNAR',30,'',6],['JONES',4,'L',7],['PARKER',21,'',8],['RIPTIDE',54,'L',9]] /* name, number, 'L' = left-hander (the same delivery mirrored), which body he wears */,PCH=2.7,PCW=2.8;
+const BULLPEN=[['STORM',99,'',0],['VOLKOV',47,'L',1],['DIAZ',13,'',2],['NITRO',7,'',3],['ZLORP',50,'L',4],['DRAKE',25,'',5],['MAYNAR',30,'',6],['JONES',4,'L',7],['PARKER',21,'',8],['RIPTIDE',54,'L',9],['ROMERO',66,'',10],['ASTRA',48,'L',11],['BRADY',40,'',12],['DEMON',6,'',13]] /* name, number, 'L' = left-hander (the same delivery mirrored), which body he wears */,PCH=2.7,PCW=2.8;
 // HIT BY PITCH. He wears it: down in a heap, a beat on the ground, back to his feet, then he limps to first with an extra bar of Juice for his trouble.
 const HB1=3.0,HBD=5.0;
 // THE BRAWL. Some hit-by-pitches don't end with a trot to first: the hitter charges the mound. He runs out, the pitcher squares up,
@@ -2429,8 +2433,8 @@ const QT={ph:'',kind:'',M:null,code:[],i:0,lim:0,t1:0,tp:0,ok:false,runT:1.5,hea
 // the base back toward him), the heads-up call, and what a made or missed code does. pa: the plate appearance is still open (the
 // scenario came off an out), so the normal end-of-at-bat handling runs afterwards.
 const QTE_MOVES={
-  plate:{name:'SCISSOR KICK',code:['R','R','U','D','R','L','U','R'],base:0,u:[-.7071,-.7071],call:"HE'S COMING HOME!",ok:()=>{S.bases[2]=0;addRuns(1);},okT:['SAFE!',''],no:()=>{S.bases[2]=0;recordOut();},noT:['OUT!','']},
-  dp:{name:'TAKE-OUT KICK',code:['D','L','D','R','U','R','D'],base:2,u:[.7071,.7071],call:'THEY WANT TWO!',ok:()=>{S.bases[0]=1;},okT:['SAFE!',''],no:()=>{S.bases[0]=0;recordOut();},noT:['OUT!',''],pa:true},
+  plate:{name:'BEAT THE THROW!',code:['R','R','U','D','R','L','U','R'],base:0,u:[-.7071,-.7071],call:"HE'S COMING HOME!",ok:()=>{S.bases[2]=0;addRuns(1);},okT:['SAFE!',''],no:()=>{S.bases[2]=0;recordOut();},noT:['OUT!','']},
+  dp:{name:'TAKE-OUT KICK',code:['D','L','D','R','U','R','D'],base:2,u:[.7071,.7071],call:'BREAK UP THE PLAY!',ok:()=>{S.bases[0]=1;},okT:['SAFE!',''],no:()=>{S.bases[0]=0;recordOut();},noT:['OUT!',''],pa:true},
   stretch2:{name:'GOING FOR TWO',code:['R','D','R','U','L','R'],base:2,u:[.7071,.7071],call:"HE'S GOING FOR TWO!",ok:()=>{S.bases[0]=0;S.bases[1]=1;},okT:['SAFE!',''],no:()=>{S.bases[0]=0;recordOut();},noT:['OUT!','']},
   stretch3:{name:'GOING FOR THREE',code:['U','R','U','L','D','R','U'],base:3,u:[.7071,-.7071],call:"HE'S GOING FOR THREE!",ok:()=>{S.bases[1]=0;S.bases[2]=1;},okT:['SAFE!',''],no:()=>{S.bases[1]=0;recordOut();},noT:['OUT!','']},
   adv3:{name:'FIRST TO THIRD',code:['R','U','L','U','R','D','R'],base:3,u:[.7071,-.7071],call:"HE'S GOING TO THIRD!",ok:()=>{S.bases[1]=0;S.bases[2]=1;},okT:['SAFE!',''],no:()=>{S.bases[1]=0;recordOut();},noT:['OUT!','']},
@@ -2471,8 +2475,8 @@ const QPB={};
 function qteKey(d){if(S.state!=='qte'||QT.ph!=='input')return;
   {const b=QPB[d]||(QPB[d]=document.querySelector('#qpad [data-d='+d+']')),good=QT.mash||d===QT.code[QT.i];if(b){b.className=good?'hit':'miss';clearTimeout(b._t);b._t=setTimeout(()=>{b.className='';},150);}}
   if(QT.stop){const x=QT.sx,ins=z=>x>=z[0]&&x<=z[0]+z[1];QT.gold=ins(QT.so);const ok=QT.gold||ins(QT.sg);buzz(ok?[20,30,60]:[40,30,40]);tone(ok?'triangle':'sawtooth',QT.gold?990:ok?660:150,QT.gold?1480:ok?880:80,.12,.3);const n=$('qsn');if(n)n.className=QT.gold?'au':ok?'ok':'no';qteDone(ok);return;}
-  if(QT.mash){QT.fill+=1/(15*Math.pow(QT.D||1,.7));buzz(10);tone('triangle',380+520*Math.min(1,QT.fill),420+560*Math.min(1,QT.fill),.05,.25);qteShow();if(QT.fill>=1)qteDone(true);return;}
-  if(d===QT.code[QT.i]){QT.i++;buzz(15);tone('triangle',520+110*QT.i,700+110*QT.i,.07,.3);if(QT.i>=QT.code.length){qteShow();qteDone(true);return;}}
+  if(QT.mash){QT.fill+=1/(15*Math.pow(QT.D||1,.7));buzz(10);tone('triangle',380+520*Math.min(1,QT.fill),420+560*Math.min(1,QT.fill),.06,.5);qteShow();if(QT.fill>=1)qteDone(true);return;}
+  if(d===QT.code[QT.i]){QT.i++;buzz(15);tone('triangle',520+110*QT.i,700+110*QT.i,.09,.6);tone('sine',1040+220*QT.i,1400+220*QT.i,.12,.35); /* a clear ding, a step higher with every arrow you get right */if(QT.i>=QT.code.length){qteShow();qteDone(true);return;}}
   else{QT.t1-=.3;buzz([30,30,30]);tone('sawtooth',160,90,.12,.3);const r=$('qtr');r.classList.remove('bad');requestAnimationFrame(()=>r.classList.add('bad'));} // a wrong arrow costs a third of a second off the clock; your progress stays
   qteShow();}
 function qteDone(ok){QT.ph='out';QT.ok=ok;QT.t1=now;QT.hit=false;qteSeen=true;try{localStorage.setItem('mm_qte','1');}catch(e){}
@@ -2809,14 +2813,14 @@ function tryContact(){flight_pop=false;if(pitch.hbp){swing.done=true;swing.miss=
   const play=judge(tr,S.over&&S.overOn?Object.assign({},b,{spd:b.spd*1.08}):b);play.tag=play.tag||tr.tag||(kind==='TOPSPIN SINKER'?'':kind);if(tr.offP&&play.type==='hit'&&!play.infield)play.tag='ERROR · OFF THE PITCHER';if(tr.offF&&play.type==='hit')play.tag='ERROR · ATE HIM UP'; /* a ball a fielder should have handled and didn't is scored as his error */
   flight={tr,play,t0:now,q,pw,tb,od:!!(S.over&&S.overOn),v,done:false,called:false,trailC:S.over&&S.overOn?[.2,.55,1]:tb?[1,.45,.1]:pw&&q>.75?[1,.85,.25]:[.5,.5,.55]}; // Overdrive hits burn blue, Juice hits orange
   // Some Overdrive home runs don't come down: the ball leaves the Moon's orbit, headed for Earth. Always the first one a player ever hits; after that, about a third of them.
-  if(flight.od&&play.type==='hr'&&(DBG.orbit||DBG.sat||DBG.lamp||!orbSeen||Math.random()<.5)){const pick3=Math.random(),lampH=DBG.lamp||(orbSeen&&!DBG.orbit&&!DBG.sat&&pick3<.34&&TOWERS.length>0),sat=!lampH&&(DBG.sat||(orbSeen&&!DBG.orbit&&pick3<.67)),rev=!lampH&&!sat&&(DBG.rev||(orbSeen&&!DBG.orbit&&Math.random()<.7));S.orbN=(S.orbN||0)+1;orbSeen=true;try{localStorage.setItem('mm_orbit','1');}catch(e){}flight.orbit=true;flight.rev=rev;play.endT+=9;
+  if(flight.od&&play.type==='hr'&&(DBG.orbit||DBG.sat||DBG.lamp||DBG.rev||!orbSeen||Math.random()<.65)){const kd=DBG.lamp?'lamp':DBG.sat?'sat':DBG.rev?'rev':(DBG.orbit||!orbSeen)?'earth':odPick(),lampH=kd==='lamp'&&TOWERS.length>0,sat=kd==='sat',rev=kd==='rev';S.orbN=(S.orbN||0)+1;orbSeen=true;try{localStorage.setItem('mm_orbit','1');}catch(e){}flight.orbit=true;flight.rev=rev;play.endT+=9;
     // its own flight from the moment it leaves the bat: one smooth climb out over the wall and away, never the normal arc
     const hd=Math.hypot(v0.x,v0.z)||1,dx=v0.x/hd,dz=v0.z/hd;flight.orbP=[p0.clone(),new V3(p0.x+dx*46,p0.y+15,p0.z+dz*46),new V3(p0.x+dx*135,96,p0.z+dz*135),ORB_TO.clone()];
     // ...or it never gets as far as Earth: there is a satellite in the way
     if(sat){flight.sat=true;const T0=new V3(p0.x+dx*430,500,p0.z+dz*430);flight.orbP[2].set(p0.x+dx*190,250,p0.z+dz*190);flight.orbP[3]=T0;satPlace(T0,Math.atan2(dx,dz));}
     // ...or it finds a light tower
     if(lampH){const ph=Math.atan2(dx,-dz)/DEG;let bi=0,bd=1e9;TOWERS.forEach((t,i)=>{const e=Math.abs(t.d-ph);if(e<bd){bd=e;bi=i;}});const T1=TOWERS[bi].p;flight.lamp=bi+1;
-      flight.orbP[1].set(lerp(p0.x,T1.x,.22),p0.y+18,lerp(p0.z,T1.z,.22));flight.orbP[2].set(lerp(p0.x,T1.x,.62),T1.y+34,lerp(p0.z,T1.z,.62));flight.orbP[3]=T1.clone();}}
+      flight.orbP[1].set(lerp(p0.x,T1.x,.3),lerp(p0.y,T1.y,.4),lerp(p0.z,T1.z,.3));flight.orbP[2].set(lerp(p0.x,T1.x,.7),lerp(p0.y,T1.y,.86),lerp(p0.z,T1.z,.7)); /* a line shot: it leaves the bat on a rope and is still climbing when it smashes into the lights, never dropping onto them */flight.orbP[3]=T1.clone();}}
   pitch.hit=true;pring.visible=false;decoy.visible=false;S.state='flight';payHeat();$('mph').textContent=pitchMph(pitch.dur);$('plast').textContent=pitch.P.n+' · '+pitchMph(pitch.dur)+' MPH';$('pitchinfo').classList.add('on'),$('plast').classList.add('on');renderRep(pitch.P);
   if(tb)juiceArmed=false;
   // ── the payoff
@@ -3011,6 +3015,9 @@ function revTick(e){if(!REV.g)revBuild();const u=clamp(e/REV.dur,0,1),th=(PI*2+.
   const P=REV.trail.geometry.attributes.position,Cc=REV.trail.geometry.attributes.color,N=REV.N,span=Math.min(th,2.4);for(let i=0;i<N;i++){const k=i/(N-1);revAt(th-span*(1-k),_a);P.setXYZ(i,_a.x,_a.y,_a.z);const f=k*k;Cc.setXYZ(i,.25*f,.6*f,1*f);}P.needsUpdate=true;Cc.needsUpdate=true;{const H=REV.head.geometry.attributes.position;revAt(th,_a);H.setXYZ(0,_a.x,_a.y,_a.z);H.needsUpdate=true;}
   REV.halo.scale.setScalar(1+.25*Math.sin(now*9));}
 function revOff(){if(REV.g)REV.g.visible=false;$('hud').classList.remove('rv');}
+// The Overdrive homer shows are dealt like cards: none comes up again until every one has been seen, and the first of a new deal is never the last of the old one.
+let odBag=[],odLastK='';function odPick(){if(!odBag.length){odBag=['rev','lamp','sat','earth'];}const W={rev:3,lamp:2,sat:2,earth:1};let c=odBag.filter(k=>k!==odLastK);if(!c.length)c=odBag;
+  let r=Math.random()*c.reduce((a,k)=>a+W[k],0),k=c[0];for(const q of c){r-=W[q];if(r<=0){k=q;break;}}odBag.splice(odBag.indexOf(k),1);odLastK=k;return k;}
 let odEver=false;try{odEver=localStorage.getItem('mm_od')==='1';}catch(e){}
 let orbSeen=false;try{orbSeen=localStorage.getItem('mm_orbit')==='1';}catch(e){} // the very first Overdrive homer a player ever hits always leaves orbit; after that it is about one in three
 const D2={clip:'',dur:2.9,base:2},PDEF=2.0,ORB_TO=new V3(94,462,-858);
@@ -3179,13 +3186,16 @@ const MX={ready:false,map:[],on:true,token:0,kind:'ely'};
 // player looks you can switch between on the title screen
 const MODELS={ely:{label:'armoured',body:'ely.txt',clips:'ely_clips.min.json',tex:{d:'ely_d.jpg',n:'ely_n.jpg',s:'ely_s.jpg',g:'ely_g.jpg'},
   bat:[{body:'exored.txt',hide:/Eye_Spec|Brows/,tex:{Body_MAT:['exored_d0.jpg','exored_n0.jpg'],Exo_MAT:['exored_d1.jpg','exored_n1.jpg']}},{body:'dreyar.txt',tex:{dreyar_M3:['dreyar_d0.jpg','dreyar_n0.jpg']}},
-    {body:'david.txt',tex:{Ch28_body:['david_d0.jpg','david_n0.jpg']}},{body:'jolleen.txt',tex:{phong1:['jolleen_d0.jpg','jolleen_n0.jpg']}},{body:'abe.txt',tex:{Ch39_Body:['abe_d0.jpg','abe_n0.jpg']}},{body:'exo.txt',hide:/Eye_Spec|Brows/,tex:{Body_MAT:['exo_body.jpg'],Exo_MAT:['exo_suit.jpg']}}], /* hitters who are not the house model: LINEUP[..].body is 1-based into this list */
+    {body:'david.txt',tex:{Ch28_body:['david_d0.jpg','david_n0.jpg']}},{body:'jolleen.txt',tex:{phong1:['jolleen_d0.jpg','jolleen_n0.jpg']}},{body:'abe.txt',tex:{Ch39_Body:['abe_d0.jpg','abe_n0.jpg']}},{body:'exo.txt',hide:/Eye_Spec|Brows/,tex:{Body_MAT:['exo_body.jpg'],Exo_MAT:['exo_suit.jpg']}},
+    {body:'olivia.txt',col:0xa4a4a8,tex:{Ch11_body1:['olivia_d0.jpg','olivia_n0.jpg'],Ch11_body:['olivia_d1.jpg','olivia_n1.jpg']}},{body:'dummy.txt',tex:{Ch32_body:['dummy_d0.jpg','dummy_n0.jpg']}}], /* hitters who are not the house model: LINEUP[..].body is 1-based into this list */
   def:{body:'van.txt',tex:{d:'van_d.jpg',n:'van_n.jpg',s:'van_s.jpg'}},ump:{body:'exo.txt',tex:{Body_MAT:'exo_body.jpg',Exo_MAT:'exo_suit.jpg'}},
   // other bodies for the mound: every pitching change brings a different-looking arm (each material: colour map, normal map)
   pit:[{body:'crypto.txt',tex:{Ch45_Body:['crypto_d.jpg','crypto_n.jpg']}},{body:'alien.txt',tex:{Ch44_Body:['alien_d0.jpg','alien_n0.jpg'],Ch44_body1:['alien_d1.jpg','alien_n1.jpg']}},
     {body:'racer.txt',tex:{Ch20_body:['racer_d0.jpg','racer_n0.jpg']}},{body:'zlorp.txt',tex:{Ch50_body1:['zlorp_d0.jpg'],Ch50_body:['zlorp_d1.jpg','zlorp_n1.jpg']}},
     {body:'drake.txt',tex:{Ch25_Body:['drake_d0.jpg','drake_n0.jpg'],Ch25_body1:['drake_d1.jpg','drake_n1.jpg']}},{body:'maynar.txt',tex:{Ch30_Body1:['maynar_d0.jpg','maynar_n0.jpg'],Ch30_Body:['maynar_d1.jpg','maynar_n1.jpg']}},
-    {body:'jones.txt',tex:{Ch04_body:['jones_d0.jpg','jones_n0.jpg']}},{body:'parker.txt',tex:{Body_MAT:['parker_d0.jpg']}},{body:'exo.txt',hide:/Eye_Spec|Brows/,tex:{Body_MAT:['exo_body.jpg'],Exo_MAT:['exo_suit.jpg']}}]}},ORDER=['ely']; // one look for now; add entries here to offer more on the title screen
+    {body:'jones.txt',tex:{Ch04_body:['jones_d0.jpg','jones_n0.jpg']}},{body:'parker.txt',tex:{Body_MAT:['parker_d0.jpg']}},{body:'exo.txt',hide:/Eye_Spec|Brows/,tex:{Body_MAT:['exo_body.jpg'],Exo_MAT:['exo_suit.jpg']}},
+    {body:'romero.txt',tex:{Ch10_body:['romero_d0.jpg','romero_n0.jpg'],Ch10_body1:['romero_d1.jpg','romero_n1.jpg']}},{body:'astra.txt',hide:/hair/i,tex:{Ch48_body1:['astra_d0.jpg','astra_n0.jpg'],Ch48_body:['astra_d1.jpg','astra_n1.jpg']}},
+    {body:'brady.txt',hide:/hair|beard/i,tex:{Ch40_body:['brady_d0.jpg','brady_n0.jpg'],Ch40_body1:['brady_d1.jpg','brady_n1.jpg']}},{body:'demon.txt',tex:{Demon_MAT:['demon_d0.jpg','demon_n0.jpg']}}]}},ORDER=['ely']; // one look for now; add entries here to offer more on the title screen
 try{const k=localStorage.getItem('mm_kind');if(MODELS[k])MX.kind=k;}catch(e){}
 const atlasC=document.createElement('canvas');atlasC.width=atlasC.height=1024;const atlasT=new T.CanvasTexture(atlasC);
 const SW={skin:[800,544],sleeve:[864,544],trim:[928,544],glove:[992,544],shoe:[800,608],sole:[864,608],band:[928,608],hair:[992,608],belt:[800,672]};
@@ -3785,7 +3795,7 @@ function loadPlayers(kind){ // body file = character mesh; clips.json = motion-c
     const batLoad=k=>{const v=cfg.bat&&canClone&&cfg.bat[k-1];if(!v)return null;if(batP[k])return batP[k];const keys=Object.keys(v.tex);
       return batP[k]=Promise.all([loadBuf(v.body),...keys.map(q=>Promise.all(v.tex[q].map(loadImg)))]).then(r=>{if(my!==MX.token)return;
         const vb=new T.FBXLoader().parse(r[0],''),tx=i=>{const t=new T.Texture(i);t.needsUpdate=true;t.anisotropy=ANISO;return t;},mats={},geos=new Map();
-        keys.forEach((q,i)=>{const o={map:tx(r[1+i][0]),color:0xffffff,emissive:0x1c1c22,specular:0x333340,shininess:26,skinning:true};if(r[1+i][1])o.normalMap=tx(r[1+i][1]);mats[q]=new T.MeshPhongMaterial(o);});
+        keys.forEach((q,i)=>{const o={map:tx(r[1+i][0]),color:v.col||0xffffff,emissive:v.col?0x0c0c10:0x1c1c22,specular:0x333340,shininess:26,skinning:true};if(r[1+i][1])o.normalMap=tx(r[1+i][1]);mats[q]=new T.MeshPhongMaterial(o);});
         MX.batVar[k]={make:names=>{const o=T.SkeletonUtils.clone(vb);o.animations=fitClips(o,names.filter(n=>cj[n]));return o;},
           skin:()=>{const m2={};keys.forEach(q=>m2[q]=mats[q].clone());return {mat:m2[keys[0]],mats:m2,hide:v.hide,topY:refRest.HeadTop_End?refRest.HeadTop_End.y:0,trim:g=>{let o=geos.get(g.uuid);if(!o){o=weld(g);o.userData.lite=liteGeo(o,LOD_CELL);geos.set(g.uuid,o);}return o;}};}}; /* every wearer gets his own copy of the materials: the hitter fades in and out, the runners must not */
         jobs.push(['bat',k]);RUN.list.forEach((R,i)=>jobs.push(['run',k,i]));}).catch(e=>console.warn('hitter body '+v.body+' not loaded',e));};
@@ -4167,7 +4177,7 @@ function updateCamera(rdt){
     _a.set(q.x-p0.x,q.y-p0.y,q.z-p0.z);if(_a.lengthSq()<1e-6)_a.set(0,0,-1);_a.normalize(); // riding just behind and above the ball, looking where it is going
     camPos.set(p0.x,p0.y,p0.z).addScaledVector(_a,-7).add(_b.set(0,1.7,0));camLook.set(p0.x,p0.y,p0.z).addScaledVector(_a,14);}
   else if(flight&&flight.orb&&!flight.done){ // from just outside the park, watching it climb away toward Earth
-    if(flight.lamp){const T1=TOWERS[flight.lamp-1].p;camPos.set(T1.x*.56,38,T1.z*.56);camLook.copy(flight.lampHit?T1:_b.copy(ball.position).lerp(T1,.7));pcutT=now;pcutH.set(T1.x,T1.y+11,T1.z);} // from the outfield grass, looking up at the tower as it comes in
+    if(flight.lamp){const T1=TOWERS[flight.lamp-1].p,h1=Math.hypot(T1.x,T1.z)||1,sd=T1.x>0?1:-1;camPos.set(T1.x*.46+(-T1.z/h1)*sd*48,26,T1.z*.46+(T1.x/h1)*sd*48);camLook.copy(flight.lampHit?T1:_b.copy(ball.position).lerp(T1,.6)); /* from off to the side, toward the foul line (clear of the scoreboard): the rope is seen side-on, climbing all the way into the lights */pcutT=now;pcutH.set(T1.x,T1.y+11,T1.z);} // from the outfield grass, looking up at the tower as it comes in
     else if(flight.sat){camPos.set(flight.orbFrom.x*.45+16,104,flight.orbFrom.z*.45+34).addScaledVector(_b.copy(ball.position).sub(flight.orbFrom),.04);camLook.copy(flight.satHit?SAT.g.position:ball.position);} // from high over the park, clear of every deck and roof, looking up and out at it
     else{camPos.copy(flight.orbFrom).add(_a.set(34,6,62)).addScaledVector(_b.copy(ball.position).sub(flight.orbFrom),.12);camLook.copy(ball.position);}
     if(flight.revOn){camPos.copy(REV.cam);camLook.copy(REV.look);}camera.position.lerp(camPos,now-flight.orb<.08||flight.revOn?1:.2);}
