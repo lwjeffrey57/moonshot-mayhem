@@ -1112,6 +1112,7 @@ gl_FragColor=vec4(col,1.0);
   // the upper deck and its roof are open from left-centre (25 degrees) round to right-centre (15 degrees): the Earth hangs over the scoreboard,
   // and the rocket on its pad and the crater rim stand in the opening to its left. The deck is kept in right field and down both lines.
   const GAP0=8,GAP1=24,split=a=>[a.slice(0,GAP0+1),a.slice(GAP1)];
+  scene.add(new T.Mesh(ribbon(fb,s1a,1),basic({color:0x14183a}))); // the top of the wall runs straight into the first row: no gap for a ball to drop down
   scene.add(new T.Mesh(ribbon(s1a,s1b,1),cm));split(s2a).forEach((a,k)=>scene.add(new T.Mesh(ribbon(a,split(s2b)[k],1),cm)));
   // luxury boxes between the decks
   const boxes=tex(256,32,(g,w,h)=>{g.fillStyle='#14122c';g.fillRect(0,0,w,h);for(let x=2;x<w;x+=16){g.fillStyle=Math.random()<.75?'#ffd98a':'#3a4a7a';g.fillRect(x,7,12,15);g.fillStyle='rgba(0,0,0,.3)';g.fillRect(x,16,12,6);}g.fillStyle='#ff4d2e';g.fillRect(0,26,w,6);g.fillStyle='#e8e8f0';g.fillRect(0,0,w,3);});
@@ -1210,6 +1211,7 @@ gl_FragColor=vec4(col,1.0);
     const line=[[70,-70],[30,-4],[BK_R/Math.SQRT2,BK_Z+BK_R/Math.SQRT2]].map(p=>new V3(p[0]*s,0,p[1]));
     const n=new V3(.866*s,0,.5);
     scene.add(new T.Mesh(ribbon(line,line.map(p=>p.clone().setY(1.75))),basic({color:0x1c2552})));scene.add(new T.Mesh(ribbon(line.map(p=>p.clone().setY(1.75)),line.map(p=>p.clone().setY(1.9))),basic({color:0xe8c92a})));
+    scene.add(new T.Mesh(ribbon(line.map(p=>p.clone().setY(1.9)),line.map(p=>p.clone().addScaledVector(n,1).setY(1.9))),basic({color:0x14183a}))); // the same along the foul-side walls
     scene.add(new T.Mesh(ribbon(line.map(p=>p.clone().addScaledVector(n,1).setY(1.9)),line.map(p=>p.clone().addScaledVector(n,34).setY(23)),1),fm));
     scene.add(new T.Mesh(ribbon(line.map(p=>p.clone().addScaledVector(n,30).setY(23)),line.map(p=>p.clone().addScaledVector(n,30).setY(30))),basic({color:0x1a1838})));
     scene.add(new T.Mesh(ribbon(line.map(p=>p.clone().addScaledVector(n,30).setY(30)),line.map(p=>p.clone().addScaledVector(n,58).setY(52)),1),fm));
@@ -2505,6 +2507,12 @@ function simulate(p0,v0,spin,opt){spin=spin||{side:0,lift:0};opt=opt||{};const G
       v.x+=-v.z/h*spin.side*k;v.z+=v.x/h*spin.side*k;v.y+=spin.lift*k;}
     p.addScaledVector(v,dt);t+=dt;
     const r=Math.hypot(p.x,p.z),phi=Math.atan2(p.x,-p.z),fr=fenceR(phi);
+    // The walls down the lines and the seats behind them are solid. A ball that reaches the wall below its top comes back off it; one that
+    // clears it comes down among the fans and stays there. (Everything beyond those walls is foul ground.)
+    if(!hr&&!grd&&p.z<-4&&p.z>-71){const sw=p.x<0?-1:1,e=-((p.x*sw-70)*-.855+(p.z+70)*-.518);
+      if(e>0){const nx=.855*sw,nz=.518;
+        if(p.y<=1.9&&e<.8){const vn=v.x*nx+v.z*nz;if(vn>0){v.x-=1.45*vn*nx;v.z-=1.45*vn*nz;v.multiplyScalar(.6);}p.x-=nx*(e+.06);p.z-=nz*(e+.06);if(!land){land={x:p.x,z:p.z,t};foul=true;}}
+        else if(p.y<=(e<1?1.9:1.9+(e-1)*.64)+.9){if(!land){land={x:p.x,z:p.z,t};foul=true;}seatT=t;pts.push({x:p.x,y:p.y,z:p.z,t});break;}}}
     if(!hr&&!grd&&r>=fr){
       {const off=Math.abs(p.x)-(.216-p.z); // how far outside the chalk it is as it reaches the fence
         if(!land&&off>LINE_TOL&&off<LINE_TOL+.7&&p.y>WALL_H&&p.y<26){hr=true;hrT=t;hrY=p.y;poleT=t;tag='OFF THE FOUL POLE';v.x*=-.35;v.z*=.25;v.y*=.4;}
@@ -2522,7 +2530,7 @@ function simulate(p0,v0,spin,opt){spin=spin||{side:0,lift:0};opt=opt||{};const G
         if(vn<0){if(!eyeT){eyeT=t;const q=p.clone(),w=v.clone();let n=0;while(q.y>0&&n++<2000){const sp2=w.length();w.multiplyScalar(1-DRAG*sp2*dt);w.y-=G*dt;q.addScaledVector(w,dt);}dist=Math.hypot(q.x,q.z);} // distance is where it would have come down
           v.x-=1.62*vn*n3x;v.y-=1.62*vn*n3y;v.z-=1.62*vn*n3z;v.multiplyScalar(.8);p.y=hy+.03;}}} // comes off the panel up and back toward the field
     if(hr||grd){const d=r-fr,deck=phi<-25*DEG||phi>15*DEG; // it comes down among the fans: stopped at head height on the lower deck, or by the upper deck and its facade where there is one
-      const sy=d>1.5?WALL_H+.3+(d-1.5)*.667+.9:0;
+      const sy=d>1.5?WALL_H+.3+(d-1.5)*.667+.9:WALL_H+.2*Math.max(0,d)/1.5+.25; // the first metre and a half behind the wall is the ledge in front of row one: it stops there too
       if(p.y<=sy||d>58||(deck&&d>=30&&p.y>25&&p.y<=32+(d-30)*.667+.9)){pts.push({x:p.x,y:p.y,z:p.z,t});seatT=t;break;}}
     else if(p.y<=0){
       if(!land){land={x:p.x,z:p.z,t};if(Math.abs(p.x)>.216-p.z+LINE_TOL)foul=true;} // fair or foul is settled by where it first lands, measured from the chalked lines
