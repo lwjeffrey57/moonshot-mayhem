@@ -42,7 +42,8 @@ Recordings to find or make (the game currently fakes most of these by reshaping 
 - Fielder alignment and depth, dives and jumping catches.
 - **Quick time events.** A short burst of input at a big moment, with something real riding on it.
   - Input idea: a sequence of direction presses that has to be entered in order before time runs out, the way stratagem codes work in
-    Helldivers 2. Arrow keys on desktop; on a phone, flicks of the aim stick or swipes (needs a design that works one-handed and fast).
+    Helldivers 2. Arrow keys on desktop; on a phone, an on-screen d-pad that appears only for the event (leading idea), in place of the aim
+    stick so the left thumb is already there. Flicks of the stick or swipes are the fallback if the d-pad feels cramped.
   - Stakes: get it right and the play goes your way; miss it and it goes the other way. Longer or faster sequences for bigger moments.
   - First example: a play at the plate. The runner comes home, the throw beats him, and a correct sequence has him go in with a running
     scissor kick that knocks the ball loose from the catcher: safe. Miss it and he is out.
