@@ -814,7 +814,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 441</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 442</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <button class="tag wkopt sens" id="sens1" type="button"></button>
@@ -2105,7 +2105,7 @@ function pop(t,s='',cls='',long=false){
   // ordinary one, which drops to the line underneath. If several were earned at once the proudest leads and the rest follow as plates up top.
   let _bq=null;try{_bq=bdgQ;}catch(e){}
   // CALLOUT AND BADGE PLATE NEVER SHARE THE SCREEN: a callout always wins. A plate that is up when one arrives is taken down and comes back afterwards.
-  if(_bq){const pn=performance.now();if(bdgCur&&pn<bdgCurEnd){$('bdg').classList.remove('go');bdgCur.old=1;_bq.unshift(bdgCur);bdgCur=null;}popUntil=pn+(long?3300:1700);bdgBusy=Math.max(bdgBusy,popUntil);}
+  if(_bq){const pn=performance.now();if(bdgCur&&pn<bdgCurEnd){$('bdg').classList.remove('go');if(!bdgCur.re&&pn<bdgCurEnd-1900){bdgCur.old=1;bdgCur.re=1;_bq.unshift(bdgCur);}bdgCur=null;} /* it comes back ONCE, and only if it had been up for under a second: never again and again through a run of callouts */popUntil=pn+(long?3300:1700);bdgBusy=Math.max(bdgBusy,popUntil);}
   if(_bq&&cls!=='logo'&&_bq.some(b=>!b.old&&performance.now()-b.tq<80)){const fresh=_bq.filter(b=>!b.old&&performance.now()-b.tq<80);const R=['slam','b2b','five','hr500','rev','earth','sat','lamp','board','eye','duel','juicehr','ambush','odhr','hr450','hr','walkoff','jump','brawl','send','heater','ten','win','wore','hit'];
     fresh.sort((a,b)=>R.indexOf(a[0])-R.indexOf(b[0]));const B=fresh[0];bdgQ.splice(bdgQ.indexOf(B),1);$('pop').className='';bdgShow(B,true);return;} /* the badge plate IS the call: the ordinary callout is not shown at all, so the two can never collide */
   const e=$('pop');e.className='';e.querySelector('.t').textContent=t;e.querySelector('.s').textContent=s;void e.offsetWidth;e.className='go '+cls+(long?' long':'');}
