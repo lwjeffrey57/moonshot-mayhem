@@ -875,7 +875,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 498</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 499</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <button class="tag wkopt sens" id="sens1" type="button"></button>
@@ -3340,7 +3340,7 @@ function satTick(){if(!SAT.g.visible)return;if(!(flight&&flight.sat)){SAT.g.visi
   else SAT.g.rotation.y+=dt*.12;}
 // INTO ORBIT: some Overdrive homers never come down. The camera cuts to the Moon seen from space; the ball climbs off the surface from the
 // little point of light that is the ballpark, settles into orbit and goes all the way round. No caption: the picture says it.
-const REV={g:null,cut:.12, /* straight to space: the in-between camera could end up inside the stands */dur:6.2,C:new V3(0,-3000,0),R:60,cam:new V3(),look:new V3(),a:new V3(),b:new V3()};
+const REV={g:null,cut:1.9, /* first the ball is watched leaving the park (from the plate, looking out over the field: a view that is always clear), then the cut to space */dur:6.2,C:new V3(0,-3000,0),R:60,cam:new V3(),look:new V3(),a:new V3(),b:new V3()};
 function revBuild(){const g=REV.g=new T.Group();g.position.copy(REV.C);const tx=new T.TextureLoader().load('moon_d.jpg');tx.wrapS=tx.wrapT=T.MirroredRepeatWrapping;tx.repeat.set(6,3);tx.anisotropy=ANISO;
   g.add(new T.Mesh(new T.SphereGeometry(REV.R,64,40),new T.MeshPhongMaterial({map:tx,color:0xa8a8b0,emissive:0x3c3c42,emissiveMap:tx,shininess:2,specular:0x050505,fog:false})));
   REV.a.set(.22,.62,.75).normalize();REV.b.set(.95,.12,-.3);REV.b.addScaledVector(REV.a,-REV.b.dot(REV.a)).normalize(); /* a: where the park is; b: the way the ball heads off */
@@ -4573,7 +4573,8 @@ function updateCamera(rdt){
     if(flight.lamp){const T1=TOWERS[flight.lamp-1].p,h1=Math.hypot(T1.x,T1.z)||1,sd=T1.x>0?1:-1;camPos.set(T1.x*.46+(-T1.z/h1)*sd*48,26,T1.z*.46+(T1.x/h1)*sd*48);camLook.copy(flight.lampHit?T1:_b.copy(ball.position).lerp(T1,.6)); /* from off to the side, toward the foul line (clear of the scoreboard): the rope is seen side-on, climbing all the way into the lights */pcutT=now;pcutH.set(T1.x,T1.y+11,T1.z);} // from the outfield grass, looking up at the tower as it comes in
     else if(flight.sat){camPos.set(flight.orbFrom.x*.45+16,104,flight.orbFrom.z*.45+34).addScaledVector(_b.copy(ball.position).sub(flight.orbFrom),.04);camLook.copy(flight.satHit?SAT.g.position:ball.position);} // from high over the park, clear of every deck and roof, looking up and out at it
     else{camPos.set(flight.orbFrom.x*.45+16,104,flight.orbFrom.z*.45+34).addScaledVector(_b.copy(ball.position).sub(flight.orbFrom),.04);camLook.copy(ball.position);} /* from high over the park, clear of every deck and roof (the old spot just outside the wall could sit inside the stands) */
-    if(flight.revOn){camPos.copy(REV.cam);camLook.copy(REV.look);}camera.position.lerp(camPos,now-flight.orb<.08||flight.revOn?1:.2);}
+    if(flight.rev&&!flight.revOn){camPos.set(-2.2,3.4,9);camLook.copy(ball.position);} /* from behind the plate, a little up: the ball climbing out over the outfield bowl and away */
+    if(flight.revOn){camPos.copy(REV.cam);camLook.copy(REV.look);}camera.position.lerp(camPos,now-flight.orb<.08||flight.revOn||flight.rev?1:.2);}
   else if(S.kOut&&S.kOut.taunt&&MX.pit&&now>S.kOut.t+DEF_CUT&&now<S.kOut.t+DEFEAT&&S.state==='result'){ // ...then the pitcher, from the plate side
     pcutT=now;pcutH.set(0,2.3,-18.4);const e=clamp((now-S.kOut.t-DEF_CUT)/(DEFEAT-DEF_CUT),0,1);camLook.set(0,1.45,-18.4);camPos.set(lerp(1.6,1.1,e),1.35,-18.4+lerp(4.6,3.8,ease(e)));}
   else if(S.kOut&&MX.clip&&MX.clip.bi===S.kOut.bi&&now>S.kOut.t&&now<S.kOut.t+DEFEAT&&S.state==='result'){ // strikeout: close on the hitter from the pitcher's side
