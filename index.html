@@ -841,7 +841,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 455</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 456</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <button class="tag wkopt sens" id="sens1" type="button"></button>
@@ -3212,7 +3212,7 @@ let odBag=[],odLastK='';function odPick(){if(!odBag.length){odBag=['rev','lamp',
   let r=Math.random()*c.reduce((a,k)=>a+W[k],0),k=c[0];for(const q of c){r-=W[q];if(r<=0){k=q;break;}}odBag.splice(odBag.indexOf(k),1);odLastK=k;return k;}
 // BADGES. Earned once, kept on the device. Each has a name (ballplayer talk), what it takes, and an icon. badge(id) is called from wherever the feat happens.
 const BADGES=[['hit','KNOCK','Get your first hit','🧢'],['hr','WENT YARD','Hit your first home run','💥'],['hr450','TAPE MEASURE','Hit one 450 feet or more','📏'],['hr500','FIVE HUNDRED CLUB','Hit one 500 feet or more','🚀'],
-  ['odhr','OVERDRIVEN','Homer in Overdrive','🔥'],['juicehr','GOT HEEEM!','Homer off a Juice pitch','🧃'],['duel','BEAT THE HEAT','Homer while the pitcher is in Overdrive','🥵'],['ambush','AMBUSH','Homer on the first pitch','⚡'],
+  ['odhr','OVERDRIVEN','Homer in Overdrive','🔥'],['juicehr','GOT HEEEM!','Homer off a Juice pitch','😂'],['duel','BEAT THE HEAT','Homer while the pitcher is in Overdrive','🥵'],['ambush','AMBUSH','Homer on the first pitch','⚡'],
   ['slam','GRAND SALAMI','Hit a grand slam','🍖'],['b2b','BACK TO BACK','Homers in consecutive at-bats','👯'],['five','DERBY NIGHT','Five homers in one game','🎆'],['heater','ON A HEATER','Five hits in a row','♨️'],
   ['rev','IN ORBIT','Put one into orbit round the Moon','🌕'],['earth','NEXT STOP: EARTH','Hit one clean off the Moon','🌍'],['sat','SPACE JUNK','Take out the satellite','🛰️'],['lamp','LIGHTS OUT','Smash a light tower','💡'],['board','OFF THE SCOREBOARD','Homer off the scoreboard','📺'],['eye','OFF THE BATTER\'S EYE','Homer off the batter\'s eye','👁️'],
   ['send','WHEELS','Win a showdown at the bag','👟'],['jump','PERFECT JUMP','Stop the needle on gold','🥇'],['brawl','LAST MAN STANDING','Win a brawl','🥊'],['wore','WORE IT','Get hit by a pitch','🩹'],
