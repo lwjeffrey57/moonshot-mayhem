@@ -214,10 +214,10 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 /* centre calls */
 #pop{left:0;right:0;top:26%;text-align:center;opacity:0}
 /* why the screen is shaking: a plain label for as long as the pitcher's Overdrive is on and there is a pitch to face */
-#podtag{position:absolute;left:50%;top:35%;transform:translateX(-50%);white-space:nowrap;opacity:0;transition:opacity .25s;pointer-events:none;z-index:40;font-family:var(--display);font-style:italic;font-size:clamp(15px,4.4vw,24px);letter-spacing:.06em;color:#ff5a36;-webkit-text-stroke:3px #000;paint-order:stroke fill;text-shadow:0 2px 0 #000,0 0 14px rgba(255,70,40,.8)}
+#podtag{position:absolute;left:50%;top:27%;transform:translateX(-50%);white-space:nowrap;opacity:0;transition:opacity .25s;pointer-events:none;z-index:40;font-family:var(--display);font-style:italic;font-size:clamp(19px,5.6vw,30px);line-height:1.02;text-align:center;letter-spacing:.06em;color:#ff5a36;-webkit-text-stroke:3px #000;paint-order:stroke fill;text-shadow:0 2px 0 #000,0 0 14px rgba(255,70,40,.8)}
 #hud.podlive #podtag{opacity:1;animation:podtag .62s ease-in-out infinite alternate}
 @keyframes podtag{from{filter:brightness(1)}to{filter:brightness(1.5)}}
-#hud.mob #podtag{top:42.5%} /* on the batter's eye, just over the pitcher's head */
+#hud.mob #podtag{top:33.5%} /* on the batter's eye, just over the pitcher's head */
 @media (orientation:landscape) and (max-height:520px){#hud.mob #podtag{top:36%}}
 /* quick time event: the move's name, its arrow code, a clock that drains; on phones a d-pad where the aim stick usually is */
 #gobtn{position:absolute;left:50%;bottom:max(26px,env(safe-area-inset-bottom,0px));transform:translateX(-50%) scale(.6);opacity:0;pointer-events:none;z-index:47;padding:14px 26px;font-family:var(--display);font-style:italic;font-size:clamp(22px,6.4vw,34px);letter-spacing:.03em;color:#04140a;background:linear-gradient(#7dff9c,#1fd153);border:4px solid #000;border-radius:18px;box-shadow:0 6px 0 #000,0 0 0 4px rgba(255,255,255,.7),0 0 30px 8px rgba(57,255,106,.7);white-space:nowrap;touch-action:none}
@@ -244,14 +244,14 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 #qmw span{position:relative;display:block;line-height:clamp(40px,11vw,54px);font-size:clamp(15px,4.4vw,22px);color:#fff;-webkit-text-stroke:3px #000;paint-order:stroke fill;letter-spacing:.05em}
 #qtm{height:10px;width:min(360px,84vw);margin:0 auto;background:#000;border:2px solid #f2f5ff;border-radius:6px;overflow:hidden}
 #qtb{display:block;height:100%;background:#39ff6a;transform-origin:0 50%}#qtb.low{background:#ff4d2e}
-#qpad{position:absolute;left:max(14px,env(safe-area-inset-left,0px));bottom:max(18px,env(safe-area-inset-bottom,0px));width:186px;height:186px;display:none;z-index:46;pointer-events:auto}
+#qpad{position:absolute;left:max(10px,env(safe-area-inset-left,0px));bottom:max(118px,calc(env(safe-area-inset-bottom,0px) + 108px));width:234px;height:234px;display:none;z-index:48;pointer-events:auto;touch-action:none;border-radius:50%;background:radial-gradient(circle,rgba(10,12,34,.55) 0 62%,rgba(10,12,34,0) 72%)}
 #hud.mob.qon #qpad{display:block}#hud.mob.qon.qm #qpad{display:none}
 /* the tap-furiously kind gets one big button instead of the d-pad */
 #qmash{position:absolute;left:50%;top:62%;margin-left:-88px;width:176px;height:176px;display:none;z-index:48;pointer-events:auto;padding:0;border-radius:50%;font-family:var(--display);font-style:italic;font-size:44px;color:#fff;text-shadow:0 3px 0 #000;background:radial-gradient(circle at 50% 35%,#ff8a5c,#ff3b3b 60%,#a0140c);border:5px solid #000;box-shadow:0 7px 0 #000,0 0 0 5px rgba(255,255,255,.6),0 0 34px 10px rgba(255,80,50,.7);touch-action:none}
 #hud.mob.qon.qm #qmash{display:block}#qmash:active{transform:translateY(5px) scale(.96);box-shadow:0 2px 0 #000,0 0 0 5px rgba(255,255,255,.9),0 0 40px 14px rgba(255,160,80,.9)}
-#qpad button{position:absolute;width:62px;height:62px;padding:0;font-size:26px;color:#fff;background:linear-gradient(#3a4190,#1b1f4a);border:3px solid #000;border-radius:12px;box-shadow:0 4px 0 #000,0 0 0 3px rgba(242,245,255,.5);touch-action:none}
+#qpad button{position:absolute;width:78px;height:78px;padding:0;font-size:32px;pointer-events:none;color:#fff;background:linear-gradient(#3a4190,#1b1f4a);border:3px solid #000;border-radius:12px;box-shadow:0 4px 0 #000,0 0 0 3px rgba(242,245,255,.5);touch-action:none}
 #qpad button:active{transform:translateY(3px);background:#39ff6a;color:#04140a}
-#qpad [data-d=U]{left:62px;top:0}#qpad [data-d=D]{left:62px;bottom:0}#qpad [data-d=L]{left:0;top:62px}#qpad [data-d=R]{right:0;top:62px}
+#qpad [data-d=U]{left:78px;top:0}#qpad [data-d=D]{left:78px;bottom:0}#qpad [data-d=L]{left:0;top:78px}#qpad [data-d=R]{right:0;top:78px}
 /* walk-off: gold light pours in from the edges and pulses */
 #hud.woff::after{content:'';position:absolute;inset:0;z-index:3;pointer-events:none;box-shadow:inset 0 0 90px 30px rgba(255,214,60,.75);animation:woff .5s ease-in-out infinite alternate}
 @keyframes woff{from{opacity:.35}to{opacity:1}}
@@ -676,7 +676,7 @@ body.mob #tip{display:block}body.mob .how{display:none}
     <button id="gobtn" type="button">GO!<small></small></button>
     <div id="qte" hidden><b id="qtt"></b><div id="qtr"></div><div id="qtm"><i id="qtb"></i></div></div>
     <div id="qpad" aria-hidden="true"><button type="button" data-d="U">▲</button><button type="button" data-d="L">◀</button><button type="button" data-d="R">▶</button><button type="button" data-d="D">▼</button></div>
-    <div id="podtag" aria-hidden="true">PITCHER OVERDRIVE ACTIVE</div>
+    <div id="podtag" aria-hidden="true">PITCHER OVERDRIVE<br>ACTIVE</div>
     <div id="duel" aria-hidden="true"><i class="dl">BATTER</i><i class="dr">PITCHER</i><b>OVERDRIVE<span>DUEL</span></b></div>
     <div id="goal" hidden></div>
   </div>
@@ -3807,8 +3807,12 @@ function shApply(){const on=SHQ&&rim.castShadow;shBig.visible=on;if(shMound)shMo
   $('shbtn').textContent='FIELD SHADOWS: '+(SHQ?'ON':'OFF');}
 // before the pitch the shadow picture is spent on the plate and the infield, where it is seen close up; once the ball is in play it opens out to the whole park
 function shTick(){if(!(SHQ&&rim.castShadow))return;const st=S.state,wide=!(st==='ready'||st==='windup'||st==='pitch'||st==='walkup'||st==='title'||st==='pod'||st==='hbp'||st==='brawl');if(st==='qte'){if(shWide!=='q'){shWide='q';shFrame(QT.mx,QT.mz,14);}return;}if(wide!==shWide){shWide=wide;if(wide)shFrame(0,-52,84);else shFrame(0,-19,34);}}
-document.querySelectorAll('#qpad button').forEach(b=>{const go=e=>{e.preventDefault();e.stopPropagation();qteKey(b.dataset.d);};b.addEventListener('pointerdown',go);});
-{const q=$('qmash');q.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();qteKey('U');});}
+// The d-pad takes a touch anywhere on it: the direction is whichever way the finger is from the middle, so there are no dead gaps between
+// the arrows and a near miss still counts. Every finger that comes down is read at once (touchstart), with nothing waiting on a tap or a release.
+{const pad=$('qpad'),dir=(x,y)=>{const r=pad.getBoundingClientRect(),dx=x-(r.left+r.width/2),dy=y-(r.top+r.height/2);return Math.abs(dx)>Math.abs(dy)?(dx>0?'R':'L'):(dy>0?'D':'U');};
+  pad.addEventListener('touchstart',e=>{e.preventDefault();e.stopPropagation();},{passive:false}); // stops the browser treating fast taps as a scroll or zoom
+  pad.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();qteKey(dir(e.clientX,e.clientY));});} // one press per finger, the instant it lands
+{const q=$('qmash');q.addEventListener('touchstart',e=>{e.preventDefault();e.stopPropagation();},{passive:false});q.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();qteKey('U');});}
 {const g=$('gobtn'),go=e=>{e.preventDefault();e.stopPropagation();goTap();};g.addEventListener('pointerdown',go);}
 $('shbtn').addEventListener('click',()=>{SHQ=!SHQ;if(SHQ&&!rim.castShadow)rim.castShadow=true;try{localStorage.setItem('mm_shadows',SHQ?'1':'0');}catch(e){}shApply();});
 shApply();
