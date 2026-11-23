@@ -223,11 +223,11 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 #qte{position:absolute;left:50%;top:15%;transform:translateX(-50%);z-index:46;text-align:center;font-family:var(--display);font-style:italic;pointer-events:none}
 #hud.mob #qte{top:24%}
 #qte b{display:block;font-weight:400;font-size:clamp(20px,5.6vw,34px);color:var(--volt);-webkit-text-stroke:3px #000;paint-order:stroke fill;text-shadow:0 3px 0 #000;letter-spacing:.04em}
-#qtr{display:flex;gap:8px;justify-content:center;margin:8px 0}
-#qtr i{display:flex;align-items:center;justify-content:center;width:clamp(40px,11vw,58px);height:clamp(40px,11vw,58px);font-style:normal;font-size:clamp(20px,5.5vw,30px);color:#fff;background:#12142e;border:3px solid #f2f5ff;border-radius:8px;box-shadow:0 3px 0 #000}
+#qtr{display:flex;gap:5px;justify-content:center;margin:8px 0}
+#qtr i{display:flex;align-items:center;justify-content:center;width:clamp(30px,9.4vw,52px);height:clamp(30px,9.4vw,52px);font-style:normal;font-size:clamp(16px,4.8vw,28px);color:#fff;background:#12142e;border:3px solid #f2f5ff;border-radius:8px;box-shadow:0 3px 0 #000}
 #qtr i.ok{background:#1fae4a;border-color:#39ff6a;color:#04140a;transform:scale(1.08)}
 #qtr.bad{animation:qbad .28s}@keyframes qbad{0%,100%{transform:translateX(0)}25%{transform:translateX(-9px)}75%{transform:translateX(9px)}}#qtr.bad i{border-color:#ff4d2e}
-#qtm{height:10px;width:min(300px,74vw);margin:0 auto;background:#000;border:2px solid #f2f5ff;border-radius:6px;overflow:hidden}
+#qtm{height:10px;width:min(360px,84vw);margin:0 auto;background:#000;border:2px solid #f2f5ff;border-radius:6px;overflow:hidden}
 #qtb{display:block;height:100%;background:#39ff6a;transform-origin:0 50%}#qtb.low{background:#ff4d2e}
 #qpad{position:absolute;left:max(14px,env(safe-area-inset-left,0px));bottom:max(18px,env(safe-area-inset-bottom,0px));width:186px;height:186px;display:none;z-index:46;pointer-events:auto}
 #hud.mob.qon #qpad{display:block}
@@ -2155,17 +2155,17 @@ const QT={ph:'',kind:'',M:null,code:[],i:0,lim:0,t1:0,tp:0,ok:false,runT:1.5,hea
 // the base back toward him), the heads-up call, and what a made or missed code does. pa: the plate appearance is still open (the
 // scenario came off an out), so the normal end-of-at-bat handling runs afterwards.
 const QTE_MOVES={
-  plate:{name:'SCISSOR KICK',code:['R','R','U','D','R'],lim:2.7,base:0,u:[-.7071,-.7071],call:"HE'S COMING HOME!",ok:()=>{S.bases[2]=0;addRuns(1);},okT:['SAFE!','KNOCKED IT LOOSE · +1 RUN'],no:()=>{S.bases[2]=0;recordOut();},noT:['OUT AT THE PLATE!','TAGGED OUT']},
-  dp:{name:'TAKE-OUT KICK',code:['D','L','D','R'],lim:2.4,base:2,u:[.7071,.7071],call:'THEY WANT TWO!',ok:()=>{S.bases[0]=1;},okT:['BROKE IT UP!','NO DOUBLE PLAY · HITTER SAFE'],no:()=>{S.bases[0]=0;recordOut();},noT:['DOUBLE PLAY!','TWO FOR ONE'],pa:true},
-  stretch2:{name:'GOING FOR TWO',code:['R','D','R'],lim:2.1,base:2,u:[.7071,.7071],call:"HE'S GOING FOR TWO!",ok:()=>{S.bases[0]=0;S.bases[1]=1;},okT:['SAFE AT SECOND!','STRETCHED IT INTO A DOUBLE'],no:()=>{S.bases[0]=0;recordOut();},noT:['OUT AT SECOND!','THROWN OUT STRETCHING']},
-  stretch3:{name:'GOING FOR THREE',code:['U','R','U','L'],lim:2.3,base:3,u:[.7071,-.7071],call:"HE'S GOING FOR THREE!",ok:()=>{S.bases[1]=0;S.bases[2]=1;},okT:['SAFE AT THIRD!','STRETCHED IT INTO A TRIPLE'],no:()=>{S.bases[1]=0;recordOut();},noT:['OUT AT THIRD!','THROWN OUT STRETCHING']},
-  tag2:{name:'TAGGING UP',code:['L','U','R'],lim:2.1,base:2,u:[.7071,.7071],call:"HE'S TAGGING UP!",ok:()=>{S.bases[0]=0;S.bases[1]=1;},okT:['SAFE AT SECOND!','TAGGED UP AND TOOK IT'],no:()=>{S.bases[0]=0;recordOut();},noT:['OUT AT SECOND!','CUT DOWN TAGGING UP'],pa:true},
-  tag3:{name:'TAGGING UP',code:['D','R','U','R'],lim:2.3,base:3,u:[.7071,-.7071],call:"HE'S TAGGING UP!",ok:()=>{S.bases[1]=0;S.bases[2]=1;},okT:['SAFE AT THIRD!','TAGGED UP AND TOOK IT'],no:()=>{S.bases[1]=0;recordOut();},noT:['OUT AT THIRD!','CUT DOWN TAGGING UP'],pa:true}};
+  plate:{name:'SCISSOR KICK',code:['R','R','U','D','R','L','U','R'],base:0,u:[-.7071,-.7071],call:"HE'S COMING HOME!",ok:()=>{S.bases[2]=0;addRuns(1);},okT:['SAFE!','KNOCKED IT LOOSE · +1 RUN'],no:()=>{S.bases[2]=0;recordOut();},noT:['OUT AT THE PLATE!','TAGGED OUT']},
+  dp:{name:'TAKE-OUT KICK',code:['D','L','D','R','U','R','D'],base:2,u:[.7071,.7071],call:'THEY WANT TWO!',ok:()=>{S.bases[0]=1;},okT:['BROKE IT UP!','NO DOUBLE PLAY · HITTER SAFE'],no:()=>{S.bases[0]=0;recordOut();},noT:['DOUBLE PLAY!','TWO FOR ONE'],pa:true},
+  stretch2:{name:'GOING FOR TWO',code:['R','D','R','U','L','R'],base:2,u:[.7071,.7071],call:"HE'S GOING FOR TWO!",ok:()=>{S.bases[0]=0;S.bases[1]=1;},okT:['SAFE AT SECOND!','STRETCHED IT INTO A DOUBLE'],no:()=>{S.bases[0]=0;recordOut();},noT:['OUT AT SECOND!','THROWN OUT STRETCHING']},
+  stretch3:{name:'GOING FOR THREE',code:['U','R','U','L','D','R','U'],base:3,u:[.7071,-.7071],call:"HE'S GOING FOR THREE!",ok:()=>{S.bases[1]=0;S.bases[2]=1;},okT:['SAFE AT THIRD!','STRETCHED IT INTO A TRIPLE'],no:()=>{S.bases[1]=0;recordOut();},noT:['OUT AT THIRD!','THROWN OUT STRETCHING']},
+  tag2:{name:'TAGGING UP',code:['L','U','R','D','R','U'],base:2,u:[.7071,.7071],call:"HE'S TAGGING UP!",ok:()=>{S.bases[0]=0;S.bases[1]=1;},okT:['SAFE AT SECOND!','TAGGED UP AND TOOK IT'],no:()=>{S.bases[0]=0;recordOut();},noT:['OUT AT SECOND!','CUT DOWN TAGGING UP'],pa:true},
+  tag3:{name:'TAGGING UP',code:['D','R','U','R','D','L','U'],base:3,u:[.7071,-.7071],call:"HE'S TAGGING UP!",ok:()=>{S.bases[1]=0;S.bases[2]=1;},okT:['SAFE AT THIRD!','TAGGED UP AND TOOK IT'],no:()=>{S.bases[1]=0;recordOut();},noT:['OUT AT THIRD!','CUT DOWN TAGGING UP'],pa:true}};
 let qteSeen=false;try{qteSeen=localStorage.getItem('mm_qte')==='1';}catch(e){}
 function qteOK(){const C=MX.clip,P=MX.pit;if(!WALK.on||!C||!P||!MX.on)return false;if(!(C.intros.q_flykick&&C.intros.run&&C.intros.p_dying&&C.intros.b_gut&&C.intros.b_stance&&P.taunts.b_stance&&P.taunts.b_jab&&P.taunts.p_dying))return false;
   return DBG.qte||(S.qteN||0)<3&&(!qteSeen||Math.random()<.5);}
 function qteStart(kind){const M=QTE_MOVES[kind],Bp=M.base?[BASES[M.base][0],BASES[M.base][1]]:[0,0],u=M.u;
-  S.state='qte';S.t=now;S.qteN=(S.qteN||0)+1;Object.assign(QT,{ph:'heads',tp:now,kind,M,code:M.code,i:0,lim:M.lim+(qteSeen?0:.9),ok:false,bx:Bp[0],bz:Bp[1],ux:u[0],uz:u[1],ball:null});
+  S.state='qte';S.t=now;S.qteN=(S.qteN||0)+1;Object.assign(QT,{ph:'heads',tp:now,kind,M,code:M.code,i:0,lim:.38*M.code.length+1.0+(qteSeen?0:1.2), /* the clock: enough to punch the whole code in at a brisk pace with room for one slip, and no more */ok:false,bx:Bp[0],bz:Bp[1],ux:u[0],uz:u[1],ball:null});
   QT.fx=Bp[0]+u[0]*.35;QT.fz=Bp[1]+u[1]*.35;QT.fry=Math.atan2(u[0],u[1]);QT.rry=Math.atan2(-u[0],-u[1]);QT.rx=Bp[0]+u[0]*17;QT.rz=Bp[1]+u[1]*17;
   QT.mx=Bp[0]+u[0]*1.5;QT.mz=Bp[1]+u[1]*1.5;{let nx=u[1],nz=-u[0];if(nx*(0-Bp[0])+nz*(-19.4-Bp[1])<0){nx=-nx;nz=-nz;}QT.nx=nx;QT.nz=nz;} // the side-on camera stands on the infield side of the line
   QT.b={n:'run',t:now,loop:true};QT.f={n:'b_stance',t:now,loop:true};
@@ -2997,7 +2997,7 @@ function updateClip(dt){
     const th=clamp((aim.y-C.y0)/.9,-.45,.45)*w*(MX.leanSign||1);
     C.spine.parent.getWorldQuaternion(_qp);C.spine.getWorldQuaternion(_qd);_q2.setFromAxisAngle(ZAX,th);_qd.premultiply(_q2);C.spine.quaternion.copy(_qp.invert()).multiply(_qd);}
   o.updateMatrixWorld(true);clipBat();
-  if(MX.lefty){ // mirror the batter and his bat across the plate
+  if(MX.lefty&&S.state!=='qte'&&S.state!=='brawl'){ // mirror the batter and his bat across the plate (not while he is away from it, in a brawl or a play on the bases: there he is placed directly)
     bat.position.x*=-1;_bd.x*=-1;bat.quaternion.setFromUnitVectors(UP,_bd);bat.updateMatrixWorld(true);
     o.scale.x=-o.scale.x;o.position.x=-o.position.x;o.updateMatrixWorld(true);}
   if(S.state==='celly2'&&C.intros[D2.clip]){const L=C.intros[D2.clip].loc; // on the bag at second, facing home
