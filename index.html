@@ -2164,7 +2164,7 @@ function brawlTick(el){const B=BRW;
     if(q.att==='b')crowdPump(last?1:.6);else if(!roarG)boo(.6);if(last){B.ko=true;rumble=1;}}
   if(el>=B.f1+.9&&B.ko&&!B.taunt){B.taunt=true;const w={n:'p_fist',t:now,loop:true};if(B.win)B.b=w;else B.p=w;}
   if(el>=B.dur){B.taunt=false;const k=B.win?1:Math.random()<.6?-1:0;hbpEnd(k,B.win?'WON THE BRAWL!':'LOST THE BRAWL');}}
-function hbpStart(){S.state='hbp';S.t=now;S.hbpN=(S.hbpN||0)+1;S.hbpF=false;S.hbpR=false;ball.visible=false;ballShadow.visible=false;pring.visible=false;swing=null;
+function hbpStart(){S.state='hbp';S.t=now;S.hbpN=(S.hbpN||0)+1;S.hbpF=false;S.hbpR=false;S.hbpWill=undefined;ball.visible=false;ballShadow.visible=false;pring.visible=false;swing=null;
   // a ball off the body, not off leather: a dull, dead thump with a short slap on the front of it, then the air going out of him (no mitt pop)
   noise(.035,'highpass',1800,900,.5);noise(.16,'bandpass',210,90,1.3,1.4);tone('sine',92,38,.26,1.2);tone('triangle',150,60,.12,.5);tone('sawtooth',210,120,.22,.16,.09);noise(.3,'bandpass',700,300,.22,.8,.1);
   buzz([60,40,120]);shake=Math.max(shake,.4*FX);flash(.5);
@@ -2176,7 +2176,7 @@ function hbpStart(){S.state='hbp';S.t=now;S.hbpN=(S.hbpN||0)+1;S.hbpF=false;S.hb
 // 25% he shrugs it off (no change, one bar). So plunking a man can hand the hitters a better player than the one who got hit.
 function hbpEnd(fk,title){const b=curBatter(),r0=Math.random(),k=fk!==undefined?fk:r0<.35?1:r0<.75?-1:0,was={pwr:b.pwr,con:b.con,spd:b.spd};
   if(k){if(!b.base)b.base={spd:b.spd,pwr:b.pwr,con:b.con};const m=k>0?1.1:.9;b.spd=clamp(b.spd*m,.7,1.25);b.pwr=clamp(b.pwr*m,.7,1.25);b.con=clamp(b.con*m,.7,1.25);b.hb=(b.hb||0)+k;}
-  S.walked=true;S.juice=Math.min(1,S.juice+(k>0?.5:.25));walkRunners();{const R=RUN.list.find(R=>R.active&&R.target===1&&R.s<1);if(R){R.hurt=k<=0;if(title){R.s=.5;R.delay=0;R.raceV=k<=0?.085:.12;}}} /* after a brawl he was out at the mound, not in the box: he picks it up halfway down the line, and takes his time */
+  S.walked=true;S.juice=Math.min(1,S.juice+(k>0?.5:.25));walkRunners();{const R=RUN.list.find(R=>R.active&&R.target===1&&R.s<1);if(R){R.hurt=k<=0;R.s=.5;R.delay=0;R.raceV=k<=0?.085:.12;}} /* after a brawl he was out at the mound, not in the box: he picks it up halfway down the line, and takes his time */
   const r=advance(1,true),run=r?'+1 RUN · ':'';
   if(k>0){pop(title||'FIRED UP!',run+b.name+' · RATINGS UP · +2 JUICE','hot',true);cheer(.5,3);roar(.9,.3);buzz([30,40,80]);}
   else if(k<0){pop(title||'SHAKEN UP',run+b.name+' · RATINGS DOWN','cool',true);crowdDrop();}
@@ -2680,7 +2680,7 @@ function finishPlay(){
     {const deep=pl.air&&!dp&&pl.f&&pl.f.of&&Math.hypot(pl.p.x,pl.p.z)>70&&S.outs<3,k=deep?(S.bases[1]&&!S.bases[2]?'tag3':S.bases[0]&&!S.bases[1]?'tag2':''):''; // a deep fly with a man on: he tags up and goes
       if(k&&S.outs<2&&qteParts()){afterPA(dp?2.7:f.thr?2.1:1.5);if(DBG.qte===k)S.next=()=>qteStart(k,true);else goOffer(k);return;}}
     afterPA(dp?2.7:f.thr?2.1:1.5);return;}
-  S.hits++;S.streak++;S.bestStreak=Math.max(S.bestStreak,S.streak);if(!f.tb)S.juice=Math.min(1,S.juice+(pl.type==='hr'?.5:.25)); // every hit is worth one quarter; // a Juice hit doesn't refill the bar it just spent
+  S.hits++;S.streak++;S.bestStreak=Math.max(S.bestStreak,S.streak);if(!f.tb)S.juice=Math.min(1,S.juice+(pl.type==='hr'?.5:.25));else if(pl.type==='hr'&&!S.over)S.juice=Math.min(1,S.juice+.25); /* a homer on a Juice swing gives one bar back */ // every hit is worth one quarter; // a Juice hit doesn't refill the bar it just spent
   if(pl.type==='hr'){
     const ft=Math.round(pl.dist*3.281);S.hrs++;S.longest=Math.max(S.longest,ft);const r=advance(4);f.rbi=r;
     buzz([40,50,90]);pop(r===4?'GRAND SLAM!':'GONE!',`${ft} FT · +${r} RUN${r>1?'S':''}`+(pl.tag?' · '+pl.tag:''),'hot',true);scoreboard('HOME RUN',ft+' FT');
@@ -2762,7 +2762,7 @@ function doSwing(type){
   if(paused||S.state==='title'||S.state==='over')return;
   if(S.state==='trot'){S.t=now-TROT.dur;return;} // skip the trot
   if(S.state==='celly2'){S.t=now-D2.dur;return;}
-  if(S.state==='hbp'){S.t=now-HBD;return;}
+  if(S.state==='hbp'){S.t=now-HBD;return;} // (a skip: straight to whatever comes next)
   if(S.state==='brawl'){S.t=now-BRW.dur;return;}
   if(S.state==='hbprun'){S.t=now-HBR;return;}
   if(S.state==='pod'){S.t=now-POD;return;}
@@ -3646,7 +3646,8 @@ function step(dt){
   else if(st==='walkup'&&el>=WALK.dur)endWalkup();
   else if(st==='celly2'&&el>=D2.dur){toReady(PACE.newBatter);}
   else if(st==='hbp'){if(!S.hbpR&&el>=1.5){S.hbpR=true;roar(.42,1.2);} /* after the boos the place keeps buzzing while he is down, and it builds as he gets up: never silence, and never louder than the charge that may follow */
-    if(!S.hbpF&&el>=HB1){S.hbpF=true;flash(.35);roar(.62,.9);}if(el>=HBD){if(brawlNeed())brawlStart();else hbpEnd();}}
+    if(!S.hbpF&&el>=HB1){S.hbpF=true;flash(.35);roar(.62,.9);}if(S.hbpWill===undefined)S.hbpWill=brawlNeed(); /* decided once, as he goes down */
+    if(S.hbpWill){if(el>=HBD)brawlStart();}else if(el>=HB1+1.25)hbpEnd();} // no fight coming: cut away as he gets to his feet, before he can look like he is squaring up
   else if(st==='brawl')brawlTick(el);
   else if(st==='qte')qteTick();
   else if(st==='hbprun'&&el>=HBR)hbpRunEnd();
