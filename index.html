@@ -357,7 +357,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
 #hud:not(.mob)>#card,#hud.kr:not(.mob)>#card{left:auto;right:5%;top:auto;bottom:54.5%;max-width:24vw} /* right-hander: lower and further right, beside the second baseman, never on him */#hud.lh:not(.mob)>#card,#hud.kr.lh:not(.mob)>#card{left:5%;right:auto;bottom:54.5%;max-width:24vw}
 #hud.mob>#card,#hud.mob.lh>#card{top:auto!important;bottom:57.5%!important;max-width:calc(50vw - 40px)!important} /* wholly above the pitcher's head, and never wide enough to reach across to him: he stays in the clear */
 #hud.mob>#card #cname{max-width:100%;overflow:hidden!important;text-overflow:ellipsis}#hud.mob>#card{right:max(16px,env(safe-area-inset-right,0px))!important}#hud.mob.lh>#card{left:max(16px,env(safe-area-inset-left,0px))!important;right:auto!important}
-#hud.mob:not(.lh)>#card #cname{font-size:clamp(16px,4.7vw,20px)!important}#hud.mob:not(.lh)>#card .stat em{font-size:21px!important}#hud.mob:not(.lh)>#card .stat{font-size:10px!important}#hud.mob:not(.lh)>#card{padding:5px 8px 6px!important} /* a touch smaller for right-handed hitters */
+#hud.mob:not(.lh)>#card #cname{font-size:clamp(16px,4.7vw,20px)!important}#hud.mob:not(.lh)>#card .stat em{font-size:21px!important}#hud.mob:not(.lh)>#card .stat{font-size:10px!important}#hud.mob:not(.lh)>#card{padding:5px 8px 6px!important;bottom:55%!important} /* a touch smaller for right-handed hitters */
 /* during a walk-up any callout still on screen (the inning line, PLAY BALL) is held small along the top, well above the man walking in */
 #hud.wk #pop.logo{top:10%!important}#hud.mob.wk #pop.logo{top:17%!important}#hud.wk #pop.logo .t{font-size:clamp(40px,10.5vw,92px)!important}#hud.mob.wk #pop.logo .t{font-size:clamp(44px,14vw,64px)!important} /* PLAY BALL: big, right over the head of the first man walking up, with clear air between them */
 #hud.mob.podlive>#card{bottom:66%!important} /* the batter plate steps up out of the way of the pitcher's Overdrive tag */
@@ -875,7 +875,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 501</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 502</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <button class="tag wkopt sens" id="sens1" type="button"></button>
@@ -2911,7 +2911,7 @@ function optLabels(){const set=(id,t)=>{const e=document.getElementById(id);if(e
 const easyAB=()=>S.bi===0&&S.inning===1&&gamesPlayed<=3;
 function choosePitch(){
   if(easyAB()){const P=PITCHES[0],tx=rand(-.11,.11),ty=rand(.72,.94);
-    return {P,tx,ty,dur:.84*rand(.98,1.03),brk:new V3(P.brk[0]*.3,P.brk[1]*.3,0),arc:P.arc,rel:new V3(),t0:0,inZone:true};}
+    return {P,tx,ty,dur:.84*rand(.98,1.03),brk:new V3(P.brk[0]*.3*(S.pName&&S.pName[2]==='L'?-1:1),P.brk[1]*.3,0),lh:!!(S.pName&&S.pName[2]==='L'),arc:P.arc,rel:new V3(),t0:0,inZone:true};}
   // the pitcher has a meter too: strikes and outs build Heat, and he spends a bar of it to throw a special pitch
   // The pitcher has Juice too. Nobody sees it in the first three at-bats of a game; the fourth hitter on is guaranteed the game's first
   // special pitch within his first two pitches, so the player learns early that it exists. After that it follows the Heat meter.
@@ -2932,7 +2932,7 @@ function choosePitch(){
   const hbp=(S.bi===S.forceHbpBi&&S.balls+S.strikes===0&&!(S.over&&S.overOn)&&!S.hbpN)||S.bi>0&&!(S.over&&S.overOn)&&!(gamesPlayed<=3&&S.bi<3)&&(S.hbpN||0)<3&&S.balls+S.strikes===0&&(DBG.hbp||Math.random()<(S.bi===S.retalBi?.3:S.pOver?.14:.05)); /* the hitter after a big homer or a showy celebration is far more likely to wear one: it reads as payback */ // never while the hitter is in Overdrive
   if(hbp){tx=(curBatter().lh?1:-1)*.68;ty=rand(1.05,1.3);}
   const sp=inningSp();
-  return {P,tx,ty,hbp,dur:P.dur*sp*DIFF[diffI].dur*rand(.97,1.03),brk:new V3(P.brk[0]*rand(.8,1.15),P.brk[1]*rand(.8,1.15),0),arc:P.arc,rel:new V3(),t0:0,
+  return {P,tx,ty,hbp,dur:P.dur*sp*DIFF[diffI].dur*rand(.97,1.03),brk:new V3(P.brk[0]*rand(.8,1.15)*(S.pName&&S.pName[2]==='L'?-1:1),P.brk[1]*rand(.8,1.15),0),lh:!!(S.pName&&S.pName[2]==='L'),arc:P.arc,rel:new V3(),t0:0, /* a left-hander's pitches break the other way: his slider runs toward the third-base side, his screwball and changeup fade toward first */
     inZone:tx>=ZONE.x0&&tx<=ZONE.x1&&ty>=ZONE.y0&&ty<=ZONE.y1};
 }
 function pitchPos(pt,u,out){
@@ -4455,7 +4455,7 @@ function step(dt){
   if(S.state==='pitch'&&pitch){
     const u=(now-pitch.t0)/pitch.dur;pitchPos(pitch,u,ball.position);
     if(pitch.hbp&&u>=.985)hbpStart();
-    {const sp=SPIN[pitch.P.n]||[.7,.7,.1,46];_spin.set(sp[0],sp[1],sp[2]).normalize();ball.rotateOnWorldAxis(_spin,sp[3]*dt);}
+    {const sp=SPIN[pitch.P.n]||[.7,.7,.1,46];_spin.set(sp[0],sp[1]*(pitch.lh?-1:1),sp[2]*(pitch.lh?-1:1)).normalize();ball.rotateOnWorldAxis(_spin,sp[3]*dt); /* and the ball spins the mirrored way out of a left hand */}
     ball.scale.setScalar(1);ballShadow.position.set(ball.position.x,.03,ball.position.z);ballShadow.scale.setScalar(.16);
     const show=u>(pitch.P.sp?.42:.22)&&u<1;pring.visible=show;
     if(show){pring.position.set(pitch.tx,pitch.ty,0);const uT=u+SW_T/pitch.dur, // the ring runs ahead by the swing time, so 'tap when it finishes closing' is exactly on time
