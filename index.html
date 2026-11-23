@@ -924,6 +924,7 @@ const shBig=new T.Mesh(new T.PlaneGeometry(280,230),new T.ShadowMaterial({opacit
     g.fillStyle='#fff';g.beginPath();g.ellipse(c,c-R*.95,R*.5,R*.12,0,0,PI*2);g.fill();g.beginPath();g.ellipse(c,c+R*.97,R*.45,R*.1,0,0,PI*2);g.fill();
     const sh=g.createRadialGradient(c-R*.55,c-R*.35,R*.5,c-R*.2,c-R*.1,R*1.5);sh.addColorStop(0,'rgba(0,0,10,0)');sh.addColorStop(.62,'rgba(0,0,10,.25)');sh.addColorStop(1,'rgba(0,0,10,.96)');g.fillStyle=sh;g.fillRect(0,0,w,h); // night side
     g.restore();});
+  new T.TextureLoader().load('earth.png',t=>{t.anisotropy=ANISO;earth.material.map=t;earth.material.needsUpdate=true;},undefined,()=>{}); /* the real thing (the Apollo 17 'Blue Marble' photograph) replaces the painted Earth once it has loaded */
   const earth=new T.Sprite(new T.SpriteMaterial({map:et,fog:false,transparent:true,depthWrite:false}));earth.position.set(150,372,-928);earth.scale.set(350,350,1);earth.renderOrder=-5;scene.add(earth);
 }
 
@@ -2177,11 +2178,11 @@ function basePos(sv,out){const i=clamp(Math.floor(sv),0,3),u=sv-i;return out.set
 function setupRunners(make,skins,cj){
   RUN.pose=pose({y:.88,lean:.22,hL:[-.3,0,.3],kL:.5,hR:[-.3,0,-.3],kR:.5,sL:[-.2,0,.25],eL:-.5,sR:[-.2,0,-.25],eR:-.5}); // a short lead: knees bent, hands loose
   for(let i=0;i<4;i++){const R={fig:mkFielder('RUN',i),s:0,target:0,active:false,jog:false,delay:0};R.fig.root.scale.setScalar(1.25);R.fig.root.visible=false;scene.add(R.fig.root);
-    setupFielder(R,make(['run','jog','turn','c_fist','x_limp'].filter(k=>!cj||cj[k])),skins.home,true);
+    setupFielder(R,make(['run','jog','turn','c_fist','x_limp','c_moonwalk'].filter(k=>!cj||cj[k])),skins.home,true);
     R.obj.traverse(o=>{if(o.isMesh&&o.material&&!Array.isArray(o.material)){o.material=o.material.clone();o.material.transparent=false;o.material.opacity=1;o.material.depthWrite=true;}}); // runners get their own copy of the uniform material: the hitter's fades in and out as batters change, and that was fading the men on base with him
     const still=name=>{const c=R.obj.animations.find(c=>c.name===name);if(!c)return null;c.tracks=c.tracks.filter(t=>/quaternion$/.test(t.name)||/Hips\.position$/.test(t.name));
       const ht=c.tracks.find(t=>/Hips\.position$/.test(t.name));if(ht){const v=ht.values;for(let k=3;k<v.length;k+=3){v[k]=v[0];v[k+2]=v[2];}}const a=R.mixer.clipAction(c);a.dur=c.duration;return a;};
-    R.turnAct=still('turn');R.fistAct=still('c_fist');R.hurtAct=still('x_limp');
+    R.turnAct=still('turn');R.fistAct=still('c_fist');R.hurtAct=still('x_limp');R.mwAct=still('c_moonwalk');
     const jc=R.obj.animations.find(c=>c.name==='jog');
     if(jc){jc.tracks=jc.tracks.filter(t=>/quaternion$/.test(t.name)||/Hips\.position$/.test(t.name));const ht=jc.tracks.find(t=>/Hips\.position$/.test(t.name));if(ht){const v=ht.values;for(let k=3;k<v.length;k+=3){v[k]=v[0];v[k+2]=v[2];}}
       R.jogAct=R.mixer.clipAction(jc);R.jogDur=jc.duration;}
@@ -2191,7 +2192,7 @@ function setupRunners(make,skins,cj){
 // ── Home-run trot, shown as a highlight cut on no-doubters: rounding second, then touching home and a fist pump on the plate.
 const TROT={dur:5.85,celT:3.05,cele:false,clip:'',R:null,cam:new V3(),segs:[[0,3.05,1.7,3.5]]}; // rounds second and third, then halfway down the line it cuts to him at the plate, already celebrating // one continuous run: round second, round third, home // rounding second, then the last steps home; the fist pump fills the rest
 function startTrot(){const R=RUN.list.find(R=>!R.active)||null;if(!R||!R.jogAct)return false;
-  R.active=true;R.trot=true;R.delay=0;R.s=0;R.target=4;TROT.R=R;TROT.cele=false;TROT.cut=false;R.fig.root.scale.setScalar(FSCALE.inf);
+  R.active=true;R.trot=true;R.delay=0;R.s=0;R.target=4;TROT.R=R;TROT.cele=false;TROT.cut=false;TROT.mwS=false;R.fig.root.scale.setScalar(FSCALE.inf);
   {const C=MX.clip,own=celClip(WALK.by[curBatter().name]);const wild=wildTrot&&C?WILD_CEL.filter(k=>C.intros[k]):[];wildTrot=false;
     const all0=C?WILD_CEL.filter(k=>C.intros[k]&&k!=='p_loser'&&k!==celLast):[],all=all0.concat(all0.filter(k=>CEL_FAV.includes(k)),all0.filter(k=>CEL_FAV.includes(k))),pick=a=>a[(Math.random()*a.length)|0], /* the crowd-pleasers (break dance, backflip, twerk, macarena) come up three times as often as the rest */w2=wild.filter(k=>k!=='p_loser'&&k!==celLast);
     // his own routine about a third of the time, the 'loser' sign at the pitcher now and then, otherwise anything from the whole book (dances, flexes, the pitcher's own strikeout taunts thrown back at him), never the same one twice running
@@ -2201,10 +2202,14 @@ function startTrot(){const R=RUN.list.find(R=>!R.active)||null;if(!R||!R.jogAct)
  if(DBG.cel)TROT.clip=DBG.cel;
  // Variety: about a third of the time the trot itself isn't shown. The camera stays on the pitcher wearing it, then cuts to the hitter at the plate.
  TROT.pcut=TROT.clip!=='p_loser'&&!!(MX.pit&&MX.pit.defs.length)&&(DBG.pcut||Math.random()<.35);
- TROT.celT=TROT.pcut?2.5:3.05;TROT.segs[0][1]=TROT.celT;TROT.dur=TROT.celT+(TROT.clip==='p_loser'?4.25:2.8);
+ // THE MOONWALK: some trots end with him turning his back on the plate at third and gliding the last stretch home backwards. He touches
+ // the plate, and whatever celebration was coming follows on from there.
+ TROT.mw=!!R.mwAct&&(DBG.mw||(celLast2!=='mw'&&Math.random()<.3));celLast2=TROT.mw?'mw':'';if(TROT.mw)TROT.pcut=false;
+ {const base=TROT.pcut?2.5:3.05,MW=3.3;TROT.celT=base+(TROT.mw?MW:0);TROT.segs=TROT.mw?[[0,base,1.7,3.7],[base,TROT.celT,3.7,3.999,1]]:[[0,TROT.celT,1.7,3.5]];}
+ TROT.dur=TROT.celT+(TROT.clip==='p_loser'?4.25:2.8);
  S.state='trot';S.t=now;return true;}
 // after the hitter's 'loser' taunt, the camera cuts to the pitcher wearing it: seconds since that cut, or -1
-const trotPit=()=>S.state==='trot'&&TROT.pcut&&now-S.t<TROT.celT;
+let celLast2='';const trotPit=()=>S.state==='trot'&&TROT.pcut&&now-S.t<TROT.celT;
 const pitCut=()=>S.state==='trot'&&TROT.clip==='p_loser'&&TROT.cele?now-S.t-TROT.celT-2.1:-1;
 function endTrot(){const R=TROT.R;if(R){R.trot=false;R.active=false;R.fig.root.visible=false;R.obj.scale.x=R.sx;R.fig.root.scale.setScalar(1.25);}TROT.R=null;TROT.cele=false;}
 function updateTrot(dt){
@@ -2214,15 +2219,17 @@ function updateTrot(dt){
     root.scale.setScalar(lerp(FSCALE.inf,1,ease(clamp((sv-3.35)/.6,0,1)))); // infielder-sized on the bases, easing to the hitter's own size as he comes down the line to the plate
     basePos(Math.min(3.999,sv+.04),_a);basePos(Math.max(0,sv-.04),_b);root.rotation.y=Math.atan2(_a.x-_b.x,_a.z-_b.z);   // heading follows the path, so it swings round at the bag
     const near=Math.abs(sv-Math.round(sv))<.17&&Math.round(sv)>0&&Math.round(sv)<4;mode=near&&R.turnAct?'turn':'jog';mir=mode==='turn';
-    basePos(Math.min(3.999,sv+.3),_a);_b.set(_a.x,0,_a.z+19.4).normalize();TROT.cam.set(_a.x+_b.x*3.5,1.5,_a.z+_b.z*3.5);}
+    basePos(Math.min(3.999,sv+.3),_a);_b.set(_a.x,0,_a.z+19.4).normalize();TROT.cam.set(_a.x+_b.x*3.5,1.5,_a.z+_b.z*3.5);
+    if(seg[4]){mode='mw';mir=false;root.rotation.y+=PI;TROT.cam.set(_rv.x+.7071*4.6+.7071*1.6,1.25,_rv.z-.7071*4.6+.7071*1.6); // back to the plate, gliding home; watched side-on from the infield
+      if(!TROT.mwS){TROT.mwS=true;crowdPump(.8);$('pop').className='';const e2=$('shout');e2.textContent='MOONWALK!';e2.style.left='50%';e2.style.top=(MOB?'30%':'24%');e2.classList.remove('b','go');void e2.offsetWidth;e2.classList.add('go');}}}
   else{root.position.set(0,0,0);root.rotation.y=PI/4;
     // cut on the action: the frame his foot hits the plate, the camera jumps to a new, low angle and the celebration starts on the cut
     if(!TROT.cut){TROT.cut=true;flash(.4);crowdPump();}
     if(TROT.clip==='p_loser')TROT.cam.set(1.1,1.35,-3.6);else TROT.cam.set(1.5,.6,2.7); // camera ahead of him, looking back up the third-base line
     TROT.cele=!!(TROT.clip&&MX.clip&&MX.clip.intros[TROT.clip]);root.visible=!TROT.cele;if(!R.fistAct)mode='jog';} // the batter's own model takes over for the celebration
-  if(mode!==R.mode){R.mode=mode;R.mixer.stopAllAction();(mode==='turn'?R.turnAct:mode==='fist'?R.fistAct:R.jogAct).reset().play();}
+  if(mode!==R.mode){R.mode=mode;R.mixer.stopAllAction();(mode==='mw'?R.mwAct:mode==='turn'?R.turnAct:mode==='fist'?R.fistAct:R.jogAct).reset().play();}
   R.obj.scale.x=R.sx*(mir?-1:1); // the clip turns right; runners turn left
-  const a=mode==='turn'?R.turnAct:mode==='fist'?R.fistAct:R.jogAct,d=mode==='jog'?R.jogDur:a.dur;R.runT=(R.runT+dt*(mode==='jog'?1.25:1))%d;a.time=R.runT;R.mixer.update(0);
+  const a=mode==='mw'?R.mwAct:mode==='turn'?R.turnAct:mode==='fist'?R.fistAct:R.jogAct,d=mode==='jog'?R.jogDur:a.dur;R.runT=(R.runT+dt*(mode==='jog'?1.25:mode==='mw'?1.35:1))%d;a.time=R.runT;R.mixer.update(0);
 }
 function syncRunners(){const L=RUN.list;TROT.R=null;TROT.cele=false;L.forEach(R=>{R.keep=false;R.trot=false;R.lead=false;R.fig.root.scale.setScalar(1.25);if(R.obj)R.obj.scale.x=R.sx;});
   for(let b=0;b<3;b++)if(S.bases[b]){const R=L.find(R=>R.active&&!R.keep&&Math.round(R.target)===b+1)||L.find(R=>!R.keep&&!R.active)||L.find(R=>!R.keep);
@@ -4040,7 +4047,7 @@ function shTick(){if(!(SHQ&&rim.castShadow))return;const st=S.state,wide=!(st===
 $('shbtn').addEventListener('click',()=>{SHQ=!SHQ;if(SHQ&&!rim.castShadow)rim.castShadow=true;try{localStorage.setItem('mm_shadows',SHQ?'1':'0');}catch(e){}shApply();});
 shApply();
 resize();hud();
-const DBG={dive:'',hbp:false,pcut:false,fl:'',rob:false,pc:false,staunt:false,pod:false,trail:false,orbit:false,sat:false,drill:false,brawl:false,qte:false,mash:false,slide:false,pn:'',laser:false,lamp:false,pdef:false,dbl:false,cam:false,admire:'',trip:false,fist:false,pop:false,loser:false}; // test hook: pin the camera to CAM_HOME/CAM_LOOK
+const DBG={dive:'',hbp:false,pcut:false,fl:'',rob:false,pc:false,staunt:false,pod:false,trail:false,orbit:false,sat:false,drill:false,brawl:false,qte:false,mash:false,slide:false,pn:'',laser:false,lamp:false,mw:false,pdef:false,dbl:false,cam:false,admire:'',trip:false,fist:false,pop:false,loser:false}; // test hook: pin the camera to CAM_HOME/CAM_LOOK
 window.__mm={crowdFx,setE:v=>{crowdE=v;crowdShow=v;},GLOVE,renderer,scene,LODM,camera,zapStart,acState:()=>AC?(zoneLP?"lp="+Math.round(zoneLP.frequency.value)+" ":"")+AC.state+" t="+AC.currentTime.toFixed(1)+" real="+crowdReal+" roar="+(roarG?roarG.gain.value.toFixed(2)+(roarTop?"T":""):"off")+" bed="+crowdGain.gain.value.toFixed(2):"none",roar,roarOff,boo,cheer,crowdRise,crowdDrop,S,aim,MX,DBG,landRingOn:()=>landRing.visible,hud,tutAnim,draw:()=>draw(),endGame,TROT,SFX,RUN,ballPos:()=>ball.position,ballVisible:()=>ball.visible,fielders,toReady,CAM_HOME,CAM_LOOK,now:()=>now,simulate,judge,get pitch(){return pitch;},get flight(){return flight;},lastSwing:()=>{const t=swing&&swing.type;swing=null;return t;},lastSwingTurbo:()=>!!(swing&&swing.turbo),doSwing,newGame,V3,
   sim:(dt)=>{hitstop=0;now+=dt;step(dt);},
   step:(n,dt=1/60)=>{for(let i=0;i<n;i++){if(hitstop>0)hitstop=0;now+=dt;step(dt);}updateCamera(dt);draw();}};
