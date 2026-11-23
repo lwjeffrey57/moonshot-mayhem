@@ -220,6 +220,12 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 #hud.mob #podtag{top:42.5%} /* on the batter's eye, just over the pitcher's head */
 @media (orientation:landscape) and (max-height:520px){#hud.mob #podtag{top:36%}}
 /* quick time event: the move's name, its arrow code, a clock that drains; on phones a d-pad where the aim stick usually is */
+#gobtn{position:absolute;left:50%;bottom:max(26px,env(safe-area-inset-bottom,0px));transform:translateX(-50%) scale(.6);opacity:0;pointer-events:none;z-index:47;padding:14px 26px;font-family:var(--display);font-style:italic;font-size:clamp(22px,6.4vw,34px);letter-spacing:.03em;color:#04140a;background:linear-gradient(#7dff9c,#1fd153);border:4px solid #000;border-radius:18px;box-shadow:0 6px 0 #000,0 0 0 4px rgba(255,255,255,.7),0 0 30px 8px rgba(57,255,106,.7);white-space:nowrap;touch-action:none}
+#gobtn.on{opacity:1;pointer-events:auto;animation:gobtn .42s ease-in-out infinite alternate}
+@keyframes gobtn{from{transform:translateX(-50%) scale(1)}to{transform:translateX(-50%) scale(1.09)}}
+#hud.mob #gobtn{bottom:max(120px,calc(env(safe-area-inset-bottom,0px) + 110px))}
+#gobtn small{display:block;font-family:var(--hud);font-style:normal;font-size:11px;letter-spacing:.08em;opacity:.75}
+#hud:not(.mob) #gobtn small::after{content:'PRESS G'}
 #qte{position:absolute;left:50%;top:15%;transform:translateX(-50%);z-index:46;text-align:center;font-family:var(--display);font-style:italic;pointer-events:none}
 #hud.mob #qte{top:24%}
 #qte b{display:block;font-weight:400;font-size:clamp(20px,5.6vw,34px);color:var(--volt);-webkit-text-stroke:3px #000;paint-order:stroke fill;text-shadow:0 3px 0 #000;letter-spacing:.04em}
@@ -235,7 +241,10 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 #qtm{height:10px;width:min(360px,84vw);margin:0 auto;background:#000;border:2px solid #f2f5ff;border-radius:6px;overflow:hidden}
 #qtb{display:block;height:100%;background:#39ff6a;transform-origin:0 50%}#qtb.low{background:#ff4d2e}
 #qpad{position:absolute;left:max(14px,env(safe-area-inset-left,0px));bottom:max(18px,env(safe-area-inset-bottom,0px));width:186px;height:186px;display:none;z-index:46;pointer-events:auto}
-#hud.mob.qon #qpad{display:block}
+#hud.mob.qon #qpad{display:block}#hud.mob.qon.qm #qpad{display:none}
+/* the tap-furiously kind gets one big button instead of the d-pad */
+#qmash{position:absolute;left:50%;bottom:max(34px,env(safe-area-inset-bottom,0px));margin-left:-84px;width:168px;height:168px;display:none;z-index:46;padding:0;border-radius:50%;font-family:var(--display);font-style:italic;font-size:44px;color:#fff;text-shadow:0 3px 0 #000;background:radial-gradient(circle at 50% 35%,#ff8a5c,#ff3b3b 60%,#a0140c);border:5px solid #000;box-shadow:0 7px 0 #000,0 0 0 5px rgba(255,255,255,.6),0 0 34px 10px rgba(255,80,50,.7);touch-action:none}
+#hud.mob.qon.qm #qmash{display:block}#qmash:active{transform:translateY(5px) scale(.96);box-shadow:0 2px 0 #000,0 0 0 5px rgba(255,255,255,.9),0 0 40px 14px rgba(255,160,80,.9)}
 #qpad button{position:absolute;width:62px;height:62px;padding:0;font-size:26px;color:#fff;background:linear-gradient(#3a4190,#1b1f4a);border:3px solid #000;border-radius:12px;box-shadow:0 4px 0 #000,0 0 0 3px rgba(242,245,255,.5);touch-action:none}
 #qpad button:active{transform:translateY(3px);background:#39ff6a;color:#04140a}
 #qpad [data-d=U]{left:62px;top:0}#qpad [data-d=D]{left:62px;bottom:0}#qpad [data-d=L]{left:0;top:62px}#qpad [data-d=R]{right:0;top:62px}
@@ -659,6 +668,8 @@ body.mob #tip{display:block}body.mob .how{display:none}
     <div id="duelv" aria-hidden="true"></div>
     <div id="odv" aria-hidden="true"><i class="b"></i><i class="t"></i><i class="l"></i><i class="r"></i></div>
     <div id="odp" class="odp" aria-hidden="true"><i class="b"></i><i class="t"></i><i class="l"></i><i class="r"></i></div>
+    <button id="qmash" type="button" aria-hidden="true">TAP!</button>
+    <button id="gobtn" type="button">GO!<small></small></button>
     <div id="qte" hidden><b id="qtt"></b><div id="qtr"></div><div id="qtm"><i id="qtb"></i></div></div>
     <div id="qpad" aria-hidden="true"><button type="button" data-d="U">▲</button><button type="button" data-d="L">◀</button><button type="button" data-d="R">▶</button><button type="button" data-d="D">▼</button></div>
     <div id="podtag" aria-hidden="true">PITCHER OVERDRIVE ACTIVE</div>
@@ -800,7 +811,7 @@ function podCls(){const st=S.state,on=pOD()&&!(st==='title'||st==='over'||st==='
   {const ks=on&&!(S.over&&S.overOn)?Math.min(2,S.strikes|0):0;if(ks!==podKs){podKs=ks;$('hud').classList.toggle('ks1',ks===1);$('hud').classList.toggle('ks2',ks===2);}}
   {const lv=on&&(st==='ready'||st==='windup'||st==='pitch')&&$('tut').hidden;if(lv!==podLv){podLv=lv;$('hud').classList.toggle('podlive',lv);}}
   const ip=st==='flight'||st==='result'||st==='trot'||st==='celebrate'||st==='celly2';if(ip!==inplayOn){inplayOn=ip;$('hud').classList.toggle('inplay',ip);}
-  const ce=st==='celly2'||st==='trot'||!!(flight&&flight.orb&&!flight.done);if(ce!==celOn){celOn=ce;$('hud').classList.toggle('cel',ce);}}
+  const ce=st==='celly2'||st==='trot'||st==='qte'||st==='brawl'||st==='hbprun'||!!(flight&&flight.orb&&!flight.done);if(ce!==celOn){celOn=ce;$('hud').classList.toggle('cel',ce);}}
  // while the camera is close on the pitcher, call-outs drop to a smaller line along the bottom so the words never sit on him
 function draw(){podCls();shTick();{const pc=now-pcutT<.06,e=$('pop');if(pc!==pcutOn){pcutOn=pc;$('hud').classList.toggle('pcut',pc);if(!pc){e.style.top='';e.style.bottom='';e.className='';}}
   if(pc){_s0.copy(pcutH).project(camera);const H=canvas.clientHeight||innerHeight;e.style.bottom='auto';{const t1=e.querySelector('.t'),s1=e.querySelector('.s');e.style.top=Math.max(6,(-_s0.y*.5+.5)*H-t1.offsetHeight-(s1.textContent?s1.offsetHeight+6:0)).toFixed(0)+'px';}}} // call-outs sit just above the head of whoever the close-up is on
@@ -2172,9 +2183,15 @@ const QTE_MOVES={
   tag2:{name:'TAGGING UP',code:['L','U','R','D','R','U'],base:2,u:[.7071,.7071],call:"HE'S TAGGING UP!",ok:()=>{S.bases[0]=0;S.bases[1]=1;},okT:['SAFE AT SECOND!','TAGGED UP AND TOOK IT'],no:()=>{S.bases[0]=0;recordOut();},noT:['OUT AT SECOND!','CUT DOWN TAGGING UP'],pa:true},
   tag3:{name:'TAGGING UP',code:['D','R','U','R','D','L','U'],base:3,u:[.7071,-.7071],call:"HE'S TAGGING UP!",ok:()=>{S.bases[1]=0;S.bases[2]=1;},okT:['SAFE AT THIRD!','TAGGED UP AND TOOK IT'],no:()=>{S.bases[1]=0;recordOut();},noT:['OUT AT THIRD!','CUT DOWN TAGGING UP'],pa:true}};
 let qteSeen=false;try{qteSeen=localStorage.getItem('mm_qte')==='1';}catch(e){}
-function qteOK(){const C=MX.clip,P=MX.pit;if(!WALK.on||!C||!P||!MX.on)return false;if(!(C.intros.q_flykick&&C.intros.run&&C.intros.p_dying&&C.intros.b_gut&&C.intros.b_stance&&P.taunts.b_stance&&P.taunts.b_jab&&P.taunts.p_dying))return false;
-  return DBG.qte||(S.qteN||0)<3&&(!qteSeen||Math.random()<.5);}
-function qteStart(kind){const M=QTE_MOVES[kind],Bp=M.base?[BASES[M.base][0],BASES[M.base][1]]:[0,0],u=M.u;
+function qteParts(){const C=MX.clip,P=MX.pit;return !!(WALK.on&&C&&P&&MX.on&&C.intros.q_flykick&&C.intros.run&&C.intros.p_dying&&C.intros.b_gut&&C.intros.b_stance&&P.taunts.b_stance&&P.taunts.b_jab&&P.taunts.p_dying);}
+function qteOK(){return qteParts()&&(DBG.qte||(S.qteN||0)<3&&(!qteSeen||Math.random()<.5));} // the double play decides for itself; the rest are the player's call (the GO button)
+// GO: after a hit (or a deep fly) that leaves a runner with a base to take, a button comes up for a couple of seconds. Press it and he goes,
+// which means a quick time event at the bag; leave it and he stays put. On a computer: G or Enter.
+const GO_LABEL={plate:'SEND HIM HOME!',stretch2:'GO FOR TWO!',stretch3:'GO FOR THREE!',tag2:'TAG UP!',tag3:'TAG UP!'};
+function goOffer(k){S.goK=k;const b=$('gobtn');b.firstChild.nodeValue=GO_LABEL[k];b.classList.remove('on');void b.offsetWidth;b.classList.add('on');readyDur=Math.max(readyDur,2.6);S.t=now;buzz(25);}
+function goHide(){if(S.goK){S.goK=null;}$('gobtn').classList.remove('on');}
+function goTap(){if(!S.goK||S.state!=='result')return;const k=S.goK;goHide();S.next=()=>qteStart(k,true);S.t=now-readyDur+.2;buzz([20,30,60]);tone('triangle',660,990,.12,.3);}
+function qteStart(kind,noPA){QT.noPA=!!noPA;goHide();const M=QTE_MOVES[kind],Bp=M.base?[BASES[M.base][0],BASES[M.base][1]]:[0,0],u=M.u;
   S.state='qte';S.t=now;S.qteN=(S.qteN||0)+1;Object.assign(QT,{ph:'heads',tp:now,kind,M,code:M.code,i:0,mash:DBG.mash||(qteSeen&&Math.random()<.35),fill:0,lt:0,lim:.38*M.code.length+1.0+(qteSeen?0:1.2), /* the clock: enough to punch the whole code in at a brisk pace with room for one slip, and no more */ok:false,bx:Bp[0],bz:Bp[1],ux:u[0],uz:u[1],ball:null,blow:0});
   QT.fx=Bp[0]+u[0]*.35;QT.fz=Bp[1]+u[1]*.35;QT.fry=Math.atan2(u[0],u[1]);QT.rry=Math.atan2(-u[0],-u[1]);QT.rx=Bp[0]+u[0]*17;QT.rz=Bp[1]+u[1]*17;
   QT.mx=Bp[0]+u[0]*1.5;QT.mz=Bp[1]+u[1]*1.5;{let nx=u[1],nz=-u[0];if(nx*(0-Bp[0])+nz*(-19.4-Bp[1])<0){nx=-nx;nz=-nz;}QT.nx=nx;QT.nz=nz;} // the side-on camera stands on the infield side of the line
@@ -2183,7 +2200,7 @@ function qteStart(kind){const M=QTE_MOVES[kind],Bp=M.base?[BASES[M.base][0],BASE
   QT.hid=[];RUN.list.forEach(R=>{if(R.fig.root.visible){QT.hid.push(R.fig.root);R.fig.root.visible=false;}});fielders.forEach(f=>{const r=f.fig.root;if(!f.isP&&r.visible&&Math.hypot(r.position.x-Bp[0],r.position.z-Bp[1])<9){QT.hid.push(r);r.visible=false;}});
   ball.visible=false;ballShadow.visible=false;pop(M.call,'','hot');buzz([30,30,60]);crowdRise(.8,3,true);hud();}
 function qteShow(){const M=QT.M,e=$('qte');$('qtt').textContent=M.name;
-  if(QT.mash){if(!$('qmf')){$('qtr').innerHTML='<div id="qmw"><em id="qmf"></em><span>MASH ANY ARROW!</span></div>';}$('qmf').style.transform='scaleX('+Math.min(1,QT.fill).toFixed(3)+')';e.hidden=false;$('hud').classList.add('qon');return;} // the other kind: no code, just hammer the arrows until the bar is full
+  if(QT.mash){if(!$('qmf')){$('qtr').innerHTML='<div id="qmw"><em id="qmf"></em><span>'+(MOB?'TAP! TAP! TAP!':'MASH SPACE!')+'</span></div>';}$('hud').classList.add('qm');$('qmf').style.transform='scaleX('+Math.min(1,QT.fill).toFixed(3)+')';e.hidden=false;$('hud').classList.add('qon');return;} // the other kind: no code, just hammer the arrows until the bar is full
  $('qtr').innerHTML=QT.code.map((c,i)=>`<i class="${i<QT.i?'ok':i===QT.i?'cur':''}">${{U:'▲',D:'▼',L:'◀',R:'▶'}[c]}</i>`).join('');e.hidden=false;$('hud').classList.add('qon');}
 function qteKey(d){if(S.state!=='qte'||QT.ph!=='input')return;
   {const b=document.querySelector('#qpad [data-d='+d+']'),good=QT.mash||d===QT.code[QT.i];if(b){b.classList.remove('hit','miss');void b.offsetWidth;b.classList.add(good?'hit':'miss');setTimeout(()=>b.classList.remove('hit','miss'),220);}}
@@ -2192,9 +2209,11 @@ function qteKey(d){if(S.state!=='qte'||QT.ph!=='input')return;
   else{QT.i=0;buzz([30,30,30]);tone('sawtooth',160,90,.12,.3);const r=$('qtr');r.classList.remove('bad');void r.offsetWidth;r.classList.add('bad');} // a wrong arrow: start the code again
   qteShow();}
 function qteDone(ok){QT.ph='out';QT.ok=ok;QT.t1=now;QT.hit=false;qteSeen=true;try{localStorage.setItem('mm_qte','1');}catch(e){}
-  $('hud').classList.remove('qon');setTimeout(()=>{$('qte').hidden=true;},ok?350:120);
+  $('hud').classList.remove('qon','qm');setTimeout(()=>{$('qte').hidden=true;},ok?350:120);
   if(ok){QT.b={n:'q_flykick',t:now};SND.zap();buzz([20,30,60]);}else{QT.b={n:'run',t:now,loop:true};QT.f={n:'b_jab',t:now+.12};tone('sawtooth',140,70,.25,.35);}}
 function qteTick(){const Q=QT,d0=9.5,d1=2.6,pe=now-Q.tp;
+  if(Q.ph==='run'||Q.ph==='input'||(Q.ph==='out'&&!Q.hit)){const k=Q.ph==='run'?clamp(pe/Q.runT,0,1)*.84:Q.ph==='input'?.84:Math.min(1,.84+.16*(now-Q.t1)/.4),gx=Q.fx+Q.nx*.25,gz=Q.fz+Q.nz*.25; // the throw is on its way the whole time
+    ball.visible=true;ball.scale.setScalar(1.5);ball.position.set(lerp(gx-Q.ux*11+Q.nx*1.5,gx,k),lerp(2.7,1.25,k)+Math.sin(k*PI)*.5,lerp(gz-Q.uz*11+Q.nz*1.5,gz,k));}
   if(Q.ph==='heads'){const k=clamp(pe/Q.headT,0,1),d=lerp(17,d0,k);Q.rx=Q.bx+Q.ux*d;Q.rz=Q.bz+Q.uz*d;if(k>=1){Q.ph='run';Q.tp=now;Q.b={n:'run',t:now,loop:true,rate:.5};$('pop').className='';}} // the heads-up: he is going, seen from in front
   else if(Q.ph==='run'){const k=clamp(pe/Q.runT,0,1),d=lerp(d0,d1,k);Q.rx=Q.bx+Q.ux*d;Q.rz=Q.bz+Q.uz*d;
     if(k>=1){Q.ph='input';Q.t1=now;if(Q.mash){Q.lim=3.1+(qteSeen?0:1.2);Q.fill=0;Q.lt=now;$('qtr').innerHTML='';}Q.b={n:'run',t:now,freeze:((now-Q.b.t)*.5)%.7,loop:true};qteShow();buzz(40);tone('sine',880,880,.1,.3);}}
@@ -2203,12 +2222,12 @@ function qteTick(){const Q=QT,d0=9.5,d1=2.6,pe=now-Q.tp;
   else{const e=now-Q.t1,d=Q.ok?lerp(lerp(d1,1.05,ease(clamp(e/.45,0,1))),.15,ease(clamp((e-.5)/.6,0,1))):lerp(d1,1.0,ease(clamp(e/.45,0,1)));Q.rx=Q.bx+Q.ux*d;Q.rz=Q.bz+Q.uz*d; /* a made kick carries him through the fielder and onto the bag, and no further */
     if(!Q.hit&&e>=.42){Q.hit=true;const M=Q.M;SND.mitt();tone('sine',120,45,.2,.7);shake=Math.max(shake,.55*FX);rumble=Math.max(rumble,1.3);flash(.5);burst(fxS,_p.set(Q.fx+Q.ux*.4,1.2,Q.fz+Q.uz*.4),22,4,.5,[1,.9,.5],2,1);
       if(Q.ok){Q.f={n:'p_dying',t:now-1.1,hold:true};Q.fx0=Q.fx;Q.fz0=Q.fz;Q.blow=now;Q.ball={t:now,x:Q.fx,z:Q.fz};rumble=1;crowdPump(1);M.ok();pop(M.okT[0],M.okT[1],'hot',true);}
-      else{Q.b={n:'b_gut',t:now,hold:true};crowdDrop();M.no();pop(M.noT[0],M.noT[1],'cool',true);}
+      else{ball.visible=false;Q.b={n:'b_gut',t:now,hold:true};crowdDrop();M.no();pop(M.noT[0],M.noT[1],'cool',true);}
       hud();}
     if(Q.ok&&Q.blow){const k=1-Math.pow(1-clamp((now-Q.blow)/.55,0,1),2);Q.fx=Q.fx0-Q.ux*1.8*k;Q.fz=Q.fz0-Q.uz*1.8*k;} // the kick sends him back off his feet, well clear of the bag
     if(Q.ball){const t=now-Q.ball.t;ball.visible=t<1.6;ball.scale.setScalar(1.6);ball.position.set(Q.ball.x-Q.ux*1.4*t+Q.nx*.9*t,1.1+4.2*t-4.9*t*t,Q.ball.z-Q.uz*1.4*t+Q.nz*.9*t);if(ball.position.y<.06)ball.position.y=.06;}
     if(e>=2.4){Q.hid.forEach(r=>{r.visible=true;});Q.hid=[];ball.visible=false;ball.scale.setScalar(1);$('qte').hidden=true;syncRunners();
-      if(Q.M.pa)afterPA(.9);else toReady(PACE.newBatter);}}}
+      if(Q.M.pa&&!Q.noPA)afterPA(.9);else toReady(PACE.newBatter);}}}
 function hbpRunEnd(){$('walk').hidden=true;$('hud').classList.remove('wk');afterPA(.5);}
 // The pitcher's Overdrive is revealed with a cut to the mound, after the hitter's own entrance is over: he flexes, the screen goes red, then the news.
 const POD=2.1;
@@ -2244,7 +2263,7 @@ function gameRating(){const G=S.goal,pts=S.runs*10+S.hits*4+S.hrs*8+(S.longest>=
   const T=[[0,'D','BENCH WARMER'],[20,'C','ROOKIE'],[45,'B','EVERYDAY STARTER'],[75,'A','ALL-STAR'],[110,'S','MOONSHOT LEGEND']];let i=0;T.forEach((t,j)=>{if(pts>=t[0])i=j;});
   return {pts,stars:i+1,grade:T[i][1],title:T[i][2],next:T[i+1]?T[i+1][0]-pts:0,nextTitle:T[i+1]?T[i+1][2]:''};}
 function newGame(){LINEUP.forEach(b=>{if(b.base)Object.assign(b,b.base);b.hb=0;}); /* stat changes from getting hit last only for the game */gamesPlayed++;try{localStorage.setItem('mm_games',gamesPlayed);}catch(e){}
-  Object.assign(S,{inning:1,outs:0,balls:0,strikes:0,runs:0,bases:[0,0,0],hits:0,hrs:0,longest:0,streak:0,bestStreak:0,juice:.25,heat:.2,over:false,stk:false,opp:0,bi:-1,pitches:0,seen:{},kOut:null});S.podN=0;S.podBi=-9;S.goal=null; /* per-game goals are switched off for now: pickGoal() is still here to bring them back */S.ks=0;S.d2=0;S.cardBi=-1;S.pChanges=0;S.pRuns0=0;S.pc3=false;S.pcPending=false;S.pStart=gamesPlayed%BULLPEN.length;S.pName=BULLPEN[S.pStart]; /* a different starter each game, so left-handers start some of them */$('pcap').textContent='PITCHER';S.sTaunt=null;S.stLast=false;jPend=false;S.orbN=0;S.odUses=0;S.brawled=false;S.qteN=0;S.retalBi=-9;S.walkoff=false;S.duel=false;$('hud').classList.remove('duel');S.pdLast=false;S.pOver=false;S.podPending=false;S.jSaid=false;S.overOn=false;S.spSeen=false;lastWalk='';
+  Object.assign(S,{inning:1,outs:0,balls:0,strikes:0,runs:0,bases:[0,0,0],hits:0,hrs:0,longest:0,streak:0,bestStreak:0,juice:.25,heat:.2,over:false,stk:false,opp:0,bi:-1,pitches:0,seen:{},kOut:null});S.podN=0;S.podBi=-9;S.goal=null; /* per-game goals are switched off for now: pickGoal() is still here to bring them back */S.ks=0;S.d2=0;S.cardBi=-1;S.pChanges=0;S.pRuns0=0;S.pc3=false;S.pcPending=false;S.pStart=gamesPlayed%BULLPEN.length;S.pName=BULLPEN[S.pStart]; /* a different starter each game, so left-handers start some of them */$('pcap').textContent='PITCHER';S.sTaunt=null;S.stLast=false;jPend=false;S.orbN=0;S.odUses=0;S.brawled=false;S.qteN=0;S.goK=null;S.retalBi=-9;S.walkoff=false;S.duel=false;$('hud').classList.remove('duel');S.pdLast=false;S.pOver=false;S.podPending=false;S.jSaid=false;S.overOn=false;S.spSeen=false;lastWalk='';
   $('title').hidden=true;$('over').hidden=true;$('pausebtn').hidden=false;$('mutebtn').hidden=false;setBatter();renderRep();scoreboard('PLAY BALL','INNING 1');S.opp=0;toReady(2);pop('PLAY BALL!','','logo');hud();SND.playball();cheer(.14,1.5);}
 
 // ───────────────────────── pitching
@@ -2619,7 +2638,7 @@ function finishPlay(){
       if(!dp&&pl.air&&f.q>.7){crowdOut(lq);setTimeout(()=>boo(.4),700);}else crowdOut(lq);}
     if(qdp){S.state='result';S.t=now;readyDur=1.25;S.next=()=>qteStart('dp');hud();return;}
     {const deep=pl.air&&!dp&&pl.f&&pl.f.of&&Math.hypot(pl.p.x,pl.p.z)>70&&S.outs<3,k=deep?(S.bases[1]&&!S.bases[2]?'tag3':S.bases[0]&&!S.bases[1]?'tag2':''):''; // a deep fly with a man on: he tags up and goes
-      if(k&&qteOK()){S.state='result';S.t=now;readyDur=1.3;S.next=()=>qteStart(k);hud();return;}} // the man from first is out at second; whether they turn two is up to him (and you)
+      if(k&&S.outs<2&&qteParts()){afterPA(dp?2.7:f.thr?2.1:1.5);if(DBG.qte===k)S.next=()=>qteStart(k,true);else goOffer(k);return;}}
     afterPA(dp?2.7:f.thr?2.1:1.5);return;}
   S.hits++;S.streak++;S.bestStreak=Math.max(S.bestStreak,S.streak);if(!f.tb)S.juice=Math.min(1,S.juice+(pl.type==='hr'?.5:.25)); // every hit is worth one quarter; // a Juice hit doesn't refill the bar it just spent
   if(pl.type==='hr'){
@@ -2647,8 +2666,8 @@ function finishPlay(){
   }
   const cel=S.state==='celebrate'||S.state==='trot';setBatter();if(cel)readyDur=3.1;else readyDur=f.thr?2.2+(f.thr.wait||0):1.5;S.next=null;hud();
   // Plays that turn into a quick time event: a single with a man on second (he is waved home), a double he tries to stretch into a triple, a single he tries to stretch into a double.
-  if(pl.type==='hit'&&!pl.infield&&!pl.grd&&S.outs<2&&S.state==='result'){const k=pl.bases===1&&f.had2&&S.bases[2]?'plate':pl.bases===2&&!S.bases[2]&&Math.random()<.6?'stretch3':pl.bases===1&&!S.bases[1]&&Math.random()<.45?'stretch2':'';
-    if((DBG.qte===true||!DBG.qte||DBG.qte===k)&&k&&qteOK()){readyDur=1.3;S.next=()=>qteStart(k);}}
+  if(pl.type==='hit'&&!pl.infield&&!pl.grd&&S.outs<2&&S.state==='result'){const k=pl.bases===1&&f.had2&&S.bases[2]?'plate':pl.bases===2&&!S.bases[2]?'stretch3':pl.bases===1&&!S.bases[1]?'stretch2':'';
+    if(k&&qteParts()){if(DBG.qte===true||DBG.qte===k){readyDur=1.3;S.next=()=>qteStart(k,true);}else goOffer(k);}}
   // Some doubles get a show of their own: once the play is over, cut to him standing on second doing one of the home-run celebrations.
   // Triples always get one, on third (they are rare, and a triple is the most exciting play there is short of a homer).
   if(pl.type==='hit'&&(pl.bases===2||pl.bases===3)&&S.state==='result'&&WALK.on&&MX.clip&&(pl.bases===3||DBG.dbl||earlyShow(S.d2||0)||Math.random()<.4)){
@@ -2748,6 +2767,7 @@ const padKnob=$('apad').firstElementChild,aimHome=()=>{if(touchLast)return;aim.x
 canvas.addEventListener('pointerup',padEnd);canvas.addEventListener('pointercancel',padEnd);
 canvas.addEventListener('contextmenu',e=>e.preventDefault());
 addEventListener('keydown',e=>{keys[e.code]=true;if(e.repeat)return;
+  if(S.goK&&(e.code==='KeyG'||e.code==='Enter')){goTap();e.preventDefault();return;}
   if(S.state==='qte'){const d={ArrowUp:'U',ArrowDown:'D',ArrowLeft:'L',ArrowRight:'R',KeyW:'U',KeyS:'D',KeyA:'L',KeyD:'R'}[e.code]||(QT.mash&&e.code==='Space'?'U':'');if(d){qteKey(d);e.preventDefault();}return;}
   if(e.code==='Space'||e.code==='KeyZ'||e.code==='KeyJ'){doSwing('contact');e.preventDefault();}
   else if(e.code==='KeyX'||e.code==='KeyK'){doSwing('power');}
@@ -3563,7 +3583,7 @@ function step(dt){
   else if(st==='windup'&&now-windupT0>=1.0){
     if(MX.pit&&MX.on){MX.pit.obj.updateMatrixWorld(true);MX.pit.hand.getWorldPosition(pitch.rel);}else{pitcher.root.updateMatrixWorld(true);pitcher.handR.getWorldPosition(pitch.rel);}pitch.t0=now;S.state='pitch';if(S.over&&S.overOn)S.odSeen=true;SND.pitch();if(pitch.P.sp)sfx('crush',.7,.72);ball.visible=true;ballShadow.visible=true;
   }
-  else if(st==='result'&&el>=readyDur){if(S.next){const n=S.next;S.next=null;n();}else toReady(S.fresh?PACE.newBatter:PACE.samePitch);}
+  else if(st==='result'&&el>=readyDur){goHide();if(S.next){const n=S.next;S.next=null;n();}else toReady(S.fresh?PACE.newBatter:PACE.samePitch);}
   else if(st==='walkup'&&el>=WALK.dur)endWalkup();
   else if(st==='celly2'&&el>=D2.dur){toReady(PACE.newBatter);}
   else if(st==='hbp'){if(!S.hbpF&&el>=HB1){S.hbpF=true;flash(.35);}if(el>=HBD){if(brawlNeed())brawlStart();else hbpEnd();}}
@@ -3784,6 +3804,8 @@ function shApply(){const on=SHQ&&rim.castShadow;shBig.visible=on;if(shMound)shMo
 // before the pitch the shadow picture is spent on the plate and the infield, where it is seen close up; once the ball is in play it opens out to the whole park
 function shTick(){if(!(SHQ&&rim.castShadow))return;const st=S.state,wide=!(st==='ready'||st==='windup'||st==='pitch'||st==='walkup'||st==='title'||st==='pod'||st==='hbp'||st==='brawl');if(st==='qte'){if(shWide!=='q'){shWide='q';shFrame(QT.mx,QT.mz,14);}return;}if(wide!==shWide){shWide=wide;if(wide)shFrame(0,-52,84);else shFrame(0,-19,34);}}
 document.querySelectorAll('#qpad button').forEach(b=>{const go=e=>{e.preventDefault();e.stopPropagation();qteKey(b.dataset.d);};b.addEventListener('pointerdown',go);});
+{const q=$('qmash');q.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();qteKey('U');});}
+{const g=$('gobtn'),go=e=>{e.preventDefault();e.stopPropagation();goTap();};g.addEventListener('pointerdown',go);}
 $('shbtn').addEventListener('click',()=>{SHQ=!SHQ;if(SHQ&&!rim.castShadow)rim.castShadow=true;try{localStorage.setItem('mm_shadows',SHQ?'1':'0');}catch(e){}shApply();});
 shApply();
 resize();hud();
