@@ -231,6 +231,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
 @keyframes gobtnL{from{transform:scale(1)}to{transform:scale(1.08)}}
 #hud.mob #gobtn small::after{content:'ADVANCE THE RUNNER'}
 #gobtn[data-r=g]{box-shadow:0 6px 0 #000,0 0 0 4px #39ff6a}#gobtn[data-r=y]{box-shadow:0 6px 0 #000,0 0 0 4px #ffd23b}#gobtn[data-r=r]{box-shadow:0 6px 0 #000,0 0 0 4px #ff4d2e}
+#gobtn,#hud.mob #gobtn{color:#fff;-webkit-text-stroke:5px #05060f;paint-order:stroke fill;text-shadow:0 3px 0 #05060f}#gobtn small,#hud.mob #gobtn small{color:#fff;opacity:1;font-weight:800;-webkit-text-stroke:3px #05060f;paint-order:stroke fill;text-shadow:none} /* bold white lettering with a black outline, on any risk colour */
 #gobtn small{display:block;font-family:var(--hud);font-style:normal;font-size:11px;letter-spacing:.08em;opacity:.75}
 #hud:not(.mob) #gobtn small::after{content:'PRESS G'}
 #qte{position:absolute;left:50%;top:15%;transform:translateX(-50%);z-index:46;text-align:center;font-family:var(--display);font-style:italic;pointer-events:none}
@@ -847,7 +848,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 464</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 465</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <button class="tag wkopt sens" id="sens1" type="button"></button>
