@@ -314,11 +314,23 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
 #tbar .gp{background:linear-gradient(90deg,rgba(255,77,46,.3),rgba(255,77,46,.8) 36%,#ff8a70 42%,#ff8a70 58%,rgba(255,77,46,.8) 64%,rgba(255,77,46,.3))}
 #tbar .jx{background:#ffd23b;box-shadow:0 0 8px 1px rgba(255,210,59,.8)} /* same colours as the bat: green = CONTACT window, red core = POWER window, gold ends = Juice */
 #tbar .dim{opacity:.22}
+/* BADGES: a gold plate drops in under the meters when one is earned; the full case is on the title screen */
+#bdg{position:absolute;left:50%;top:92px;z-index:60;display:flex;align-items:center;gap:10px;padding:7px 16px 7px 9px;pointer-events:none;white-space:nowrap;border-radius:26px;background:linear-gradient(#2a2208,#0e0b02);border:2px solid #ffd23b;box-shadow:0 4px 0 #000,0 0 22px 4px rgba(255,210,59,.55);transform:translate(-50%,-140px);opacity:0;visibility:visible!important}
+#hud.mob #bdg{top:132px;padding:5px 12px 5px 7px;gap:8px}#bdg.go{animation:bdgIn 3.1s cubic-bezier(.2,1.3,.3,1) both}
+@keyframes bdgIn{0%{transform:translate(-50%,-140px) scale(.7);opacity:0}9%{transform:translate(-50%,0) scale(1.08);opacity:1}14%{transform:translate(-50%,0) scale(1)}86%{transform:translate(-50%,0) scale(1);opacity:1}100%{transform:translate(-50%,-30px) scale(.96);opacity:0}}
+#bdg i{font-style:normal;font-size:30px;line-height:1;filter:drop-shadow(0 2px 0 #000)}#bdg em{display:block;font-family:var(--hud);font-style:normal;font-weight:800;font-size:10px;letter-spacing:.16em;color:#ffd23b}
+#bdg b{display:block;font-family:var(--display);font-style:italic;font-weight:400;font-size:clamp(17px,4.4vw,24px);line-height:1.05;color:#fff;text-shadow:0 2px 0 #000}#bdg span{display:block;font-family:var(--hud);font-size:11px;color:var(--chrome);letter-spacing:.03em}
+#bdgs{position:absolute;inset:0;z-index:80;display:flex;flex-direction:column;align-items:center;gap:10px;padding:18px 12px;background:rgba(4,5,16,.95);overflow-y:auto;pointer-events:auto;-webkit-overflow-scrolling:touch}#bdgs[hidden]{display:none}
+#bdgs h2{font-family:var(--display);font-style:italic;font-weight:400;font-size:clamp(24px,6vw,40px);color:#ffd23b;text-shadow:0 3px 0 #000;margin:0}#bdgs p{margin:0;font-size:12px;letter-spacing:.14em;color:var(--dim)}
+#bdgl{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px;width:min(920px,100%)}
+#bdgl div{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:10px;border:2px solid rgba(242,245,255,.16);background:rgba(20,22,48,.7);text-align:left;opacity:.5}
+#bdgl div.got{opacity:1;border-color:#ffd23b;background:linear-gradient(#2a2208,#151104);box-shadow:0 0 10px 1px rgba(255,210,59,.3)}#bdgl i{font-style:normal;font-size:26px;filter:grayscale(1)}#bdgl .got i{filter:none}
+#bdgl b{display:block;font-family:var(--display);font-style:italic;font-weight:400;font-size:16px;color:#fff}#bdgl span{display:block;font-size:11px;color:var(--chrome)}
 #odh{position:absolute;display:none;z-index:49;pointer-events:none;white-space:nowrap;font-family:var(--display);font-style:italic;font-size:clamp(17px,4.6vw,24px);color:#9fe6ff;-webkit-text-stroke:4px #000;paint-order:stroke fill;text-shadow:0 0 14px rgba(58,170,255,.95);transform:translate(0,-50%);animation:odhB .45s ease-in-out infinite alternate}
 #odh.m{transform:translate(-50%,-50%);animation-name:odhM}#hud.odhint #odh{display:block}
 #hud.odhint #kj{transform-origin:0 50%;background:linear-gradient(#bff4ff,#3aa8ff 55%,#1e5fe0);color:#02103a;border-color:#fff;animation:kjod .4s ease-in-out infinite alternate;z-index:5}@keyframes kjod{from{transform:scale(1.08);box-shadow:0 0 12px 3px rgba(88,214,255,.8)}to{transform:scale(1.3);box-shadow:0 0 30px 12px rgba(88,214,255,1),0 0 0 4px #fff}}
 @keyframes odhB{from{margin-left:0}to{margin-left:10px}}@keyframes odhM{from{margin-top:0}to{margin-top:-9px}}
-#hud.rv>*{visibility:hidden!important} /* the orbit shot plays clean: nothing on the glass */
+#hud.rv>*:not(#bdg){visibility:hidden!important} /* the orbit shot plays clean: nothing on the glass */
 /* OVERDRIVE CONTACT: the timing window burns as a live blue flame (a white-hot bar with tongues of fire licking up off it) */
 #tbar.odz .trk i.jx,#tbar.odz .trk i.gc:not(.dim),#tbar.odz .trk i.gp:not(.dim){background:linear-gradient(90deg,rgba(30,110,255,.5),#1e7bff 22%,#7fe0ff 40%,#f2fdff 50%,#7fe0ff 60%,#1e7bff 78%,rgba(30,110,255,.5));box-shadow:0 0 9px 2px rgba(80,180,255,.95),0 0 22px 6px rgba(30,100,255,.6);animation:odzGlow .13s steps(2) infinite}
 #tbar.odz .trk i.jx::before,#tbar.odz .trk i.jx::after{content:'';position:absolute;left:-3px;right:-3px;bottom:55%;height:30px;transform-origin:50% 100%;pointer-events:none;mix-blend-mode:screen;filter:blur(.7px);
@@ -720,6 +732,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <div id="statfx" aria-hidden="true"></div>
     <button id="qmash" type="button" aria-hidden="true">TAP!</button>
     <div id="odh" aria-hidden="true"></div>
+    <div id="bdg" aria-live="polite"><i></i><div><em>BADGE UNLOCKED</em><b></b><span></span></div></div>
     <button id="gobtn" type="button">GO!<small></small></button>
     <div id="qte" hidden><b id="qtt"></b><div id="qtr"></div><div id="qtm"><i id="qtb"></i></div></div>
     <div id="qpad" aria-hidden="true"><button type="button" data-d="U">▲</button><button type="button" data-d="L">◀</button><button type="button" data-d="R">▶</button><button type="button" data-d="D">▼</button></div>
@@ -772,6 +785,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="tag wkopt" id="wk" type="button"></button>
     <button class="tag wkopt sens" id="sens1" type="button"></button>
     <button class="tag wkopt" id="mute1" type="button"></button>
+    <button class="tag wkopt" id="bdgbtn" type="button"></button>
     <button class="tag" id="mdl" type="button" hidden style="pointer-events:auto;background:none;border:1px solid var(--dim);padding:6px 12px;cursor:pointer;font-family:var(--hud)"></button>
     <div class="tag" id="best"></div>
   </div>
@@ -2402,7 +2416,7 @@ function brawlTick(el){const B=BRW;
     if(q.att==='b')crowdPump(last?1:.6);else if(!roarG)boo(.6);if(last){B.ko=true;rumble=1;}}
   if(el>=B.f1+1.1&&B.ko&&!B.taunt){B.taunt=true;const w={n:'p_fist',t:now,loop:true};if(B.win)B.b=w;else B.p=w;}
   if(el>=B.dur){B.taunt=false;const k=B.win?1:Math.random()<.6?-1:0;hbpEnd(k,B.win?'WON THE BRAWL!':'LOST THE BRAWL');}}
-function hbpStart(){S.state='hbp';S.t=now;S.hbpN=(S.hbpN||0)+1;S.hbpF=false;S.hbpR=false;S.hbpWill=undefined;ball.visible=false;ballShadow.visible=false;pring.visible=false;swing=null;
+function hbpStart(){badge('wore');S.state='hbp';S.t=now;S.hbpN=(S.hbpN||0)+1;S.hbpF=false;S.hbpR=false;S.hbpWill=undefined;ball.visible=false;ballShadow.visible=false;pring.visible=false;swing=null;
   // a ball off the body, not off leather: a dull, dead thump with a short slap on the front of it, then the air going out of him (no mitt pop)
   noise(.035,'highpass',1800,900,.5);noise(.16,'bandpass',210,90,1.3,1.4);tone('sine',92,38,.26,1.2);tone('triangle',150,60,.12,.5);tone('sawtooth',210,120,.22,.16,.09);noise(.3,'bandpass',700,300,.22,.8,.1);
   buzz([60,40,120]);shake=Math.max(shake,.4*FX);flash(.5);
@@ -2416,6 +2430,7 @@ function hbpEnd(fk,title){const b=curBatter(),r0=Math.random(),k=fk!==undefined?
   if(k){if(!b.base)b.base={spd:b.spd,pwr:b.pwr,con:b.con};const m=k>0?1.1:.9;b.spd=clamp(b.spd*m,.7,1.25);b.pwr=clamp(b.pwr*m,.7,1.25);b.con=clamp(b.con*m,.7,1.25);b.hb=(b.hb||0)+k;}
   S.walked=true;S.juice=Math.min(1,S.juice+(k>0?.5:.25));walkRunners();{const R=RUN.list.find(R=>R.active&&R.target===1&&R.s<1);if(R){R.hurt=k<=0;R.s=.5;R.delay=0;R.raceV=k<=0?.085:.12;}} /* after a brawl he was out at the mound, not in the box: he picks it up halfway down the line, and takes his time */
   const r=advance(1,true),run=r?'+1 RUN · ':'';
+  if(k>0&&title&&/BRAWL/.test(title))badge('brawl');
   if(k>0){pop(title||'FIRED UP!',run+'▲ RATINGS UP · +2 JUICE','sup',true);cheer(.5,3);roar(.9,.3);buzz([30,40,80]);}
   else if(k<0){pop(title||'SHAKEN UP',run+'▼ RATINGS DOWN','sdn',true);crowdDrop();}
   else{pop(title||'SHOOK IT OFF',run+'TAKE YOUR BASE','plain');cheer(.3,2);}
@@ -2502,7 +2517,7 @@ function qteTick(){const Q=QT,d0=9.5,d1=2.6,pe=now-Q.tp;
     const left=1-(now-Q.t1)/Q.lim;$('qtb').style.transform='scaleX('+Math.max(0,left).toFixed(3)+')';$('qtb').classList.toggle('low',left<.35);if(left<=0)qteDone(false);}
   else{const e=now-Q.t1,d=Q.ok?lerp(lerp(d1,1.05,ease(clamp(e/.45,0,1))),.15,ease(clamp((e-.5)/.6,0,1))):lerp(d1,1.0,ease(clamp(e/.45,0,1)))+(Q.blow?1.9*(1-Math.pow(1-clamp((now-Q.blow)/.55,0,1),2)):0);Q.rx=Q.bx+Q.ux*d;Q.rz=Q.bz+Q.uz*d; /* a made kick carries him through the fielder and onto the bag, and no further */
     if(!Q.hit&&e>=.42){Q.hit=true;const M=Q.M;SND.mitt();tone('sine',120,45,.2,.7);shake=Math.max(shake,.55*FX);rumble=Math.max(rumble,1.3);flash(.5);burst(fxS,_p.set(Q.fx+Q.ux*.4,1.2,Q.fz+Q.uz*.4),22,4,.5,[1,.9,.5],2,1);
-      if(Q.ok){Q.f={n:'p_dying',t:now-1.1,hold:true};Q.fx0=Q.fx;Q.fz0=Q.fz;Q.blow=now;Q.ball={t:now,x:Q.fx,z:Q.fz};rumble=1;crowdPump(1);M.ok();if(Q.gold){S.juice=Math.min(1,S.juice+.5);}pop(M.okT[0],Q.gold?'PERFECT JUMP · +JUICE':M.okT[1],'hot',true);}
+      if(Q.ok){Q.f={n:'p_dying',t:now-1.1,hold:true};Q.fx0=Q.fx;Q.fz0=Q.fz;Q.blow=now;Q.ball={t:now,x:Q.fx,z:Q.fz};rumble=1;crowdPump(1);M.ok();badge('send');if(Q.gold){S.juice=Math.min(1,S.juice+.5);badge('jump');}pop(M.okT[0],Q.gold?'PERFECT JUMP · +JUICE':M.okT[1],'hot',true);}
       else{ball.visible=false;Q.b={n:'p_dying',t:now-1.1,hold:true};Q.blow=now;crowdDrop();setTimeout(()=>sfx('out',.95),260); /* the umpire's out call; there is no 'safe' recording yet */ /* tagged hard: he goes back off his feet the way the fielder does when the kick lands */M.no();pop(M.noT[0],M.noT[1],'cool',true);}
       hud();}
     if(Q.ok&&Q.blow){const k=1-Math.pow(1-clamp((now-Q.blow)/.55,0,1),2);Q.fx=Q.fx0-Q.ux*1.8*k;Q.fz=Q.fz0-Q.uz*1.8*k;} // the kick sends him back off his feet, well clear of the bag
@@ -2544,7 +2559,7 @@ function gameRating(){const G=S.goal,pts=S.runs*10+S.hits*4+S.hrs*8+(S.longest>=
   const T=[[0,'D','BENCH WARMER'],[20,'C','ROOKIE'],[45,'B','EVERYDAY STARTER'],[75,'A','ALL-STAR'],[110,'S','MOONSHOT LEGEND']];let i=0;T.forEach((t,j)=>{if(pts>=t[0])i=j;});
   return {pts,stars:i+1,grade:T[i][1],title:T[i][2],next:T[i+1]?T[i+1][0]-pts:0,nextTitle:T[i+1]?T[i+1][2]:''};}
 function newGame(){LINEUP.forEach(b=>{if(b.base)Object.assign(b,b.base);b.hb=0;}); /* stat changes from getting hit last only for the game */gamesPlayed++;try{localStorage.setItem('mm_games',gamesPlayed);}catch(e){}
-  Object.assign(S,{inning:1,outs:0,balls:0,strikes:0,runs:0,bases:[0,0,0],hits:0,hrs:0,longest:0,streak:0,bestStreak:0,juice:.75 /* three bars: a hit in the very first at-bat fills the fourth and unlocks Overdrive */,heat:.2,over:false,stk:false,opp:0,bi:-1,pitches:0,seen:{},kOut:null});S.podN=0;S.podBi=-9;S.goal=null; /* per-game goals are switched off for now: pickGoal() is still here to bring them back */S.ks=0;S.d2=0;S.cardBi=-1;S.pChanges=0;S.pRuns0=0;S.pc3=false;S.pcPending=false;S.pStart=gamesPlayed%BULLPEN.length;S.pName=BULLPEN[S.pStart];setTimeout(pitcherModel,0); /* a different starter each game, so left-handers start some of them */$('pcap').textContent='PITCHER';S.sTaunt=null;S.stLast=false;jPend=false;S.orbN=0;S.odUses=0;S.brawled=false;S.qteN=0;S.goK=null;S.retalBi=-9;S.forceHbpBi=-9;S.walkoff=false;S.duel=false;$('hud').classList.remove('duel');S.pdLast=false;S.pOver=false;S.podPending=false;S.jSaid=false;S.overOn=false;S.spSeen=false;lastWalk='';
+  Object.assign(S,{inning:1,outs:0,balls:0,strikes:0,runs:0,bases:[0,0,0],hits:0,hrs:0,longest:0,streak:0,bestStreak:0,juice:.75 /* three bars: a hit in the very first at-bat fills the fourth and unlocks Overdrive */,heat:.2,over:false,stk:false,opp:0,bi:-1,pitches:0,seen:{},kOut:null});S.podN=0;S.podBi=-9;S.goal=null; /* per-game goals are switched off for now: pickGoal() is still here to bring them back */S.ks=0;S.d2=0;S.cardBi=-1;S.pChanges=0;S.pRuns0=0;S.pc3=false;S.pcPending=false;S.lastHRbi=-9;S.pStart=gamesPlayed%BULLPEN.length;S.pName=BULLPEN[S.pStart];setTimeout(pitcherModel,0); /* a different starter each game, so left-handers start some of them */$('pcap').textContent='PITCHER';S.sTaunt=null;S.stLast=false;jPend=false;S.orbN=0;S.odUses=0;S.brawled=false;S.qteN=0;S.goK=null;S.retalBi=-9;S.forceHbpBi=-9;S.walkoff=false;S.duel=false;$('hud').classList.remove('duel');S.pdLast=false;S.pOver=false;S.podPending=false;S.jSaid=false;S.overOn=false;S.spSeen=false;lastWalk='';
   $('title').hidden=true;$('over').hidden=true;$('pausebtn').hidden=false;$('mutebtn').hidden=false;setBatter();renderRep();scoreboard('PLAY BALL','INNING 1');S.opp=0;toReady(2);pop('PLAY BALL!','','logo');hud();SND.playball();cheer(.14,1.5);}
 
 // ───────────────────────── pitching
@@ -2816,7 +2831,7 @@ function tryContact(){flight_pop=false;if(pitch.hbp){swing.done=true;swing.miss=
   // a liner that would die at the foot of the wall carries a touch further and bangs off it instead: more balls off the wall, fewer dropping at its base
   for(let i=0;i<7&&!tr.hr&&!tr.foul&&tr.land&&!(tr.wall&&tr.wallT<tr.land.t)&&Math.atan2(v0.y,Math.hypot(v0.x,v0.z))<26*DEG;i++){const L=tr.land,gap=fenceR(Math.atan2(L.x,-L.z))-Math.hypot(L.x,L.z),hard=v0.length()>=37;if(gap<0||gap>(hard?24:9))break;v0.multiplyScalar(hard?1.055:1.04);if(hard&&v0.y>2)v0.y*=.97;tr=simulate(p0,v0,spin,fopt);} /* a hard liner headed for the deep outfield keeps going on a rope, a laser off the wall */
   const play=judge(tr,S.over&&S.overOn?Object.assign({},b,{spd:b.spd*1.08}):b);play.tag=play.tag||tr.tag||(kind==='TOPSPIN SINKER'?'':kind);if(tr.offP&&play.type==='hit'&&!play.infield)play.tag='ERROR · OFF THE PITCHER';if(tr.offF&&play.type==='hit')play.tag='ERROR · ATE HIM UP'; /* a ball a fielder should have handled and didn't is scored as his error */
-  flight={tr,play,t0:now,q,pw,tb,od:!!(S.over&&S.overOn),v,done:false,called:false,trailC:S.over&&S.overOn?[.2,.55,1]:tb?[1,.45,.1]:pw&&q>.75?[1,.85,.25]:[.5,.5,.55]}; // Overdrive hits burn blue, Juice hits orange
+  flight={tr,play,t0:now,q,pw,tb,jp:!!(pitch&&pitch.P&&pitch.P.sp),pod:!!pOD(),fp:(S.balls|0)+(S.strikes|0)===0,od:!!(S.over&&S.overOn),v,done:false,called:false,trailC:S.over&&S.overOn?[.2,.55,1]:tb?[1,.45,.1]:pw&&q>.75?[1,.85,.25]:[.5,.5,.55]}; // Overdrive hits burn blue, Juice hits orange
   // Some Overdrive home runs don't come down: the ball leaves the Moon's orbit, headed for Earth. Always the first one a player ever hits; after that, about a third of them.
   if(flight.od&&play.type==='hr'&&(DBG.orbit||DBG.sat||DBG.lamp||DBG.rev||!orbSeen||Math.random()<.65)){const kd=DBG.lamp?'lamp':DBG.sat?'sat':DBG.rev?'rev':(DBG.orbit||!orbSeen)?'earth':odPick(),lampH=kd==='lamp'&&TOWERS.length>0,sat=kd==='sat',rev=kd==='rev';S.orbN=(S.orbN||0)+1;orbSeen=true;try{localStorage.setItem('mm_orbit','1');}catch(e){}flight.orbit=true;flight.rev=rev;play.endT+=9;
     // its own flight from the moment it leaves the bat: one smooth climb out over the wall and away, never the normal arc
@@ -2885,7 +2900,7 @@ function tryContact(){flight_pop=false;if(pitch.hbp){swing.done=true;swing.miss=
 function addRuns(n){if(!n)return;const was=S.runs>S.opp;S.runs+=n;
   // WALK-OFF: the home side bats last, so the moment the Comets go in front in the final inning the game is over. The park comes apart.
   if(S.inning===3&&!was&&S.runs>S.opp&&!S.walkoff){S.walkoff=true;setTimeout(()=>{if(S.state==='over'||S.state==='title')return;
-    pop('WALK-OFF!','COMETS WIN IT · '+S.runs+'-'+S.opp,'logo',true);flash(.8);rumble=1;shake=Math.max(shake,.4*FX);buzz([60,40,60,40,60,40,200]);roarOff(.2);roar(1.6,.15,true,true);crowdE=1;
+    badge('walkoff');pop('WALK-OFF!','COMETS WIN IT · '+S.runs+'-'+S.opp,'logo',true);flash(.8);rumble=1;shake=Math.max(shake,.4*FX);buzz([60,40,60,40,60,40,200]);roarOff(.2);roar(1.6,.15,true,true);crowdE=1;
     for(let i=0;i<16;i++)fireworks.push({t:now+.05+i*.22,p:new V3(rand(-80,80),rand(45,92),rand(-170,-105))});$('hud').classList.add('woff');setTimeout(()=>$('hud').classList.remove('woff'),4200);},1300);}}
 // The Krakens bat in the top of the 2nd and 3rd, off-screen (the game always starts 0-0): their runs go up as the inning turns over, so the player always knows the score to beat
 // and, as the home side, always bats last. Arcade rules: plenty of luck early, and their last turn is pulled toward the player's score so the
@@ -2947,8 +2962,11 @@ function finishPlay(){revOff();
     {const deep=pl.air&&!dp&&pl.f&&pl.f.of&&Math.hypot(pl.p.x,pl.p.z)>70&&S.outs<3,k=deep?(S.bases[1]&&!S.bases[2]?'tag3':S.bases[0]&&!S.bases[1]?'tag2':''):''; // a deep fly with a man on: he tags up and goes
       if(k&&S.outs<2&&qteParts()){afterPA(dp?2.7:f.thr?2.1:1.5);if(DBG.qte===k){S.goD=qteRisk(k,pl);S.next=()=>qteStart(k,true);}else goOffer(k,pl);return;}}
     afterPA(dp?2.7:f.thr?2.1:1.5);return;}
+  badge('hit');if(S.streak>=4)badge('heater');
   S.hits++;S.streak++;S.bestStreak=Math.max(S.bestStreak,S.streak);if(!f.tb)S.juice=Math.min(1,S.juice+(pl.type==='hr'?.5:.25));else if(pl.type==='hr'&&!S.over)S.juice=Math.min(1,S.juice+.25); /* a homer on a Juice swing gives one bar back */ // every hit is worth one quarter; // a Juice hit doesn't refill the bar it just spent
   if(pl.type==='hr'){
+    {const ft0=Math.round(pl.dist*3.281);badge('hr');if(ft0>=450)badge('hr450');if(ft0>=500)badge('hr500');if(f.od)badge('odhr');if(f.jp)badge('juicehr');if(f.pod)badge('duel');if(f.fp)badge('ambush');if(S.bases.filter(Boolean).length===3)badge('slam');
+      if(S.lastHRbi===S.bi-1)badge('b2b');S.lastHRbi=S.bi;if(S.hrs>=4)badge('five');if(f.sat)badge('sat');else if(f.lamp)badge('lamp');else if(f.rev)badge('rev');else if(f.orbit)badge('earth');}
     const ft=Math.round(pl.dist*3.281);S.hrs++;S.longest=Math.max(S.longest,ft);const r=advance(4);f.rbi=r;
     buzz([40,50,90]);pop(r===4?'GRAND SLAM!':'GONE!',`${ft} FT · +${r} RUN${r>1?'S':''}`+(pl.tag?' · '+pl.tag:''),'hot',true);scoreboard('HOME RUN',ft+' FT');
     if(!LAS.on&&!LAMP.on&&(DBG.laser||lasWant||Math.random()<(S.over?.4:.12)))laserStart();lasWant=false;
@@ -3023,10 +3041,25 @@ function revOff(){if(REV.g)REV.g.visible=false;$('hud').classList.remove('rv');}
 // The Overdrive homer shows are dealt like cards: none comes up again until every one has been seen, and the first of a new deal is never the last of the old one.
 let odBag=[],odLastK='';function odPick(){if(!odBag.length){odBag=['rev','lamp','sat','earth'];}const W={rev:3,lamp:2,sat:2,earth:1};let c=odBag.filter(k=>k!==odLastK);if(!c.length)c=odBag;
   let r=Math.random()*c.reduce((a,k)=>a+W[k],0),k=c[0];for(const q of c){r-=W[q];if(r<=0){k=q;break;}}odBag.splice(odBag.indexOf(k),1);odLastK=k;return k;}
+// BADGES. Earned once, kept on the device. Each has a name (ballplayer talk), what it takes, and an icon. badge(id) is called from wherever the feat happens.
+const BADGES=[['hit','KNOCK','Get your first hit','🧢'],['hr','WENT YARD','Hit your first home run','💥'],['hr450','TAPE MEASURE','Hit one 450 feet or more','📏'],['hr500','FIVE HUNDRED CLUB','Hit one 500 feet or more','🚀'],
+  ['odhr','OVERDRIVEN','Homer in Overdrive','🔥'],['juicehr','TOOK HIS BEST','Homer off a Juice pitch','🧃'],['duel','BEAT THE HEAT','Homer while the pitcher is in Overdrive','🥵'],['ambush','AMBUSH','Homer on the first pitch','⚡'],
+  ['slam','GRAND SALAMI','Hit a grand slam','🍖'],['b2b','BACK TO BACK','Homers in consecutive at-bats','👯'],['five','DERBY NIGHT','Five homers in one game','🎆'],['heater','ON A HEATER','Five hits in a row','♨️'],
+  ['rev','IN ORBIT','Put one into orbit round the Moon','🌕'],['earth','NEXT STOP: EARTH','Hit one clean off the Moon','🌍'],['sat','SPACE JUNK','Take out the satellite','🛰️'],['lamp','LIGHTS OUT','Smash a light tower','💡'],
+  ['send','WHEELS','Win a showdown at the bag','👟'],['jump','PERFECT JUMP','Stop the needle on gold','🥇'],['brawl','LAST MAN STANDING','Win a brawl','🥊'],['wore','WORE ONE','Get hit by a pitch','🩹'],
+  ['walkoff','WALK-OFF','Win it in your last at-bat','🏃'],['win','IN THE WIN COLUMN','Win a game','🏆'],['ten','DOUBLE DIGITS','Score ten runs in a game','🔟']];
+let bdgGot={};try{bdgGot=JSON.parse(localStorage.getItem('mm_badges')||'{}')||{};}catch(e){}
+const bdgQ=[];let bdgBusy=0;
+function badge(id){if(bdgGot[id])return;const B=BADGES.find(b=>b[0]===id);if(!B)return;bdgGot[id]=1;try{localStorage.setItem('mm_badges',JSON.stringify(bdgGot));}catch(e){}bdgQ.push(B);bdgLabel();}
+function bdgLabel(){const e=$('bdgbtn');if(e)e.textContent='Badges: '+BADGES.filter(b=>bdgGot[b[0]]).length+' / '+BADGES.length;}
+setInterval(()=>{if(!bdgQ.length||performance.now()<bdgBusy||$('hud').classList.contains('rv')||S.state==='title')return;const B=bdgQ.shift(),e=$('bdg');e.querySelector('i').textContent=B[3];e.querySelector('b').textContent=B[1];e.querySelector('span').textContent=B[2];
+  e.classList.remove('go');void e.offsetWidth;e.classList.add('go');bdgBusy=performance.now()+3300;buzz([20,40,20,40,90]);[660,880,1100,1320].forEach((f,i)=>tone('triangle',f,f*1.02,.12,.4,i*.07));},250);
+function bdgOpen(){let e=$('bdgs');if(!e){e=document.createElement('div');e.id='bdgs';e.innerHTML='<h2>BADGES</h2><p></p><div id="bdgl"></div><button class="cta alt" type="button">BACK</button>';document.body.appendChild(e);e.addEventListener('click',ev=>{if(ev.target===e||ev.target.tagName==='BUTTON')e.hidden=true;});}
+  e.querySelector('p').textContent=BADGES.filter(b=>bdgGot[b[0]]).length+' OF '+BADGES.length+' EARNED';$('bdgl').innerHTML=BADGES.map(b=>'<div class="'+(bdgGot[b[0]]?'got':'')+'"><i>'+b[3]+'</i><p style="margin:0"><b>'+b[1]+'</b><span>'+b[2]+'</span></p></div>').join('');e.hidden=false;}
 let odEver=false;try{odEver=localStorage.getItem('mm_od')==='1';}catch(e){}
 let orbSeen=false;try{orbSeen=localStorage.getItem('mm_orbit')==='1';}catch(e){} // the very first Overdrive homer a player ever hits always leaves orbit; after that it is about one in three
 const D2={clip:'',dur:2.9,base:2},PDEF=2.0,ORB_TO=new V3(94,462,-858);
-function endGame(){
+function endGame(){if(S.runs>S.opp)badge('win');if(S.runs>=10)badge('ten');
   S.state='over';let best=0;try{best=+localStorage.getItem('mm_best')||0;if(S.runs>best)localStorage.setItem('mm_best',S.runs);}catch(e){}
   const rows=[['RUNS',S.runs],['HITS',S.hits],['HOMERS',S.hrs],['LONGEST',S.longest?S.longest+' FT':'—'],['BEST STREAK',S.bestStreak],['BEST GAME',Math.max(best,S.runs)]];
   {const R=gameRating(),G=S.goal;STATS.g++;STATS.runs+=S.runs;STATS.hits+=S.hits;STATS.hrs+=S.hrs;STATS.longest=Math.max(STATS.longest,S.longest);try{localStorage.setItem('mm_stats',JSON.stringify(STATS));}catch(e){}
@@ -3159,6 +3192,7 @@ document.addEventListener('touchstart',e=>{let hit=false;for(const t of e.change
 ['tc','tp','tj'].forEach(id=>$(id).addEventListener('click',e=>{if(e.detail===0){press(id);if(id==='tj')juiceTap();else doSwing(id==='tp'?'power':'contact');}})); // keyboard activation
 $('start').addEventListener('click',()=>{audioInit();if(AC&&AC.state==='suspended')AC.resume();startGame();});
 $('title').addEventListener('click',e=>{if(e.target.closest('button'))return;$('start').click();}); // a tap anywhere on the title screen starts the game; the option buttons keep their own jobs
+bdgLabel();$('bdgbtn').addEventListener('click',e=>{e.stopPropagation();bdgOpen();});
 muteLabel();$('mutebtn').addEventListener('click',e=>{e.stopPropagation();toggleMute();});$('mute1').addEventListener('click',toggleMute);
 walkLabel();$('wk').addEventListener('click',()=>{WALK.on=!WALK.on;try{localStorage.setItem('mm_walk',WALK.on?'1':'0');}catch(e){}walkLabel();});
 $('mdl').addEventListener('click',()=>loadPlayers(ORDER[(ORDER.indexOf(MX.kind)+1)%ORDER.length]));
