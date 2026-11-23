@@ -16,3 +16,6 @@ Third-party assets used in Moonshot Mayhem and the terms they are used under.
 ## Audio
 All crowd, umpire, organ and effect recordings in `sfx/` are placeholders taken from online sources and must be
 replaced with original or licensed sound before release (see BACKLOG.md).
+
+- Earth: 'The Blue Marble', NASA / Apollo 17 crew (public domain).
+- Moon surface colour and normal maps, star-field photograph: supplied by the project owner; source and licence to be confirmed before public release.
