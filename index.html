@@ -635,7 +635,7 @@ body.mob #tip{display:block}body.mob .how{display:none}
       <svg id="hpt" viewBox="0 0 172 46" aria-hidden="true"><rect id="hbat" x="20" y="18" width="132" height="10" rx="5" fill="#d8a25a" stroke="#000" stroke-width="1.5"/><circle id="hball" cx="86" cy="23" r="13" fill="#fff" stroke="#000" stroke-width="1.5" fill-opacity=".92"/><circle id="hdot" cx="86" cy="23" r="3" fill="#e23a22"/></svg></div>
     <div id="plast"></div>
     <div id="rep" hidden><div class="cap">PITCHES</div><div id="replist" class="pills"></div></div>
-    <div id="keys" class="pills"><div class="pill">CONTACT<span class="k">CLICK</span></div><div class="pill">POWER<span class="k">R-CLICK</span></div><div class="pill dk" id="kj">JUICE<span class="k">SHIFT</span></div><div class="pill dk">CAMERA<span class="k">C</span></div><div class="pill dk">PAUSE<span class="k">ESC</span></div></div>
+    <div id="keys" class="pills"><div class="pill">POWER<span class="k">CLICK</span></div><div class="pill">CONTACT<span class="k">R-CLICK</span></div><div class="pill dk" id="kj">JUICE<span class="k">SHIFT</span></div><div class="pill dk">CAMERA<span class="k">C</span></div><div class="pill dk">PAUSE<span class="k">ESC</span></div></div>
     <button id="pausebtn" type="button" aria-label="Pause game" hidden>❚❚</button>
     <button id="mutebtn" type="button" aria-label="Mute sound" hidden></button>
     <div id="jtoast" aria-hidden="true">JUICE READY!<small>tap it, then swing</small></div>
@@ -687,8 +687,8 @@ body.mob #tip{display:block}body.mob .how{display:none}
     <div class="tag">Arcade batting · 3 innings · swing for the lights</div>
     <div class="how">
       <div><b>Aim</b>Move the mouse (or drag) to put the bat ring on the pitch.</div>
-      <div><b>Contact swing</b>Click, Z or Space. Big sweet spot, line drives.</div>
-      <div><b>Power swing</b>Right-click or X. Small sweet spot, moonshots.</div>
+      <div><b>Contact swing</b>Right-click, Z or Space. Big sweet spot, line drives.</div>
+      <div><b>Power swing</b>Left-click or X. Small sweet spot, moonshots.</div>
       <div><b>Juice</b>Hold Shift while swinging to burn a quarter: about 20% harder off the bat, bigger sweet spot. Every hit or walk adds a quarter.</div>
       <div><b>Timing</b>Swing as the yellow ring closes. Early pulls, late slices.</div>
       <div><b>Overdrive</b>A full Juice meter charges it. Press Shift to switch it on: free Juice on every swing that at-bat.</div>
@@ -859,7 +859,7 @@ rim.shadow.mapSize.set(1024,1024);Object.assign(rim.shadow.camera,{left:-4,right
 renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;
 const shSmall=new T.Mesh(new T.PlaneGeometry(12,12),new T.ShadowMaterial({opacity:.45}));shSmall.rotation.x=-PI/2;shSmall.position.set(0,.03,0);shSmall.receiveShadow=true;shSmall.renderOrder=1;scene.add(shSmall);
 // FIELD SHADOWS (a quality switch): every player throws a real shadow across the whole field instead of sitting on a soft dark oval
-const shBig=new T.Mesh(new T.PlaneGeometry(280,230),new T.ShadowMaterial({opacity:.5,polygonOffset:true,polygonOffsetFactor:-4,polygonOffsetUnits:-8}));shBig.rotation.x=-PI/2;shBig.position.set(0,.03,-75);shBig.receiveShadow=true;shBig.renderOrder=1;shBig.visible=false;scene.add(shBig);scene.add(rim.target);let shMound=null;
+const shBig=new T.Mesh(new T.PlaneGeometry(280,230),new T.ShadowMaterial({opacity:.5,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-4,polygonOffsetUnits:-8}));shBig.rotation.x=-PI/2;shBig.position.set(0,.03,-75);shBig.receiveShadow=true;shBig.renderOrder=1;shBig.visible=false;scene.add(shBig);scene.add(rim.target);let shMound=null;
 
 // sky: the park sits on the Moon. Black space, hard stars, a band of the Milky Way; no air, so no sunset and no haze.
 {
@@ -992,7 +992,7 @@ gl_FragColor=vec4(col,1.0);
   const gp=new T.Mesh(new T.PlaneGeometry(900,900),groundMat);gp.rotation.x=-PI/2;gp.position.set(0,0,-150);scene.add(gp);
   // mound: a smooth dome using the same surface shader, with the pitching rubber on top
   {const md=new T.Mesh(new T.LatheGeometry([[.001,.25],[.8,.25],[1.45,.2],[2.1,.1],[2.74,.004]].map(q=>new T.Vector2(q[0],q[1])),28),groundMat);md.position.set(0,0,-18.4);scene.add(md);
-   shMound=new T.Mesh(md.geometry,new T.ShadowMaterial({opacity:.5,side:T.DoubleSide,polygonOffset:true,polygonOffsetFactor:-4,polygonOffsetUnits:-8}));shMound.position.copy(md.position);shMound.receiveShadow=true;shMound.renderOrder=1;shMound.visible=false;scene.add(shMound); /* the mound catches shadows too */
+   shMound=new T.Mesh(md.geometry,new T.ShadowMaterial({opacity:.5,depthWrite:false,side:T.DoubleSide,polygonOffset:true,polygonOffsetFactor:-4,polygonOffsetUnits:-8}));shMound.position.copy(md.position);shMound.receiveShadow=true;shMound.renderOrder=1;shMound.visible=false;scene.add(shMound); /* the mound catches shadows too */
     const rb=new T.Mesh(new T.BoxGeometry(.61,.04,.15),new T.MeshLambertMaterial({color:0xf0f0ea}));rb.position.set(0,.262,-18.4);scene.add(rb);}
   {const S2=1024/14,X2=x=>(x+7)*S2,Z2=z=>(z+8)*S2;
     const home=tex(1024,1024,(g)=>{
@@ -1500,7 +1500,7 @@ const retP=new T.Mesh(new T.RingGeometry(.9,1,24),overlayMat(0xff4d2e,.95));retP
 {const fill=new T.Mesh(new T.CircleGeometry(.9,28),overlayMat(0xff4d2e,.4));fill.renderOrder=8;retP.add(fill);} // POWER sweet spot reads as a hot core inside the bat ring, not a second ring
 const retDot=new T.Mesh(new T.CircleGeometry(.014,8),overlayMat(0xffffff,.9));retDot.renderOrder=9;reticle.add(retDot);retDot.visible=false;
 // where a ball hit in the air is going to come down
-const landRing=new T.Mesh(new T.RingGeometry(.8,1,36),new T.MeshBasicMaterial({color:0xffe53b,transparent:true,opacity:.9,depthWrite:false,side:T.DoubleSide,fog:false}));
+const landRing=new T.Mesh(new T.RingGeometry(.7,1,40),new T.MeshBasicMaterial({color:0xffe53b,transparent:true,opacity:.9,depthWrite:false,side:T.DoubleSide,fog:false,polygonOffset:true,polygonOffsetFactor:-6,polygonOffsetUnits:-12})); // a thicker band, pulled clear of the ground and the shadow layer so it can never be buried
 landRing.rotation.x=-PI/2;landRing.renderOrder=3;landRing.visible=false;scene.add(landRing);
 const echoBall=new T.Mesh(new T.RingGeometry(.026,.04,20),overlayMat(0xffffff,1));echoBall.renderOrder=11;echoBall.visible=false;scene.add(echoBall); // marks where the pitch was after a miss
 const PT_R=.068;
@@ -2174,7 +2174,7 @@ function hbpEnd(fk,title){const b=curBatter(),r0=Math.random(),k=fk!==undefined?
   if(k<=0)roarOff(3); // no fight, or a lost one: it settles in a long tail
   showCard();
   // He heads for first with the camera in front of him, and the walk-up banner comes back to show what getting hit (or the fight) did to his ratings.
-  {const gb=v=>{const g=statGrade(v);return `<b class="gr g${g}"><u>${g}</u></b>`;},ch=(lab,o,n)=>`<span>${lab} ${gb(o)}${k?` <i class="${k>0?'hbu':'hbd'}">${k>0?'▲':'▼'}</i> ${gb(n)}`:''}</span>`;
+  {const gb=v=>{const g=statGrade(v);return `<b class="gr g${g}"><u>${g}</u></b>`;},ch=(lab,o,n)=>`<span>${lab} ${gb(o)}${k?` <i class="${k>0?'hbu':'hbd'}">➜</i> ${gb(n)}`:''}</span>`;
     $('wnum').textContent=b.num;$('wname').textContent=b.name;$('wrat').innerHTML=ch(MOB?'PWR':'POWER',was.pwr,b.pwr)+ch(MOB?'CON':'CONTACT',was.con,b.con)+ch(MOB?'SPD':'SPEED',was.spd,b.spd);$('shout').classList.remove('go');
     $('wspot').textContent=k>0?'RATINGS UP · +2 JUICE':k<0?'RATINGS DOWN FOR THE GAME':'NO HARM DONE';$('wskip').textContent='';$('walk').hidden=false;$('hud').classList.add('wk');}
   S.state='hbprun';S.t=now;hud();}
@@ -2362,7 +2362,7 @@ function simulate(p0,v0,spin,opt){spin=spin||{side:0,lift:0};opt=opt||{};const G
     if(!hr&&!grd&&r>=fr){
       {const off=Math.abs(p.x)-(.216-p.z); // how far outside the chalk it is as it reaches the fence
         if(!land&&off>LINE_TOL&&off<LINE_TOL+.7&&p.y>WALL_H&&p.y<26){hr=true;hrT=t;hrY=p.y;poleT=t;tag='OFF THE FOUL POLE';v.x*=-.35;v.z*=.25;v.y*=.4;}
-        else if(!land&&off<=LINE_TOL&&off>-3.2&&p.y>WALL_H&&p.y<26){hr=true;hrT=t;hrY=p.y;poleT=t;tag='OFF THE FOUL POLE SCREEN';v.x*=.12;v.z*=-.12;v.y=v.y*.3-1;}} /* the screen that runs up the fair side of the pole: it catches the ball and drops it, and it is a home run */ // the pole is fair: it clangs off and drops
+        else if(!land&&off<=LINE_TOL&&off>-3.2&&p.y>WALL_H&&p.y<26){hr=true;hrT=t;hrY=p.y;poleT=t;tag='OFF THE FOUL POLE';v.x*=.12;v.z*=-.12;v.y=v.y*.3-1;}} /* the screen that runs up the fair side of the pole: it catches the ball and drops it, and it is a home run */ // the pole is fair: it clangs off and drops
       if(!hr&&Math.abs(p.x)>.216-p.z+LINE_TOL){if(!land)foul=true;else wall=true;pts.push({x:p.x,y:p.y,z:p.z,t});break;} // out of play down the line: foul only if it never came down fair
       if(hr){}
       else if(p.y>WALL_H&&!land){hr=true;hrT=t;hrY=p.y;}
@@ -2773,7 +2773,7 @@ canvas.addEventListener('pointermove',e=>{
   else pointerAim(e);});
 canvas.addEventListener('pointerdown',e=>{audioInit();
   if(e.pointerType==='touch'){touchLast={id:e.pointerId,x:e.clientX,y:e.clientY,x0:e.clientX,y0:e.clientY};$('apad').classList.add('drag');return;}
-  pointerAim(e);doSwing(e.button===2?'power':'contact');e.preventDefault();});
+  pointerAim(e);doSwing(e.button===2?'contact':'power');e.preventDefault();}); // on a computer: left click is the POWER swing, right click is CONTACT
 // Phones hold back the first few pixels of a finger's movement while they decide whether the touch is a tap or a scroll. Claiming the touch
 // the instant it lands tells the browser not to wait, so the ring answers the very first nudge of the thumb. Nothing else about aiming changes.
 canvas.addEventListener('touchstart',e=>{e.preventDefault();},{passive:false});
@@ -3650,10 +3650,10 @@ function step(dt){
       bez(flight.orb?.22+.78*Math.pow(clamp((now-flight.orb)/3.1,0,1),1.5):.22*ease(Math.min(1,tf/1.1)),ball.position);}
     if(flight.dShow){const ft=Math.round(flight.dFt*Math.min(1,Math.hypot(p.x,p.z)/(flight.dEnd||1)));if(ft!==flight.dLast){flight.dLast=ft;$('hds').textContent=ft+' FT';}}
     if(flight.play.type==='out'&&flight.play.air&&tf<flight.play.endT){const pl=flight.play,k=1-tf/pl.endT; // every ball that is going to be caught in the air gets the ring, under the spot where it will be caught: liners, pop-ups, foul outs, robberies
-      landRing.visible=true;landRing.position.set(pl.p.x,.07,pl.p.z);landRing.scale.setScalar(lerp(1.4,5,k));landRing.material.opacity=.55+.4*(1-k);}
+      landRing.visible=true;landRing.position.set(pl.p.x,.11,pl.p.z);landRing.scale.setScalar(lerp(1.4,5,k));landRing.material.opacity=.75+.25*(1-k);}
     else if(!tr.hr&&tr.land&&tr.land.t>.45&&tf<tr.land.t){ // fly balls and liners (not home runs): a ring on the grass that tightens as the ball comes down
-      const k=1-tf/tr.land.t;landRing.visible=true;landRing.position.set(tr.land.x,.07,tr.land.z);landRing.scale.setScalar(lerp(1.4,5,k));landRing.material.opacity=.55+.4*(1-k);}
-    if(tr.poleT&&!flight.poleHit&&tf>=tr.poleT){flight.poleHit=true;burst(fxL,ball.position,16,7,.5,[1,.9,.3],5,1);tone('sine',1250,900,.5,.6);tone('triangle',2500,1800,.4,.3);pop(/SCREEN/.test(tr.tag)?'OFF THE SCREEN!':'OFF THE POLE!','FAIR BALL · HOME RUN','hot');poleFlash=now;} // doink
+      const k=1-tf/tr.land.t;landRing.visible=true;landRing.position.set(tr.land.x,.11,tr.land.z);landRing.scale.setScalar(lerp(1.4,5,k));landRing.material.opacity=.75+.25*(1-k);}
+    if(tr.poleT&&!flight.poleHit&&tf>=tr.poleT){flight.poleHit=true;burst(fxL,ball.position,16,7,.5,[1,.9,.3],5,1);tone('sine',1250,900,.5,.6);tone('triangle',2500,1800,.4,.3);pop('OFF THE POLE!','FAIR BALL · HOME RUN','hot');poleFlash=now;} // doink
     if(tr.offP&&flight.play.type==='hit'&&!flight.offPd&&tf>=tr.offP){flight.offPd=true; // drilled him: the pitcher goes down in a heap on the mound
       if(MX.pit&&MX.pit.taunts.p_dying)S.sTaunt={t:now,clip:'p_dying',dur:3.3};SND.mitt();tone('sine',110,45,.2,.7);buzz([30,30,60]);shake=Math.max(shake,.25*FX);crowdOut(.9);}
     if(tr.offF&&flight.play.type==='hit'&&!flight.offFd&&tf>=tr.offF.t){flight.offFd=true;SND.mitt();tone('sine',110,45,.2,.7);buzz([30,30,60]);shake=Math.max(shake,.25*FX);crowdOut(.9);}
