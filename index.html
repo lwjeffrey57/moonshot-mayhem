@@ -338,7 +338,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
 @keyframes odhB{from{margin-left:0}to{margin-left:10px}}@keyframes odhM{from{margin-top:0}to{margin-top:-9px}}
 #hud.rv>*:not(#bdg):not(#orbc){visibility:hidden!important}
 /* the one line on the orbit shot: across the top, above the Moon, burning Overdrive blue (a new badge drops in just under it) */
-#hud.rv #bdg{top:128px}#hud.mob.rv #bdg{top:120px}
+#hud.rv #bdg{top:clamp(96px,17vh,150px)}#hud.mob.rv #bdg{top:clamp(84px,12vh,120px)}
 #orbc{position:absolute;left:3%;right:3%;top:max(4%,calc(env(safe-area-inset-top,0px) + 12px));z-index:61;display:none;text-align:center;pointer-events:none;font-family:var(--display);font-style:italic;font-size:clamp(24px,6.4vw,62px);line-height:1;letter-spacing:.02em;white-space:nowrap}
 #hud.rv #orbc{display:block}#orbc b{position:relative;display:inline-block;font-weight:400;color:#eaffff;-webkit-text-stroke:clamp(4px,.8vw,7px) #02103a;paint-order:stroke fill;text-shadow:0 4px 0 #000,0 0 18px #3ad6ff,0 0 42px #1e7bff;animation:orbcIn .6s cubic-bezier(.2,1.5,.3,1) .55s both,orbcF .16s steps(2) .55s infinite}
 #orbc b::before{content:'';position:absolute;z-index:-1;left:-2%;right:-2%;bottom:38%;height:150%;pointer-events:none;transform-origin:50% 100%;filter:blur(1.2px);mix-blend-mode:screen;opacity:.9;
@@ -1643,7 +1643,7 @@ const AWAY={base:'#f4f4f0',trim:'#0e7c86',ink:'#0e3c46',pin:'rgba(14,60,70,.35)'
 const LINEUP=[
   {name:'VASQUEZ',num:27,spd:1.0,pwr:1.0,con:1.05,skin:0xb9794f},{name:'OKAFOR',body:1,lh:true,num:8,spd:1.14,pwr:.96,con:1.12,skin:0x6b4226},
   {name:'DELACROIX',body:7,num:3,crouch:true,spd:1.02,pwr:1.06,con:1.0,skin:0xe2b08a},{name:'BRICKHOUSE',body:2,num:44,spd:0.78,pwr:1.16,con:.82,skin:0xd9a47c},
-  {name:'TANAKA',body:6,lh:true,num:51,spd:1.1,pwr:1.02,con:1.08,skin:0xe6bd94},{name:'MONTOYA',body:3,num:19,crouch:true,spd:0.95,pwr:1.1,con:.95,skin:0xa8683e},
+  {name:'TANAKA',body:6,lh:true,num:51,spd:1.1,pwr:1.02,con:1.08,skin:0xe6bd94},{name:'MONTOYA',num:19,crouch:true,spd:0.95,pwr:1.1,con:.95,skin:0xa8683e},
   {name:'ABERNATHY',body:4,lh:true,num:12,spd:1.15,pwr:.94,con:1.1,skin:0xf0c4a0},{name:'JACKSON-BELL',body:8,num:35,crouch:true,spd:0.81,pwr:1.12,con:.93,skin:0x5a3820},
   {name:'KOWALSKI',body:5,num:6,spd:1.04,pwr:.98,con:1.04,skin:0xe8b690},
 ];
@@ -2516,7 +2516,7 @@ function qteRisk(k,pl){const from={plate:3,adv3:2,stretch3:2,stretch2:1,tag3:2,t
   const px=pl&&pl.p?pl.p.x:0,pz=pl&&pl.p?pl.p.z:-80,dn=clamp((Math.hypot(px,pz)-45)/60,0,1);let D=1.38-.62*dn+({stretch3:.16,stretch2:.1,plate:.05,tag2:.22,tag3:.05}[k]||0);
   if(k==='adv3'||k==='stretch3'||k==='tag3')D+=clamp(-px/60,-1,1)*.14; /* left field is the short throw to third */
   return clamp(D/Math.pow(sp,1.3),.55,1.6);}
-function goOffer(k,pl){S.goK=k;S.goD=qteRisk(k,pl);const b=$('gobtn');b.firstChild.nodeValue=GO_LABEL[k];b.dataset.r=S.goD<.85?'g':S.goD<1.15?'y':'r';b.querySelector('small').textContent=(S.goD<.85?'GOOD ODDS':S.goD<1.15?'TOSS-UP':'LONG SHOT')+' · ';b.classList.remove('on');void b.offsetWidth;b.classList.add('on');readyDur=Math.max(readyDur,3.2);S.t=now;buzz(25);}
+function goOffer(k,pl){S.goK=k;S.goD=qteRisk(k,pl);const b=$('gobtn');b.firstChild.nodeValue=GO_LABEL[k];b.dataset.r=S.goD<.85?'g':S.goD<1.15?'y':'r';b.querySelector('small').textContent=(S.goD<.85?'GOOD ODDS':S.goD<1.15?'TOSS-UP':'LONG SHOT')+' · ';b.classList.remove('on');void b.offsetWidth;b.classList.add('on');readyDur=Math.max(readyDur,qteSeen?2.3:3.2);S.t=now;buzz(25);} /* up for a little over two seconds; a player who has never taken one gets the full three */
 function goHide(){if(S.goK){S.goK=null;}$('gobtn').classList.remove('on');}
 function goTap(){if(!S.goK||S.state!=='result')return;const k=S.goK;goHide();S.next=()=>qteStart(k,true);S.t=now-readyDur+.2;buzz([20,30,60]);tone('triangle',660,990,.12,.3);}
 function qteStart(kind,noPA){QT.noPA=!!noPA;goHide();const D=QT.D=kind==='dp'?1:clamp(S.goD||1,.55,1.6);S.goD=0;const M=QTE_MOVES[kind],Bp=M.base?[BASES[M.base][0],BASES[M.base][1]]:[0,0],u=M.u;
@@ -3090,7 +3090,7 @@ function revBuild(){const g=REV.g=new T.Group();g.position.copy(REV.C);const tx=
   const hg=new T.BufferGeometry();hg.setAttribute('position',new T.BufferAttribute(new Float32Array(3),3));REV.head=new T.Points(hg,new T.PointsMaterial({size:30,map:dot,color:0x9fdcff,sizeAttenuation:false,transparent:true,blending:T.AdditiveBlending,depthWrite:false,fog:false}));REV.head.frustumCulled=false;g.add(REV.head);g.visible=false;scene.add(g);}
 function revAt(th,o){const up=clamp(th/1.1,0,1),r=REV.R*(1+.24*(1-Math.pow(1-up,2)));return o.copy(REV.a).multiplyScalar(Math.cos(th)*r).addScaledVector(REV.b,Math.sin(th)*r);} /* climbs off the surface over the first sixth of the lap, then holds its height */
 function revTick(e){if(!REV.g)revBuild();const u=clamp(e/REV.dur,0,1),th=(PI*2+.5)*(u<.5?2*u*u*.9+u*.1:1-.9*2*(1-u)*(1-u)-.1*(1-u)); /* eases away, cruises, eases in: one lap and a little more */
-  if(!flight.revOn){flight.revOn=true;badge('rev'); /* the badge drops in as the ball is seen in orbit */REV.g.visible=true;$('hud').classList.add('rv');SND.zap();tone('sine',70,180,1.6,.5);crowdPump(1);buzz([30,40,30,40,200]);}
+  if(!flight.revOn){flight.revOn=true;bdgBusy=Math.min(bdgBusy,performance.now()+500);badge('rev'); /* the badge drops in as the ball is seen in orbit */REV.g.visible=true;$('hud').classList.add('rv');SND.zap();tone('sine',70,180,1.6,.5);crowdPump(1);buzz([30,40,30,40,200]);}
   revAt(th,ball.position).add(REV.C);REV.cam.set(REV.C.x+20+30*u,REV.C.y+40-12*u,REV.C.z+268-18*u);REV.look.set(REV.C.x,REV.C.y+4,REV.C.z);
   const P=REV.trail.geometry.attributes.position,Cc=REV.trail.geometry.attributes.color,N=REV.N,span=Math.min(th,2.4);for(let i=0;i<N;i++){const k=i/(N-1);revAt(th-span*(1-k),_a);P.setXYZ(i,_a.x,_a.y,_a.z);const f=k*k;Cc.setXYZ(i,.25*f,.6*f,1*f);}P.needsUpdate=true;Cc.needsUpdate=true;{const H=REV.head.geometry.attributes.position;revAt(th,_a);H.setXYZ(0,_a.x,_a.y,_a.z);H.needsUpdate=true;}
   REV.halo.scale.setScalar(1+.25*Math.sin(now*9));}
@@ -3105,13 +3105,13 @@ const BADGES=[['hit','KNOCK','Get your first hit','🧢'],['hr','WENT YARD','Hit
   ['rev','IN ORBIT','Put one into orbit round the Moon','🌕'],['earth','NEXT STOP: EARTH','Hit one clean off the Moon','🌍'],['sat','SPACE JUNK','Take out the satellite','🛰️'],['lamp','LIGHTS OUT','Smash a light tower','💡'],['board','OFF THE SCOREBOARD','Homer off the scoreboard','📺'],['eye','OFF THE BATTER\'S EYE','Homer off the batter\'s eye','👁️'],
   ['send','WHEELS','Win a showdown at the bag','👟'],['jump','PERFECT JUMP','Stop the needle on gold','🥇'],['brawl','LAST MAN STANDING','Win a brawl','🥊'],['wore','WORE ONE','Get hit by a pitch','🩹'],
   ['walkoff','WALK-OFF','Win it in your last at-bat','🏃'],['win','IN THE WIN COLUMN','Win a game','🏆'],['ten','DOUBLE DIGITS','Score ten runs in a game','🔟']];
-let bdgGot={};try{bdgGot=JSON.parse(localStorage.getItem('mm_badges2')||'{}')||{};}catch(e){}
+let bdgGot={};try{bdgGot=JSON.parse(localStorage.getItem('mm_badges3')||'{}')||{};}catch(e){}
 const bdgQ=[];let bdgBusy=0,bdgCur=null,bdgCurEnd=0,popUntil=0;
 let callShown={};try{callShown=JSON.parse(localStorage.getItem('mm_calls')||'{}')||{};}catch(e){}
 function callOnce(L){for(const [ok,id,txt] of L)if(ok&&!callShown[id]){callShown[id]=1;try{localStorage.setItem('mm_calls',JSON.stringify(callShown));}catch(e){}return txt;}return '';} /* the first applicable feat whose call has never been shown, or nothing */
-function badge(id){if(bdgGot[id])return;const B=BADGES.find(b=>b[0]===id);if(!B)return;bdgGot[id]=1;try{localStorage.setItem('mm_badges2',JSON.stringify(bdgGot));}catch(e){}const q=B.slice();q.tq=performance.now();bdgQ.push(q);bdgLabel();}
+function badge(id){if(bdgGot[id])return;const B=BADGES.find(b=>b[0]===id);if(!B)return;bdgGot[id]=1;try{localStorage.setItem('mm_badges3',JSON.stringify(bdgGot));}catch(e){}const q=B.slice();q.tq=performance.now();bdgQ.push(q);bdgLabel();}
 function bdgLabel(){const e=$('bdgbtn');if(e)e.textContent='Badges: '+BADGES.filter(b=>bdgGot[b[0]]).length+' / '+BADGES.length;}
-setInterval(()=>{if(!bdgQ.length||performance.now()<bdgBusy||$('hud').classList.contains('rv')||S.state==='title')return;const B=bdgQ.shift(),e=$('bdg');bdgCur=B;bdgCurEnd=performance.now()+3000;e.querySelector('i').textContent=B[3];e.querySelector('b').textContent=B[1];e.querySelector('span').textContent=B[2];
+setInterval(()=>{if(!bdgQ.length||performance.now()<bdgBusy||S.state==='title')return; /* (plates DO show during the orbit shot: that is exactly when IN ORBIT should drop in) */const B=bdgQ.shift(),e=$('bdg');bdgCur=B;bdgCurEnd=performance.now()+3000;e.querySelector('i').textContent=B[3];e.querySelector('b').textContent=B[1];e.querySelector('span').textContent=B[2];
   e.classList.remove('go');void e.offsetWidth;e.classList.add('go');bdgBusy=performance.now()+3300;buzz([20,40,20,40,90]);[660,880,1100,1320].forEach((f,i)=>tone('triangle',f,f*1.02,.12,.4,i*.07));},250);
 function bdgOpen(){let e=$('bdgs');if(!e){e=document.createElement('div');e.id='bdgs';e.innerHTML='<h2>BADGES</h2><p></p><div id="bdgl"></div><button class="cta alt" type="button">BACK</button>';document.body.appendChild(e);e.addEventListener('click',ev=>{if(ev.target===e||ev.target.tagName==='BUTTON')e.hidden=true;});}
   e.querySelector('p').textContent=BADGES.filter(b=>bdgGot[b[0]]).length+' OF '+BADGES.length+' EARNED';$('bdgl').innerHTML=BADGES.map(b=>'<div class="'+(bdgGot[b[0]]?'got':'')+'"><i>'+b[3]+'</i><p style="margin:0"><b>'+b[1]+'</b><span>'+b[2]+'</span></p></div>').join('');e.hidden=false;}
