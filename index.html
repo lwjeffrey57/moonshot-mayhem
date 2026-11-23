@@ -1710,26 +1710,27 @@ function crowdTick(dt){
 // The ballpark organ. One riff at a time, picked for the situation as a hitter settles in, never back to back, and it stops the moment
 // a ball is put in play. Riffs: charge (rally), chord (filler), post (start of an inning), clap, letsgo, neenaa (taunting a new pitcher),
 // mariachi (man on first), lgo (big spot in the last inning), rise (two strikes: clap it up).
-let orgS=null,orgG=null,orgNext=0,orgLast='',orgSt='',orgInn=0;
+let orgS=null,orgG=null,orgNext=0,orgLast='',orgSt='',orgInn=0;const orgN={}; // orgN: how often each riff has played, so the ones heard least come up next
 function organStop(fade=.3){if(!orgS)return;const t=AC.currentTime;try{orgG.gain.cancelScheduledValues(t);orgG.gain.setValueAtTime(orgG.gain.value,t);orgG.gain.linearRampToValueAtTime(0,t+fade);orgS.stop(t+fade+.05);}catch(e){}orgS=null;}
 function organPlay(name,vol=.5){const b=SFX['org_'+name];if(!AC||!b)return false;organStop(.15);
   const t=AC.currentTime;orgS=AC.createBufferSource();orgG=AC.createGain();orgS.buffer=b;orgG.gain.value=vol;orgS.connect(orgG);orgG.connect(master);orgS.start(t);
-  const me=orgS;orgS.onended=()=>{if(orgS===me)orgS=null;};orgLast=name;orgNext=t+b.duration+rand(12,22);return true;}
+  const me=orgS;orgS.onended=()=>{if(orgS===me)orgS=null;};orgLast=name;orgN[name]=(orgN[name]||0)+1;orgNext=t+b.duration+rand(5,10);return true;}
 function organTick(){
   if(!AC)return;
   const st=S.state;if(st===orgSt)return;
   const was=orgSt;orgSt=st;
   if(st==='flight'){organStop(.25);return;}
   if(st==='title'||st==='over'||st==='end'){organStop(.4);return;}
-  if(st!=='ready'||orgS||AC.currentTime<orgNext||roarG)return;
-  const fresh=S.balls+S.strikes===0,risp=S.bases[1]||S.bases[2],behind=S.opp>S.runs,pick=a=>{const o=a.filter(n=>n!==orgLast);return o[(Math.random()*o.length)|0];};
+  if(st!=='ready'||orgS||AC.currentTime<orgNext||(roarG&&roarG.gain.value>.5))return;
+  const fresh=S.balls+S.strikes===0,risp=S.bases[1]||S.bases[2],behind=S.opp>S.runs,pick=a=>{const o=a.filter(n=>n!==orgLast&&SFX['org_'+n]),lo=Math.min(...o.map(n=>orgN[n]||0)),c=o.filter(n=>(orgN[n]||0)===lo);return c[(Math.random()*c.length)|0];}; /* of the riffs that fit the moment, the least-played one */
   let n='';
   if(orgInn!==S.inning&&fresh){orgInn=S.inning;n='post';}
   else if(fresh&&S.inning===3&&(behind||risp)&&Math.random()<.7)n=pick(['lgo','charge','letsgo']);
   else if(fresh&&risp&&Math.random()<.7)n=pick(['charge','letsgo','clap']);
-  else if(fresh&&S.bases[0]&&Math.random()<.4)n=pick(['mariachi','chord']);
-  else if(!fresh&&S.strikes===2&&Math.random()<.35)n='rise';
-  else if(fresh&&Math.random()<.22)n=pick(['chord','clap','letsgo']);
+  else if(fresh&&S.bases[0]&&Math.random()<.6)n=pick(['mariachi','chord','clap']);
+  else if(!fresh&&S.strikes===2&&Math.random()<.5)n='rise';
+  else if(fresh&&Math.random()<.55)n=pick(['chord','clap','letsgo','charge','mariachi','neenaa','lgo']);
+  else if(!fresh&&Math.random()<.18)n=pick(['chord','clap','rise']);
   if(n)organPlay(n);}
 // An ordinary home run's roar is a loop of the steady middle of a cheer, which on its own is flat, like noise. So while it runs, fresh
 // waves of cheering break over it every second or so (the opening shout of the big cheer, at a slightly different pitch each time).
@@ -2153,7 +2154,7 @@ function brawlTick(el){const B=BRW;
     if(q.att==='b')crowdPump(last?1:.6);else if(!roarG)boo(.6);if(last){B.ko=true;rumble=1;}}
   if(el>=B.f1+.9&&B.ko&&!B.taunt){B.taunt=true;const w={n:'p_fist',t:now,loop:true};if(B.win)B.b=w;else B.p=w;}
   if(el>=B.dur){B.taunt=false;const k=B.win?1:Math.random()<.6?-1:0;hbpEnd(k,B.win?'WON THE BRAWL!':'LOST THE BRAWL');}}
-function hbpStart(){S.state='hbp';S.t=now;S.hbpN=(S.hbpN||0)+1;S.hbpF=false;ball.visible=false;ballShadow.visible=false;pring.visible=false;swing=null;
+function hbpStart(){S.state='hbp';S.t=now;S.hbpN=(S.hbpN||0)+1;S.hbpF=false;S.hbpR=false;ball.visible=false;ballShadow.visible=false;pring.visible=false;swing=null;
   // a ball off the body, not off leather: a dull, dead thump with a short slap on the front of it, then the air going out of him (no mitt pop)
   noise(.035,'highpass',1800,900,.5);noise(.16,'bandpass',210,90,1.3,1.4);tone('sine',92,38,.26,1.2);tone('triangle',150,60,.12,.5);tone('sawtooth',210,120,.22,.16,.09);noise(.3,'bandpass',700,300,.22,.8,.1);
   buzz([60,40,120]);shake=Math.max(shake,.4*FX);flash(.5);
@@ -2170,6 +2171,7 @@ function hbpEnd(fk,title){const b=curBatter(),r0=Math.random(),k=fk!==undefined?
   if(k>0){pop(title||'FIRED UP!',run+b.name+' · RATINGS UP · +2 JUICE','hot',true);cheer(.5,3);roar(.9,.3);buzz([30,40,80]);}
   else if(k<0){pop(title||'SHAKEN UP',run+b.name+' · RATINGS DOWN','cool',true);crowdDrop();}
   else{pop(title||'SHOOK IT OFF',run+'TAKE YOUR BASE','plain');cheer(.3,2);}
+  if(k<=0)roarOff(3); // no fight, or a lost one: it settles in a long tail
   showCard();
   // He heads for first with the camera in front of him, and the walk-up banner comes back to show what getting hit (or the fight) did to his ratings.
   {const gb=v=>{const g=statGrade(v);return `<b class="gr g${g}"><u>${g}</u></b>`;},ch=(lab,o,n)=>`<span>${lab} ${gb(o)}${k?` <i class="${k>0?'hbu':'hbd'}">${k>0?'▲':'▼'}</i> ${gb(n)}`:''}</span>`;
@@ -3599,7 +3601,8 @@ function step(dt){
   else if(st==='result'&&el>=readyDur){goHide();if(S.next){const n=S.next;S.next=null;n();}else toReady(S.fresh?PACE.newBatter:PACE.samePitch);}
   else if(st==='walkup'&&el>=WALK.dur)endWalkup();
   else if(st==='celly2'&&el>=D2.dur){toReady(PACE.newBatter);}
-  else if(st==='hbp'){if(!S.hbpF&&el>=HB1){S.hbpF=true;flash(.35);}if(el>=HBD){if(brawlNeed())brawlStart();else hbpEnd();}}
+  else if(st==='hbp'){if(!S.hbpR&&el>=1.5){S.hbpR=true;roar(.42,1.2);} /* after the boos the place keeps buzzing while he is down, and it builds as he gets up: never silence, and never louder than the charge that may follow */
+    if(!S.hbpF&&el>=HB1){S.hbpF=true;flash(.35);roar(.62,.9);}if(el>=HBD){if(brawlNeed())brawlStart();else hbpEnd();}}
   else if(st==='brawl')brawlTick(el);
   else if(st==='qte')qteTick();
   else if(st==='hbprun'&&el>=HBR)hbpRunEnd();
