@@ -875,7 +875,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 500</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 501</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <button class="tag wkopt sens" id="sens1" type="button"></button>
@@ -4508,7 +4508,7 @@ function step(dt){
       if(flight.satHit){ball.visible=false;ballGlow.material.opacity=0;}}
     if(flight.play.type==='hr'&&!flight.called&&tf>=tr.hrT-.9){flight.called=true;pop("OUTTA HERE!",'','hot');SND.boom();}
     if(flight.play.type==='hr'&&!flight.clr&&tf>=tr.hrT){flight.clr=true; /* the instant it is over the wall, and not a frame sooner: the horn (on a good share of them) and, when it was a no-doubter, the lasers */
-      if(DBG.horn||Math.random()<.7)sfx('horn',1.5); /* the home-run horn: loud, and on seven homers in ten */if(lasWant&&!LAS.on&&!LAMP.on&&!flight.lamp){laserStart();lasWant=false;}}
+      sfx('horn',1.5); /* the home-run horn: loud, on every homer */if(lasWant&&!LAS.on&&!LAMP.on&&!flight.lamp){laserStart();lasWant=false;}}
     if(tf>=flight.play.endT){
       if(flight.play.type==='hr'){_p.copy(ball.position);burst(fxL,_p,30,14,.9,[1,.9,.6],4,4);SND.boom();}
       ball.visible=flight.play.type==='foul';ballShadow.visible=false;ballGlow.material.opacity=0;finishPlay();}
