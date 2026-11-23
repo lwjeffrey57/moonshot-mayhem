@@ -230,6 +230,15 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
 @keyframes gobtnL{from{transform:scale(1)}to{transform:scale(1.08)}}
 #hud.mob #gobtn small::after{content:'ADVANCE THE RUNNER'}
 #gobtn[data-r=g]{box-shadow:0 6px 0 #000,0 0 0 4px #39ff6a}#gobtn[data-r=y]{box-shadow:0 6px 0 #000,0 0 0 4px #ffd23b}#gobtn[data-r=r]{box-shadow:0 6px 0 #000,0 0 0 4px #ff4d2e}
+/* GO is an ARROW pointing the way he is going to run, not a pill: a block arrow with the risk colour as its outer edge, lunging forward as it waits */
+#gobtn,#hud.mob #gobtn{--ar:polygon(0 17%,70% 17%,70% 0,100% 50%,70% 100%,70% 83%,0 83%);border:0;border-radius:0;box-shadow:none!important;background:#fff;clip-path:var(--ar);-webkit-clip-path:var(--ar);padding:clamp(30px,7vw,44px) clamp(78px,17vw,112px) clamp(30px,7vw,44px) clamp(20px,4.5vw,30px);isolation:isolate}
+#gobtn[data-r=g],#hud.mob #gobtn[data-r=g]{background:#39ff6a}#gobtn[data-r=y],#hud.mob #gobtn[data-r=y]{background:#ffd23b}#gobtn[data-r=r],#hud.mob #gobtn[data-r=r]{background:#ff4d2e}
+#hud.mob #gobtn{padding:24px 62px 24px 15px;font-size:clamp(16px,4.6vw,23px)}#hud.mob #gobtn small{font-size:9px}
+#gobtn::before,#gobtn::after{content:'';position:absolute;z-index:-1;clip-path:var(--ar);-webkit-clip-path:var(--ar)}
+#gobtn::before{inset:5px 9px 5px 5px;background:#000}#gobtn::after{inset:10px 18px 10px 9px;background:linear-gradient(#9dffb4,#1fd153 60%,#12a53d)}
+#gobtn.on,#hud.mob #gobtn.on{animation:goArrow .38s cubic-bezier(.3,0,.2,1) infinite alternate}
+@keyframes goArrow{from{transform:translateX(-50%) scale(1)}to{transform:translateX(calc(-50% + 14px)) scale(1.06)}}
+#hud.mob #gobtn.on{animation-name:goArrowL}@keyframes goArrowL{from{transform:translateX(0) scale(1)}to{transform:translateX(14px) scale(1.06)}}
 #gobtn small{display:block;font-family:var(--hud);font-style:normal;font-size:11px;letter-spacing:.08em;opacity:.75}
 #hud:not(.mob) #gobtn small::after{content:'PRESS G'}
 #qte{position:absolute;left:50%;top:15%;transform:translateX(-50%);z-index:46;text-align:center;font-family:var(--display);font-style:italic;pointer-events:none}
