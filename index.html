@@ -357,7 +357,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
 #bdg{position:absolute;left:50%;top:112px;z-index:60;display:flex;align-items:center;gap:10px;padding:9px 22px 9px 12px;pointer-events:none;white-space:nowrap;border-radius:34px;background:linear-gradient(#2a2208,#0e0b02);border:2px solid #ffd23b;box-shadow:0 4px 0 #000,0 0 22px 4px rgba(255,210,59,.55);transform:translate(-50%,-140px);opacity:0;visibility:visible!important}
 #hud.mob #bdg{top:152px;padding:5px 12px 5px 7px;gap:8px}#bdg.go{animation:bdgIn 3.1s cubic-bezier(.2,1.3,.3,1) both}
 @keyframes bdgIn{0%{transform:translate(-50%,-140px) scale(.7);opacity:0}9%{transform:translate(-50%,0) scale(calc(var(--bs,1)*1.08));opacity:1}14%{transform:translate(-50%,0) scale(var(--bs,1))}86%{transform:translate(-50%,0) scale(var(--bs,1));opacity:1}100%{transform:translate(-50%,-30px) scale(calc(var(--bs,1)*.96));opacity:0}}
-#bdg{transform-origin:50% 0;white-space:normal}#bdg.lead{--bs:1.28}#hud.mob #bdg.lead{--bs:1.18}
+#bdg{transform-origin:50% 0;white-space:normal}#bdg{--bs:.86}#hud.mob #bdg{--bs:.82}#bdg.lead{--bs:1}#hud.mob #bdg.lead{--bs:.92} /* a touch smaller all round; the one that leads as the call is full size */
 /* EVERY BADGE PLATE IS THE SAME SIZE AND SHAPE, whatever it says, so the eye learns it: "that outline means a badge". A long name takes two lines inside it. */
 #bdg,#hud.mob #bdg{box-sizing:border-box;width:330px;height:108px;padding:8px 20px 8px 14px;gap:12px;border-radius:54px;justify-content:flex-start}
 #hud.mob #bdg{width:min(292px,78vw);height:100px;border-radius:50px;padding:6px 16px 6px 11px;gap:9px}
@@ -839,7 +839,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 450</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 451</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <button class="tag wkopt sens" id="sens1" type="button"></button>
@@ -1027,7 +1027,7 @@ const TEXR=[];try{document.fonts.load('400 40px "Russo One"').then(()=>{TEXR.for
 function tex(w,h,draw,rep){const c=document.createElement('canvas');c.width=w;c.height=h;draw(c.getContext('2d'),w,h);
   const t=new T.CanvasTexture(c);if(/\.font\s*=|font\b/.test(String(draw)))TEXR.push({c,w,h,draw,t});if(rep){t.wrapS=t.wrapT=T.RepeatWrapping;t.repeat.set(rep[0],rep[1]);}return t;}
 
-const SKYG=[]; /* the sky and its stars: they travel with the camera, like anything infinitely far away */
+let STAND_LIT=null;const SKYG=[]; /* the sky and its stars: they travel with the camera, like anything infinitely far away */
 const hemi=new T.HemisphereLight(0xdde4ff,0x4a4a55,0.85);scene.add(hemi);
 const sun=new T.DirectionalLight(0xfff1dc,0.8);sun.position.set(-30,80,60);scene.add(sun);
 const rim=new T.DirectionalLight(0xffc890,0.45);rim.position.set(-9,13,-11);rim.castShadow=true;scene.add(rim);
@@ -1285,7 +1285,15 @@ gl_FragColor=vec4(col,1.0);
   // Earth and the stars stand clear above it and the place reads as the Moon at a glance. (The decks down the foul lines stay.)
   const UPPER=false,GAP0=8,GAP1=24,split=a=>[a.slice(0,GAP0+1),a.slice(GAP1)];
   scene.add(new T.Mesh(ribbon(fb,s1a,1),basic({color:0x14183a}))); // the top of the wall runs straight into the first row: no gap for a ball to drop down
-  scene.add(new T.Mesh(ribbon(s1a,s1b,1),cm));if(UPPER)split(s2a).forEach((a,k)=>scene.add(new T.Mesh(ribbon(a,split(s2b)[k],1),cm)));
+  scene.add(new T.Mesh(ribbon(s1a,s1b,1),cm));
+  // THE STANDS ARE LIT TOO, the same painted way: a see-through layer over each bank of seats, bright pools where the floodlights land,
+  // falling away to shadow between them and up toward the back rows. One small texture, drawn once per bank: nothing to slow a phone down.
+  const standLight=tex(512,128,(g,w,h)=>{g.clearRect(0,0,w,h);const vg=g.createLinearGradient(0,0,0,h);vg.addColorStop(0,'rgba(3,4,16,.62)');vg.addColorStop(.45,'rgba(3,4,16,.3)');vg.addColorStop(1,'rgba(3,4,16,.08)');g.fillStyle=vg;g.fillRect(0,0,w,h);
+    g.globalCompositeOperation='destination-out';for(const cx of [0,w]){g.save();g.translate(cx,h*1.05);g.scale(w*.36/h,1.15);const rg=g.createRadialGradient(0,0,0,0,0,h);rg.addColorStop(0,'rgba(0,0,0,.95)');rg.addColorStop(.6,'rgba(0,0,0,.5)');rg.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=rg;g.fillRect(-h,-h,h*2,h*2);g.restore();}
+    g.globalCompositeOperation='source-over';for(const cx of [0,w]){g.save();g.translate(cx,h*1.02);g.scale(w*.3/h,.9);const rg=g.createRadialGradient(0,0,0,0,0,h);rg.addColorStop(0,'rgba(255,244,214,.2)');rg.addColorStop(1,'rgba(255,244,214,0)');g.fillStyle=rg;g.fillRect(-h,-h,h*2,h*2);g.restore();}},[1,1]);
+  standLight.repeat.set(1/44,1);
+  const litMat=new T.MeshBasicMaterial({map:standLight,transparent:true,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-4,fog:true}),lit=(a,b)=>{const m=new T.Mesh(ribbon(a,b,1),litMat);m.renderOrder=1;scene.add(m);};STAND_LIT=lit;
+  lit(s1a,s1b);if(UPPER)split(s2a).forEach((a,k)=>scene.add(new T.Mesh(ribbon(a,split(s2b)[k],1),cm)));
   // luxury boxes between the decks
   const boxes=tex(256,32,(g,w,h)=>{g.fillStyle='#14122c';g.fillRect(0,0,w,h);for(let x=2;x<w;x+=16){g.fillStyle=Math.random()<.75?'#ffd98a':'#3a4a7a';g.fillRect(x,7,12,15);g.fillStyle='rgba(0,0,0,.3)';g.fillRect(x,16,12,6);}g.fillStyle='#ff4d2e';g.fillRect(0,26,w,6);g.fillStyle='#e8e8f0';g.fillRect(0,0,w,3);});
   boxes.wrapS=T.RepeatWrapping;boxes.repeat.set(1/40,1);
@@ -1390,14 +1398,22 @@ gl_FragColor=vec4(col,1.0);
   const BK_A=17,BK_R=(26-BK_A)/(Math.SQRT2-1),BK_Z=BK_A-BK_R;
   // foul-side walls and stands
   poleNetT=tex(64,64,(g,w,h)=>{g.clearRect(0,0,w,h);g.fillStyle='#000';g.fillRect(0,0,w,h);g.strokeStyle='#ffe53b';g.lineWidth=3;g.beginPath();g.moveTo(0,0);g.lineTo(w,h);g.moveTo(w,0);g.lineTo(0,h);g.stroke();g.strokeStyle='#3ad6ff';g.lineWidth=2;g.strokeRect(0,0,w,h);},[1,1]);poleNetT.wrapS=poleNetT.wrapT=T.RepeatWrapping;poleNetT.repeat.set(3,30);
+  // The walls down the lines are padded and lit the same way as the outfield wall (painted-in light: a bulge on every pad, bright at the
+  // top, shadow at the foot, a pool of floodlight every 24 m). Navy here, so the eye still reads green as "the home-run wall".
+  const sidePad=tex(1024,64,(g,w,h)=>{const bg=g.createLinearGradient(0,0,0,h);bg.addColorStop(0,'#3a4c9a');bg.addColorStop(.5,'#27357a');bg.addColorStop(1,'#141c48');g.fillStyle=bg;g.fillRect(0,0,w,h);
+    const pw=w/10;for(let x=0;x<w;x+=pw){const cg=g.createLinearGradient(x,0,x+pw,0);cg.addColorStop(0,'rgba(0,0,0,.4)');cg.addColorStop(.1,'rgba(255,255,255,.16)');cg.addColorStop(.45,'rgba(255,255,255,0)');cg.addColorStop(.88,'rgba(0,0,0,.16)');cg.addColorStop(1,'rgba(0,0,0,.4)');g.fillStyle=cg;g.fillRect(x,0,pw,h);
+      g.fillStyle='rgba(10,12,24,.75)';for(const yy of [h*.25,h*.75])for(const dx of [7,pw-7]){g.beginPath();g.arc(x+dx,yy,2,0,7);g.fill();}}
+    {const vg=g.createLinearGradient(0,0,0,h);vg.addColorStop(0,'rgba(255,255,255,.22)');vg.addColorStop(.3,'rgba(255,255,255,.05)');vg.addColorStop(.6,'rgba(0,0,0,.1)');vg.addColorStop(1,'rgba(0,0,0,.5)');g.fillStyle=vg;g.fillRect(0,0,w,h);}
+    g.save();g.globalCompositeOperation='overlay';for(const cx of [0,w]){const R0=h*1.6;g.save();g.translate(cx,0);g.scale((w*.42)/R0,1);const rg=g.createRadialGradient(0,0,0,0,0,R0);rg.addColorStop(0,'rgba(255,246,220,.95)');rg.addColorStop(.5,'rgba(255,240,205,.45)');rg.addColorStop(1,'rgba(255,240,205,0)');g.fillStyle=rg;g.fillRect(-R0,0,R0*2,h);g.restore();}g.restore();
+    g.fillStyle='rgba(255,255,255,.1)';g.fillRect(0,h*.2,w,2);},[1,1]);sidePad.repeat.set(1/24,1);sidePad.anisotropy=ANISO;
   [-1,1].forEach(s=>{
     const line=[[70,-70],[30,-4],[BK_R/Math.SQRT2,BK_Z+BK_R/Math.SQRT2]].map(p=>new V3(p[0]*s,0,p[1]));
     const n=new V3(.866*s,0,.5);
-    scene.add(new T.Mesh(ribbon(line,line.map(p=>p.clone().setY(1.75))),basic({color:0x1c2552})));scene.add(new T.Mesh(ribbon(line.map(p=>p.clone().setY(1.75)),line.map(p=>p.clone().setY(1.9))),basic({color:0xe8c92a})));
+    scene.add(new T.Mesh(ribbon(line,line.map(p=>p.clone().setY(1.75)),1),basic({map:sidePad})));scene.add(new T.Mesh(ribbon(line.map(p=>p.clone().setY(1.75)),line.map(p=>p.clone().setY(1.9))),basic({color:0xe8c92a})));
     scene.add(new T.Mesh(ribbon(line.map(p=>p.clone().setY(1.9)),line.map(p=>p.clone().addScaledVector(n,1).setY(1.9))),basic({color:0x14183a}))); // the same along the foul-side walls
-    scene.add(new T.Mesh(ribbon(line.map(p=>p.clone().addScaledVector(n,1).setY(1.9)),line.map(p=>p.clone().addScaledVector(n,34).setY(23)),1),fm));
+    scene.add(new T.Mesh(ribbon(line.map(p=>p.clone().addScaledVector(n,1).setY(1.9)),line.map(p=>p.clone().addScaledVector(n,34).setY(23)),1),fm));if(STAND_LIT)STAND_LIT(line.map(p=>p.clone().addScaledVector(n,1).setY(1.9)),line.map(p=>p.clone().addScaledVector(n,34).setY(23)));
     scene.add(new T.Mesh(ribbon(line.map(p=>p.clone().addScaledVector(n,30).setY(23)),line.map(p=>p.clone().addScaledVector(n,30).setY(30))),basic({color:0x1a1838})));
-    scene.add(new T.Mesh(ribbon(line.map(p=>p.clone().addScaledVector(n,30).setY(30)),line.map(p=>p.clone().addScaledVector(n,58).setY(52)),1),fm));
+    scene.add(new T.Mesh(ribbon(line.map(p=>p.clone().addScaledVector(n,30).setY(30)),line.map(p=>p.clone().addScaledVector(n,58).setY(52)),1),fm));if(STAND_LIT)STAND_LIT(line.map(p=>p.clone().addScaledVector(n,30).setY(30)),line.map(p=>p.clone().addScaledVector(n,58).setY(52)));
     // dugout
     {const A=new V3(30*s,0,-4),B=new V3(70*s,0,-70),c=A.clone().lerp(B,.26),dir=B.clone().sub(A).normalize(),ry=-Math.atan2(dir.z,dir.x);
       const mk=(w,h,d,col,y,off)=>{const m=new T.Mesh(new T.BoxGeometry(w,h,d),new T.MeshBasicMaterial({color:col}));m.position.copy(c).addScaledVector(n,off);m.position.y=y;m.rotation.y=ry;scene.add(m);};
@@ -1433,6 +1449,10 @@ gl_FragColor=vec4(col,1.0);
       ['LUNAR LEAGUE','MOONSHOT PARK','TRANQUILITY BASE','MOONSHOT PARK','LUNAR LEAGUE'].forEach((t,i)=>{const cx=w*(.1+.2*i);
         g.fillStyle='rgba(0,0,0,.5)';g.fillText(t,cx+2,h*.58+2,w*.17);g.fillStyle=i%2?'#ffe53b':'#f2f4fb';g.fillText(t,cx,h*.58,w*.17);});
       for(let i=0;i<4;i++){const cx=w*(.2+.2*i),cy=h*.58;g.fillStyle='#3ad6ff';g.beginPath();g.arc(cx,cy,13,0,7);g.fill();g.fillStyle='#1b2552';g.beginPath();g.arc(cx+6,cy-3,12,0,7);g.fill();}
+      // the same painted-in light as the other walls
+      {const pw=w/35;for(let x=0;x<w;x+=pw){const cg=g.createLinearGradient(x,0,x+pw,0);cg.addColorStop(0,'rgba(0,0,0,.3)');cg.addColorStop(.1,'rgba(255,255,255,.12)');cg.addColorStop(.45,'rgba(255,255,255,0)');cg.addColorStop(.88,'rgba(0,0,0,.12)');cg.addColorStop(1,'rgba(0,0,0,.3)');g.fillStyle=cg;g.fillRect(x,6,pw,h-6);}
+        const vg=g.createLinearGradient(0,0,0,h);vg.addColorStop(0,'rgba(255,255,255,.2)');vg.addColorStop(.3,'rgba(255,255,255,.04)');vg.addColorStop(.6,'rgba(0,0,0,.08)');vg.addColorStop(1,'rgba(0,0,0,.45)');g.fillStyle=vg;g.fillRect(0,6,w,h-6);
+        g.save();g.globalCompositeOperation='overlay';for(let i=0;i<=5;i++){const R0=h*1.6;g.save();g.translate(w*(.2*i),0);g.scale((w*.085)/R0,1);const rg=g.createRadialGradient(0,0,0,0,0,R0);rg.addColorStop(0,'rgba(255,246,220,.9)');rg.addColorStop(.5,'rgba(255,240,205,.4)');rg.addColorStop(1,'rgba(255,240,205,0)');g.fillStyle=rg;g.fillRect(-R0,0,R0*2,h);g.restore();}g.restore();}
       g.fillStyle='#e8c92a';g.fillRect(0,0,w,6);});
     pad.wrapS=T.RepeatWrapping;pad.repeat.set(1/WLn,1);pad.anisotropy=ANISO;
     scene.add(new T.Mesh(ribbon(arc(0,0),arc(0,1.9),1),basic({map:pad})));
@@ -3067,14 +3087,14 @@ function strike(kind){heatUp(.11);S.strikes++;{const n=S.strikes;setTimeout(()=>
     // the strikeout sulk: one of the defeat routines, with the camera on him (skipped when walk-ups are off, for pace)
     const ds=MX.clip&&WALK.on?Object.keys(MX.clip.intros).filter(k=>/^d_/.test(k)):[];
     if(ds.length){let ts=MX.pit?Object.keys(MX.pit.taunts).filter(k=>!/sadwalk|dying/.test(k)):[];{const w=ts.filter(k=>WILD_TAUNT.includes(k));if(earlyShow(S.ks||0)&&w.length)ts=w;}S.ks=(S.ks||0)+1;S.kOut={t:now+(kind==='look'?.15:.45),bi:S.bi,clip:ds[(Math.random()*ds.length)|0],taunt:ts[(Math.random()*ts.length)|0]};afterPA(DEFEAT+.75);}else afterPA(1.5);}
-  else{pop(kind==='look'?'STRIKE':'WHIFF!','','plain');
+  else{pop(kind==='look'?'STRIKE '+['ONE','TWO'][S.strikes-1]+'!':'WHIFF!',kind==='look'?S.balls+'-'+S.strikes:'STRIKE '+['ONE','TWO'][S.strikes-1]+' · '+S.balls+'-'+S.strikes,'plain');
     // sometimes he lets the hitter know about it: a taunt on the mound, seen from the normal batting view (the camera only goes to him after a strikeout)
     const ts=MX.pit&&WALK.on?Object.keys(MX.pit.taunts).filter(k=>!/sadwalk|dying/.test(k)):[],go=ts.length&&!S.stLast&&(DBG.staunt||Math.random()<.4);S.stLast=!!go;
     if(go){S.sTaunt={t:now+.35,clip:ts[(Math.random()*ts.length)|0],dur:2.1};setTimeout(()=>boo(.45),500);}
     samePA((kind==='look'?1.05:1.3)+(go?.75:0));}}
 function finishPlay(){revOff();
   const f=flight,pl=f.play;f.done=true;
-  if(pl.type==='foul'){if(S.strikes<2)S.strikes++;pop('FOUL','','plain');if(Math.random()<.75)setTimeout(()=>sfx('foul',.9),250);samePA(1);return;}
+  if(pl.type==='foul'){const was=S.strikes;if(S.strikes<2)S.strikes++;pop('FOUL',(S.strikes>was?'STRIKE '+['ONE','TWO'][S.strikes-1]+' · ':'')+S.balls+'-'+S.strikes,'plain');if(Math.random()<.75)setTimeout(()=>sfx('foul',.9),250);samePA(1);return;}
   if(pl.type==='out'){const dp=!!pl.dp&&S.bases[0]&&S.outs<2,qdp=dp&&pl.label==='GROUND OUT'&&qteOK();recordOut();
     if(dp&&!qdp){recordOut();S.bases[0]=0;} // the man on first is forced at second, then the relay gets the hitter
     const B=(i)=>new V3(BASES[i][0],1.2,BASES[i][1]);
@@ -4279,7 +4299,7 @@ function step(dt){
       else if(pitch.inZone){strike('look');}
       else{S.balls++;{const n=S.balls;setTimeout(()=>SND.call(true,n),240);}
         if(S.balls>=4){S.walked=true;S.juice=Math.min(1,S.juice+.25);walkRunners();const r=advance(1,true);pop('WALK',r?'+1 RUN':'TAKE YOUR BASE','plain');boo(.5);afterPA(1.3);}
-        else{pop('BALL','','plain');samePA(.95);}}
+        else{pop('BALL '+['ONE','TWO','THREE'][S.balls-1],S.balls+'-'+S.strikes,'plain');samePA(.95);}}
     }
   }
   if(flight&&!flight.done&&(S.state==='flight')){
