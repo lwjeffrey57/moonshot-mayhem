@@ -1931,7 +1931,7 @@ function setBatter(){
   // PITCHING CHANGE: the defence goes to the bullpen when the man on the mound has given up three runs, or (half the time) to open the third inning.
   // At most two a game. The new arm comes in fresh: two of three bars, or (from the second inning on, a little under half the time) a full bar and already in Overdrive.
   else if(S.bi>=3&&S.pChanges<2&&(DBG.pc||S.runs-S.pRuns0>=3||(S.inning===3&&!S.pc3&&(S.pc3=true)&&Math.random()<.5))){
-    S.pChanges++;S.pRuns0=S.runs;S.pName=BULLPEN[S.pChanges%BULLPEN.length];S.pcPending=true;if(podFree()&&Math.random()<.4){S.heat=1;S.pOver=true;S.podN++;S.podBi=S.bi;}else S.heat=.667;} // a full bar always means Overdrive: he arrives either in it, or with two of three bars
+    S.pChanges++;S.pRuns0=S.runs;S.pName=BULLPEN[((S.pStart||0)+S.pChanges)%BULLPEN.length];S.pcPending=true;if(podFree()&&Math.random()<.4){S.heat=1;S.pOver=true;S.podN++;S.podBi=S.bi;}else S.heat=.667;} // a full bar always means Overdrive: he arrives either in it, or with two of three bars
   // He can also just snap: from the second inning on there is a chance each new hitter that he goes into Overdrive whatever his meter says,
   // and the more runs he has given up the likelier it is (3% with no runs, about 30% once eight are in). Never in the first inning.
   else if(DBG.pod||(podFree()&&(S.heat>=.999||Math.random()<(S.podN?.02*Math.min(S.runs,8):S.runs>=3?.4:S.inning>=2?.3:.04)))){S.pOver=true;S.podPending=true;S.podN++;S.podBi=S.bi;} // not announced yet: once the hitter is in the box the game cuts to the mound for the reveal (podReveal)
@@ -2065,7 +2065,7 @@ function toReady(d){roarOff();showCard();$('hitinfo').hidden=true;S.state='ready
     if(S.pcW){const old=BULLPEN[(S.pChanges+BULLPEN.length-1)%BULLPEN.length];flash(.3);pop(old[0]+' IS DONE','HIT THE SHOWERS','cool',true);cheer(.3,2.4);}else pcIntro();
     return;}
   if(WALK.on&&S.fresh&&S.bi>=0&&!S.seen[S.bi%LINEUP.length]&&MX.clip&&MX.clip.intros[WALK.by[curBatter().name]])startWalkup();}
-const BULLPEN=[['STORM',99],['VOLKOV',47],['DIAZ',13]],PCH=2.7,PCW=2.8;
+const BULLPEN=[['STORM',99],['VOLKOV',47,'L'],['DIAZ',13],['RIPTIDE',54,'L']] /* 'L': a left-hander, the same delivery mirrored */,PCH=2.7,PCW=2.8;
 // HIT BY PITCH. He wears it: down in a heap, a beat on the ground, back to his feet, then he limps to first with an extra bar of Juice for his trouble.
 const HB1=3.0,HBD=5.0;
 function hbpStart(){S.state='hbp';S.t=now;S.hbpN=(S.hbpN||0)+1;S.hbpF=false;ball.visible=false;ballShadow.visible=false;pring.visible=false;swing=null;
@@ -2119,7 +2119,7 @@ function gameRating(){const G=S.goal,pts=S.runs*10+S.hits*4+S.hrs*8+(S.longest>=
   const T=[[0,'D','BENCH WARMER'],[20,'C','ROOKIE'],[45,'B','EVERYDAY STARTER'],[75,'A','ALL-STAR'],[110,'S','MOONSHOT LEGEND']];let i=0;T.forEach((t,j)=>{if(pts>=t[0])i=j;});
   return {pts,stars:i+1,grade:T[i][1],title:T[i][2],next:T[i+1]?T[i+1][0]-pts:0,nextTitle:T[i+1]?T[i+1][2]:''};}
 function newGame(){LINEUP.forEach(b=>{if(b.base)Object.assign(b,b.base);b.hb=0;}); /* stat changes from getting hit last only for the game */gamesPlayed++;try{localStorage.setItem('mm_games',gamesPlayed);}catch(e){}
-  Object.assign(S,{inning:1,outs:0,balls:0,strikes:0,runs:0,bases:[0,0,0],hits:0,hrs:0,longest:0,streak:0,bestStreak:0,juice:.25,heat:.2,over:false,stk:false,opp:0,bi:-1,pitches:0,seen:{},kOut:null});S.podN=0;S.podBi=-9;S.goal=null; /* per-game goals are switched off for now: pickGoal() is still here to bring them back */S.ks=0;S.d2=0;S.cardBi=-1;S.pChanges=0;S.pRuns0=0;S.pc3=false;S.pcPending=false;S.pName=BULLPEN[0];$('pcap').textContent='PITCHER';S.sTaunt=null;S.stLast=false;jPend=false;S.orbN=0;S.odUses=0;S.duel=false;$('hud').classList.remove('duel');S.pdLast=false;S.pOver=false;S.podPending=false;S.jSaid=false;S.overOn=false;S.spSeen=false;lastWalk='';
+  Object.assign(S,{inning:1,outs:0,balls:0,strikes:0,runs:0,bases:[0,0,0],hits:0,hrs:0,longest:0,streak:0,bestStreak:0,juice:.25,heat:.2,over:false,stk:false,opp:0,bi:-1,pitches:0,seen:{},kOut:null});S.podN=0;S.podBi=-9;S.goal=null; /* per-game goals are switched off for now: pickGoal() is still here to bring them back */S.ks=0;S.d2=0;S.cardBi=-1;S.pChanges=0;S.pRuns0=0;S.pc3=false;S.pcPending=false;S.pStart=gamesPlayed%BULLPEN.length;S.pName=BULLPEN[S.pStart]; /* a different starter each game, so left-handers start some of them */$('pcap').textContent='PITCHER';S.sTaunt=null;S.stLast=false;jPend=false;S.orbN=0;S.odUses=0;S.duel=false;$('hud').classList.remove('duel');S.pdLast=false;S.pOver=false;S.podPending=false;S.jSaid=false;S.overOn=false;S.spSeen=false;lastWalk='';
   $('title').hidden=true;$('over').hidden=true;$('pausebtn').hidden=false;$('mutebtn').hidden=false;setBatter();renderRep();scoreboard('PLAY BALL','INNING 1');S.opp=0;toReady(2);pop('PLAY BALL!','','logo');hud();SND.playball();cheer(.14,1.5);}
 
 // ───────────────────────── pitching
@@ -3261,7 +3261,7 @@ function batAura(){
   if(hot&&Math.random()<.5){_p.set(0,rand(.3,.9),0);bat.localToWorld(_p);_v.set(rand(-1,1),rand(0,2),rand(-1,1));const c=batGlow.material.color;fxS.emit(_p,_v,.25,c.r,c.g,c.b,-2);}
 }
 function updatePitcher(){
-  if(MX.pit&&MX.on){const P=MX.pit,act=S.state==='windup'||((S.state==='pitch'||S.state==='flight'||S.state==='result')&&pitch);
+  if(MX.pit&&MX.on){const P=MX.pit;if(P.sx===undefined)P.sx=Math.abs(P.obj.scale.x);P.obj.scale.x=P.sx*(S.pName&&S.pName[2]?-1:1);const act=S.state==='windup'||((S.state==='pitch'||S.state==='flight'||S.state==='result')&&pitch);
     const e=act?now-windupT0:0;let k=0;
     for(const n in P.taunts)P.taunts[n].a.setEffectiveWeight(0);
     if(S.kOut&&S.kOut.taunt&&now>S.kOut.t&&now<S.kOut.t+DEFEAT){const tn=P.taunts[S.kOut.taunt],te=now-S.kOut.t; // struck him out: rub it in
