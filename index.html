@@ -1161,7 +1161,7 @@ gl_FragColor=vec4(col,1.0);
         [PI/4,3*PI/4,5*PI/4,7*PI/4].forEach(a=>{const f=new T.Mesh(fg,fm);f.position.set(Math.sin(a)*7.2,14,Math.cos(a)*7.2);f.rotation.y=a-PI/2;G.add(f);});}
       [[0,0],[3.3,2.4],[-3.3,2.4],[0,-3.8]].forEach(([x,z])=>{const b=new T.Mesh(new T.CylinderGeometry(1.5,2.9,6.5,10,1,true),Dk);b.position.set(x,5,z);G.add(b);});
       // the pad and the gantry
-      {const pad=new T.Mesh(new T.CylinderGeometry(30,33,3,20),Dk);pad.position.y=.2;G.add(pad);const ring=new T.Mesh(new T.RingGeometry(21,24,28),mb(0xffc21e));ring.rotation.x=-PI/2;ring.position.y=1.8;G.add(ring);
+      {const pad=new T.Mesh(new T.CylinderGeometry(27,29,3,20),Dk);pad.position.y=.2;G.add(pad);const ring=new T.Mesh(new T.RingGeometry(21,24,28),mb(0xffc21e));ring.rotation.x=-PI/2;ring.position.y=1.8;G.add(ring);
         const lat=tex(128,512,(g,w,h)=>{g.clearRect(0,0,w,h);g.strokeStyle='#d6dbee';g.lineCap='square';g.lineWidth=14;g.beginPath();g.moveTo(8,0);g.lineTo(8,h);g.moveTo(w-8,0);g.lineTo(w-8,h);g.stroke();
           g.lineWidth=7;for(let y=0;y<h;y+=51.2){g.beginPath();g.moveTo(8,y);g.lineTo(w-8,y+51.2);g.moveTo(w-8,y);g.lineTo(8,y+51.2);g.stroke();g.beginPath();g.moveTo(8,y);g.lineTo(w-8,y);g.stroke();}},[1,1]);
         lat.anisotropy=ANISO;const lm=new T.MeshBasicMaterial({map:lat,color:0x7f86aa,alphaTest:.5,side:T.DoubleSide,fog:false});
@@ -1170,7 +1170,7 @@ gl_FragColor=vec4(col,1.0);
         const top=new T.Mesh(new T.BoxGeometry(10,2,10),St);top.position.set(0,98,-22);G.add(top);const mastR=new T.Mesh(new T.CylinderGeometry(.35,.35,12,5),St);mastR.position.set(0,105,-22);G.add(mastR);
         const bc=new T.Mesh(new T.SphereGeometry(1.5,8,6),new T.MeshBasicMaterial({color:0xff3b3b,fog:false}));bc.position.set(0,111.5,-22);G.add(bc);POLE_CAPS.push(bc);
         [[-9,5,26,.3],[8,4,34,.22]].forEach(([x,y,sz,op])=>{const sp=new T.Sprite(new T.SpriteMaterial({map:glowTex,color:0xffffff,transparent:true,opacity:op,depthWrite:false,fog:false}));sp.position.set(x,y,6);sp.scale.set(sz,sz*.6,1);G.add(sp);});} // a little venting at the base
-      {const at=pol(440,-16.5*DEG,-1);G.position.copy(at);G.rotation.y=Math.atan2(-at.x,-at.z)-PI/2;G.scale.setScalar(2.1);scene.add(G);}}}
+      {const at=pol(318,-16.5*DEG,-1);G.position.copy(at);G.rotation.y=Math.atan2(-at.x,-at.z)-PI/2;G.scale.setScalar(1.55);scene.add(G);} /* on open ground well in front of the crater rim (whose near face comes in to about 380 m): nothing of it stands inside the rock */}}
   // the crowd near the plate, close enough to read: rows of fans in bubble helmets (it is the Moon, after all)
   const fans=tex(512,512,(g,w,h)=>{g.fillStyle='#191630';g.fillRect(0,0,w,h);
     const cols=['#e8e8f0','#d8423a','#3a6ad8','#f0c838','#f08a3a','#27408f','#3ad6ff','#ffffff','#2a8a4a','#c84a8a','#ff4d2e'],skins=['#f0c4a0','#c98f62','#8a5a3a','#e2b08a'];
