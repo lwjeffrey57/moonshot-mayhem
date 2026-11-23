@@ -814,7 +814,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 443</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 444</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <button class="tag wkopt sens" id="sens1" type="button"></button>
@@ -2959,8 +2959,9 @@ function tryContact(){flight_pop=false;if(pitch.hbp){swing.done=true;swing.miss=
     chase>.3?'#ff4d2e':Math.abs(n)<.22&&cr<.3?'#ffe53b':flight.lvl===1?'#9aa3c7':'#f2f5ff',flight.lvl); // timing, then where the barrel met it
   // No-doubters: sometimes stay on the hitter instead of the ball. 'admire' = he holds his finish, watches it and drops the bat;
   // 'show' = the same, then his own walk-up routine as a celebration. Decided here because we already know where the ball lands.
-  if(play.type==='hr'&&MX.clip){const ft=play.dist*3.281,big=tb||ft>=500,r=Math.random(),early=earlyShow(S.hrs),kind=DBG.trail?'':DBG.admire||(early?'show':big?(r<.45?'show':r<.65?'admire':''):ft>=440?(r<.4?'admire':''):'');wildTrot=early;
-    if(!kind&&!flight.orbit&&ft>=420&&(DBG.trail||Math.random()<.6))flight.trailCam=true; // some no-doubters are watched from right behind the ball
+  if(play.type==='hr'&&MX.clip){const ft=play.dist*3.281,big=tb||ft>=500,r=Math.random(),early=earlyShow(S.hrs),kind=DBG.trail?'':DBG.admire||(early?'show':big?(r<.34?'show':r<.5?'admire':''):ft>=440?(r<.3?'admire':''):'');wildTrot=early;
+    if(!kind&&!flight.orbit&&ft>=385&&(DBG.trail||Math.random()<.82))flight.trailCam=true; /* most homers that stay on the ball are now watched from behind it, with the distance running up above it */
+    flight.noSb=hrShowLast==='board'&&Math.random()<.92;flight.noEye=hrShowLast==='eye'&&Math.random()<.92; /* the scoreboard light-show almost never comes up on two homers running: the second one just sails by */ // some no-doubters are watched from right behind the ball
    
     lasWant=!!(kind&&(DBG.laser||Math.random()<.45)); // a no-doubter: now and then the lasers come on, but never before the ball has actually cleared the wall
     if(kind){flight.admire=kind;flight.trot=WALK.on&&RUN.list.length>0;flight.A=Math.max(1.2,Math.min(kind==='show'&&!flight.trot?3.9:2.5,play.endT-1.3));{const c=['NO DOUBTER!','SEE YA!','CRANKED!','ABSOLUTE TANK!','MOONSHOT!','ABSOLUTE NUKE!','ABSOLUTE BOMB!','LIFT OFF!','PIMPED IT!','PIMPED IT!'][(Math.random()*10)|0];flight.pimp=c==='PIMPED IT!';pop(c,'',tb?'hot':'');} /* pimp: said here, so the home-plate shout will not say it again */}}
@@ -3065,6 +3066,7 @@ function finishPlay(){revOff();
     const feat=r===4?'GRAND SLAM!':''; /* the feats are called by their badge plate (icon and all) the first time they happen; the text call stays the ordinary one */
     // THE NUMBER IS HONEST: it is how far the ball would have gone had nothing been in its way. When something was (the scoreboard, the
     // batter's eye, the seats), the call says so, the way a broadcast does: PROJECTED 523 FT.
+    hrShowLast=f.sbHit?'board':f.tr.eyeT?'eye':f.tr.poleT?'pole':'';
     const proj=!f.orbit&&!!(f.tr.eyeT||f.sbHit||f.tr.poleT),ftT=(proj?'PROJECTED ':'')+ft+' FT';
     buzz([40,50,90]);pop(feat||'GONE!',`${ftT} · +${r} RUN${r>1?'S':''}`+(pl.tag?' · '+pl.tag:''),'hot',true);scoreboard('HOME RUN',(proj?'PROJ. ':'')+ft+' FT');
     if(!LAS.on&&!LAMP.on&&(DBG.laser||lasWant||Math.random()<(S.over?.4:.12)))laserStart();lasWant=false;
@@ -3147,6 +3149,7 @@ const BADGES=[['hit','KNOCK','Get your first hit','🧢'],['hr','WENT YARD','Hit
   ['send','WHEELS','Win a showdown at the bag','👟'],['jump','PERFECT JUMP','Stop the needle on gold','🥇'],['brawl','LAST MAN STANDING','Win a brawl','🥊'],['wore','WORE ONE','Get hit by a pitch','🩹'],
   ['walkoff','WALK-OFF','Win it in your last at-bat','🏃'],['win','IN THE WIN COLUMN','Win a game','🏆'],['ten','DOUBLE DIGITS','Score ten runs in a game','🔟']];
 let bdgGot={};try{bdgGot=JSON.parse(localStorage.getItem('mm_badges3')||'{}')||{};}catch(e){}
+let hrShowLast='';
 const bdgQ=[];let bdgBusy=0,bdgCur=null,bdgCurEnd=0,popUntil=0;
 let callShown={};try{callShown=JSON.parse(localStorage.getItem('mm_calls')||'{}')||{};}catch(e){}
 function callOnce(L){for(const [ok,id,txt] of L)if(ok&&!callShown[id]){callShown[id]=1;try{localStorage.setItem('mm_calls',JSON.stringify(callShown));}catch(e){}return txt;}return '';} /* the first applicable feat whose call has never been shown, or nothing */
@@ -4259,7 +4262,7 @@ function step(dt){
     if(tr.offF&&flight.play.type==='hit'&&!flight.offFd&&tf>=tr.offF.t){flight.offFd=true;SND.mitt();SND.boom();tone('sine',110,45,.2,.7);buzz([30,30,60]);shake=Math.max(shake,.5*FX);flash(.4);{const rp=tr.offF.f.fig.root.position;burst(fxS,_p.set(rp.x,1.3,rp.z),24,5,.5,[1,.9,.5],2,1);}crowdOut(.9);}
     if(tr.hr&&!flight.fenceRoar&&tf>=tr.hrT){flight.fenceRoar=true;roar(flight.roarL||1,.35);} // over the fence: the roar that has been building steps up
     if(tr.seatT&&!flight.orbit&&tf>=tr.seatT){ball.visible=false;if(!flight.seated){flight.seated=true;burst(fxL,ball.position,12,4,.5,[.95,.95,1],4,1);}} /* swallowed by the crowd: somebody up there has a souvenir */
-    if(tr.eyeT&&!flight.orbit&&!flight.eyeHit&&tf>=tr.eyeT){flight.eyeHit=true;if(flight.play.type==='hr'){badge('eye');pop("OFF THE BATTER'S EYE!",'','hot');}zapStart(ball.position,false);burst(fxL,ball.position,26,9,.7,[.6,.85,1],7,1);SND.mitt();tone('sine',120,50,.25,.5);} // thud off the batter's eye
+    if(tr.eyeT&&!flight.orbit&&!flight.eyeHit&&tf>=tr.eyeT){flight.eyeHit=true;if(flight.play.type==='hr'&&!flight.noEye){badge('eye');pop("OFF THE BATTER'S EYE!",'','hot');}if(!flight.noEye)zapStart(ball.position,false);burst(fxL,ball.position,26,9,.7,[.6,.85,1],7,1);SND.mitt();tone('sine',120,50,.25,.5);} // thud off the batter's eye
     if(tr.land&&!flight.orbit&&!flight.landed&&tf>=tr.land.t){flight.landed=true;if(flight.play.type==='hit')roar(.75,.3); /* it drops in: the cheer starts now, not when the fielder finally gets to it */_p.set(tr.land.x,.05,tr.land.z);burst(fxL,_p,10,3,.5,[.75,.6,.42],4,2);} // dust where it comes down, so fair or foul is clear
     const dc=camera.position.distanceTo(ball.position);ball.scale.setScalar(Math.max(1,dc*.05));
     ballShadow.visible=!flight.orbit;ballShadow.position.set(p.x,.03,p.z);ballShadow.scale.setScalar(.2+Math.min(1.2,p.y*.03));
@@ -4292,7 +4295,7 @@ function step(dt){
   const b=S.bi>=0?curBatter():LINEUP[0],tb=(S.over&&S.overOn)||(!S.over&&juiceOn()&&S.juice>=.25);
   if(QT.pb!=null&&S.state!=='qte'){QT.pb=null;pitcherModel();}
   stickHint();sbTick();zapTick();crowdTick(dt);shoutTick();poleTick();satTick();lampTick(dt);laserTick(dt);organTick();vendorTick();roarTick();heartTick();zoneTick();
-  if(flight&&flight.play.type==='hr'&&!flight.sbHit&&!flight.orbit&&ball.visible&&Math.abs(ball.position.x-SBX)<24&&ball.position.y>30&&ball.position.y<48&&ball.position.z<-(fenceR(0)+15)&&ball.position.z>-(fenceR(0)+24)){flight.sbHit=true;badge('board');pop('OFF THE SCOREBOARD!','','hot');zapStart(ball.position,true);burst(fxL,ball.position,26,9,.7,[.6,.85,1],7,1);}
+  if(flight&&flight.play.type==='hr'&&!flight.sbHit&&!flight.noSb&&!flight.orbit&&ball.visible&&Math.abs(ball.position.x-SBX)<24&&ball.position.y>30&&ball.position.y<48&&ball.position.z<-(fenceR(0)+15)&&ball.position.z>-(fenceR(0)+24)){flight.sbHit=true;badge('board');pop('OFF THE SCOREBOARD!','','hot');zapStart(ball.position,true);burst(fxL,ball.position,26,9,.7,[.6,.85,1],7,1);}
   if(!!MX.lefty!==lhCls){lhCls=!!MX.lefty;$('hud').classList.toggle('lh',lhCls);}
   touchSettle();reticle.position.set(aim.x,aim.y,0);
   {const ez=(easyAB()?1.3:1)*DIFF[diffI].ring;if(!!tb!==retTb){retTb=!!tb;retT=now; /* the rings answer the press at once: no wait for the flash to clear */retOd=!!(tb&&S.over&&S.overOn);} /* Overdrive lights the whole screen for a moment as it comes on: the rings wait for that to clear, then swell where you can see it */
