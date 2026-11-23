@@ -42,6 +42,7 @@ Recordings to find or make (the game currently fakes most of these by reshaping 
 - Pitching, not only hitting (effectively a second game).
 - Fielder alignment and depth, dives and jumping catches.
 - **Quick time events.** BUILT (first version): arrow-code events at the plate, breaking up a double play, stretching a hit, tagging up.
+  The GO button is offered on every eligible hit for now; once the mechanic is tuned, offer it only some of the time so it cannot be farmed.
   Still open: a real slide and tag animation, the catcher taking the throw, tuning the clock, more scenarios (robbed homer, brawl, duel).
   Original note: a short burst of input at a big moment, with something real riding on it.
   - Input idea: a sequence of direction presses that has to be entered in order before time runs out, the way stratagem codes work in

@@ -223,7 +223,11 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 #gobtn{position:absolute;left:50%;bottom:max(26px,env(safe-area-inset-bottom,0px));transform:translateX(-50%) scale(.6);opacity:0;pointer-events:none;z-index:47;padding:14px 26px;font-family:var(--display);font-style:italic;font-size:clamp(22px,6.4vw,34px);letter-spacing:.03em;color:#04140a;background:linear-gradient(#7dff9c,#1fd153);border:4px solid #000;border-radius:18px;box-shadow:0 6px 0 #000,0 0 0 4px rgba(255,255,255,.7),0 0 30px 8px rgba(57,255,106,.7);white-space:nowrap;touch-action:none}
 #gobtn.on{opacity:1;pointer-events:auto;animation:gobtn .42s ease-in-out infinite alternate}
 @keyframes gobtn{from{transform:translateX(-50%) scale(1)}to{transform:translateX(-50%) scale(1.09)}}
-#hud.mob #gobtn{bottom:max(120px,calc(env(safe-area-inset-bottom,0px) + 110px))}
+/* on phones it sits on the left, where the aim thumb already is, like an 'advance the runner' control */
+#hud.mob #gobtn{left:max(14px,env(safe-area-inset-left,0px));bottom:max(190px,calc(env(safe-area-inset-bottom,0px) + 180px));transform:scale(.6);transform-origin:0 100%;padding:16px 20px;font-size:clamp(20px,5.8vw,28px)}
+#hud.mob #gobtn.on{animation:gobtnL .42s ease-in-out infinite alternate}
+@keyframes gobtnL{from{transform:scale(1)}to{transform:scale(1.08)}}
+#hud.mob #gobtn small::after{content:'ADVANCE THE RUNNER'}
 #gobtn small{display:block;font-family:var(--hud);font-style:normal;font-size:11px;letter-spacing:.08em;opacity:.75}
 #hud:not(.mob) #gobtn small::after{content:'PRESS G'}
 #qte{position:absolute;left:50%;top:15%;transform:translateX(-50%);z-index:46;text-align:center;font-family:var(--display);font-style:italic;pointer-events:none}
