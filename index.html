@@ -627,7 +627,7 @@ body.mob #tip{display:block}body.mob .how{display:none}
       <div id="juice" class="meter"><div id="jbar" class="mbar"><div id="jfill" class="mfill"></div><span id="jtxt" class="mtxt">JUICE</span></div>
         <div class="mcap">BATTER</div></div>
       <div id="zmini" title="Last pitch location"><i id="zdot" hidden></i></div>
-      <div id="heat" class="meter"><div class="mbar"><div id="hfill" class="mfill"></div><span class="mtxt">HEAT</span></div>
+      <div id="heat" class="meter"><div class="mbar"><div id="hfill" class="mfill"></div><span class="mtxt">JUICE</span></div>
         <div class="mcap" id="pcap">PITCHER</div></div>
     </div>
     <div id="walk" hidden><div class="wn" id="wnum"></div><div class="wb"><div class="wname" id="wname"></div><div class="wrow" id="wrat"></div><div class="wrow sub"><span id="wspot"></span><span id="wskip"></span></div></div></div>
@@ -2188,7 +2188,7 @@ function startTrot(){const R=RUN.list.find(R=>!R.active)||null;if(!R||!R.jogAct)
   {const C=MX.clip,own=celClip(WALK.by[curBatter().name]);const wild=wildTrot&&C?WILD_CEL.filter(k=>C.intros[k]):[];wildTrot=false;
     const all0=C?WILD_CEL.filter(k=>C.intros[k]&&k!=='p_loser'&&k!==celLast):[],all=all0.concat(all0.filter(k=>CEL_FAV.includes(k)),all0.filter(k=>CEL_FAV.includes(k))),pick=a=>a[(Math.random()*a.length)|0], /* the crowd-pleasers (break dance, backflip, twerk, macarena) come up three times as often as the rest */w2=wild.filter(k=>k!=='p_loser'&&k!==celLast);
     // his own routine about a third of the time, the 'loser' sign at the pitcher now and then, otherwise anything from the whole book (dances, flexes, the pitcher's own strikeout taunts thrown back at him), never the same one twice running
-    TROT.clip=w2.length&&!DBG.loser?pick(w2):C&&C.intros.p_loser&&(DBG.loser||Math.random()<.22)?'p_loser':C&&C.intros[own]&&own!==celLast&&Math.random()<.35?own:all.length?pick(all):C&&C.intros[own]?own:'';celLast=TROT.clip;} // sometimes he turns and gives the pitcher the 'loser' sign instead // his own routine once he has touched home
+    TROT.clip=w2.length&&!DBG.loser?pick(w2):C&&C.intros.w_bboy&&celLast!=='w_bboy'&&!DBG.loser&&Math.random()<.3?'w_bboy': /* the break dance is the house favourite: three times in ten, never twice running */C&&C.intros.p_loser&&(DBG.loser||Math.random()<.22)?'p_loser':C&&C.intros[own]&&own!==celLast&&Math.random()<.35?own:all.length?pick(all):C&&C.intros[own]?own:'';celLast=TROT.clip;} // sometimes he turns and gives the pitcher the 'loser' sign instead // his own routine once he has touched home
   // men already on base stay ahead of him: when the highlight cuts in, each is at least three-quarters of a base in front of the man behind, and they keep that lead home
   RUN.list.filter(o=>o!==R&&o.active&&o.target>=4).sort((a,b)=>a.s-b.s).forEach((o,k)=>{o.s=Math.max(o.s,Math.min(3.7,1.7+.75*(k+1)));o.lead=true;o.delay=0;});
  if(DBG.cel)TROT.clip=DBG.cel;
