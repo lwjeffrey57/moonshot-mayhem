@@ -319,6 +319,16 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
 #tbar .gp{background:linear-gradient(90deg,rgba(255,77,46,.3),rgba(255,77,46,.8) 36%,#ff8a70 42%,#ff8a70 58%,rgba(255,77,46,.8) 64%,rgba(255,77,46,.3))}
 #tbar .jx{background:#ffd23b;box-shadow:0 0 8px 1px rgba(255,210,59,.8)} /* same colours as the bat: green = CONTACT window, red core = POWER window, gold ends = Juice */
 #tbar .dim{opacity:.22}
+/* OVERDRIVE ON A PHONE, same look for a fraction of the work. What costs frames is anything that makes the browser REPAINT every frame:
+   a glow that pulses by changing its shadow, or a blurred flame that is re-blurred as it moves. So on phones: the full-screen edge glow
+   pulses by fading (free) instead of by redrawing its shadow; each flame is blurred once and then only moved; the button glows hold still. */
+#hud.mob.odon #odv{animation:odvO .6s ease-in-out infinite alternate;box-shadow:inset 0 0 40px 5px rgba(100,200,255,.9);will-change:opacity}@keyframes odvO{from{opacity:.8}to{opacity:1}}
+#hud.mob #odv i,#hud.mob #odp i{filter:none;will-change:background-position}
+#odv::before,#odp::before{will-change:transform}
+.tb.odf::after,.tb.pw.fire::after,.tb.jc.od::after,.tb.jc.has::after{will-change:transform;backface-visibility:hidden}
+#hud.mob .tb.odf,#hud.mob .tb.pw.fire,#hud.mob .tb.pw.blue{animation:none}
+#hud.mob .tb.odf{box-shadow:0 4px 0 #000,0 0 18px 5px rgba(90,200,255,.9)}#hud.mob .tb.pw.fire{box-shadow:0 4px 0 #000,0 0 18px 5px rgba(255,140,40,.9)}
+#hud.mob .tb.jc.odon{animation:none;box-shadow:0 4px 0 #000,0 0 20px 6px rgba(120,220,255,.95)}
 #opts{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 10px;max-width:min(820px,96vw);pointer-events:none}#opts .wkopt{font-size:clamp(10px,2.6vw,13px);padding:6px 10px}
 /* BADGES: a gold plate drops in under the meters when one is earned; the full case is on the title screen */
 #bdg{position:absolute;left:50%;top:112px;z-index:60;display:flex;align-items:center;gap:10px;padding:9px 22px 9px 12px;pointer-events:none;white-space:nowrap;border-radius:34px;background:linear-gradient(#2a2208,#0e0b02);border:2px solid #ffd23b;box-shadow:0 4px 0 #000,0 0 22px 4px rgba(255,210,59,.55);transform:translate(-50%,-140px);opacity:0;visibility:visible!important}
