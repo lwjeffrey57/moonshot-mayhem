@@ -292,6 +292,9 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
 #pop.hot .t{color:var(--heat);text-shadow:0 5px 0 #000,0 0 50px rgba(255,77,46,.8)}
 #pop.cool .t{color:var(--ice);text-shadow:0 5px 0 #000,0 0 40px rgba(58,214,255,.6)}
 #pop.plain .t{color:var(--chrome);text-shadow:0 5px 0 #000}
+#pop.bdgp .t,#hud.pcut #pop.bdgp .t{color:#ffd23b;font-size:clamp(28px,7.6vw,72px);-webkit-text-stroke:clamp(4px,.8vw,6px) #000;paint-order:stroke fill;text-shadow:0 5px 0 #000,0 0 36px rgba(255,210,59,.8);white-space:nowrap}
+#pop.bdgp .s,#hud.pcut #pop.bdgp .s{display:inline-block;margin-top:8px;padding:4px 14px 3px;font-size:clamp(13px,3.3vw,24px);letter-spacing:.06em;color:#ffd23b;background:rgba(14,11,2,.88);border:2px solid #ffd23b;border-radius:8px;box-shadow:0 3px 0 #000;white-space:nowrap}
+#hud.pcut #pop.bdgp{left:2%;right:2%}
 /* what the fight (or the pitch that hit him) did to his ratings: green is good, red is bad, the same as the arrows. Heavy, outlined, on its own dark plate so it reads over anything. */
 #pop.sup .t,#pop.sdn .t,#hud.pcut #pop.sup .t,#hud.pcut #pop.sdn .t{font-size:clamp(26px,7.4vw,58px);line-height:1.05;-webkit-text-stroke:clamp(4px,.8vw,6px) #000;paint-order:stroke fill;letter-spacing:.02em;white-space:nowrap}
 #hud.pcut #pop.sup,#hud.pcut #pop.sdn{left:2%;right:2%}
@@ -2060,7 +2063,12 @@ const curBatter=()=>LINEUP[S.bi%LINEUP.length];
 // the name-and-ratings card follows the hitter the player is looking at, not the one who is merely due up
 function showCard(){if(S.bi<0)return;S.cardBi=S.bi;const b=curBatter();$('cnum').textContent=b.num;$('cname').innerHTML=b.name+(b.lh?' · L':' · R')+(b.hb>0?' <i class="hbu">▲</i>':b.hb<0?' <i class="hbd">▼</i>':''); /* one arrow by the name says his ratings are up or down for the game; the letters stay clean so nothing overlaps on a phone */cardStats(b);}
 
-function pop(t,s='',cls='',long=false){const e=$('pop');e.className='';e.querySelector('.t').textContent=t;e.querySelector('.s').textContent=s;void e.offsetWidth;e.className='go '+cls+(long?' long':'');}
+function pop(t,s='',cls='',long=false){
+  // A NEW BADGE IS THE CALL: if a feat has just earned one, its badge (icon and name, in gold) goes up as the big callout in place of the
+  // ordinary one, which drops to the line underneath. If several were earned at once the proudest leads and the rest follow as plates up top.
+  let _bq=null;try{_bq=bdgQ;}catch(e){}if(_bq&&_bq.length&&cls!=='logo'){const R=['slam','b2b','five','hr500','rev','earth','sat','lamp','board','eye','duel','juicehr','ambush','odhr','hr450','hr','walkoff','jump','brawl','send','heater','ten','win','wore','hit'];
+    bdgQ.sort((a,b)=>R.indexOf(a[0])-R.indexOf(b[0]));const B=bdgQ.shift();s='BADGE UNLOCKED'+(t?' · '+t:'');t=B[3]+' '+B[1];cls='bdgp';long=true;bdgBusy=performance.now()+2600;buzz([20,40,20,40,90]);[660,880,1100,1320].forEach((f,i)=>tone('triangle',f,f*1.02,.12,.4,i*.07));}
+  const e=$('pop');e.className='';e.querySelector('.t').textContent=t;e.querySelector('.s').textContent=s;void e.offsetWidth;e.className='go '+cls+(long?' long':'');}
 let MOB=false;function setMob(){MOB=matchMedia('(pointer:coarse)').matches||innerWidth<=560;$('hud').classList.toggle('mob',MOB);document.body.classList.toggle('mob',MOB);}setMob();addEventListener('resize',setMob); // narrow a desktop window to preview the phone layout
 const buzz=p=>{try{if(navigator.vibrate)navigator.vibrate(p);}catch(e){}};
 const TIPS=[['AIM','Drag your left thumb anywhere on the screen to move the bat ring onto the pitch.'],['SWING','Tap CONTACT or POWER the moment the shrinking yellow ring meets the white circle and turns green. Bigger is too early, smaller is late.'],
@@ -2246,6 +2254,7 @@ function setBatter(){if(MX.batPrep)setTimeout(MX.batPrep,700);if(MX.pitVar&&S.pN
   else if(S.over&&S.overOn){S.over=false;S.overOn=false;S.juice=0;}
   juiceArmed=false; // Juice armed for one hitter never carries over to the next
   S.walked=false;S.odSeen=false;S.bi++;const b=curBatter();S.balls=0;S.strikes=0;
+  if(S.bi===1&&!S.over&&!S.overOn){S.juice=1;} /* every game, the second hitter comes up with Overdrive charged, whatever the leadoff man did: nobody plays a game without meeting it */
   // The pitcher has Overdrive too: when his Heat meter is full, every pitch of the next at-bat is a Juice pitch. Then his meter starts over.
   duelEnd();
   if(S.pOver){S.pOver=false;S.podPending=false;S.heat=0;}
@@ -3003,7 +3012,7 @@ function finishPlay(){revOff();
   S.hits++;S.streak++;S.bestStreak=Math.max(S.bestStreak,S.streak);if(!f.tb)S.juice=Math.min(1,S.juice+(pl.type==='hr'?.5:.25));else if(pl.type==='hr'&&!S.over)S.juice=Math.min(1,S.juice+.25); /* a homer on a Juice swing gives one bar back */ // every hit is worth one quarter; // a Juice hit doesn't refill the bar it just spent
   if(pl.type==='hr'){
     {const ft0=Math.round(pl.dist*3.281);badge('hr');if(ft0>=450)badge('hr450');if(ft0>=500)badge('hr500');if(f.od)badge('odhr');if(f.jp)badge('juicehr');if(f.pod)badge('duel');if(f.fp)badge('ambush');if(S.bases.filter(Boolean).length===3)badge('slam');
-      S.b2b=S.lastHRbi===S.bi-1;if(S.b2b)badge('b2b');S.lastHRbi=S.bi;if(S.hrs>=4)badge('five');if(f.sat)badge('sat');else if(f.lamp)badge('lamp');else if(f.rev)badge('rev');else if(f.orbit)badge('earth');}
+      S.b2b=S.lastHRbi===S.bi-1;if(S.b2b)badge('b2b');S.lastHRbi=S.bi;if(S.hrs>=4)badge('five');if(f.sat)badge('sat');else if(f.lamp)badge('lamp');else if(f.rev)badge('rev');else if(f.orbit)badge('earth');else if(f.sbHit)badge('board');else if(f.tr.eyeT)badge('eye');}
     const ft=Math.round(pl.dist*3.281);S.hrs++;S.longest=Math.max(S.longest,ft);const r=advance(4);f.rbi=r;
     // The badge feats double as the call, ONCE EACH: the first time a feat happens its badge name is what goes up. After that (and once every
     // feat that applies has had its turn) the call is the ordinary one again.
@@ -3088,14 +3097,14 @@ let odBag=[],odLastK='';function odPick(){if(!odBag.length){odBag=['rev','lamp',
 const BADGES=[['hit','KNOCK','Get your first hit','🧢'],['hr','WENT YARD','Hit your first home run','💥'],['hr450','TAPE MEASURE','Hit one 450 feet or more','📏'],['hr500','FIVE HUNDRED CLUB','Hit one 500 feet or more','🚀'],
   ['odhr','OVERDRIVEN','Homer in Overdrive','🔥'],['juicehr','TOOK HIS BEST','Homer off a Juice pitch','🧃'],['duel','BEAT THE HEAT','Homer while the pitcher is in Overdrive','🥵'],['ambush','AMBUSH','Homer on the first pitch','⚡'],
   ['slam','GRAND SALAMI','Hit a grand slam','🍖'],['b2b','BACK TO BACK','Homers in consecutive at-bats','👯'],['five','DERBY NIGHT','Five homers in one game','🎆'],['heater','ON A HEATER','Five hits in a row','♨️'],
-  ['rev','IN ORBIT','Put one into orbit round the Moon','🌕'],['earth','NEXT STOP: EARTH','Hit one clean off the Moon','🌍'],['sat','SPACE JUNK','Take out the satellite','🛰️'],['lamp','LIGHTS OUT','Smash a light tower','💡'],
+  ['rev','IN ORBIT','Put one into orbit round the Moon','🌕'],['earth','NEXT STOP: EARTH','Hit one clean off the Moon','🌍'],['sat','SPACE JUNK','Take out the satellite','🛰️'],['lamp','LIGHTS OUT','Smash a light tower','💡'],['board','OFF THE SCOREBOARD','Homer off the scoreboard','📺'],['eye','OFF THE BATTER\'S EYE','Homer off the batter\'s eye','👁️'],
   ['send','WHEELS','Win a showdown at the bag','👟'],['jump','PERFECT JUMP','Stop the needle on gold','🥇'],['brawl','LAST MAN STANDING','Win a brawl','🥊'],['wore','WORE ONE','Get hit by a pitch','🩹'],
   ['walkoff','WALK-OFF','Win it in your last at-bat','🏃'],['win','IN THE WIN COLUMN','Win a game','🏆'],['ten','DOUBLE DIGITS','Score ten runs in a game','🔟']];
-let bdgGot={};try{bdgGot=JSON.parse(localStorage.getItem('mm_badges')||'{}')||{};}catch(e){}
+let bdgGot={};try{bdgGot=JSON.parse(localStorage.getItem('mm_badges2')||'{}')||{};}catch(e){}
 const bdgQ=[];let bdgBusy=0;
 let callShown={};try{callShown=JSON.parse(localStorage.getItem('mm_calls')||'{}')||{};}catch(e){}
 function callOnce(L){for(const [ok,id,txt] of L)if(ok&&!callShown[id]){callShown[id]=1;try{localStorage.setItem('mm_calls',JSON.stringify(callShown));}catch(e){}return txt;}return '';} /* the first applicable feat whose call has never been shown, or nothing */
-function badge(id){if(bdgGot[id])return;const B=BADGES.find(b=>b[0]===id);if(!B)return;bdgGot[id]=1;try{localStorage.setItem('mm_badges',JSON.stringify(bdgGot));}catch(e){}bdgQ.push(B);bdgLabel();}
+function badge(id){if(bdgGot[id])return;const B=BADGES.find(b=>b[0]===id);if(!B)return;bdgGot[id]=1;try{localStorage.setItem('mm_badges2',JSON.stringify(bdgGot));}catch(e){}bdgQ.push(B);bdgLabel();}
 function bdgLabel(){const e=$('bdgbtn');if(e)e.textContent='Badges: '+BADGES.filter(b=>bdgGot[b[0]]).length+' / '+BADGES.length;}
 setInterval(()=>{if(!bdgQ.length||performance.now()<bdgBusy||$('hud').classList.contains('rv')||S.state==='title')return;const B=bdgQ.shift(),e=$('bdg');e.querySelector('i').textContent=B[3];e.querySelector('b').textContent=B[1];e.querySelector('span').textContent=B[2];
   e.classList.remove('go');void e.offsetWidth;e.classList.add('go');bdgBusy=performance.now()+3300;buzz([20,40,20,40,90]);[660,880,1100,1320].forEach((f,i)=>tone('triangle',f,f*1.02,.12,.4,i*.07));},250);
