@@ -259,6 +259,8 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 #hud.cel #tbar,#hud.cel #tim,#hud.cel #sharp,#hud.pcut #tbar,#hud.pcut #tim,#hud.pcut #card,#hud.pcut #hitinfo,#hud.pcut #pitchinfo,#hud.pcut #sharp{visibility:hidden!important}
 #hud.pcut #pop .t{font-size:clamp(24px,6.2vw,64px)}
 #hud.pcut #pop{left:14%;right:14%}
+#hud.hbps #pop,#hud.mob.hbps #pop{top:auto!important;bottom:7%} /* the man on the ground fills the middle of the picture: the call goes underneath him */
+#hud.qs #pop{left:4%;right:4%}#hud.qs #pop .t{font-size:clamp(34px,10.5vw,84px)}
 #hud.pcut #pop .s{font-size:clamp(12px,2.4vw,22px);margin-top:3px}
 #hud.mob #pop.logo{top:21%} /* PLAY BALL sits higher, clear of the hitter */
 #hud.mob #pop{top:31.5%} /* on phones: clear of the batter card and the buttons above it */
@@ -809,13 +811,15 @@ function cardTick(){
   _s0.project(camera);const cw=c.offsetWidth||150,ch=c.offsetHeight||44;
   const x=clamp((_s0.x*.5+.5)*W-cw*.5,4,W-cw-4),y=Math.max(150,(-_s0.y*.5+.5)*H-ch-2);
   c.style.transform='translate('+x.toFixed(0)+'px,'+y.toFixed(0)+'px)';}
-const pcutH=new V3(0,2.3,-18.4);let retTb=false,retT=-9,pcutT=-9,pcutOn=false,celOn=false,podOn=false,podLv=false,podKs=0,inplayOn=false;
+const pcutH=new V3(0,2.3,-18.4);let retTb=false,retT=-9,pcutT=-9,pcutOn=false,celOn=false,qsOn=false,hbOn=false,podOn=false,podLv=false,podKs=0,inplayOn=false;
 // the pitcher's fire border waits until the hitter is in the box; the batter card goes away once the ball is in play
 function podCls(){const st=S.state,on=pOD()&&!(st==='title'||st==='over'||st==='end'||st==='walkup'||st==='pchange');if(on!==podOn){podOn=on;$('hud').classList.toggle('pod',on);}
   {const ks=on&&!(S.over&&S.overOn)?Math.min(2,S.strikes|0):0;if(ks!==podKs){podKs=ks;$('hud').classList.toggle('ks1',ks===1);$('hud').classList.toggle('ks2',ks===2);}}
   {const lv=on&&(st==='ready'||st==='windup'||st==='pitch')&&$('tut').hidden;if(lv!==podLv){podLv=lv;$('hud').classList.toggle('podlive',lv);}}
   const ip=st==='flight'||st==='result'||st==='trot'||st==='celebrate'||st==='celly2';if(ip!==inplayOn){inplayOn=ip;$('hud').classList.toggle('inplay',ip);}
-  const ce=st==='celly2'||st==='trot'||st==='qte'||st==='brawl'||st==='hbprun'||!!(flight&&flight.orb&&!flight.done);if(ce!==celOn){celOn=ce;$('hud').classList.toggle('cel',ce);}}
+  const ce=st==='celly2'||st==='trot'||st==='qte'||st==='brawl'||st==='hbprun'||!!(flight&&flight.orb&&!flight.done);if(ce!==celOn){celOn=ce;$('hud').classList.toggle('cel',ce);}
+  if((st==='qte')!==qsOn){qsOn=st==='qte';$('hud').classList.toggle('qs',qsOn);}
+  if((st==='hbp')!==hbOn){hbOn=st==='hbp';$('hud').classList.toggle('hbps',hbOn);}}
  // while the camera is close on the pitcher, call-outs drop to a smaller line along the bottom so the words never sit on him
 function draw(){podCls();shTick();{const pc=now-pcutT<.06,e=$('pop');if(pc!==pcutOn){pcutOn=pc;$('hud').classList.toggle('pcut',pc);if(!pc){e.style.top='';e.style.bottom='';e.className='';}}
   if(pc){_s0.copy(pcutH).project(camera);const H=canvas.clientHeight||innerHeight;e.style.bottom='auto';{const t1=e.querySelector('.t'),s1=e.querySelector('.s');e.style.top=Math.max(6,(-_s0.y*.5+.5)*H-t1.offsetHeight-(s1.textContent?s1.offsetHeight+6:0)).toFixed(0)+'px';}}} // call-outs sit just above the head of whoever the close-up is on
@@ -2082,6 +2086,7 @@ const _rv=new V3();
 function updateRunners(dt){
   for(const R of RUN.list){const root=R.fig.root;
     if(R.trot)continue;
+    if(S.state==='qte'){root.visible=false;continue;} // the close-up has its own runner; the real ones wait out of shot
     if(S.state==='celly2'&&R.active&&Math.abs(R.s-D2.base)<.05){root.visible=false;continue;} // the hitter's own model is celebrating on the bag
     if(!R.active){root.visible=false;continue;}
     if(R.delay>0){R.delay-=dt;root.visible=false;continue;}
@@ -2132,7 +2137,7 @@ const BR_ATT={b_jab:.36,b_jabstep:.62,b_quad:.42,b_kickl:.95,b_kickr:.62,b_butt:
 let brawlSeen=false;try{brawlSeen=localStorage.getItem('mm_brawl')==='1';}catch(e){}
 function brawlNeed(){const C=MX.clip,P=MX.pit;if(!WALK.on||!C||!P||!MX.on||!C.intros.b_stance||!C.intros.run||!C.intros.p_dying||!P.taunts.b_stance||!P.taunts.p_dying)return false;return DBG.brawl||(S.hbpN||0)<=1||Math.random()<.3;} // the first hit-by-pitch of every game is a brawl; after that it is a roll of the dice
 function brawlStart(){S.state='brawl';S.t=now;S.brawled=true;brawlSeen=true;try{localStorage.setItem('mm_brawl','1');}catch(e){}
-  MX.clip.hips.getWorldPosition(_p);BRW.x0=_p.x;BRW.z0=_p.z;BRW.bx=_p.x;BRW.bz=_p.z;BRW.win=DBG.brawl==='lose'?false:DBG.brawl==='win'?true:Math.random()<.5;BRW.r=-1;BRW.cur=null;BRW.ko=false;
+  MX.clip.hips.getWorldPosition(_p);BRW.x0=_p.x;BRW.z0=_p.z;BRW.bx=_p.x;BRW.bz=_p.z;BRW.win=DBG.brawl==='lose'?false:DBG.brawl==='win'?true:Math.random()<.5;BRW.r=-1;BRW.cur=null;BRW.ko=false;BRW.hits=0;BRW.zd=4.1;
   const W=BRW.win?'b':'p',L=BRW.win?'p':'b',att=Math.random()<.5?[L,W,W]:[W,L,W],pool=Object.keys(BR_ATT).sort(()=>Math.random()-.5);
   BRW.seq=att.map((a,i)=>({att:a,clip:pool[i],react:i===2?'p_dying':/kick|butt/.test(pool[i])?'b_gut':Math.random()<.5?'b_hit2':'b_gut'}));
   BRW.b={n:'run',t:now,loop:true};BRW.p={n:'b_stance',t:now,loop:true};
@@ -2143,7 +2148,7 @@ function brawlTick(el){const B=BRW;
   const r=el<B.f0?-1:Math.min(B.n-1,Math.floor((el-B.f0)/B.rd));
   if(r!==B.r&&r>=0&&el<B.f1){B.r=r;const q=B.seq[r];B.cur={q,t:now,hit:false};const a={n:q.clip,t:now};if(q.att==='b')B.b=a;else B.p=a;}
   if(B.cur&&!B.cur.hit&&now-B.cur.t>=BR_ATT[B.cur.q.clip]){B.cur.hit=true;const q=B.cur.q,last=B.r===B.n-1,d={n:q.react,t:now,hold:last};if(q.att==='b')B.p=d;else B.b=d;
-    SND.mitt();tone('sine',120,45,.2,.7);noise(.1,'lowpass',500,90,.7);buzz(last?[60,40,120]:[40]);shake=Math.max(shake,(last?.6:.4)*FX);rumble=Math.max(rumble,last?1.4:1);flash(last?.6:.25);burst(fxS,_p.set(0,1.35,BR_Z-.6),last?26:12,4,.45,[1,.9,.5],2,1);
+    SND.mitt();tone('sine',120,45,.2,.7);noise(.1,'lowpass',500,90,.7);buzz(last?[60,40,120]:[40]);B.hits=(B.hits||0)+1;shake=Math.max(shake,(.3+.17*B.hits)*FX);rumble=Math.max(rumble,.7+.4*B.hits);flash(last?.6:.25); /* every blow hits harder than the one before */burst(fxS,_p.set(0,1.35,BR_Z-.6),last?26:12,4,.45,[1,.9,.5],2,1);
     {const e=$('shout'),ws=last?['LIGHTS OUT!','GOOD NIGHT!','DOWN HE GOES!']:['POW!','WHAM!','BAM!','OOF!','CRACK!'];e.textContent=ws[(Math.random()*ws.length)|0];e.style.left='50%';e.style.top=(MOB?'38%':'30%');e.classList.toggle('b',q.att==='p');e.classList.remove('go');void e.offsetWidth;e.classList.add('go');}
     if(q.att==='b')crowdPump(last?1:.6);else if(!roarG)boo(.6);if(last){B.ko=true;rumble=1;}}
   if(el>=B.f1+.9&&B.ko&&!B.taunt){B.taunt=true;const w={n:'p_fist',t:now,loop:true};if(B.win)B.b=w;else B.p=w;}
@@ -2182,19 +2187,20 @@ const QT={ph:'',kind:'',M:null,code:[],i:0,lim:0,t1:0,tp:0,ok:false,runT:1.5,hea
 // the base back toward him), the heads-up call, and what a made or missed code does. pa: the plate appearance is still open (the
 // scenario came off an out), so the normal end-of-at-bat handling runs afterwards.
 const QTE_MOVES={
-  plate:{name:'SCISSOR KICK',code:['R','R','U','D','R','L','U','R'],base:0,u:[-.7071,-.7071],call:"HE'S COMING HOME!",ok:()=>{S.bases[2]=0;addRuns(1);},okT:['SAFE!','KNOCKED IT LOOSE · +1 RUN'],no:()=>{S.bases[2]=0;recordOut();},noT:['OUT AT THE PLATE!','TAGGED OUT']},
-  dp:{name:'TAKE-OUT KICK',code:['D','L','D','R','U','R','D'],base:2,u:[.7071,.7071],call:'THEY WANT TWO!',ok:()=>{S.bases[0]=1;},okT:['BROKE IT UP!','NO DOUBLE PLAY · HITTER SAFE'],no:()=>{S.bases[0]=0;recordOut();},noT:['DOUBLE PLAY!','TWO FOR ONE'],pa:true},
-  stretch2:{name:'GOING FOR TWO',code:['R','D','R','U','L','R'],base:2,u:[.7071,.7071],call:"HE'S GOING FOR TWO!",ok:()=>{S.bases[0]=0;S.bases[1]=1;},okT:['SAFE AT SECOND!','STRETCHED IT INTO A DOUBLE'],no:()=>{S.bases[0]=0;recordOut();},noT:['OUT AT SECOND!','THROWN OUT STRETCHING']},
-  stretch3:{name:'GOING FOR THREE',code:['U','R','U','L','D','R','U'],base:3,u:[.7071,-.7071],call:"HE'S GOING FOR THREE!",ok:()=>{S.bases[1]=0;S.bases[2]=1;},okT:['SAFE AT THIRD!','STRETCHED IT INTO A TRIPLE'],no:()=>{S.bases[1]=0;recordOut();},noT:['OUT AT THIRD!','THROWN OUT STRETCHING']},
-  tag2:{name:'TAGGING UP',code:['L','U','R','D','R','U'],base:2,u:[.7071,.7071],call:"HE'S TAGGING UP!",ok:()=>{S.bases[0]=0;S.bases[1]=1;},okT:['SAFE AT SECOND!','TAGGED UP AND TOOK IT'],no:()=>{S.bases[0]=0;recordOut();},noT:['OUT AT SECOND!','CUT DOWN TAGGING UP'],pa:true},
-  tag3:{name:'TAGGING UP',code:['D','R','U','R','D','L','U'],base:3,u:[.7071,-.7071],call:"HE'S TAGGING UP!",ok:()=>{S.bases[1]=0;S.bases[2]=1;},okT:['SAFE AT THIRD!','TAGGED UP AND TOOK IT'],no:()=>{S.bases[1]=0;recordOut();},noT:['OUT AT THIRD!','CUT DOWN TAGGING UP'],pa:true}};
+  plate:{name:'SCISSOR KICK',code:['R','R','U','D','R','L','U','R'],base:0,u:[-.7071,-.7071],call:"HE'S COMING HOME!",ok:()=>{S.bases[2]=0;addRuns(1);},okT:['SAFE!',''],no:()=>{S.bases[2]=0;recordOut();},noT:['OUT!','']},
+  dp:{name:'TAKE-OUT KICK',code:['D','L','D','R','U','R','D'],base:2,u:[.7071,.7071],call:'THEY WANT TWO!',ok:()=>{S.bases[0]=1;},okT:['SAFE!',''],no:()=>{S.bases[0]=0;recordOut();},noT:['OUT!',''],pa:true},
+  stretch2:{name:'GOING FOR TWO',code:['R','D','R','U','L','R'],base:2,u:[.7071,.7071],call:"HE'S GOING FOR TWO!",ok:()=>{S.bases[0]=0;S.bases[1]=1;},okT:['SAFE!',''],no:()=>{S.bases[0]=0;recordOut();},noT:['OUT!','']},
+  stretch3:{name:'GOING FOR THREE',code:['U','R','U','L','D','R','U'],base:3,u:[.7071,-.7071],call:"HE'S GOING FOR THREE!",ok:()=>{S.bases[1]=0;S.bases[2]=1;},okT:['SAFE!',''],no:()=>{S.bases[1]=0;recordOut();},noT:['OUT!','']},
+  adv3:{name:'FIRST TO THIRD',code:['R','U','L','U','R','D','R'],base:3,u:[.7071,-.7071],call:"HE'S GOING TO THIRD!",ok:()=>{S.bases[1]=0;S.bases[2]=1;},okT:['SAFE!',''],no:()=>{S.bases[1]=0;recordOut();},noT:['OUT!','']},
+  tag2:{name:'TAGGING UP',code:['L','U','R','D','R','U'],base:2,u:[.7071,.7071],call:"HE'S TAGGING UP!",ok:()=>{S.bases[0]=0;S.bases[1]=1;},okT:['SAFE!',''],no:()=>{S.bases[0]=0;recordOut();},noT:['OUT!',''],pa:true},
+  tag3:{name:'TAGGING UP',code:['D','R','U','R','D','L','U'],base:3,u:[.7071,-.7071],call:"HE'S TAGGING UP!",ok:()=>{S.bases[1]=0;S.bases[2]=1;},okT:['SAFE!',''],no:()=>{S.bases[1]=0;recordOut();},noT:['OUT!',''],pa:true}};
 let qteSeen=false;try{qteSeen=localStorage.getItem('mm_qte')==='1';}catch(e){}
 function qteParts(){const C=MX.clip,P=MX.pit;return !!(WALK.on&&C&&P&&MX.on&&C.intros.q_flykick&&C.intros.run&&C.intros.p_dying&&C.intros.b_gut&&C.intros.b_stance&&P.taunts.b_stance&&P.taunts.b_jab&&P.taunts.p_dying);}
 function qteOK(){return qteParts()&&(DBG.qte||(S.qteN||0)<3&&(!qteSeen||Math.random()<.5));} // the double play decides for itself; the rest are the player's call (the GO button)
 // GO: after a hit (or a deep fly) that leaves a runner with a base to take, a button comes up for a couple of seconds. Press it and he goes,
 // which means a quick time event at the bag; leave it and he stays put. On a computer: G or Enter.
-const GO_LABEL={plate:'SEND HIM HOME!',stretch2:'GO FOR TWO!',stretch3:'GO FOR THREE!',tag2:'TAG UP!',tag3:'TAG UP!'};
-function goOffer(k){S.goK=k;const b=$('gobtn');b.firstChild.nodeValue=GO_LABEL[k];b.classList.remove('on');void b.offsetWidth;b.classList.add('on');readyDur=Math.max(readyDur,2.6);S.t=now;buzz(25);}
+const GO_LABEL={adv3:'SEND HIM TO THIRD!',plate:'SEND HIM HOME!',stretch2:'GO FOR TWO!',stretch3:'GO FOR THREE!',tag2:'TAG UP!',tag3:'TAG UP!'};
+function goOffer(k){S.goK=k;const b=$('gobtn');b.firstChild.nodeValue=GO_LABEL[k];b.classList.remove('on');void b.offsetWidth;b.classList.add('on');readyDur=Math.max(readyDur,3.2);S.t=now;buzz(25);}
 function goHide(){if(S.goK){S.goK=null;}$('gobtn').classList.remove('on');}
 function goTap(){if(!S.goK||S.state!=='result')return;const k=S.goK;goHide();S.next=()=>qteStart(k,true);S.t=now-readyDur+.2;buzz([20,30,60]);tone('triangle',660,990,.12,.3);}
 function qteStart(kind,noPA){QT.noPA=!!noPA;goHide();const M=QTE_MOVES[kind],Bp=M.base?[BASES[M.base][0],BASES[M.base][1]]:[0,0],u=M.u;
@@ -2471,7 +2477,7 @@ function tryContact(){flight_pop=false;if(pitch.hbp){swing.done=true;swing.miss=
   swing.done=true;
   const b=curBatter(),tCross=pitch.t0+pitch.dur,dt=(swing.t0+SW_T)-tCross;
   const pw=swing.type==='power',tb=swing.turbo;
-  const ez=easyAB()?1.3:1,JT=tb?1.35:1,SK=pitch.P.sp?.52:1,win=.118*(pw?.85:1.2)*JT*ez*SK,n=dt/win;
+  const odOn=!!(S.over&&S.overOn),ez=easyAB()?1.3:1,JT=odOn?1.85:tb?1.35:1,SK=pitch.P.sp?(odOn?.8:.52):1, /* Overdrive: the timing window is nearly twice as wide, and a Juice pitch takes much less of it away */win=.118*(pw?.85:1.2)*JT*ez*SK,n=dt/win;
   // chasing: how far outside the strike zone the pitch is (0 in the zone → 1 well off the plate)
   const offX=Math.max(ZONE.x0-pitch.tx,pitch.tx-ZONE.x1,0),offY=Math.max(ZONE.y0-pitch.ty,pitch.ty-ZONE.y1,0),chase=clamp(Math.hypot(offX,offY)/.16,0,1);
   const R=.17*b.con*(pw?(tb?.8:.63):1.25)*(tb?1.2:1)*(1-.3*chase)*ez; // the power core is 10% smaller without Juice; Juice gives the old size back, then its usual boost
@@ -2672,7 +2678,8 @@ function finishPlay(){
   }
   const cel=S.state==='celebrate'||S.state==='trot';setBatter();if(cel)readyDur=3.1;else readyDur=f.thr?2.2+(f.thr.wait||0):1.5;S.next=null;hud();
   // Plays that turn into a quick time event: a single with a man on second or a double with a man on first (the runner now on third can be sent home), a double he tries to stretch into a triple, a single he tries to stretch into a double.
-  if(pl.type==='hit'&&!pl.infield&&!pl.grd&&S.outs<2&&S.state==='result'){const k=(pl.bases===1&&f.had2&&S.bases[2])||(pl.bases===2&&f.had1&&S.bases[2])?'plate':pl.bases===2&&!S.bases[2]?'stretch3':pl.bases===1&&!S.bases[1]?'stretch2':'';
+  if(pl.type==='hit'&&!pl.infield&&!pl.grd&&pl.bases<3&&S.state==='result'){ // offered on every base hit that leaves somebody a base to take: the lead runner first, otherwise the hitter
+    const k=S.bases[2]?'plate':pl.bases===2?'stretch3':S.bases[1]?'adv3':'stretch2';
     if(k&&qteParts()){if(DBG.qte===true||DBG.qte===k){readyDur=1.3;S.next=()=>qteStart(k,true);}else goOffer(k);}}
   // Some doubles get a show of their own: once the play is over, cut to him standing on second doing one of the home-run celebrations.
   // Triples always get one, on third (they are rare, and a triple is the most exciting play there is short of a homer).
@@ -3724,12 +3731,13 @@ function updateCamera(rdt){
   else if(flight&&flight.thr&&flight.thr.safe&&now>flight.thr.t0+.45&&S.state==='result'){camPos.set(25.4,1.5,-16.2);camLook.set(17.6,1.05,-18.6);} // the race: from foul ground past the bag, the runner coming up the line and the first baseman stretching for the throw
   else if(S.state==='hbprun'){const R=RUN.list.find(R=>R.active&&R.target===1); // in front of him, up the first-base line, as he comes
     if(R){R.fig.root.getWorldPosition(_a);camPos.set(_a.x+3.9,1.25,_a.z-3.1);camLook.set(_a.x,1.05,_a.z);pcutT=now;pcutH.set(_a.x,2.55,_a.z);}} /* the result call sits above his head, never across him */
-  else if(S.state==='qte'){if(QT.ph==='heads'){camPos.set(QT.rx-QT.ux*5.4+QT.nx*1.3,1.3,QT.rz-QT.uz*5.4+QT.nz*1.3);camLook.set(QT.rx,1.1,QT.rz);} // in front of him as he goes
+  else if(S.state==='qte'){pcutT=now;if(QT.ph==='heads')pcutH.set(QT.rx,2.6,QT.rz);else pcutH.set(QT.mx,2.75,QT.mz); /* calls sit above the players' heads, never across them */
+    if(QT.ph==='heads'){camPos.set(QT.rx-QT.ux*5.4+QT.nx*1.3,1.3,QT.rz-QT.uz*5.4+QT.nz*1.3);camLook.set(QT.rx,1.1,QT.rz);} // in front of him as he goes
     else{const k=QT.ph==='run'?ease(clamp((now-QT.tp)/QT.runT,0,1)):1,d=6.6-1.6*k,o=QT.ph==='out'&&QT.ok?ease(clamp((now-QT.t1-.4)/.8,0,1)):0;camPos.set(QT.mx+QT.nx*(d+1.4*o),1.25,QT.mz+QT.nz*(d+1.4*o));camLook.set(QT.mx-QT.ux*1.6*o,1.05-.2*o,QT.mz-QT.uz*1.6*o);}}
   else if(S.state==='brawl'){const el=now-S.t;pcutT=now;pcutH.set(0,2.75,BR_Z-.6);
     if(el<BRW.ch){camPos.set(BRW.bx+1.5,1.55,BRW.bz+3.4);camLook.set(0,1.2,-18.4);}                       // behind him as he goes
     else if(el<BRW.f0){camPos.set(-1.5,1.5,BR_Z+1.9);camLook.set(.1,1.35,-18.4);}                          // over the hitter's shoulder: the pitcher is ready for him
-    else{const a=.25*Math.sin((el-BRW.f0)*.5),ko=BRW.ko?ease(clamp((el-BRW.f1+.6)/1.2,0,1)):0,d=4.1+2.6*ko,cz=BR_Z-.6+(BRW.win?-1.1:1.1)*ko;camPos.set(d*Math.cos(a),1.3+.5*ko,cz+d*Math.sin(a));camLook.set(0,1.2-.35*ko,cz);}} /* after the knockdown it pulls back to keep the man on the ground in the picture */ // side-on for the fight, drifting a little
+    else{const a=.25*Math.sin((el-BRW.f0)*.5),ko=BRW.ko?ease(clamp((el-BRW.f1+.6)/1.2,0,1)):0,zt=4.1-.75*Math.min(3,BRW.hits||0),d=(BRW.zd=lerp(BRW.zd||4.1,zt,.12))+3.4*ko, /* and the camera crowds in a step closer with each one */cz=BR_Z-.6+(BRW.win?-1.1:1.1)*ko;camPos.set(d*Math.cos(a),1.3+.5*ko,cz+d*Math.sin(a));camLook.set(0,1.2-.35*ko,cz);}} /* after the knockdown it pulls back to keep the man on the ground in the picture */ // side-on for the fight, drifting a little
   else if(S.state==='hbp'&&MX.clip){MX.clip.hips.getWorldPosition(_a);const sd=_a.x<0?1:-1;camPos.set(_a.x+sd*1.9,.95,_a.z-2.5);camLook.set(_a.x,Math.max(.4,_a.y*.8),_a.z);} // from the pitcher's side, low, on the man who got hit
   else if(S.state==='celly2'){const B=BASES[D2.base];if(D2.base===3){camPos.set(B[0]+3.6,.8,B[1]+1.2);}else camPos.set(1.7,.8,-35.4);camLook.set(B[0],1.2,B[1]);}
   else if(flight&&flight.tr.offF&&flight.tr.offF.x!==undefined&&flight.play.type==='hit'&&now-flight.t0-flight.tr.offF.t>.25&&now-flight.t0-flight.tr.offF.t<2.7&&(S.state==='flight'||S.state==='result')){ // the infielder who wore one: from the plate side of him, low
