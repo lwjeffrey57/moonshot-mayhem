@@ -326,7 +326,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
 #pop.sup .t{color:#39ff6a;text-shadow:0 5px 0 #000,0 0 34px rgba(57,255,106,.75)}#pop.sdn .t{color:#ff4d2e;text-shadow:0 5px 0 #000,0 0 34px rgba(255,77,46,.75)}
 #pop.sup .s,#pop.sdn .s,#hud.pcut #pop.sup .s,#hud.pcut #pop.sdn .s{display:inline-block;margin-top:8px;padding:5px 14px 4px;font-size:clamp(15px,3.7vw,30px);font-style:italic;letter-spacing:.04em;border-radius:8px;background:rgba(6,7,20,.86);border:2px solid currentColor;box-shadow:0 3px 0 #000;text-shadow:0 2px 0 #000;white-space:nowrap}
 #pop.sup .s{color:#39ff6a}#pop.sdn .s{color:#ff4d2e}#pop.sup .s:empty,#pop.sdn .s:empty{display:none}
-#pop.logo .t{color:var(--volt);font-size:clamp(36px,9.5vw,92px);-webkit-text-stroke:2px #000;text-shadow:0 6px 0 #000,0 0 18px #000,0 0 60px rgba(255,229,59,.55);transform:rotate(-4deg)}
+#pop.logo .t{white-space:nowrap;color:var(--volt);font-size:clamp(30px,7.4vw,74px);-webkit-text-stroke:2px #000;text-shadow:0 6px 0 #000,0 0 18px #000,0 0 60px rgba(255,229,59,.55);transform:rotate(-4deg)}
 #pop.logo .s{color:var(--heat);font-size:clamp(15px,3.8vw,28px);-webkit-text-stroke:1.5px #000;text-shadow:0 4px 0 #000,0 0 14px #000;transform:rotate(-4deg);margin-top:10px}
 #pop.go{animation:slam 1.5s cubic-bezier(.2,1.4,.3,1) both}
 #pop.go.long{animation-duration:3.2s}
@@ -349,7 +349,13 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
 #hud:not(.mob)>#card #cnum{font-size:58px}#hud:not(.mob)>#card #cname{font-size:30px}#hud:not(.mob)>#card .stat{font-size:16px;color:#fff}#hud:not(.mob)>#card .stat em{font-size:30px}
 #hud.mob>#card .stat{color:#fff}
 #hud.mob>#card,#hud.mob.lh>#card{max-width:52vw;padding:7px 9px 8px;overflow:visible}#hud.mob>#card #cname{font-size:clamp(17px,5.2vw,22px)!important}#hud.mob>#card .stat{font-size:10px!important;gap:2px}#hud.mob>#card .stat em{font-size:22px!important}#hud.mob>#card .stats{gap:4px!important}
-#hud:not(.mob) #keys{bottom:206px}
+/* WHERE IT SITS: just over the head of the infielder on the open side of the plate (second baseman for a right-handed hitter, shortstop for
+   a left-handed one), on phones and computers alike: where the eyes already are, and never across the hitter or the strike zone. */
+#hud:not(.mob)>#card,#hud.kr:not(.mob)>#card{left:54%;right:auto;top:auto;bottom:58%}#hud.lh:not(.mob)>#card,#hud.kr.lh:not(.mob)>#card{left:19%}
+#hud.mob>#card,#hud.mob.lh>#card{top:auto!important;bottom:54.5%!important;max-width:70vw!important}#hud.mob>#card{right:max(16px,env(safe-area-inset-right,0px))!important}#hud.mob.lh>#card{left:max(16px,env(safe-area-inset-left,0px))!important;right:auto!important}
+/* during a walk-up any callout still on screen (the inning line, PLAY BALL) is held small along the top, well above the man walking in */
+#hud.wk #pop{top:9%!important}#hud.mob.wk #pop{top:15%!important}#hud.wk #pop .t{font-size:clamp(22px,5.2vw,50px)!important}#hud.wk #pop .s{font-size:clamp(11px,2.4vw,20px)!important;margin-top:5px}
+#hud.mob>#card #cname{font-size:clamp(19px,5.6vw,24px)!important;overflow:visible!important}#hud.mob>#card .stat{font-size:11px!important}#hud.mob>#card .stat em{font-size:25px!important}
 #dft{position:absolute;left:0;top:0;z-index:5;display:none;pointer-events:none;white-space:nowrap;will-change:transform;font-family:var(--display);font-style:italic;line-height:1;color:#fff;-webkit-text-stroke:5px #000;paint-order:stroke fill;text-shadow:0 4px 0 #000}
 #dft b{font-weight:400;font-size:clamp(34px,9vw,76px);font-variant-numeric:tabular-nums}#dft i{font-style:italic;font-size:clamp(15px,3.6vw,30px);margin-left:6px;color:var(--volt)}
 #dft.big b{color:var(--volt)}#dft.huge b{color:#ff7a1e;text-shadow:0 4px 0 #000,0 0 26px rgba(255,120,30,.9)}
@@ -852,7 +858,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 473</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 477</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <button class="tag wkopt sens" id="sens1" type="button"></button>
@@ -1875,10 +1881,11 @@ const landRing=new T.Mesh(new T.RingGeometry(.8,1,36),new T.MeshBasicMaterial({c
 landRing.rotation.x=-PI/2;landRing.renderOrder=3;landRing.visible=false;scene.add(landRing);
 // THE BALL MARKER: a bold yellow-and-black ring on the ground straight under any ball in the air. The higher the ball, the wider the ring;
 // as the ball comes down it closes in, and it is at its tightest when the ball is at the ground. It turns slowly so it catches the eye.
-const trackRing=new T.Mesh(new T.PlaneGeometry(2,2),new T.MeshBasicMaterial({map:tex(256,256,(g,w)=>{g.clearRect(0,0,w,w);const c=w/2;g.lineCap='butt';
-  g.strokeStyle='rgba(0,0,0,.85)';g.lineWidth=40;g.beginPath();g.arc(c,c,96,0,7);g.stroke();
-  g.strokeStyle='#ffe53b';g.lineWidth=26;for(let i=0;i<8;i++){g.beginPath();g.arc(c,c,96,i*PI/4+.07,i*PI/4+PI/4-.07);g.stroke();}
-  g.strokeStyle='rgba(0,0,0,.85)';g.lineWidth=10;g.beginPath();g.arc(c,c,58,0,7);g.stroke();g.strokeStyle='#ffe53b';g.lineWidth=5;g.beginPath();g.arc(c,c,58,0,7);g.stroke();},[1,1]),transparent:true,depthWrite:false,fog:false,side:T.DoubleSide,polygonOffset:true,polygonOffsetFactor:-6,polygonOffsetUnits:-12}));
+const trackRing=new T.Mesh(new T.PlaneGeometry(2,2),new T.MeshBasicMaterial({map:(()=>{const t=tex(1024,1024,(g,w)=>{g.clearRect(0,0,w,w);g.scale(w/256,w/256);const c=128;g.lineCap='butt';
+  /* solid black backing with hard edges, then pure bright yellow segments on top: drawn large so the edges stay crisp when it is seen at a slant */
+  g.strokeStyle='#000';g.lineWidth=42;g.beginPath();g.arc(c,c,96,0,7);g.stroke();
+  g.strokeStyle='#fff200';g.lineWidth=27;for(let i=0;i<8;i++){g.beginPath();g.arc(c,c,96,i*PI/4+.08,i*PI/4+PI/4-.08);g.stroke();}
+  g.strokeStyle='#000';g.lineWidth=11;g.beginPath();g.arc(c,c,58,0,7);g.stroke();g.strokeStyle='#fff200';g.lineWidth=5.5;g.beginPath();g.arc(c,c,58,0,7);g.stroke();},[1,1]);t.anisotropy=ANISO;return t;})(),color:0xffffff,transparent:true,depthWrite:false,fog:false,side:T.DoubleSide,polygonOffset:true,polygonOffsetFactor:-6,polygonOffsetUnits:-12}));
 /* (the new look, the old logic: this marker IS the landing ring. It sits where the ball will come down and tightens as the ball drops.) */
 trackRing.rotation.x=-PI/2;trackRing.renderOrder=3;trackRing.visible=false;scene.add(trackRing);landRing.material.visible=false; /* the old ring still does the thinking; this one is what is drawn, in its place */
 const echoBall=new T.Mesh(new T.RingGeometry(.026,.04,20),overlayMat(0xffffff,1));echoBall.renderOrder=11;echoBall.visible=false;scene.add(echoBall); // marks where the pitch was after a miss
@@ -2555,7 +2562,10 @@ function updateRunners(dt){
     if(moving)R.s=Math.min(R.target,hold,R.s+(R.raceV?R.raceV*dt:(R.hurt?6.2:R.lead?17.5:R.jog?10.5:16)*dt/27.43));else{if(R.raceV&&R.target===1&&!R.thru)R.thru=now;R.raceV=0;R.hurt=false;}
     if(R.thru&&(now-R.thru>3.2||!(S.state==='result'||S.state==='flight')))R.thru=0;
     if(R.s>=4){R.active=false;R.lead=false;root.visible=false;continue;}   // crossed the plate
-    root.visible=true;basePos(R.s,_rv);root.position.copy(_rv);
+    // THE LEAD: with a pitch coming, a man on base stands a few steps off it toward the next one (so the runner on second is no longer hidden
+    // dead behind the pitcher: you see him, in his own body, off the bag). When he goes he starts from there; if he stays he steps back.
+    {const bs=Math.floor(R.s+1e-6),live=S.state==='ready'||S.state==='windup'||S.state==='pitch',tgt=live&&!moving&&bs>=1&&bs<=3&&!R.thru?[0,.085,.115,.07][bs]:moving?(R.ld||0):0;R.ld=(R.ld||0)+(tgt-(R.ld||0))*Math.min(1,dt*5);
+      root.visible=true;basePos(R.s-bs<R.ld?Math.min(3.999,bs+R.ld):R.s,_rv);root.position.copy(_rv);}
     // beating the throw: he runs through the bag the way a hitter does, a few strides down the line into foul ground, easing up
     const thru=R.thru?now-R.thru:-1,thruRun=thru>=0&&thru<1.15;if(thru>=0){const d=5.5*(1-Math.pow(1-clamp(thru/1.3,0,1),2));root.position.x+=.7071*d;root.position.z-=.7071*d;}
     const i=clamp(Math.floor(R.s),0,3);root.rotation.y=thru>=0?Math.atan2(.7071,-.7071):moving?Math.atan2(BASES[i+1][0]-BASES[i][0],BASES[i+1][1]-BASES[i][1]):Math.atan2(-_rv.x,-_rv.z);
@@ -3211,7 +3221,8 @@ function finishPlay(){revOff();
     const race=pl.infield&&pl.f&&pl.f.thrAct&&pl.f!==fielders[0]&&WALK.on; // an infield hit is a race to the bag: shown from first base, and nothing is called until the throw gets there
     if(race){f.raceR=r;crowdHold(2.4);const rp=pl.f.fig.root.position,arr=now+.2+THROW_REL+clamp(Math.hypot(rp.x-19.4,rp.z+19.4)/42,.3,1.3); // when the throw will reach the bag
       RUN.list.forEach(R=>{if(R.active&&R.target===1&&R.s<1){R.delay=0;R.raceV=(1-R.s)/Math.max(.35,arr-.2-now);}});} // the runner is paced to hit the bag a step ahead of it
-    else{pop(['SINGLE!','DOUBLE!','TRIPLE!'][pl.bases-1],[r?`+${r} RUN${r>1?'S':''}`:'',pl.tag||(pl.grd?'GROUND-RULE DOUBLE':pl.infield?'BEAT THE THROW':pl.wall?'OFF THE WALL':'')].filter(Boolean).join(' · '),'');cheer(.25,2);roar(.6+.1*pl.bases+.05*r,.3);
+    else{const rip=!pl.infield&&!pl.grd&&f.q>=.85&&Math.random()<.6; /* squared up: RIPPED! leads, and what it went for drops to the line underneath */
+      pop(rip?'RIPPED!':['SINGLE!','DOUBLE!','TRIPLE!'][pl.bases-1],[rip?['SINGLE','DOUBLE','TRIPLE'][pl.bases-1]:'',r?`+${r} RUN${r>1?'S':''}`:'',pl.tag||(pl.grd?'GROUND-RULE DOUBLE':pl.infield?'BEAT THE THROW':pl.wall?'OFF THE WALL':'')].filter(Boolean).join(' · '),'');cheer(.25,2);roar(.6+.1*pl.bases+.05*r,.3);
       if(pl.infield){roar(1,.2);sfxSlice('cheer_big',.75,rand(1,1.08),rand(0,.25),2.6);cheerBusy=AC?AC.currentTime+2.4:0;}} // beat the throw: the place jumps
     S.state='result';S.t=now;readyDur=1.5;f.rbi=r;
     if(race){f.thr={t0:now+.2,pick:.2,wait:.75,to:new V3(BASES[1][0],1.2,BASES[1][1]),full:true,safe:true};}
@@ -3251,7 +3262,7 @@ function satTick(){if(!SAT.g.visible)return;if(!(flight&&flight.sat)){SAT.g.visi
   else SAT.g.rotation.y+=dt*.12;}
 // INTO ORBIT: some Overdrive homers never come down. The camera cuts to the Moon seen from space; the ball climbs off the surface from the
 // little point of light that is the ballpark, settles into orbit and goes all the way round. No caption: the picture says it.
-const REV={g:null,cut:1.3,dur:6.2,C:new V3(0,-3000,0),R:60,cam:new V3(),look:new V3(),a:new V3(),b:new V3()};
+const REV={g:null,cut:.12, /* straight to space: the in-between camera could end up inside the stands */dur:6.2,C:new V3(0,-3000,0),R:60,cam:new V3(),look:new V3(),a:new V3(),b:new V3()};
 function revBuild(){const g=REV.g=new T.Group();g.position.copy(REV.C);const tx=new T.TextureLoader().load('moon_d.jpg');tx.wrapS=tx.wrapT=T.MirroredRepeatWrapping;tx.repeat.set(6,3);tx.anisotropy=ANISO;
   g.add(new T.Mesh(new T.SphereGeometry(REV.R,64,40),new T.MeshPhongMaterial({map:tx,color:0xa8a8b0,emissive:0x3c3c42,emissiveMap:tx,shininess:2,specular:0x050505,fog:false})));
   REV.a.set(.22,.62,.75).normalize();REV.b.set(.95,.12,-.3);REV.b.addScaledVector(REV.a,-REV.b.dot(REV.a)).normalize(); /* a: where the park is; b: the way the ball heads off */
@@ -3279,7 +3290,7 @@ const BADGES=[['hit','KNOCK','Get your first hit','🧢'],['hr','WENT YARD','Hit
   ['send','WHEELS','Win a showdown at the bag','👟'],['jump','PERFECT JUMP','Stop the needle on gold','🥇'],['brawl','LAST MAN STANDING','Win a brawl','🥊'],['wore','WORE IT','Get hit by a pitch','🩹'],
   ['walkoff','WALK-OFF','Win it in your last at-bat','🏃'],['win','IN THE WIN COLUMN','Win a game','🏆'],['ten','DOUBLE DIGITS','Score ten runs in a game','🔟']];
 let bdgGot={};try{bdgGot=JSON.parse(localStorage.getItem('mm_badges3')||'{}')||{};}catch(e){}
-let admCls=false,duelTag=false,hrShowLast='',hrCamLast='';
+let wkFov=0,wkFovT=0,admCls=false,duelTag=false,hrShowLast='',hrCamLast='';
 const bdgQ=[];let bdgBusy=0,bdgCur=null,bdgCurEnd=0,popUntil=0;
 let callShown={};try{callShown=JSON.parse(localStorage.getItem('mm_calls')||'{}')||{};}catch(e){}
 function callOnce(L){for(const [ok,id,txt] of L)if(ok&&!callShown[id]){callShown[id]=1;try{localStorage.setItem('mm_calls',JSON.stringify(callShown));}catch(e){}return txt;}return '';} /* the first applicable feat whose call has never been shown, or nothing */
@@ -4161,7 +4172,7 @@ function updateBatter(dt){
   batAura();
 }
 function batAura(){
-  const hot=(S.over&&S.overOn)||(swing&&swing.turbo)||(juiceOn()&&S.juice>=.25&&(S.state==='windup'||S.state==='pitch'));
+  const hot=(S.over&&S.overOn)||(swing&&swing.turbo)||(juiceOn()&&S.juice>=.25&&(S.state==='ready'||S.state==='windup'||S.state==='pitch')); /* Juice toggled on: the bat burns the whole time, between pitches too */
   batGlow.material.opacity=lerp(batGlow.material.opacity,hot?.75+.2*Math.sin(now*30):0,.2);
   batGlow.material.color.setHex(S.over&&S.overOn?0x3ad6ff:0xff7a2a);
   bat.userData.wood.emissive.setHex(hot?(batGlow.material.color.getHex()):0);bat.userData.wood.emissiveIntensity=.5;
@@ -4389,9 +4400,9 @@ function step(dt){
       if(flight.rev&&flight.orb&&now-flight.orb>=REV.cut)revTick(now-flight.orb-REV.cut);}
     if(flight.dShow){const ft=Math.round(flight.dFt*Math.min(1,Math.hypot(p.x,p.z)/(flight.dEnd||1)));if(ft!==flight.dLast){flight.dLast=ft;$('hds').textContent=ft+' FT';}}
     if(flight.play.type==='out'&&flight.play.air&&tf<flight.play.endT){const pl=flight.play,k=1-tf/pl.endT; // every ball that is going to be caught in the air gets the ring, under the spot where it will be caught: liners, pop-ups, foul outs, robberies
-      landRing.visible=true;landRing.position.set(pl.p.x,.07,pl.p.z);landRing.scale.setScalar(lerp(1.4,5,k));landRing.material.opacity=.7+.3*(1-k);}
+      landRing.visible=true;landRing.position.set(pl.p.x,.07,pl.p.z);landRing.scale.setScalar(lerp(1.4,5,k));landRing.material.opacity=1;}
     else if(!tr.hr&&tr.land&&tr.land.t>.45&&tf<tr.land.t){ // fly balls and liners (not home runs): a ring on the grass that tightens as the ball comes down
-      const k=1-tf/tr.land.t;landRing.visible=true;landRing.position.set(tr.land.x,.07,tr.land.z);landRing.scale.setScalar(lerp(1.4,5,k));landRing.material.opacity=.7+.3*(1-k);}
+      const k=1-tf/tr.land.t;landRing.visible=true;landRing.position.set(tr.land.x,.07,tr.land.z);landRing.scale.setScalar(lerp(1.4,5,k));landRing.material.opacity=1;}
     if(tr.poleT&&!flight.poleHit&&tf>=tr.poleT){flight.poleHit=true;burst(fxL,ball.position,16,7,.5,[1,.9,.3],5,1);tone('sine',1250,900,.5,.6);tone('triangle',2500,1800,.4,.3);pop('OFF THE POLE!','FAIR BALL · HOME RUN','hot');poleFlash=now;} // doink
     if(tr.offP&&flight.play.type==='hit'&&!flight.offPd&&tf>=tr.offP){flight.offPd=true; // drilled him: the pitcher goes down in a heap on the mound
       if(MX.pit&&MX.pit.taunts.p_dying)S.sTaunt={t:now-1.15,clip:'p_dying',dur:4.4};SND.mitt();SND.boom();tone('sine',110,45,.2,.7);buzz([30,30,60]);shake=Math.max(shake,.5*FX);flash(.4);burst(fxS,_p.set(0,1.3,-18.2),24,5,.5,[1,.9,.5],2,1);crowdOut(.9);}
@@ -4468,7 +4479,7 @@ function updateCamera(rdt){
   if(!DBG.cam)applyCam();
   if(S.state==='flight'&&flight&&!flight.done&&now-flight.t0>.02)camMode='chase';
   if(DBG.cam){camPos.copy(CAM_HOME);camLook.copy(CAM_LOOK);}
-  else if(flight&&flight.aerial&&!flight.done&&flight.clr){if(!flight.aerT)flight.aerT=now;const e=now-flight.aerT,a=.5+e*.2;camPos.set(Math.sin(a)*165,98+e*5,-52+Math.cos(a)*165);camLook.set(ball.position.x*.2,6,-52+(ball.position.z+52)*.2); /* low and close enough that the whole bowl fills the picture: seats, halo board, walls and the diamond, with the Moon beyond */camera.position.lerp(camPos,e<.08?1:.3);} /* a slow sweep high over the stadium, the ball a streak below */
+  else if(flight&&flight.aerial&&!flight.done&&flight.clr){if(!flight.aerT)flight.aerT=now;const e=now-flight.aerT,a=.4+e*.22;camPos.set(Math.sin(a)*50,265+e*8,-66+Math.cos(a)*50);camLook.set(0,0,-66); /* almost straight down from high over the mound, turning slowly: the diamond, the bowl of seats all the way round it, the halo board and the Moon outside. (From a low angle the stands showed their thin backs.) */ /* low and close enough that the whole bowl fills the picture: seats, halo board, walls and the diamond, with the Moon beyond */camera.position.lerp(camPos,e<.08?1:.3);} /* a slow sweep high over the stadium, the ball a streak below */
   else if(flight&&flight.trailCam&&!flight.done&&now-flight.t0>.25&&!(flight.tr.eyeT&&now-flight.t0>flight.tr.eyeT-.25)){const tr=flight.tr, // (the chase camera lets go just before a ball hits the batter's eye, so the carom and the short circuit are watched from the field)
    i=Math.min(tr.pts.length-1,Math.floor((now-flight.t0)*120)),q=tr.pts[Math.min(tr.pts.length-1,i+6)],p0=tr.pts[i];
     _a.set(q.x-p0.x,q.y-p0.y,q.z-p0.z);if(_a.lengthSq()<1e-6)_a.set(0,0,-1);_a.normalize(); // riding just behind and above the ball, looking where it is going
@@ -4476,7 +4487,7 @@ function updateCamera(rdt){
   else if(flight&&flight.orb&&!flight.done){ // from just outside the park, watching it climb away toward Earth
     if(flight.lamp){const T1=TOWERS[flight.lamp-1].p,h1=Math.hypot(T1.x,T1.z)||1,sd=T1.x>0?1:-1;camPos.set(T1.x*.46+(-T1.z/h1)*sd*48,26,T1.z*.46+(T1.x/h1)*sd*48);camLook.copy(flight.lampHit?T1:_b.copy(ball.position).lerp(T1,.6)); /* from off to the side, toward the foul line (clear of the scoreboard): the rope is seen side-on, climbing all the way into the lights */pcutT=now;pcutH.set(T1.x,T1.y+11,T1.z);} // from the outfield grass, looking up at the tower as it comes in
     else if(flight.sat){camPos.set(flight.orbFrom.x*.45+16,104,flight.orbFrom.z*.45+34).addScaledVector(_b.copy(ball.position).sub(flight.orbFrom),.04);camLook.copy(flight.satHit?SAT.g.position:ball.position);} // from high over the park, clear of every deck and roof, looking up and out at it
-    else{camPos.copy(flight.orbFrom).add(_a.set(34,6,62)).addScaledVector(_b.copy(ball.position).sub(flight.orbFrom),.12);camLook.copy(ball.position);}
+    else{camPos.set(flight.orbFrom.x*.45+16,104,flight.orbFrom.z*.45+34).addScaledVector(_b.copy(ball.position).sub(flight.orbFrom),.04);camLook.copy(ball.position);} /* from high over the park, clear of every deck and roof (the old spot just outside the wall could sit inside the stands) */
     if(flight.revOn){camPos.copy(REV.cam);camLook.copy(REV.look);}camera.position.lerp(camPos,now-flight.orb<.08||flight.revOn?1:.2);}
   else if(S.kOut&&S.kOut.taunt&&MX.pit&&now>S.kOut.t+DEF_CUT&&now<S.kOut.t+DEFEAT&&S.state==='result'){ // ...then the pitcher, from the plate side
     pcutT=now;pcutH.set(0,2.3,-18.4);const e=clamp((now-S.kOut.t-DEF_CUT)/(DEFEAT-DEF_CUT),0,1);camLook.set(0,1.45,-18.4);camPos.set(lerp(1.6,1.1,e),1.35,-18.4+lerp(4.6,3.8,ease(e)));}
@@ -4504,7 +4515,10 @@ function updateCamera(rdt){
   else if(S.state==='walkup'&&MX.clip){ // from the pitcher's side, across the plate: his front three-quarter, with the stands behind him
     const e=clamp((now-S.t)/WALK.dur,0,1);MX.clip.hips.getWorldPosition(_a);const sd=_a.x<0?1:-1;
     const ly=camLook.y=lerp(camLook.y>0&&camLook.y<1.2?camLook.y:1.1,clamp(_a.y*.75+.1,.2,1.1),.08); // follow him down when he is on the ground, so the name card doesn't cover him
-    camLook.set(_a.x,ly,_a.z);camPos.set(sd*lerp(2.3,1.7,ease(e)),1.0+.2*e,_a.z-lerp(3.6,2.6,ease(e)));}
+    // The camera stands closer to him with a wider lens: he is the same size in the picture, but the backstop and the seats behind him
+    // fall well back, so he has room around him instead of a wall at his shoulder.
+    const bf=camera.userData.baseFov,kq=Math.max(.66,Math.tan(bf*DEG/2)/Math.tan(39*DEG));wkFovT=2*Math.atan(Math.tan(bf*DEG/2)/kq)/DEG-bf;
+    camLook.set(_a.x,ly,_a.z);camPos.set(_a.x+(sd*lerp(2.3,1.7,ease(e))-_a.x)*kq,1.0+.2*e,_a.z-lerp(3.6,2.6,ease(e))*kq);}
   else if(flight&&flight.admire&&!flight.done&&now-flight.t0<flight.A&&MX.clip){ // stay on the hitter: low, from the pitcher's side, creeping in
     const e=clamp((now-flight.t0)/flight.A,0,1);MX.clip.hips.getWorldPosition(_a);const sd=_a.x<0?1:-1;
     camLook.set(_a.x,1.18,_a.z);camPos.set(sd*lerp(2.5,1.8,ease(e)),.7,_a.z-lerp(3.3,2.5,ease(e)));flight.cut=true;}
@@ -4526,7 +4540,8 @@ function updateCamera(rdt){
   camera.lookAt(camLook);for(const o of SKYG)o.position.copy(camera.position);
   if(rumble>.02){const t=performance.now()/1000,a=rumble*FX; // the whole picture trembles, like a broadcast camera on a deck that 50,000 people are jumping on: the frame shakes, not the stands (applied after the camera is aimed, or the aim would undo it)
     camera.rotateZ((Math.sin(t*47)+Math.sin(t*71.3))*.007*a);camera.rotateX((Math.sin(t*53.7)+Math.sin(t*83.1))*.0045*a);camera.rotateY(Math.sin(t*61.3)*.0035*a);rumble*=Math.exp(-3.5*rdt);}
-  fovKick*=Math.exp(-5*rdt);const f=camera.userData.baseFov+fovKick;if(Math.abs(f-camera.fov)>.01){camera.fov=f;camera.updateProjectionMatrix();}
+  if(S.state!=='walkup')wkFovT=0;wkFov+=(wkFovT-wkFov)*Math.min(1,rdt*(wkFovT?30:8));
+  fovKick*=Math.exp(-5*rdt);const f=camera.userData.baseFov+fovKick+wkFov;if(Math.abs(f-camera.fov)>.01){camera.fov=f;camera.updateProjectionMatrix();}
   towerGlows.forEach((g,i)=>g.material.opacity=Math.min(1,(LAMP.out===(i>>1)?0:1)*(i%2?.5:.75)*(1+.1*Math.sin(performance.now()*.004+i))*(ZAP.lv===undefined?1:ZAP.lv)));
 }
 let last=performance.now();
@@ -4600,7 +4615,7 @@ $('shbtn').addEventListener('click',()=>{SHQ=!SHQ;if(SHQ&&!rim.castShadow)rim.ca
 shApply();
 resize();hud();
 const DBG={dive:'',hbp:false,pcut:false,fl:'',rob:false,pc:false,staunt:false,pod:false,trail:false,orbit:false,sat:false,drill:false,brawl:false,qte:false,mash:false,slide:false,pn:'',laser:false,lamp:false,mw:false,rev:false,stop:false,aerial:false,pdef:false,dbl:false,cam:false,admire:'',trip:false,fist:false,pop:false,loser:false}; // test hook: pin the camera to CAM_HOME/CAM_LOOK
-window.__ret=()=>reticle.position;window.__jt=juiceTap;window.__lr=()=>landRing.visible+' at '+landRing.position.x.toFixed(0)+','+landRing.position.z.toFixed(0)+' scale '+landRing.scale.x.toFixed(1)+' geo '+landRing.geometry.type+' rot '+landRing.rotation.x.toFixed(2)+' op '+landRing.material.opacity.toFixed(2)+' par '+(landRing.parent&&landRing.parent.type)+' scr '+(()=>{const v=landRing.position.clone().project(camera);return v.x.toFixed(2)+','+v.y.toFixed(2)+','+v.z.toFixed(3);})()+' y '+landRing.position.y;window.__pop=pop;window.__bdg=id=>{delete bdgGot[id];if(S.bdgGame)delete S.bdgGame[id];badge(id);pop('GONE!','512 FT · +1 RUN','hot',true);};window.__lu=LINEUP;window.__bp=k=>BULLPEN[k];window.__mm={pitcherModel,crowdFx,setE:v=>{crowdE=v;crowdShow=v;},GLOVE,renderer,scene,LODM,camera,zapStart,acState:()=>AC?(zoneLP?"lp="+Math.round(zoneLP.frequency.value)+" ":"")+AC.state+" t="+AC.currentTime.toFixed(1)+" real="+crowdReal+" roar="+(roarG?roarG.gain.value.toFixed(2)+(roarTop?"T":""):"off")+" bed="+crowdGain.gain.value.toFixed(2):"none",roar,roarOff,boo,cheer,crowdRise,crowdDrop,S,aim,MX,DBG,landRingOn:()=>landRing.visible,hud,tutAnim,draw:()=>draw(),endGame,TROT,SFX,RUN,ballPos:()=>ball.position,ballVisible:()=>ball.visible,fielders,toReady,CAM_HOME,CAM_LOOK,now:()=>now,simulate,judge,get pitch(){return pitch;},get flight(){return flight;},lastSwing:()=>{const t=swing&&swing.type;swing=null;return t;},lastSwingTurbo:()=>!!(swing&&swing.turbo),doSwing,newGame,V3,
+window.__ret=()=>reticle.position;window.__jt=juiceTap;window.__sync=syncRunners;window.__lr=()=>landRing.visible+' at '+landRing.position.x.toFixed(0)+','+landRing.position.z.toFixed(0)+' scale '+landRing.scale.x.toFixed(1)+' geo '+landRing.geometry.type+' rot '+landRing.rotation.x.toFixed(2)+' op '+landRing.material.opacity.toFixed(2)+' par '+(landRing.parent&&landRing.parent.type)+' scr '+(()=>{const v=landRing.position.clone().project(camera);return v.x.toFixed(2)+','+v.y.toFixed(2)+','+v.z.toFixed(3);})()+' y '+landRing.position.y;window.__pop=pop;window.__bdg=id=>{delete bdgGot[id];if(S.bdgGame)delete S.bdgGame[id];badge(id);pop('GONE!','512 FT · +1 RUN','hot',true);};window.__lu=LINEUP;window.__bp=k=>BULLPEN[k];window.__mm={pitcherModel,crowdFx,setE:v=>{crowdE=v;crowdShow=v;},GLOVE,renderer,scene,LODM,camera,zapStart,acState:()=>AC?(zoneLP?"lp="+Math.round(zoneLP.frequency.value)+" ":"")+AC.state+" t="+AC.currentTime.toFixed(1)+" real="+crowdReal+" roar="+(roarG?roarG.gain.value.toFixed(2)+(roarTop?"T":""):"off")+" bed="+crowdGain.gain.value.toFixed(2):"none",roar,roarOff,boo,cheer,crowdRise,crowdDrop,S,aim,MX,DBG,landRingOn:()=>landRing.visible,hud,tutAnim,draw:()=>draw(),endGame,TROT,SFX,RUN,ballPos:()=>ball.position,ballVisible:()=>ball.visible,fielders,toReady,CAM_HOME,CAM_LOOK,now:()=>now,simulate,judge,get pitch(){return pitch;},get flight(){return flight;},lastSwing:()=>{const t=swing&&swing.type;swing=null;return t;},lastSwingTurbo:()=>!!(swing&&swing.turbo),doSwing,newGame,V3,
   sim:(dt)=>{hitstop=0;now+=dt;step(dt);},
   step:(n,dt=1/60)=>{for(let i=0;i<n;i++){if(hitstop>0)hitstop=0;now+=dt;step(dt);}updateCamera(dt);draw();}};
 if(!window.__mmManual)requestAnimationFrame(frame);
