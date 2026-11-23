@@ -319,6 +319,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
 #tbar .gp{background:linear-gradient(90deg,rgba(255,77,46,.3),rgba(255,77,46,.8) 36%,#ff8a70 42%,#ff8a70 58%,rgba(255,77,46,.8) 64%,rgba(255,77,46,.3))}
 #tbar .jx{background:#ffd23b;box-shadow:0 0 8px 1px rgba(255,210,59,.8)} /* same colours as the bat: green = CONTACT window, red core = POWER window, gold ends = Juice */
 #tbar .dim{opacity:.22}
+#pmark{position:absolute;left:0;top:0;z-index:3;pointer-events:none;display:none;will-change:transform}
 /* OVERDRIVE ON A PHONE, same look for a fraction of the work. What costs frames is anything that makes the browser REPAINT every frame:
    a glow that pulses by changing its shadow, or a blurred flame that is re-blurred as it moves. So on phones: the full-screen edge glow
    pulses by fading (free) instead of by redrawing its shadow; each flame is blurred once and then only moved; the button glows hold still. */
@@ -945,7 +946,15 @@ function podCls(){const st=S.state,on=pOD()&&!(st==='title'||st==='over'||st==='
 // Hit by a pitch: the call sits just under the man on the ground (never across him), as high as that allows, and always wholly on screen.
 let hbTop=false;function hbpPop(){const e=$('pop');if(S.state==='hbp'&&MX.clip&&MX.clip.hips){MX.clip.hips.getWorldPosition(_s0);_s0.y=-.12;_s0.project(camera);const H=canvas.clientHeight||innerHeight,y=(-_s0.y*.5+.5)*H,eh=e.offsetHeight||80;
     e.style.bottom='auto';e.style.top=Math.min(H-eh-10,Math.max(y+14,H*.4)).toFixed(0)+'px';hbTop=true;}else if(hbTop){hbTop=false;e.style.top='';e.style.bottom='';}}
-function draw(){podCls();shTick();hbpPop();{const pc=now-pcutT<.06,e=$('pop');if(pc!==pcutOn){pcutOn=pc;$('hud').classList.toggle('pcut',pc);if(!pc){e.style.top='';e.style.bottom='';e.className='';}}
+// THE CENTRE MARKER, RAZOR SHARP: an SVG laid over the canvas at the exact point where the middle of the bat ring is on screen. White with a black edge.
+let markEl=null,markK=-1;function markDom(){if(!markEl){markEl=document.createElement('div');markEl.id='pmark';$('hud').appendChild(markEl);}
+  const on=markI>0&&reticle.visible&&!paused&&S.state!=='title';if(!on){if(markEl.style.display!=='none')markEl.style.display='none';return;}
+  if(markK!==markI){markK=markI;const L='stroke-linecap="round" fill="none"',two=(d,w1,w2)=>`<path d="${d}" stroke="#000" stroke-width="${w1}" ${L}/><path d="${d}" stroke="#fff" stroke-width="${w2}" ${L}/>`;
+    markEl.innerHTML='<svg viewBox="-50 -50 100 100" width="100%" height="100%" style="overflow:visible;display:block">'+(markI===1?'<circle r="13" fill="#000"/><circle r="8.5" fill="#fff"/>':markI===2?two('M-46 0H-10M10 0H46M0 -46V-10M0 10V46',17,9)+'<circle r="3.4" fill="#fff" stroke="#000" stroke-width="2"/>':'<circle r="22" stroke="#000" stroke-width="13" fill="none"/><circle r="22" stroke="#fff" stroke-width="6.5" fill="none"/>')+'</svg>';}
+  const W=canvas.clientWidth||innerWidth,H=canvas.clientHeight||innerHeight;_s0.set(reticle.position.x,reticle.position.y,0).project(camera);const x=(_s0.x*.5+.5)*W,y=(-_s0.y*.5+.5)*H;
+  _s0.set(reticle.position.x+.05,reticle.position.y,0).project(camera);const px=Math.max(markI===2?30:22,Math.abs((_s0.x*.5+.5)*W-x)*2*(markI===2?1.6:1)); /* about ten centimetres across in the park, never under 18 px */
+  markEl.style.display='block';markEl.style.width=markEl.style.height=px.toFixed(1)+'px';markEl.style.transform='translate('+(x-px/2).toFixed(1)+'px,'+(y-px/2).toFixed(1)+'px)';}
+function draw(){podCls();shTick();hbpPop();markDom();{const pc=now-pcutT<.06,e=$('pop');if(pc!==pcutOn){pcutOn=pc;$('hud').classList.toggle('pcut',pc);if(!pc){e.style.top='';e.style.bottom='';e.className='';}}
   if(pc){_s0.copy(pcutH).project(camera);const H=canvas.clientHeight||innerHeight;e.style.bottom='auto';{const t1=e.querySelector('.t'),s1=e.querySelector('.s');e.style.top=Math.max(/\bs(up|dn)\b/.test(e.className)?(MOB?112:84):6 /* the ratings call stays clear of the scoreboard and the meters */,(-_s0.y*.5+.5)*H-t1.offsetHeight-(s1.textContent?s1.offsetHeight+6:0)).toFixed(0)+'px';}}} // call-outs sit just above the head of whoever the close-up is on
  lodTick();gloveTick();if(composer)composer.render();else renderer.render(scene,camera);sharpTick();tagsTick();cardTick();}
 const scene=new T.Scene();
@@ -1732,7 +1741,7 @@ const retMarks=[null];{const W=()=>overlayMat(0xffffff,.95),K=()=>overlayMat(0x0
   const rg=new T.Group();add(rg,new T.RingGeometry(.017,.034,22),K(),0,0,13);add(rg,new T.RingGeometry(.021,.03,22),W());
   [dot,cr,rg].forEach(g=>{g.visible=false;g.renderOrder=15; /* a group is drawn in its own turn: after the rings and their fills */reticle.add(g);retMarks.push(g);});}
 const MARK_NAMES=['none','dot','crosshair','ring'];let markI=0;try{const v=localStorage.getItem('mm_mark');if(v!==null)markI=clamp(+v|0,0,3);}catch(e){}
-function markSet(){retMarks.forEach((g,i)=>{if(g)g.visible=i===markI;});['mark1','mark2'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=(id==='mark1'?'Ring marker: ':'RING MARKER: ')+(id==='mark1'?MARK_NAMES[markI]:MARK_NAMES[markI].toUpperCase());});}
+function markSet(){retMarks.forEach((g,i)=>{if(g)g.visible=false;}); /* the marker is drawn by the page itself, over the picture (markDom), so it is pin-sharp at the screen's own resolution however the 3D picture is scaled */['mark1','mark2'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=(id==='mark1'?'Ring marker: ':'RING MARKER: ')+(id==='mark1'?MARK_NAMES[markI]:MARK_NAMES[markI].toUpperCase());});}
 // where a ball hit in the air is going to come down
 const landRing=new T.Mesh(new T.RingGeometry(.8,1,36),new T.MeshBasicMaterial({color:0xffe53b,transparent:true,opacity:.9,depthWrite:false,side:T.DoubleSide,fog:false,polygonOffset:true,polygonOffsetFactor:-6,polygonOffsetUnits:-12})); // the original thin ring, kept clear of the shadow layer so it cannot be buried
 landRing.rotation.x=-PI/2;landRing.renderOrder=3;landRing.visible=false;scene.add(landRing);
