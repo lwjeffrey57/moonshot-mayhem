@@ -905,14 +905,16 @@ const shBig=new T.Mesh(new T.PlaneGeometry(280,230),new T.ShadowMaterial({opacit
 
 // sky: the park sits on the Moon. Black space, hard stars, a band of the Milky Way; no air, so no sunset and no haze.
 {
-  const t=tex(1024,512,(g,w,h)=>{
+  const SKW=matchMedia('(pointer:coarse)').matches?2048:4096; /* the backdrop is stretched right round the park, so it needs a lot of pixels to stay sharp; phones get half */
+  const t=tex(SKW,SKW/2,(g,w,h)=>{
     g.fillStyle='#020207';g.fillRect(0,0,w,h);
-    g.save();g.translate(w*.5,h*.2);g.rotate(-.32);const mw=g.createLinearGradient(0,-60,0,60);mw.addColorStop(0,'rgba(120,130,190,0)');mw.addColorStop(.5,'rgba(150,150,210,.16)');mw.addColorStop(1,'rgba(120,130,190,0)');g.fillStyle=mw;g.fillRect(-w,-60,w*2,120);
+    g.save();g.translate(w*.5,h*.2);g.rotate(-.32);g.scale(w/1024,w/1024);const mw=g.createLinearGradient(0,-60,0,60);mw.addColorStop(0,'rgba(120,130,190,0)');mw.addColorStop(.5,'rgba(150,150,210,.16)');mw.addColorStop(1,'rgba(120,130,190,0)');g.fillStyle=mw;g.fillRect(-w,-60,w*2,120);
     for(let i=0;i<900;i++){g.fillStyle=`rgba(255,255,255,${rand(.15,.7)})`;g.fillRect(rand(-w,w),rand(-34,34)*rand(.2,1),1,1);}g.restore();
     g.fillStyle='#07070b';g.fillRect(0,h*.56,w,h*.44);
   });
   // a real photograph of a star field is laid over the painted sky once it has loaded (tiled, mirrored tile to tile so no seam shows)
-  {const im=new Image();im.onload=()=>{try{const g=t.image.getContext('2d'),w=t.image.width,h=t.image.height,sz=h*.56;g.save();g.globalCompositeOperation='lighter';g.globalAlpha=.3; /* only as a faint glow of far-off dust: stretched this far, the photo's own stars turn into soft blocks, so the stars themselves are drawn as points below */for(let k=0,x=0;x<w;k++,x+=sz){g.save();if(k%2){g.translate(x+sz,0);g.scale(-1,1);g.drawImage(im,0,0,sz,sz);}else g.drawImage(im,x,0,sz,sz);g.restore();}g.restore();t.needsUpdate=true;}catch(e){}};im.src='stars.jpg';}
+  {const im=new Image();im.onload=()=>{try{const g=t.image.getContext('2d'),w=t.image.width,h=t.image.height,sh=h*.56,sw=w/2;g.save();g.globalCompositeOperation='lighter';g.globalAlpha=.85;
+      for(let k=0;k<2;k++){g.save();if(k%2){g.translate((k+1)*sw,0);g.scale(-1,1);g.drawImage(im,0,0,sw,sh);}else g.drawImage(im,k*sw,0,sw,sh);g.restore();}g.restore();t.needsUpdate=true;}catch(e){}};im.src='stars.jpg';}
   const m=new T.Mesh(new T.SphereGeometry(1200,24,16),new T.MeshBasicMaterial({map:t,side:T.BackSide,fog:false}));
   scene.add(m);
   // The stars are real points of light, not paint on the backdrop: each is drawn at its own fixed size on screen, so they stay pin-sharp on any display.
@@ -1559,7 +1561,7 @@ const AWAY={base:'#f4f4f0',trim:'#0e7c86',ink:'#0e3c46',pin:'rgba(14,60,70,.35)'
 const LINEUP=[
   {name:'VASQUEZ',num:27,spd:1.0,pwr:1.0,con:1.05,skin:0xb9794f},{name:'OKAFOR',body:1,lh:true,num:8,spd:1.14,pwr:.96,con:1.12,skin:0x6b4226},
   {name:'DELACROIX',num:3,crouch:true,spd:1.02,pwr:1.06,con:1.0,skin:0xe2b08a},{name:'BRICKHOUSE',body:2,num:44,spd:0.78,pwr:1.16,con:.82,skin:0xd9a47c},
-  {name:'TANAKA',lh:true,num:51,spd:1.1,pwr:1.02,con:1.08,skin:0xe6bd94},{name:'MONTOYA',body:3,num:19,crouch:true,spd:0.95,pwr:1.1,con:.95,skin:0xa8683e},
+  {name:'TANAKA',body:6,lh:true,num:51,spd:1.1,pwr:1.02,con:1.08,skin:0xe6bd94},{name:'MONTOYA',body:3,num:19,crouch:true,spd:0.95,pwr:1.1,con:.95,skin:0xa8683e},
   {name:'ABERNATHY',body:4,lh:true,num:12,spd:1.15,pwr:.94,con:1.1,skin:0xf0c4a0},{name:'JACKSON-BELL',num:35,crouch:true,spd:0.81,pwr:1.12,con:.93,skin:0x5a3820},
   {name:'KOWALSKI',body:5,num:6,spd:1.04,pwr:.98,con:1.04,skin:0xe8b690},
 ];
@@ -2317,7 +2319,7 @@ function toReady(d){if(S.walkoff&&S.state!=='end'&&S.state!=='over'){S.walkoff=f
     if(S.pcW){const old=BULLPEN[(S.pChanges+BULLPEN.length-1)%BULLPEN.length];flash(.3);pop(old[0]+' IS DONE','HIT THE SHOWERS','cool',true);cheer(.3,2.4);}else pcIntro();
     return;}
   if(WALK.on&&S.fresh&&S.bi>=0&&!S.seen[S.bi%LINEUP.length]&&MX.clip&&MX.clip.intros[WALK.by[curBatter().name]])startWalkup();}
-const BULLPEN=[['STORM',99,'',0],['VOLKOV',47,'L',1],['DIAZ',13,'',2],['NITRO',7,'',3],['ZLORP',50,'L',4],['DRAKE',25,'',5],['MAYNAR',30,'',6],['JONES',4,'L',7],['PARKER',21,'',8],['RIPTIDE',54,'L',5]] /* name, number, 'L' = left-hander (the same delivery mirrored), which body he wears */,PCH=2.7,PCW=2.8;
+const BULLPEN=[['STORM',99,'',0],['VOLKOV',47,'L',1],['DIAZ',13,'',2],['NITRO',7,'',3],['ZLORP',50,'L',4],['DRAKE',25,'',5],['MAYNAR',30,'',6],['JONES',4,'L',7],['PARKER',21,'',8],['RIPTIDE',54,'L',9]] /* name, number, 'L' = left-hander (the same delivery mirrored), which body he wears */,PCH=2.7,PCW=2.8;
 // HIT BY PITCH. He wears it: down in a heap, a beat on the ground, back to his feet, then he limps to first with an extra bar of Juice for his trouble.
 const HB1=3.0,HBD=5.0;
 // THE BRAWL. Some hit-by-pitches don't end with a trot to first: the hitter charges the mound. He runs out, the pitcher squares up,
@@ -3089,13 +3091,13 @@ const MX={ready:false,map:[],on:true,token:0,kind:'ely'};
 // player looks you can switch between on the title screen
 const MODELS={ely:{label:'armoured',body:'ely.txt',clips:'ely_clips.min.json',tex:{d:'ely_d.jpg',n:'ely_n.jpg',s:'ely_s.jpg',g:'ely_g.jpg'},
   bat:[{body:'exored.txt',hide:/Eye_Spec|Brows/,tex:{Body_MAT:['exored_d0.jpg','exored_n0.jpg'],Exo_MAT:['exored_d1.jpg','exored_n1.jpg']}},{body:'dreyar.txt',tex:{dreyar_M3:['dreyar_d0.jpg','dreyar_n0.jpg']}},
-    {body:'david.txt',tex:{Ch28_body:['david_d0.jpg','david_n0.jpg']}},{body:'jolleen.txt',tex:{phong1:['jolleen_d0.jpg','jolleen_n0.jpg']}},{body:'abe.txt',tex:{Ch39_Body:['abe_d0.jpg','abe_n0.jpg']}}], /* hitters who are not the house model: LINEUP[..].body is 1-based into this list */
+    {body:'david.txt',tex:{Ch28_body:['david_d0.jpg','david_n0.jpg']}},{body:'jolleen.txt',tex:{phong1:['jolleen_d0.jpg','jolleen_n0.jpg']}},{body:'abe.txt',tex:{Ch39_Body:['abe_d0.jpg','abe_n0.jpg']}},{body:'exo.txt',hide:/Eye_Spec|Brows/,tex:{Body_MAT:['exo_body.jpg'],Exo_MAT:['exo_suit.jpg']}}], /* hitters who are not the house model: LINEUP[..].body is 1-based into this list */
   def:{body:'van.txt',tex:{d:'van_d.jpg',n:'van_n.jpg',s:'van_s.jpg'}},ump:{body:'exo.txt',tex:{Body_MAT:'exo_body.jpg',Exo_MAT:'exo_suit.jpg'}},
   // other bodies for the mound: every pitching change brings a different-looking arm (each material: colour map, normal map)
   pit:[{body:'crypto.txt',tex:{Ch45_Body:['crypto_d.jpg','crypto_n.jpg']}},{body:'alien.txt',tex:{Ch44_Body:['alien_d0.jpg','alien_n0.jpg'],Ch44_body1:['alien_d1.jpg','alien_n1.jpg']}},
     {body:'racer.txt',tex:{Ch20_body:['racer_d0.jpg','racer_n0.jpg']}},{body:'zlorp.txt',tex:{Ch50_body1:['zlorp_d0.jpg'],Ch50_body:['zlorp_d1.jpg','zlorp_n1.jpg']}},
     {body:'drake.txt',tex:{Ch25_Body:['drake_d0.jpg','drake_n0.jpg'],Ch25_body1:['drake_d1.jpg','drake_n1.jpg']}},{body:'maynar.txt',tex:{Ch30_Body1:['maynar_d0.jpg','maynar_n0.jpg'],Ch30_Body:['maynar_d1.jpg','maynar_n1.jpg']}},
-    {body:'jones.txt',tex:{Ch04_body:['jones_d0.jpg','jones_n0.jpg']}},{body:'parker.txt',tex:{Body_MAT:['parker_d0.jpg']}}]}},ORDER=['ely']; // one look for now; add entries here to offer more on the title screen
+    {body:'jones.txt',tex:{Ch04_body:['jones_d0.jpg','jones_n0.jpg']}},{body:'parker.txt',tex:{Body_MAT:['parker_d0.jpg']}},{body:'exo.txt',hide:/Eye_Spec|Brows/,tex:{Body_MAT:['exo_body.jpg'],Exo_MAT:['exo_suit.jpg']}}]}},ORDER=['ely']; // one look for now; add entries here to offer more on the title screen
 try{const k=localStorage.getItem('mm_kind');if(MODELS[k])MX.kind=k;}catch(e){}
 const atlasC=document.createElement('canvas');atlasC.width=atlasC.height=1024;const atlasT=new T.CanvasTexture(atlasC);
 const SW={skin:[800,544],sleeve:[864,544],trim:[928,544],glove:[992,544],shoe:[800,608],sole:[864,608],band:[928,608],hair:[992,608],belt:[800,672]};
@@ -3193,14 +3195,31 @@ function clipBat(){const C=MX.clip;C.hL.getWorldPosition(_pl);C.mL.getWorldPosit
   if(C.liftW>0&&C.hR){ // clean and jerk: the bat is the barbell, gripped in both hands and centred between them
     C.hR.getWorldPosition(_t1);C.mR.getWorldPosition(_t2);_t1.lerp(_t2,.55);_t2.copy(_t1).sub(_pl);
     if(_t2.lengthSq()>1e-4){_t2.normalize();_pl.add(_t1).multiplyScalar(.5).addScaledVector(_t2,-.36);_bd.copy(_t2);}}
+  // THE BAT NEVER GOES THROUGH HIS HEAD OR NECK, on any body: if the barrel's line would pass inside either, it is tipped just far enough to clear.
+  if(C.head&&!C.flatW&&!C.liftW){const keep=(c,r)=>{const t=clamp(_t1.copy(c).sub(_pl).dot(_bd),.1,.92);_t2.copy(_pl).addScaledVector(_bd,t).sub(c);const d=_t2.length();
+      if(d<r){if(d<1e-4)_t2.set(1,0,0);else _t2.multiplyScalar(1/d);_t1.copy(c).addScaledVector(_t2,r).sub(_pl);if(_t1.lengthSq()>1e-6)_bd.copy(_t1).normalize();}};
+    C.head.getWorldPosition(_bk0);let hr=.11;if(C.top){C.top.getWorldPosition(_bk1);hr=clamp(_bk0.distanceTo(_bk1)*.62,.09,.26);_bk0.lerp(_bk1,.5);}keep(_bk0,hr+.05);
+    if(C.neck){C.neck.getWorldPosition(_bk1);keep(_bk1,.1);}}
   bat.position.copy(_pl).addScaledVector(_bd,-.07);bat.quaternion.setFromUnitVectors(UP,_bd);bat.updateMatrixWorld(true);}
+const _bk0=new V3(),_bk1=new V3();
+// A body with broader shoulders or shorter arms than the one the swing was made on ends up with its hands apart. Whenever the top hand is
+// near the handle (so it is meant to be holding it), the arm is bent and swung just enough to put that hand back on the bat, above the bottom hand.
+const _ik=[new V3(),new V3(),new V3(),new V3(),new V3(),new V3()],_ikq=new T.Quaternion(),_ikb=new T.Quaternion(),_ikp=new T.Quaternion();
+function ikTurn(bone,q){bone.getWorldQuaternion(_ikb);bone.parent.getWorldQuaternion(_ikp);bone.quaternion.copy(_ikp.invert()).multiply(q).multiply(_ikb);bone.updateMatrixWorld(true);}
+function gripIK(C){if(!C.aR||!C.fR||!C.hR||C.upW||C.dnW||C.flatW||C.liftW)return;const [Sp,E,H,G,Tg,ax]=_ik;
+  C.hR.getWorldPosition(H);C.mR.getWorldPosition(G);G.lerp(H,.45);Tg.copy(_pl).addScaledVector(_bd,.1); /* G: where the top hand grips; Tg: where on the handle it belongs */
+  const far=G.distanceTo(Tg);if(far<.012||far>.34)return;const k=1-clamp((far-.2)/.14,0,1);Tg.sub(G).multiplyScalar(k).add(H); /* Tg is now where the hand joint itself must go */
+  C.aR.getWorldPosition(Sp);C.fR.getWorldPosition(E);const l1=Sp.distanceTo(E),l2=E.distanceTo(H),d=clamp(Sp.distanceTo(Tg),Math.abs(l1-l2)+.01,l1+l2-.004);
+  const a0=_t1.copy(Sp).sub(E).angleTo(_t2.copy(H).sub(E)),a1=Math.acos(clamp((l1*l1+l2*l2-d*d)/(2*l1*l2),-1,1));ax.copy(_t1).cross(_t2);
+  if(ax.lengthSq()>1e-10){ikTurn(C.fR,_ikq.setFromAxisAngle(ax.normalize(),a1-a0));C.hR.getWorldPosition(H);}
+  _t1.copy(H).sub(Sp).normalize();_t2.copy(Tg).sub(Sp).normalize();ikTurn(C.aR,_ikq.setFromUnitVectors(_t1,_t2));}
 const BOX_EDGE=-.52; // nearest a foot bone may get to the middle of the plate (the box's inside line is at 0.35 m)
 function setupClip(obj,clip,B,sk){
   const keep=c=>{if(c)c.tracks=c.tracks.filter(t=>/quaternion$/.test(t.name)||/Hips\.position$/.test(t.name));return c;};
   keep(clip);const ic=keep(obj.animations.find(c=>c.name==='idle')),sc=keep(obj.animations.find(c=>c.name==='strike'));
   scene.add(obj);scene.add(bat);obj.rotation.y=PI;obj.position.set(0,0,0);
   const hL=B('LeftHand'),hR=B('RightHand'),mL=B('LeftHandMiddle1'),mR=B('RightHandMiddle1');
-  const C=MX.clip={hL,mL,hR,mR,crW:0,dl:new V3(),spine:B('Spine'),hips:B('Hips'),t:0,st:0,c0:0,h:0,sk:0,mode:'idle',sw:null};
+  const C=MX.clip={hL,mL,hR,mR,head:B('Head'),top:B('HeadTop_End'),neck:B('Neck'),crW:0,dl:new V3(),spine:B('Spine'),hips:B('Hips'),t:0,st:0,c0:0,h:0,sk:0,mode:'idle',sw:null};
   // pose the skeleton from one clip at a time while measuring
   const probe=(c,fn)=>{const m=new T.AnimationMixer(obj);m.clipAction(c).play();fn(t=>{m.setTime(t);obj.updateMatrixWorld(true);});m.stopAllAction();m.uncacheRoot(obj);};
   // grip axis in the bottom hand's frame, taken from the stance so both hands sit on the handle
@@ -3208,6 +3227,7 @@ function setupClip(obj,clip,B,sk){
   probe(ic||clip,at=>{const n=ic?ic.duration:.5;for(let t=.05;t<n;t+=n/10){at(t);hL.getWorldPosition(pa).lerp(mL.getWorldPosition(_b),.55);hR.getWorldPosition(pb).lerp(mR.getWorldPosition(_b),.55);
     hL.getWorldQuaternion(q);C.dl.add(pb.sub(pa).normalize().applyQuaternion(q.invert()));}});
   C.dl.normalize();
+  if(MX.dlRef){C.dl.copy(MX.dlRef);C.ik=true;C.aR=B('RightArm');C.fR=B('RightForeArm');} /* another body: the bat sits in the bottom hand exactly as it does in the house model's, and the top hand is brought to the handle (gripIK) */
   // contact = the frame the bat is square to the pitch: pointing straight out over the plate, at hitting height
   const sp=new V3(),contact=(c,t0,t1,fb)=>{let r=fb,best=-1e9;probe(c,at=>{for(let t=t0;t<Math.min(t1,c.duration);t+=1/120){at(t);clipBat();sp.set(0,.62,0);bat.localToWorld(sp);if(sp.y<1.25&&_bd.x>best){best=_bd.x;r=t;}}});return r;};
   const tC=contact(clip,.3,1.8,.69);C.tC=tC;C.tL=Math.max(.1,tC-.22);C.tE=Math.min(clip.duration,tC+.6);
@@ -3299,7 +3319,7 @@ function updateClip(dt){
   if(w>0){ // lean the upper body so the barrel meets the height you aimed at
     const th=clamp((aim.y-C.y0)/.9,-.45,.45)*w*(MX.leanSign||1);
     C.spine.parent.getWorldQuaternion(_qp);C.spine.getWorldQuaternion(_qd);_q2.setFromAxisAngle(ZAX,th);_qd.premultiply(_q2);C.spine.quaternion.copy(_qp.invert()).multiply(_qd);}
-  o.updateMatrixWorld(true);clipBat();
+  o.updateMatrixWorld(true);clipBat();if(C.ik)gripIK(C);
   if(MX.lefty&&S.state!=='qte'&&S.state!=='brawl'){ // mirror the batter and his bat across the plate (not while he is away from it, in a brawl or a play on the bases: there he is placed directly)
     bat.position.x*=-1;_bd.x*=-1;bat.quaternion.setFromUnitVectors(UP,_bd);bat.updateMatrixWorld(true);
     o.scale.x=-o.scale.x;o.position.x=-o.position.x;o.updateMatrixWorld(true);}
@@ -3667,7 +3687,7 @@ function loadPlayers(kind){ // body file = character mesh; clips.json = motion-c
         const vb=new T.FBXLoader().parse(r[0],''),tx=i=>{const t=new T.Texture(i);t.needsUpdate=true;t.anisotropy=ANISO;return t;},mats={},geos=new Map();
         keys.forEach((k,i)=>{const o={map:tx(r[1+i][0]),color:0xffffff,emissive:0x1c1c22,specular:0x333340,shininess:26,skinning:true};if(r[1+i][1])o.normalMap=tx(r[1+i][1]);mats[k]=new T.MeshPhongMaterial(o);});
         let vclips=null;MX.pitVar[want]={make:()=>{const o=T.SkeletonUtils.clone(vb);o.animations=vclips=vclips||fitClips(o,pitNames);return o;},
-          skin:{mat:mats[keys[0]],mats,trim:g=>{let o=geos.get(g.uuid);if(!o){o=weld(g);o.userData.lite=liteGeo(o,LOD_CELL);geos.set(g.uuid,o);}return o;}}};
+          skin:{mat:mats[keys[0]],mats,hide:v.hide,trim:g=>{let o=geos.get(g.uuid);if(!o){o=weld(g);o.userData.lite=liteGeo(o,LOD_CELL);geos.set(g.uuid,o);}return o;}}};
         if(S.state==='title'||S.state==='over'||S.state==='walkup')pitcherModel();}).catch(e=>console.warn('pitcher body '+v.body+' not loaded',e));};
     setTimeout(()=>{if(my===MX.token)pitcherModel();},3000);
     // Hitters' bodies: fetched a couple of hitters ahead, then measured for the swing and dressed as runners in quiet moments (never during a pitch).
@@ -3681,9 +3701,9 @@ function loadPlayers(kind){ // body file = character mesh; clips.json = motion-c
           skin:()=>{const m2={};keys.forEach(q=>m2[q]=mats[q].clone());return {mat:m2[keys[0]],mats:m2,hide:v.hide,topY:refRest.HeadTop_End?refRest.HeadTop_End.y:0,trim:g=>{let o=geos.get(g.uuid);if(!o){o=weld(g);o.userData.lite=liteGeo(o,LOD_CELL);geos.set(g.uuid,o);}return o;}};}}; /* every wearer gets his own copy of the materials: the hitter fades in and out, the runners must not */
         jobs.push(['bat',k]);RUN.list.forEach((R,i)=>jobs.push(['run',k,i]));}).catch(e=>console.warn('hitter body '+v.body+' not loaded',e));};
     const batRig=k=>{if(!MX.clip||!MX.obj||!MX.batVar[k])return;if(!MX.brigs)MX.brigs={[MX.bcur]:{obj:MX.obj,clip:MX.clip,D:MX.D,helmet:MX.helmet}};if(MX.brigs[k])return;
-      const cur={obj:MX.obj,clip:MX.clip,D:MX.D,helmet:MX.helmet},bv=bat.visible,v=MX.batVar[k];
+      const cur={obj:MX.obj,clip:MX.clip,D:MX.D,helmet:MX.helmet},bv=bat.visible,v=MX.batVar[k];MX.dlRef=(MX.brigs[0]||cur).clip.dl;
       try{setupModel(v.make(batNames),v.skin());MX.brigs[k]={obj:MX.obj,clip:MX.clip,D:MX.D,helmet:MX.helmet};scene.remove(MX.obj);}catch(e){console.warn('hitter rig failed',e);if(MX.obj&&MX.obj!==cur.obj)scene.remove(MX.obj);}
-      MX.obj=cur.obj;MX.clip=cur.clip;MX.D=cur.D;MX.helmet=cur.helmet;bat.visible=bv;};
+      MX.dlRef=null;MX.obj=cur.obj;MX.clip=cur.clip;MX.D=cur.D;MX.helmet=cur.helmet;bat.visible=bv;};
     MX.batPrep=()=>{if(my!==MX.token)return;for(let j=0;j<3;j++){const k=LINEUP[(Math.max(0,S.bi)+j)%LINEUP.length].body||0;if(k)batLoad(k);}};
     const jobTick=()=>{if(my!==MX.token)return;setTimeout(jobTick,260);if(!jobs.length||!RUN.list.length||!MX.clip)return;const st=S.state;
       if(!(st==='title'||st==='result'||st==='over'||st==='end'||st==='pchange'||(st==='ready'&&now-S.t<.35)||(st==='walkup'&&now-S.t<.3)))return;
@@ -3971,6 +3991,7 @@ function step(dt){
   if(flight&&!flight.done&&(S.state==='flight')){
     const tf=now-flight.t0,tr=flight.tr,i=Math.min(tr.pts.length-1,Math.floor(tf*120)),p=tr.pts[i];
     ball.visible=true;ball.position.set(p.x,p.y,p.z);
+    {const q=tr.pts[Math.min(tr.pts.length-1,i+2)],dx=q.x-p.x,dz=q.z-p.z,L=Math.hypot(dx,dz);if(L>1e-4&&flight.spI!==i){const n=i-(flight.spI??i);flight.spI=i;_spin.set(dz/L,.18,-dx/L).normalize();ball.rotateOnWorldAxis(_spin,(p.y<.4?1:-1)*Math.min(n,12)*.26);}} /* a hit ball spins: backspin in the air, tumbling forward along the ground */
     if(flight.orbit){const B=flight.orbP,bez=(u,o)=>{const v=1-u;return o.set(0,0,0).addScaledVector(B[0],v*v*v).addScaledVector(B[1],3*v*v*u).addScaledVector(B[2],3*v*u*u).addScaledVector(B[3],u*u*u);};
       if(!flight.orb&&tf>=1.1&&!(flight.admire&&tf<flight.A)){flight.orb=now;flight.orbFrom=bez(.22,new V3());flight.play.endT=tf+(flight.sat?4.7:flight.lamp?3.6:3.1);if(flight.lamp)pop('HEADED FOR THE LIGHTS!','','cool');else if(flight.sat)pop('WAY UP THERE!','','cool');else pop('LEFT ORBIT!','NEXT STOP: EARTH','cool',true);SND.boom();SND.zap();buzz([40,40,40,40,120]);}
       bez(flight.orb?.22+.78*Math.pow(clamp((now-flight.orb)/(flight.lamp?1.9:3.1),0,1),flight.lamp?1.15:1.5):.22*ease(Math.min(1,tf/1.1)),ball.position);}
