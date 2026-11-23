@@ -2138,7 +2138,7 @@ const GRADES=['F','D','C','B','A','S','S+'];
 function cardStats(b){const od=!!(S.over&&S.overOn);$('card').classList.toggle('odc',od);
   [['pw',b.pwr],['co',b.con],['sp',b.spd]].forEach(([k,v])=>{const g0=statGrade(v),g=od?GRADES[Math.min(6,GRADES.indexOf(g0)+1)]:g0,base=g==='S+'?'S':g;
     $('s'+k).style.width=clamp((v-.85)/.32*100+(od?22:0),6,100)+'%';$('s'+k).style.background=od?'#58d6ff':GRADE_COL[base];const e=$('g'+k);e.textContent=g;e.className='g'+base+(od?' up':'');});}
-function setBatter(){
+function setBatter(){if(MX.pitVar&&S.pName&&MX.pitVar[S.pName[3]||0]&&MX.pitCur!==(S.pName[3]||0))setTimeout(pitcherModel,0);
   if(S.over&&S.overOn&&S.walked){} // a walk doesn't use it up: it stays on for the next hitter
   else if(S.over&&S.overOn){S.over=false;S.overOn=false;S.juice=0;}
   juiceArmed=false; // Juice armed for one hitter never carries over to the next
@@ -2295,7 +2295,7 @@ function toReady(d){if(S.walkoff&&S.state!=='end'&&S.state!=='over'){S.walkoff=f
     if(S.pcW){const old=BULLPEN[(S.pChanges+BULLPEN.length-1)%BULLPEN.length];flash(.3);pop(old[0]+' IS DONE','HIT THE SHOWERS','cool',true);cheer(.3,2.4);}else pcIntro();
     return;}
   if(WALK.on&&S.fresh&&S.bi>=0&&!S.seen[S.bi%LINEUP.length]&&MX.clip&&MX.clip.intros[WALK.by[curBatter().name]])startWalkup();}
-const BULLPEN=[['STORM',99],['VOLKOV',47,'L'],['DIAZ',13],['RIPTIDE',54,'L']] /* 'L': a left-hander, the same delivery mirrored */,PCH=2.7,PCW=2.8;
+const BULLPEN=[['STORM',99,'',0],['VOLKOV',47,'L',1],['DIAZ',13,'',2],['NITRO',7,'',3],['ZLORP',50,'L',4],['DRAKE',25,'',5],['MAYNAR',30,'',6],['JONES',4,'L',7],['PARKER',21,'',8],['RIPTIDE',54,'L',5]] /* name, number, 'L' = left-hander (the same delivery mirrored), which body he wears */,PCH=2.7,PCW=2.8;
 // HIT BY PITCH. He wears it: down in a heap, a beat on the ground, back to his feet, then he limps to first with an extra bar of Juice for his trouble.
 const HB1=3.0,HBD=5.0;
 // THE BRAWL. Some hit-by-pitches don't end with a trot to first: the hitter charges the mound. He runs out, the pitcher squares up,
@@ -3061,7 +3061,10 @@ const MX={ready:false,map:[],on:true,token:0,kind:'ely'};
 const MODELS={ely:{label:'armoured',body:'ely.txt',clips:'ely_clips.min.json',tex:{d:'ely_d.jpg',n:'ely_n.jpg',s:'ely_s.jpg',g:'ely_g.jpg'},
   def:{body:'van.txt',tex:{d:'van_d.jpg',n:'van_n.jpg',s:'van_s.jpg'}},ump:{body:'exo.txt',tex:{Body_MAT:'exo_body.jpg',Exo_MAT:'exo_suit.jpg'}},
   // other bodies for the mound: every pitching change brings a different-looking arm (each material: colour map, normal map)
-  pit:[{body:'crypto.txt',tex:{Ch45_Body:['crypto_d.jpg','crypto_n.jpg']}},{body:'alien.txt',tex:{Ch44_Body:['alien_d0.jpg','alien_n0.jpg'],Ch44_body1:['alien_d1.jpg','alien_n1.jpg']}}]}},ORDER=['ely']; // one look for now; add entries here to offer more on the title screen
+  pit:[{body:'crypto.txt',tex:{Ch45_Body:['crypto_d.jpg','crypto_n.jpg']}},{body:'alien.txt',tex:{Ch44_Body:['alien_d0.jpg','alien_n0.jpg'],Ch44_body1:['alien_d1.jpg','alien_n1.jpg']}},
+    {body:'racer.txt',tex:{Ch20_body:['racer_d0.jpg','racer_n0.jpg']}},{body:'zlorp.txt',tex:{Ch50_body1:['zlorp_d0.jpg'],Ch50_body:['zlorp_d1.jpg','zlorp_n1.jpg']}},
+    {body:'drake.txt',tex:{Ch25_Body:['drake_d0.jpg','drake_n0.jpg'],Ch25_body1:['drake_d1.jpg','drake_n1.jpg']}},{body:'maynar.txt',tex:{Ch30_Body1:['maynar_d0.jpg','maynar_n0.jpg'],Ch30_Body:['maynar_d1.jpg','maynar_n1.jpg']}},
+    {body:'jones.txt',tex:{Ch04_body:['jones_d0.jpg','jones_n0.jpg']}},{body:'parker.txt',tex:{Body_MAT:['parker_d0.jpg']}}]}},ORDER=['ely']; // one look for now; add entries here to offer more on the title screen
 try{const k=localStorage.getItem('mm_kind');if(MODELS[k])MX.kind=k;}catch(e){}
 const atlasC=document.createElement('canvas');atlasC.width=atlasC.height=1024;const atlasT=new T.CanvasTexture(atlasC);
 const SW={skin:[800,544],sleeve:[864,544],trim:[928,544],glove:[992,544],shoe:[800,608],sole:[864,608],band:[928,608],hair:[992,608],belt:[800,672]};
@@ -3378,7 +3381,9 @@ function addHat(B,D,hm,flap){
 }
 const pitC=document.createElement('canvas');pitC.width=pitC.height=1024;const pitT=new T.CanvasTexture(pitC);
 // Which body the man on the mound should be wearing (by his place in the bullpen), and the swap itself. Only ever done between hitters.
-function pitcherModel(){if(!MX.pitVar||!MX.pit)return;const bi=Math.max(0,BULLPEN.indexOf(S.pName)),want=[0,1,2,1][bi%4],tgt=MX.pitVar[want]?want:0;if(tgt===MX.pitCur)return;
+function pitcherModel(){if(!MX.pitVar||!MX.pit||!MX.pitLoad)return;const bi=Math.max(0,BULLPEN.indexOf(S.pName)),want=BULLPEN[bi][3]||0;
+  MX.pitLoad(want);MX.pitLoad(BULLPEN[(bi+1)%BULLPEN.length][3]||0); // his own body, and the next arm's, so it is here before he is needed
+  const tgt=MX.pitVar[want]?want:MX.pitCur;if(tgt===MX.pitCur)return;
   const old=MX.pit,v=MX.pitVar[tgt];try{setupPitcher(v.make(),v.skin);MX.pitCur=tgt;scene.remove(old.obj);for(let i=LODM.length-1;i>=0;i--){let q=LODM[i];while(q&&q!==old.obj)q=q.parent;if(q)LODM.splice(i,1);}}
   catch(e){console.warn('pitcher swap failed',e);MX.pit=old;if(!old.obj.parent)scene.add(old.obj);}}
 function setupPitcher(obj,custom){
@@ -3606,13 +3611,15 @@ function loadPlayers(kind){ // body file = character mesh; clips.json = motion-c
     // The mound's wardrobe. Body 0 is the defence's usual one; the others are fetched quietly once the game is up, and from then on each
     // pitcher in the bullpen wears his own. A body that has not arrived yet (or fails) just means he comes in wearing the usual one.
     MX.pitVar=[{make:()=>makeD(pitNames),skin:defSkin}];MX.pitCur=0;
-    if(cfg.pit&&canClone)cfg.pit.forEach((v,vi)=>setTimeout(()=>{if(my!==MX.token)return;const keys=Object.keys(v.tex);
-      Promise.all([loadBuf(v.body),...keys.map(k=>Promise.all(v.tex[k].map(loadImg)))]).then(r=>{if(my!==MX.token)return;
+    // Bodies are fetched only when a pitcher who wears one is due (the man on the mound, and the next arm in the bullpen), never all at once.
+    const pitP={};MX.pitLoad=want=>{const v=cfg.pit&&canClone&&cfg.pit[want-1];if(!v||want<1)return null;if(pitP[want])return pitP[want];const keys=Object.keys(v.tex);
+      return pitP[want]=Promise.all([loadBuf(v.body),...keys.map(k=>Promise.all(v.tex[k].map(loadImg)))]).then(r=>{if(my!==MX.token)return;
         const vb=new T.FBXLoader().parse(r[0],''),tx=i=>{const t=new T.Texture(i);t.needsUpdate=true;t.anisotropy=ANISO;return t;},mats={},geos=new Map();
-        keys.forEach((k,i)=>{mats[k]=new T.MeshPhongMaterial({map:tx(r[1+i][0]),normalMap:tx(r[1+i][1]),color:0xffffff,emissive:0x1c1c22,specular:0x333340,shininess:26,skinning:true});});
-        MX.pitVar[vi+1]={make:()=>{const o=T.SkeletonUtils.clone(vb);o.animations=pitNames.map(n=>mkClip(cj[n],n));return o;},
+        keys.forEach((k,i)=>{const o={map:tx(r[1+i][0]),color:0xffffff,emissive:0x1c1c22,specular:0x333340,shininess:26,skinning:true};if(r[1+i][1])o.normalMap=tx(r[1+i][1]);mats[k]=new T.MeshPhongMaterial(o);});
+        MX.pitVar[want]={make:()=>{const o=T.SkeletonUtils.clone(vb);o.animations=pitNames.map(n=>mkClip(cj[n],n));return o;},
           skin:{mat:mats[keys[0]],mats,trim:g=>{let o=geos.get(g.uuid);if(!o){o=weld(g);o.userData.lite=liteGeo(o,LOD_CELL);geos.set(g.uuid,o);}return o;}}};
-        if(S.state==='title'||S.state==='over')pitcherModel();}).catch(e=>console.warn('pitcher body '+v.body+' not loaded',e));},3500+vi*2500));
+        if(S.state==='title'||S.state==='over'||S.state==='walkup')pitcherModel();}).catch(e=>console.warn('pitcher body '+v.body+' not loaded',e));};
+    setTimeout(()=>{if(my===MX.token)pitcherModel();},3000);
     // fielders are built one at a time so the page doesn't freeze while seven more models are prepared
     fielders.filter(f=>!f.isP).forEach((f,i)=>setTimeout(()=>{if(my!==MX.token)return;
       try{setupFielder(f,makeD(['catch','run','strafe','throw','x_dive','p_dying','d_1','d_2','d_3'].filter(k=>cj[k])),defSkin);}catch(e){console.warn('fielder model failed, using built-in figure',e);fallback(f.fig);}},400+i*220));
