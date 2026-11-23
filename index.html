@@ -468,7 +468,7 @@ body.mob #tip{display:block}body.mob .how{display:none}
 /* step 2 demo: a ball lands in the green zone and CONTACT lights up, then in the red core and POWER lights up */
 #tut.s2 .spot::before{content:'';position:absolute;left:var(--tx,50%);top:var(--ty,50%);box-sizing:border-box;width:calc(var(--tr,14px)*2);height:calc(var(--tr,14px)*2);margin:calc(var(--tr,14px)*-1);border-radius:50%;border:3px solid #fff;background:rgba(255,255,255,.6)} /* the ball stays put: the bat ring moves onto it */
 #hud.tut2 #tc{animation:tutbA 4.4s linear infinite}#hud.tut2 #tp{animation:tutbB 4.4s linear infinite}
-@keyframes tutbA{0%,17%{opacity:.4;transform:none}20%,44%{opacity:1;transform:scale(1.1);box-shadow:0 4px 0 #000,0 0 26px 8px rgba(61,220,106,.95)}48%,100%{opacity:.4;transform:none}}
+@keyframes tutbA{0%,9%{opacity:.4;transform:none}12%,44%{opacity:1;transform:scale(1.1);box-shadow:0 4px 0 #000,0 0 26px 8px rgba(61,220,106,.95)}48%,100%{opacity:.4;transform:none}}
 @keyframes tutbB{0%,43%{opacity:0;transform:none}46%,50%{opacity:.4;transform:none}54%,92%{opacity:1;transform:scale(1.1);box-shadow:0 4px 0 #000,0 0 26px 8px rgba(255,90,50,.95)}95%{opacity:.4}100%{opacity:0;transform:none}}
 #tut.s2 .lc{animation:tutlA 4.4s linear infinite}#tut.s2 .lp{animation:tutlB 4.4s linear infinite}
 @keyframes tutlA{0%,17%{opacity:0}20%,44%{opacity:1}48%,100%{opacity:0}}@keyframes tutlB{0%,50%{opacity:0}54%,92%{opacity:1}95%,100%{opacity:0}}
@@ -1979,9 +1979,9 @@ let tutT0=0;function tutAnim(t){if($('tut').hidden)return;
     const ph=((t-tutT0)%3200)/3200,lit=ph>.2&&ph<.86,tj=$('tj');tj.classList.toggle('dn',ph>.16&&ph<.22);tj.classList.toggle('on',lit);$('tp').classList.toggle('fire',lit);return;}
   if(tutStep===3){reticle.visible=false;return;} // timing step: just the ball, the closing ring and the gauge // held on the pitch from step 2
   if(tutStep!==2)return;const ph=((t-tutT0)%TUT_LOOP)/TUT_LOOP;
-  const u=ph<.02?0:ph<.18?ease((ph-.02)/.16):ph<.93?1:0; // the stick starts pushing almost at once
+  const u=ph<.02?0:ph<.1?ease((ph-.02)/.08):ph<.93?1:0; // the stick starts pushing almost at once, and the ring is on the ball about a third of a second later
   reticle.position.set(lerp(TUT_S.x,TUT_B.x,u),lerp(TUT_S.y,TUT_B.y,u),0);retP.visible=ph>=.44&&ph<.93;retCfill.visible=!retP.visible;
-  const push=ph>=.02&&ph<.18?Math.sin((ph-.02)/.16*PI):0,dx=TUT_B.x-TUT_S.x,dy=TUT_B.y-TUT_S.y,L=Math.hypot(dx,dy); // the stick leans the way the ring is travelling
+  const push=ph>=.02&&ph<.1?Math.sin((ph-.02)/.08*PI):0,dx=TUT_B.x-TUT_S.x,dy=TUT_B.y-TUT_S.y,L=Math.hypot(dx,dy); // the stick leans the way the ring is travelling
   padKnob.style.transition='none';padKnob.style.transform='translate('+(push*36*dx/L).toFixed(1)+'px,'+(-push*36*dy/L).toFixed(1)+'px)';}
 // First batter of a game, before the first pitch: if the stick hasn't been touched yet, it gets a soft yellow glow to say 'move me'.
 // Purely a highlight: nothing here moves the stick or the bat ring, and it is gone the moment a thumb lands on it.
