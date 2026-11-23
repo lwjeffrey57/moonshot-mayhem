@@ -354,7 +354,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
 #hud.mob>#card,#hud.mob.lh>#card{max-width:52vw;padding:7px 9px 8px;overflow:visible}#hud.mob>#card #cname{font-size:clamp(17px,5.2vw,22px)!important}#hud.mob>#card .stat{font-size:10px!important;gap:2px}#hud.mob>#card .stat em{font-size:22px!important}#hud.mob>#card .stats{gap:4px!important}
 /* WHERE IT SITS: just over the head of the infielder on the open side of the plate (second baseman for a right-handed hitter, shortstop for
    a left-handed one), on phones and computers alike: where the eyes already are, and never across the hitter or the strike zone. */
-#hud:not(.mob)>#card,#hud.kr:not(.mob)>#card{left:auto;right:5%;top:auto;bottom:54.5%;max-width:24vw} /* right-hander: lower and further right, beside the second baseman, never on him */#hud.lh:not(.mob)>#card,#hud.kr.lh:not(.mob)>#card{left:12%;right:auto;bottom:58%;max-width:30vw}
+#hud:not(.mob)>#card,#hud.kr:not(.mob)>#card{left:auto;right:5%;top:auto;bottom:54.5%;max-width:24vw} /* right-hander: lower and further right, beside the second baseman, never on him */#hud.lh:not(.mob)>#card,#hud.kr.lh:not(.mob)>#card{left:5%;right:auto;bottom:54.5%;max-width:24vw}
 #hud.mob>#card,#hud.mob.lh>#card{top:auto!important;bottom:57.5%!important;max-width:calc(50vw - 40px)!important} /* wholly above the pitcher's head, and never wide enough to reach across to him: he stays in the clear */
 #hud.mob>#card #cname{max-width:100%;overflow:hidden!important;text-overflow:ellipsis}#hud.mob>#card{right:max(16px,env(safe-area-inset-right,0px))!important}#hud.mob.lh>#card{left:max(16px,env(safe-area-inset-left,0px))!important;right:auto!important}
 #hud.mob:not(.lh)>#card #cname{font-size:clamp(16px,4.7vw,20px)!important}#hud.mob:not(.lh)>#card .stat em{font-size:21px!important}#hud.mob:not(.lh)>#card .stat{font-size:10px!important}#hud.mob:not(.lh)>#card{padding:5px 8px 6px!important} /* a touch smaller for right-handed hitters */
@@ -875,7 +875,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 497</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 498</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <button class="tag wkopt sens" id="sens1" type="button"></button>
@@ -1041,6 +1041,7 @@ function draw(){podTagPos();{const ad=!!(flight&&flight.admire&&!flight.done&&no
       :S.over&&S.overOn&&pOD()?'duel':S.over&&S.overOn?'od':pOD()?'pod':F&&F.play.type==='hit'&&F.landed?'hit':cnt&&S.balls===3&&S.strikes===2?'full':cnt&&S.strikes===2?'two':cnt&&(S.bases[1]||S.bases[2])?'rally':'idle'+(((pn/9000)|0)%6);
     /* a message earned by a play stays up for a good few seconds after the moment has passed, so the board is felt, not flickered */
     {const sticky={hit:6,k:5,hr:7,nodoubt:7,slam:8,change:5,walkoff:12}[HALO.m]||0;if(hm!==HALO.m&&sticky&&pn-HALO.since<sticky*1000&&!(HALO.hype[hm]&&!HALO.hype[HALO.m])){/* hold */}else if(hm!==HALO.m){HALO.m=hm;HALO.since=pn;HALO.paint(hm);}}const hy=HALO.hype[HALO.m];HALO.t.offset.x=(pn*(hy?.00011:/^idle/.test(HALO.m)?.00003:.00006))%1;
+    if(HALO.mat2)HALO.mat2.color.setScalar(hy?1.02+.22*Math.sin(pn*.012):1);
     if(HALO.mat)HALO.mat.color.setScalar(hy?1.02+.22*Math.sin(pn*.012):1); /* a smooth pulse about twice a second, never a hard strobe */}
   if(LED_T)LED_T.offset.x=(performance.now()*.000028)%1; /* the ribbon board crawls, like a real park's (moving a texture costs nothing) */podCls();shTick();hbpPop();markDom();dftDom();{const pc=now-pcutT<.06,e=$('pop');if(pc!==pcutOn){pcutOn=pc;$('hud').classList.toggle('pcut',pc);if(!pc){e.style.top='';e.style.bottom='';e.className='';}}
   if(pc){ // CLOSE-UPS: the call sits in the gap between the top bar and the head of whoever is on camera. If the gap is too small for it, the
@@ -1594,10 +1595,12 @@ gl_FragColor=vec4(col,1.0);
       moon(w*.515);moon(w*.015);moon(w*1.015);g.shadowBlur=0;
       g.fillStyle='#ff4d2e';g.fillRect(0,0,w,12);g.fillRect(0,h-12,w,12);});
     led.wrapS=T.RepeatWrapping;led.repeat.set(2/FL,1);led.anisotropy=ANISO;
-    scene.add(new T.Mesh(ribbon(arc(30,23),arc(30,30),1),basic({map:led})));LED_T=led;
+    /* it shows exactly what the halo board in the outfield shows: one programme running right round the park */
+    const ledM=HALO.t?(HALO.mat2=new T.MeshBasicMaterial({map:HALO.t,side:T.DoubleSide})):basic({map:led,side:T.DoubleSide});
+    scene.add(new T.Mesh(ribbon(arc(30,23),arc(30,30),1),ledM));LED_T=led;
     // ...and it carries on down both lines, across the face of the grandstand's upper deck: one continuous ribbon of light round the park
     [-1,1].forEach(sd=>{const ln=[[BK_R/Math.SQRT2,BK_Z+BK_R/Math.SQRT2],[30,-4],[70,-70]].map(q=>new V3(q[0]*sd,0,q[1])),nn=new V3(.866*sd,0,.5),a=ln.map(q=>q.clone().addScaledVector(nn,29.85).setY(23)),b=ln.map(q=>q.clone().addScaledVector(nn,29.85).setY(30));
-      scene.add(new T.Mesh(ribbon(sd>0?a.slice().reverse():a,sd>0?b.slice().reverse():b,1),basic({map:led,side:T.DoubleSide})));});
+      scene.add(new T.Mesh(ribbon(sd>0?a.slice().reverse():a,sd>0?b.slice().reverse():b,1),ledM));});
     // airlock tunnels into the lower deck, one per section
     const lock=tex(128,128,(g,w,h)=>{g.fillStyle='#9aa0b0';g.fillRect(0,0,w,h);
       for(let x=-h;x<w;x+=24){g.fillStyle='#f2c81e';g.beginPath();g.moveTo(x,0);g.lineTo(x+12,0);g.lineTo(x+12+h,h);g.lineTo(x+h,h);g.closePath();g.fill();}
