@@ -2488,7 +2488,7 @@ function tryContact(){flight_pop=false;if(pitch.hbp){swing.done=true;swing.miss=
   const odOn=!!(S.over&&S.overOn),ez=easyAB()?1.3:1,JT=odOn?1.85:tb?1.35:1,SK=pitch.P.sp?(odOn?.8:.52):1, /* Overdrive: the timing window is nearly twice as wide, and a Juice pitch takes much less of it away */win=.118*(pw?.85:1.2)*JT*ez*SK,n=dt/win;
   // chasing: how far outside the strike zone the pitch is (0 in the zone → 1 well off the plate)
   const offX=Math.max(ZONE.x0-pitch.tx,pitch.tx-ZONE.x1,0),offY=Math.max(ZONE.y0-pitch.ty,pitch.ty-ZONE.y1,0),chase=clamp(Math.hypot(offX,offY)/.16,0,1);
-  const R=.17*b.con*(pw?(tb?.8:.63):1.25)*(tb?(S.over&&S.overOn?1.55:1.2):1)*(1-.3*chase)*ez; /* Overdrive: both sweet spots are over half as big again (Juice alone is a fifth) */ // the power core is 10% smaller without Juice; Juice gives the old size back, then its usual boost
+  const R=.17*b.con*(pw?(tb?.8:.63):1.25)*(tb?(S.over&&S.overOn?1.85:1.2):1)*(1-.3*chase)*ez; /* Overdrive: both sweet spots are 85% bigger (Juice alone is a fifth) */ // the power core is 10% smaller without Juice; Juice gives the old size back, then its usual boost
   const d=Math.hypot(aim.x-pitch.tx,aim.y-pitch.ty);
   // where the barrel was relative to the ball, in sweet-spot radii: u>0 = swung under it, e>0 = ball out toward the end of the bat
   const cu=(pitch.ty-aim.y)/R,ce=(pitch.tx-aim.x)/R*(MX.lefty?-1:1),cr=Math.hypot(cu,ce);
@@ -3698,7 +3698,7 @@ function step(dt){
   reticle.position.set(aim.x,aim.y,0);
   {const ez=easyAB()?1.3:1;if(!!tb!==retTb){retTb=!!tb;retT=now+(tb&&S.over&&S.overOn?.42:0);retOd=!!(tb&&S.over&&S.overOn);} /* Overdrive lights the whole screen for a moment as it comes on: the rings wait for that to clear, then swell where you can see it */
    // Juice and Overdrive make both rings bigger, and they visibly swell into it (overshoot, then settle) so nobody misses that it happened
-   const k=clamp((now-retT)/(retOd?.75:.5),0,1),ov=retOd&&retTb?4.2:2.9,eo=1+ov*Math.pow(k-1,3)+(ov-1)*Math.pow(k-1,2),f=retTb?eo:1-eo,big=retOd?1.55:1.2,kc=lerp(1,big,f),kp=lerp(.63,.8*big,f);
+   const k=clamp((now-retT)/(retOd?.75:.5),0,1),ov=retOd&&retTb?4.2:2.9,eo=1+ov*Math.pow(k-1,3)+(ov-1)*Math.pow(k-1,2),f=retTb?eo:1-eo,big=retOd?1.85:1.2,kc=lerp(1,big,f),kp=lerp(.63,.8*big,f);
    retC.scale.setScalar(.17*b.con*1.25*kc*ez);retP.scale.setScalar(.17*b.con*kp*ez);}
   let showRet=(S.state==='ready'||S.state==='windup'||S.state==='pitch')&&!(swing&&swing.done);
   retC.visible=retP.visible=true;echoBall.visible=false;
