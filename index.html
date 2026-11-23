@@ -292,8 +292,10 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
 #pop.hot .t{color:var(--heat);text-shadow:0 5px 0 #000,0 0 50px rgba(255,77,46,.8)}
 #pop.cool .t{color:var(--ice);text-shadow:0 5px 0 #000,0 0 40px rgba(58,214,255,.6)}
 #pop.plain .t{color:var(--chrome);text-shadow:0 5px 0 #000}
-#pop.bdgp .t,#hud.pcut #pop.bdgp .t{color:#ffd23b;font-size:clamp(28px,7.6vw,72px);-webkit-text-stroke:clamp(4px,.8vw,6px) #000;paint-order:stroke fill;text-shadow:0 5px 0 #000,0 0 36px rgba(255,210,59,.8);white-space:nowrap}
-#pop.bdgp .s,#hud.pcut #pop.bdgp .s{display:inline-block;margin-top:8px;padding:4px 14px 3px;font-size:clamp(13px,3.3vw,24px);letter-spacing:.06em;color:#ffd23b;background:rgba(14,11,2,.88);border:2px solid #ffd23b;border-radius:8px;box-shadow:0 3px 0 #000;white-space:nowrap}
+/* a new badge as the callout: the same gold oval plate as the badge case, big */
+#pop.bdgp .t,#hud.pcut #pop.bdgp .t{display:inline-block;padding:clamp(8px,1.6vw,14px) clamp(20px,4vw,40px);border-radius:999px;background:linear-gradient(#3a2f0a,#0e0b02);border:clamp(3px,.5vw,5px) solid #ffd23b;box-shadow:0 5px 0 #000,0 0 34px 6px rgba(255,210,59,.6);
+  color:#fff;font-size:clamp(24px,6.6vw,60px);line-height:1.05;text-shadow:0 3px 0 #000;-webkit-text-stroke:0;white-space:nowrap;transform:none}
+#pop.bdgp .s,#hud.pcut #pop.bdgp .s{display:block;margin-top:9px;font-size:clamp(12px,3vw,22px);letter-spacing:.14em;color:#ffd23b;text-shadow:0 2px 0 #000,0 0 6px #000;white-space:nowrap}
 #hud.pcut #pop.bdgp{left:2%;right:2%}
 /* what the fight (or the pitch that hit him) did to his ratings: green is good, red is bad, the same as the arrows. Heavy, outlined, on its own dark plate so it reads over anything. */
 #pop.sup .t,#pop.sdn .t,#hud.pcut #pop.sup .t,#hud.pcut #pop.sdn .t{font-size:clamp(26px,7.4vw,58px);line-height:1.05;-webkit-text-stroke:clamp(4px,.8vw,6px) #000;paint-order:stroke fill;letter-spacing:.02em;white-space:nowrap}
@@ -319,8 +321,8 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
 #tbar .dim{opacity:.22}
 #opts{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 10px;max-width:min(820px,96vw);pointer-events:none}#opts .wkopt{font-size:clamp(10px,2.6vw,13px);padding:6px 10px}
 /* BADGES: a gold plate drops in under the meters when one is earned; the full case is on the title screen */
-#bdg{position:absolute;left:50%;top:92px;z-index:60;display:flex;align-items:center;gap:10px;padding:9px 22px 9px 12px;pointer-events:none;white-space:nowrap;border-radius:34px;background:linear-gradient(#2a2208,#0e0b02);border:2px solid #ffd23b;box-shadow:0 4px 0 #000,0 0 22px 4px rgba(255,210,59,.55);transform:translate(-50%,-140px);opacity:0;visibility:visible!important}
-#hud.mob #bdg{top:132px;padding:5px 12px 5px 7px;gap:8px}#bdg.go{animation:bdgIn 3.1s cubic-bezier(.2,1.3,.3,1) both}
+#bdg{position:absolute;left:50%;top:112px;z-index:60;display:flex;align-items:center;gap:10px;padding:9px 22px 9px 12px;pointer-events:none;white-space:nowrap;border-radius:34px;background:linear-gradient(#2a2208,#0e0b02);border:2px solid #ffd23b;box-shadow:0 4px 0 #000,0 0 22px 4px rgba(255,210,59,.55);transform:translate(-50%,-140px);opacity:0;visibility:visible!important}
+#hud.mob #bdg{top:152px;padding:5px 12px 5px 7px;gap:8px}#bdg.go{animation:bdgIn 3.1s cubic-bezier(.2,1.3,.3,1) both}
 @keyframes bdgIn{0%{transform:translate(-50%,-140px) scale(.7);opacity:0}9%{transform:translate(-50%,0) scale(1.08);opacity:1}14%{transform:translate(-50%,0) scale(1)}86%{transform:translate(-50%,0) scale(1);opacity:1}100%{transform:translate(-50%,-30px) scale(.96);opacity:0}}
 #bdg i{font-style:normal;font-size:clamp(34px,8vw,50px);line-height:1;filter:drop-shadow(0 2px 0 #000)}#bdg em{display:block;font-family:var(--hud);font-style:normal;font-weight:800;font-size:10px;letter-spacing:.16em;color:#ffd23b}
 #bdg b{display:block;font-family:var(--display);font-style:italic;font-weight:400;font-size:clamp(22px,6vw,38px);line-height:1.05;color:#fff;text-shadow:0 2px 0 #000}#bdg span{display:block;font-family:var(--hud);font-size:clamp(11px,2.8vw,14px);color:var(--chrome);letter-spacing:.03em}
@@ -336,7 +338,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
 @keyframes odhB{from{margin-left:0}to{margin-left:10px}}@keyframes odhM{from{margin-top:0}to{margin-top:-9px}}
 #hud.rv>*:not(#bdg):not(#orbc){visibility:hidden!important}
 /* the one line on the orbit shot: across the top, above the Moon, burning Overdrive blue (a new badge drops in just under it) */
-#hud.rv #bdg{top:128px}#hud.mob.rv #bdg{top:132px}
+#hud.rv #bdg{top:128px}#hud.mob.rv #bdg{top:120px}
 #orbc{position:absolute;left:3%;right:3%;top:max(4%,calc(env(safe-area-inset-top,0px) + 12px));z-index:61;display:none;text-align:center;pointer-events:none;font-family:var(--display);font-style:italic;font-size:clamp(24px,6.4vw,62px);line-height:1;letter-spacing:.02em;white-space:nowrap}
 #hud.rv #orbc{display:block}#orbc b{position:relative;display:inline-block;font-weight:400;color:#eaffff;-webkit-text-stroke:clamp(4px,.8vw,7px) #02103a;paint-order:stroke fill;text-shadow:0 4px 0 #000,0 0 18px #3ad6ff,0 0 42px #1e7bff;animation:orbcIn .6s cubic-bezier(.2,1.5,.3,1) .55s both,orbcF .16s steps(2) .55s infinite}
 #orbc b::before{content:'';position:absolute;z-index:-1;left:-2%;right:-2%;bottom:38%;height:150%;pointer-events:none;transform-origin:50% 100%;filter:blur(1.2px);mix-blend-mode:screen;opacity:.9;
@@ -455,7 +457,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
 #hud.mob #touch{display:flex}#hud.mob #keys{display:none}#hud.mob #rep{display:none}
 /* the swing buttons own the bottom edge: the batter card moves up under the scoreboard */
 #hud.mob>#card{left:auto;right:max(6px,env(safe-area-inset-right,0px));top:41%;bottom:auto;padding:4px 7px 5px;gap:0;max-width:32.5vw;overflow:hidden} /* right-handed hitter: above the second baseman's head */
-#hud.mob.lh>#card{left:max(6px,env(safe-area-inset-left,0px));right:auto;top:51.5%;bottom:auto; /* left-handed hitter: under the shortstop */padding:4px 7px 5px;gap:0;max-width:32.5vw;overflow:hidden} /* under the shortstop, beside the strike zone and never across it: where the eye already is */
+#hud.mob.lh>#card{left:max(6px,env(safe-area-inset-left,0px));right:auto;top:41%;bottom:auto; /* left-handed hitter: above the shortstop's head, well clear of the strike zone */padding:4px 7px 5px;gap:0;max-width:32.5vw;overflow:hidden} /* under the shortstop, beside the strike zone and never across it: where the eye already is */
 #hud.mob>#card #cnum{display:none}#hud.mob>#card #cname{font-size:clamp(12px,3.6vw,15px);overflow:hidden;text-overflow:ellipsis}#hud.mob>#card .stats{gap:4px}#hud.mob>#card .stat{font-size:8px;gap:2px;letter-spacing:.02em}#hud.mob>#card .stat em{font-size:19px}
 #hud.mob>#card #cnum{font-size:24px}
 /* overlays */
@@ -2066,8 +2068,11 @@ function showCard(){if(S.bi<0)return;S.cardBi=S.bi;const b=curBatter();$('cnum')
 function pop(t,s='',cls='',long=false){
   // A NEW BADGE IS THE CALL: if a feat has just earned one, its badge (icon and name, in gold) goes up as the big callout in place of the
   // ordinary one, which drops to the line underneath. If several were earned at once the proudest leads and the rest follow as plates up top.
-  let _bq=null;try{_bq=bdgQ;}catch(e){}if(_bq&&_bq.length&&cls!=='logo'){const R=['slam','b2b','five','hr500','rev','earth','sat','lamp','board','eye','duel','juicehr','ambush','odhr','hr450','hr','walkoff','jump','brawl','send','heater','ten','win','wore','hit'];
-    bdgQ.sort((a,b)=>R.indexOf(a[0])-R.indexOf(b[0]));const B=bdgQ.shift();s='BADGE UNLOCKED'+(t?' · '+t:'');t=B[3]+' '+B[1];cls='bdgp';long=true;bdgBusy=performance.now()+2600;buzz([20,40,20,40,90]);[660,880,1100,1320].forEach((f,i)=>tone('triangle',f,f*1.02,.12,.4,i*.07));}
+  let _bq=null;try{_bq=bdgQ;}catch(e){}
+  // CALLOUT AND BADGE PLATE NEVER SHARE THE SCREEN: a callout always wins. A plate that is up when one arrives is taken down and comes back afterwards.
+  if(_bq){const pn=performance.now();if(bdgCur&&pn<bdgCurEnd){$('bdg').classList.remove('go');bdgCur.old=1;_bq.unshift(bdgCur);bdgCur=null;}popUntil=pn+(long?3300:1700);bdgBusy=Math.max(bdgBusy,popUntil);}
+  if(_bq&&cls!=='logo'&&_bq.some(b=>!b.old&&performance.now()-b.tq<80)){const fresh=_bq.filter(b=>!b.old&&performance.now()-b.tq<80);const R=['slam','b2b','five','hr500','rev','earth','sat','lamp','board','eye','duel','juicehr','ambush','odhr','hr450','hr','walkoff','jump','brawl','send','heater','ten','win','wore','hit'];
+    fresh.sort((a,b)=>R.indexOf(a[0])-R.indexOf(b[0]));const B=fresh[0];bdgQ.splice(bdgQ.indexOf(B),1);s='BADGE UNLOCKED'+(t?' · '+t:'');t=B[3]+' '+B[1];cls='bdgp';long=true;popUntil=performance.now()+3300;bdgBusy=popUntil;buzz([20,40,20,40,90]);[660,880,1100,1320].forEach((f,i)=>tone('triangle',f,f*1.02,.12,.4,i*.07));}
   const e=$('pop');e.className='';e.querySelector('.t').textContent=t;e.querySelector('.s').textContent=s;void e.offsetWidth;e.className='go '+cls+(long?' long':'');}
 let MOB=false;function setMob(){MOB=matchMedia('(pointer:coarse)').matches||innerWidth<=560;$('hud').classList.toggle('mob',MOB);document.body.classList.toggle('mob',MOB);}setMob();addEventListener('resize',setMob); // narrow a desktop window to preview the phone layout
 const buzz=p=>{try{if(navigator.vibrate)navigator.vibrate(p);}catch(e){}};
@@ -3085,7 +3090,7 @@ function revBuild(){const g=REV.g=new T.Group();g.position.copy(REV.C);const tx=
   const hg=new T.BufferGeometry();hg.setAttribute('position',new T.BufferAttribute(new Float32Array(3),3));REV.head=new T.Points(hg,new T.PointsMaterial({size:30,map:dot,color:0x9fdcff,sizeAttenuation:false,transparent:true,blending:T.AdditiveBlending,depthWrite:false,fog:false}));REV.head.frustumCulled=false;g.add(REV.head);g.visible=false;scene.add(g);}
 function revAt(th,o){const up=clamp(th/1.1,0,1),r=REV.R*(1+.24*(1-Math.pow(1-up,2)));return o.copy(REV.a).multiplyScalar(Math.cos(th)*r).addScaledVector(REV.b,Math.sin(th)*r);} /* climbs off the surface over the first sixth of the lap, then holds its height */
 function revTick(e){if(!REV.g)revBuild();const u=clamp(e/REV.dur,0,1),th=(PI*2+.5)*(u<.5?2*u*u*.9+u*.1:1-.9*2*(1-u)*(1-u)-.1*(1-u)); /* eases away, cruises, eases in: one lap and a little more */
-  if(!flight.revOn){flight.revOn=true;REV.g.visible=true;$('hud').classList.add('rv');SND.zap();tone('sine',70,180,1.6,.5);crowdPump(1);buzz([30,40,30,40,200]);}
+  if(!flight.revOn){flight.revOn=true;badge('rev'); /* the badge drops in as the ball is seen in orbit */REV.g.visible=true;$('hud').classList.add('rv');SND.zap();tone('sine',70,180,1.6,.5);crowdPump(1);buzz([30,40,30,40,200]);}
   revAt(th,ball.position).add(REV.C);REV.cam.set(REV.C.x+20+30*u,REV.C.y+40-12*u,REV.C.z+268-18*u);REV.look.set(REV.C.x,REV.C.y+4,REV.C.z);
   const P=REV.trail.geometry.attributes.position,Cc=REV.trail.geometry.attributes.color,N=REV.N,span=Math.min(th,2.4);for(let i=0;i<N;i++){const k=i/(N-1);revAt(th-span*(1-k),_a);P.setXYZ(i,_a.x,_a.y,_a.z);const f=k*k;Cc.setXYZ(i,.25*f,.6*f,1*f);}P.needsUpdate=true;Cc.needsUpdate=true;{const H=REV.head.geometry.attributes.position;revAt(th,_a);H.setXYZ(0,_a.x,_a.y,_a.z);H.needsUpdate=true;}
   REV.halo.scale.setScalar(1+.25*Math.sin(now*9));}
@@ -3101,12 +3106,12 @@ const BADGES=[['hit','KNOCK','Get your first hit','🧢'],['hr','WENT YARD','Hit
   ['send','WHEELS','Win a showdown at the bag','👟'],['jump','PERFECT JUMP','Stop the needle on gold','🥇'],['brawl','LAST MAN STANDING','Win a brawl','🥊'],['wore','WORE ONE','Get hit by a pitch','🩹'],
   ['walkoff','WALK-OFF','Win it in your last at-bat','🏃'],['win','IN THE WIN COLUMN','Win a game','🏆'],['ten','DOUBLE DIGITS','Score ten runs in a game','🔟']];
 let bdgGot={};try{bdgGot=JSON.parse(localStorage.getItem('mm_badges2')||'{}')||{};}catch(e){}
-const bdgQ=[];let bdgBusy=0;
+const bdgQ=[];let bdgBusy=0,bdgCur=null,bdgCurEnd=0,popUntil=0;
 let callShown={};try{callShown=JSON.parse(localStorage.getItem('mm_calls')||'{}')||{};}catch(e){}
 function callOnce(L){for(const [ok,id,txt] of L)if(ok&&!callShown[id]){callShown[id]=1;try{localStorage.setItem('mm_calls',JSON.stringify(callShown));}catch(e){}return txt;}return '';} /* the first applicable feat whose call has never been shown, or nothing */
-function badge(id){if(bdgGot[id])return;const B=BADGES.find(b=>b[0]===id);if(!B)return;bdgGot[id]=1;try{localStorage.setItem('mm_badges2',JSON.stringify(bdgGot));}catch(e){}bdgQ.push(B);bdgLabel();}
+function badge(id){if(bdgGot[id])return;const B=BADGES.find(b=>b[0]===id);if(!B)return;bdgGot[id]=1;try{localStorage.setItem('mm_badges2',JSON.stringify(bdgGot));}catch(e){}const q=B.slice();q.tq=performance.now();bdgQ.push(q);bdgLabel();}
 function bdgLabel(){const e=$('bdgbtn');if(e)e.textContent='Badges: '+BADGES.filter(b=>bdgGot[b[0]]).length+' / '+BADGES.length;}
-setInterval(()=>{if(!bdgQ.length||performance.now()<bdgBusy||$('hud').classList.contains('rv')||S.state==='title')return;const B=bdgQ.shift(),e=$('bdg');e.querySelector('i').textContent=B[3];e.querySelector('b').textContent=B[1];e.querySelector('span').textContent=B[2];
+setInterval(()=>{if(!bdgQ.length||performance.now()<bdgBusy||$('hud').classList.contains('rv')||S.state==='title')return;const B=bdgQ.shift(),e=$('bdg');bdgCur=B;bdgCurEnd=performance.now()+3000;e.querySelector('i').textContent=B[3];e.querySelector('b').textContent=B[1];e.querySelector('span').textContent=B[2];
   e.classList.remove('go');void e.offsetWidth;e.classList.add('go');bdgBusy=performance.now()+3300;buzz([20,40,20,40,90]);[660,880,1100,1320].forEach((f,i)=>tone('triangle',f,f*1.02,.12,.4,i*.07));},250);
 function bdgOpen(){let e=$('bdgs');if(!e){e=document.createElement('div');e.id='bdgs';e.innerHTML='<h2>BADGES</h2><p></p><div id="bdgl"></div><button class="cta alt" type="button">BACK</button>';document.body.appendChild(e);e.addEventListener('click',ev=>{if(ev.target===e||ev.target.tagName==='BUTTON')e.hidden=true;});}
   e.querySelector('p').textContent=BADGES.filter(b=>bdgGot[b[0]]).length+' OF '+BADGES.length+' EARNED';$('bdgl').innerHTML=BADGES.map(b=>'<div class="'+(bdgGot[b[0]]?'got':'')+'"><i>'+b[3]+'</i><p style="margin:0"><b>'+b[1]+'</b><span>'+b[2]+'</span></p></div>').join('');e.hidden=false;}
@@ -4134,10 +4139,10 @@ function step(dt){
   if(st==='ready'&&el>=.25&&S.over&&!S.overOn&&otutNeed())return;
   if(st==='ready'&&el>=.25&&S.juice>=.999&&!S.over&&jtutNeed())return;
   if(st==='ready'&&S.podPending){if(S.pOver){podReveal();return;}S.podPending=false;}
-  // OVERDRIVE IS READY AND HE HASN'T PRESSED IT: the pitcher waits. A player who has never used it gets seven seconds and a pointer at the
+  // OVERDRIVE IS READY AND HE HASN'T PRESSED IT: the pitcher waits. A player who has never used it gets twenty seconds (every at-bat) and a pointer at the
   // button; anyone else gets a couple of seconds, once per charge. Pressing it (or swinging) ends the wait at once.
-  if(!S.over)S.odHeld=false;
-  if(st==='ready'&&S.over&&!S.overOn&&!S.odHeld&&!S.odHolding&&el>.25){S.odHeld=true;S.odHolding=true;S.odHoldT=now;S.odHoldD=odEver?2.4:7;
+  if(!S.over)S.odHeld=false;if(!odEver&&S.odHeldBi!==S.bi){S.odHeldBi=S.bi;S.odHeld=false;}
+  if(st==='ready'&&S.over&&!S.overOn&&!S.odHeld&&!S.odHolding&&el>.25){S.odHeld=true;S.odHolding=true;S.odHoldT=now;S.odHoldD=odEver?2.4:20; /* a first-timer gets as good as all the time in the world: twenty seconds, every at-bat, until he has pressed it once */
     const e=$('odh'),tg=MOB?$('tj'):$('kj'),r=tg.getBoundingClientRect(),hr=$('hud').getBoundingClientRect();e.textContent=MOB?'TAP IT! ▼':'';e.className=MOB?'m':''; /* on a computer the key pill itself swells and flashes: nothing is written across the hitter */
     if(MOB){e.style.left=(r.left+r.width/2-hr.left)+'px';e.style.top=(r.top-hr.top-34)+'px';}else{e.style.left=(r.right-hr.left+12)+'px';e.style.top=(r.top+r.height/2-hr.top)+'px';}$('kj').firstChild.nodeValue='OVERDRIVE';$('hud').classList.add('odhint');}
   if(S.odHolding&&(st!=='ready'||!S.over||S.overOn||swing||now-S.odHoldT>=S.odHoldD)){S.odHolding=false;$('kj').firstChild.nodeValue='JUICE';$('hud').classList.remove('odhint');if(st==='ready'&&now-S.t>readyDur-.7)S.t=now-(readyDur-.7);} /* a beat to settle, then the pitch */
@@ -4195,7 +4200,7 @@ function step(dt){
     ball.visible=true;ball.position.set(p.x,p.y,p.z);
     {const q=tr.pts[Math.min(tr.pts.length-1,i+2)],dx=q.x-p.x,dz=q.z-p.z,L=Math.hypot(dx,dz);if(L>1e-4&&flight.spI!==i){const n=i-(flight.spI??i);flight.spI=i;_spin.set(dz/L,.18,-dx/L).normalize();ball.rotateOnWorldAxis(_spin,(p.y<.4?1:-1)*Math.min(n,12)*.26);}} /* a hit ball spins: backspin in the air, tumbling forward along the ground */
     if(flight.orbit){const B=flight.orbP,bez=(u,o)=>{const v=1-u;return o.set(0,0,0).addScaledVector(B[0],v*v*v).addScaledVector(B[1],3*v*v*u).addScaledVector(B[2],3*v*u*u).addScaledVector(B[3],u*u*u);};
-      if(!flight.orb&&tf>=1.1&&!(flight.admire&&tf<flight.A)){flight.orb=now;flight.orbFrom=bez(.22,new V3());flight.play.endT=tf+(flight.rev?REV.cut+REV.dur:flight.sat?4.7:flight.lamp?3.6:3.1);if(flight.rev){}else if(flight.lamp)pop('HEADED FOR THE LIGHTS!','','cool');else if(flight.sat)pop('WAY UP THERE!','','cool');else pop('LEFT ORBIT!','NEXT STOP: EARTH','cool',true);SND.boom();SND.zap();buzz([40,40,40,40,120]);}
+      if(!flight.orb&&tf>=1.1&&!(flight.admire&&tf<flight.A)){flight.orb=now;flight.orbFrom=bez(.22,new V3());flight.play.endT=tf+(flight.rev?REV.cut+REV.dur:flight.sat?4.7:flight.lamp?3.6:3.1);if(flight.rev){}else if(flight.lamp)pop('HEADED FOR THE LIGHTS!','','cool');else if(flight.sat)pop('WAY UP THERE!','','cool');else{badge('earth');pop('LEFT ORBIT!','NEXT STOP: EARTH','cool',true);}SND.boom();SND.zap();buzz([40,40,40,40,120]);}
       bez(flight.orb?.22+.78*Math.pow(clamp((now-flight.orb)/(flight.lamp?1.9:3.1),0,1),flight.lamp?1.15:1.5):.22*ease(Math.min(1,tf/1.1)),ball.position);
       if(flight.rev&&flight.orb&&now-flight.orb>=REV.cut)revTick(now-flight.orb-REV.cut);}
     if(flight.dShow){const ft=Math.round(flight.dFt*Math.min(1,Math.hypot(p.x,p.z)/(flight.dEnd||1)));if(ft!==flight.dLast){flight.dLast=ft;$('hds').textContent=ft+' FT';}}
@@ -4209,7 +4214,7 @@ function step(dt){
     if(tr.offF&&flight.play.type==='hit'&&!flight.offFd&&tf>=tr.offF.t){flight.offFd=true;SND.mitt();SND.boom();tone('sine',110,45,.2,.7);buzz([30,30,60]);shake=Math.max(shake,.5*FX);flash(.4);{const rp=tr.offF.f.fig.root.position;burst(fxS,_p.set(rp.x,1.3,rp.z),24,5,.5,[1,.9,.5],2,1);}crowdOut(.9);}
     if(tr.hr&&!flight.fenceRoar&&tf>=tr.hrT){flight.fenceRoar=true;roar(flight.roarL||1,.35);} // over the fence: the roar that has been building steps up
     if(tr.seatT&&!flight.orbit&&tf>=tr.seatT){ball.visible=false;if(!flight.seated){flight.seated=true;burst(fxL,ball.position,12,4,.5,[.95,.95,1],4,1);}} /* swallowed by the crowd: somebody up there has a souvenir */
-    if(tr.eyeT&&!flight.orbit&&!flight.eyeHit&&tf>=tr.eyeT){flight.eyeHit=true;zapStart(ball.position,false);burst(fxL,ball.position,26,9,.7,[.6,.85,1],7,1);SND.mitt();tone('sine',120,50,.25,.5);} // thud off the batter's eye
+    if(tr.eyeT&&!flight.orbit&&!flight.eyeHit&&tf>=tr.eyeT){flight.eyeHit=true;if(flight.play.type==='hr'){badge('eye');pop("OFF THE BATTER'S EYE!",'','hot');}zapStart(ball.position,false);burst(fxL,ball.position,26,9,.7,[.6,.85,1],7,1);SND.mitt();tone('sine',120,50,.25,.5);} // thud off the batter's eye
     if(tr.land&&!flight.orbit&&!flight.landed&&tf>=tr.land.t){flight.landed=true;if(flight.play.type==='hit')roar(.75,.3); /* it drops in: the cheer starts now, not when the fielder finally gets to it */_p.set(tr.land.x,.05,tr.land.z);burst(fxL,_p,10,3,.5,[.75,.6,.42],4,2);} // dust where it comes down, so fair or foul is clear
     const dc=camera.position.distanceTo(ball.position);ball.scale.setScalar(Math.max(1,dc*.05));
     ballShadow.visible=!flight.orbit;ballShadow.position.set(p.x,.03,p.z);ballShadow.scale.setScalar(.2+Math.min(1.2,p.y*.03));
@@ -4217,8 +4222,8 @@ function step(dt){
     ballGlow.position.copy(ball.position);ballGlow.material.opacity=flight.tb?.8:flight.q>.75?.4:0;ballGlow.scale.setScalar(Math.max(.3,dc*.04));
     ballGlow.material.color.setHex(flight.od?0x3a9bff:flight.tb?0xff6a1a:0xffe53b);
     if(flight.orb){ballGlow.material.opacity=1;ballGlow.scale.setScalar(Math.max(5,dc*.11));ball.scale.setScalar(Math.max(1,dc*.075));}
-    if(flight.lamp&&flight.orb){if(!flight.lampHit&&now-flight.orb>=1.9){flight.lampHit=now;lampSmash(flight.lamp-1);}if(flight.lampHit){ball.visible=false;ballGlow.material.opacity=0;}}
-    if(flight.sat&&flight.orb){if(!flight.satHit&&now-flight.orb>=3.1){flight.satHit=now;satBreak();flash(.8);burst(fxL,SAT.g.position,90,95,1.7,[1,.85,.4],0,0);burst(fxL,SAT.g.position,60,50,1.3,[.6,.85,1],0,0);SND.boom();SND.zap();setTimeout(()=>SND.zap(),160);buzz([60,40,60,40,160]);shake=Math.max(shake,.4*FX);rumble=1;pop('DIRECT HIT!','','hot');}
+    if(flight.lamp&&flight.orb){if(!flight.lampHit&&now-flight.orb>=1.9){flight.lampHit=now;lampSmash(flight.lamp-1);badge('lamp');pop('LIGHTS OUT!','','hot');}if(flight.lampHit){ball.visible=false;ballGlow.material.opacity=0;}}
+    if(flight.sat&&flight.orb){if(!flight.satHit&&now-flight.orb>=3.1){flight.satHit=now;satBreak();flash(.8);burst(fxL,SAT.g.position,90,95,1.7,[1,.85,.4],0,0);burst(fxL,SAT.g.position,60,50,1.3,[.6,.85,1],0,0);SND.boom();SND.zap();setTimeout(()=>SND.zap(),160);buzz([60,40,60,40,160]);shake=Math.max(shake,.4*FX);rumble=1;badge('sat');pop('DIRECT HIT!','','hot');}
       if(flight.satHit){ball.visible=false;ballGlow.material.opacity=0;}}
     if(flight.play.type==='hr'&&!flight.called&&tf>=tr.hrT-.9){flight.called=true;pop("OUTTA HERE!",'','hot');SND.boom();}
     if(flight.play.type==='hr'&&!flight.clr&&tf>=tr.hrT){flight.clr=true; /* the instant it is over the wall, and not a frame sooner: the horn (on a good share of them) and, when it was a no-doubter, the lasers */
@@ -4242,7 +4247,7 @@ function step(dt){
   const b=S.bi>=0?curBatter():LINEUP[0],tb=(S.over&&S.overOn)||(!S.over&&juiceOn()&&S.juice>=.25);
   if(QT.pb!=null&&S.state!=='qte'){QT.pb=null;pitcherModel();}
   stickHint();sbTick();zapTick();crowdTick(dt);shoutTick();poleTick();satTick();lampTick(dt);laserTick(dt);organTick();vendorTick();roarTick();heartTick();zoneTick();
-  if(flight&&flight.play.type==='hr'&&!flight.sbHit&&!flight.orbit&&ball.visible&&Math.abs(ball.position.x-SBX)<24&&ball.position.y>30&&ball.position.y<48&&ball.position.z<-(fenceR(0)+15)&&ball.position.z>-(fenceR(0)+24)){flight.sbHit=true;zapStart(ball.position,true);burst(fxL,ball.position,26,9,.7,[.6,.85,1],7,1);}
+  if(flight&&flight.play.type==='hr'&&!flight.sbHit&&!flight.orbit&&ball.visible&&Math.abs(ball.position.x-SBX)<24&&ball.position.y>30&&ball.position.y<48&&ball.position.z<-(fenceR(0)+15)&&ball.position.z>-(fenceR(0)+24)){flight.sbHit=true;badge('board');pop('OFF THE SCOREBOARD!','','hot');zapStart(ball.position,true);burst(fxL,ball.position,26,9,.7,[.6,.85,1],7,1);}
   if(!!MX.lefty!==lhCls){lhCls=!!MX.lefty;$('hud').classList.toggle('lh',lhCls);}
   touchSettle();reticle.position.set(aim.x,aim.y,0);
   {const ez=(easyAB()?1.3:1)*DIFF[diffI].ring;if(!!tb!==retTb){retTb=!!tb;retT=now; /* the rings answer the press at once: no wait for the flash to clear */retOd=!!(tb&&S.over&&S.overOn);} /* Overdrive lights the whole screen for a moment as it comes on: the rings wait for that to clear, then swell where you can see it */
@@ -4396,7 +4401,7 @@ $('shbtn').addEventListener('click',()=>{SHQ=!SHQ;if(SHQ&&!rim.castShadow)rim.ca
 shApply();
 resize();hud();
 const DBG={dive:'',hbp:false,pcut:false,fl:'',rob:false,pc:false,staunt:false,pod:false,trail:false,orbit:false,sat:false,drill:false,brawl:false,qte:false,mash:false,slide:false,pn:'',laser:false,lamp:false,mw:false,rev:false,stop:false,pdef:false,dbl:false,cam:false,admire:'',trip:false,fist:false,pop:false,loser:false}; // test hook: pin the camera to CAM_HOME/CAM_LOOK
-window.__ret=()=>reticle.position;window.__lu=LINEUP;window.__bp=k=>BULLPEN[k];window.__mm={pitcherModel,crowdFx,setE:v=>{crowdE=v;crowdShow=v;},GLOVE,renderer,scene,LODM,camera,zapStart,acState:()=>AC?(zoneLP?"lp="+Math.round(zoneLP.frequency.value)+" ":"")+AC.state+" t="+AC.currentTime.toFixed(1)+" real="+crowdReal+" roar="+(roarG?roarG.gain.value.toFixed(2)+(roarTop?"T":""):"off")+" bed="+crowdGain.gain.value.toFixed(2):"none",roar,roarOff,boo,cheer,crowdRise,crowdDrop,S,aim,MX,DBG,landRingOn:()=>landRing.visible,hud,tutAnim,draw:()=>draw(),endGame,TROT,SFX,RUN,ballPos:()=>ball.position,ballVisible:()=>ball.visible,fielders,toReady,CAM_HOME,CAM_LOOK,now:()=>now,simulate,judge,get pitch(){return pitch;},get flight(){return flight;},lastSwing:()=>{const t=swing&&swing.type;swing=null;return t;},lastSwingTurbo:()=>!!(swing&&swing.turbo),doSwing,newGame,V3,
+window.__ret=()=>reticle.position;window.__bdg=id=>{delete bdgGot[id];badge(id);pop('GONE!','512 FT · +1 RUN','hot',true);};window.__lu=LINEUP;window.__bp=k=>BULLPEN[k];window.__mm={pitcherModel,crowdFx,setE:v=>{crowdE=v;crowdShow=v;},GLOVE,renderer,scene,LODM,camera,zapStart,acState:()=>AC?(zoneLP?"lp="+Math.round(zoneLP.frequency.value)+" ":"")+AC.state+" t="+AC.currentTime.toFixed(1)+" real="+crowdReal+" roar="+(roarG?roarG.gain.value.toFixed(2)+(roarTop?"T":""):"off")+" bed="+crowdGain.gain.value.toFixed(2):"none",roar,roarOff,boo,cheer,crowdRise,crowdDrop,S,aim,MX,DBG,landRingOn:()=>landRing.visible,hud,tutAnim,draw:()=>draw(),endGame,TROT,SFX,RUN,ballPos:()=>ball.position,ballVisible:()=>ball.visible,fielders,toReady,CAM_HOME,CAM_LOOK,now:()=>now,simulate,judge,get pitch(){return pitch;},get flight(){return flight;},lastSwing:()=>{const t=swing&&swing.type;swing=null;return t;},lastSwingTurbo:()=>!!(swing&&swing.turbo),doSwing,newGame,V3,
   sim:(dt)=>{hitstop=0;now+=dt;step(dt);},
   step:(n,dt=1/60)=>{for(let i=0;i<n;i++){if(hitstop>0)hitstop=0;now+=dt;step(dt);}updateCamera(dt);draw();}};
 if(!window.__mmManual)requestAnimationFrame(frame);
