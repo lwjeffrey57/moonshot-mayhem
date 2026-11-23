@@ -225,7 +225,9 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 #qte b{display:block;font-weight:400;font-size:clamp(20px,5.6vw,34px);color:var(--volt);-webkit-text-stroke:3px #000;paint-order:stroke fill;text-shadow:0 3px 0 #000;letter-spacing:.04em}
 #qtr{display:flex;gap:5px;justify-content:center;margin:8px 0}
 #qtr i{display:flex;align-items:center;justify-content:center;width:clamp(30px,9.4vw,52px);height:clamp(30px,9.4vw,52px);font-style:normal;font-size:clamp(16px,4.8vw,28px);color:#fff;background:#12142e;border:3px solid #f2f5ff;border-radius:8px;box-shadow:0 3px 0 #000}
-#qtr i.ok{background:#1fae4a;border-color:#39ff6a;color:#04140a;transform:scale(1.08)}
+#qtr i.ok{background:#39ff6a;border-color:#eafff0;color:#04140a;transform:scale(1.1);box-shadow:0 3px 0 #000,0 0 14px 4px rgba(57,255,106,.85)}
+#qtr i.cur{border-color:var(--volt);box-shadow:0 3px 0 #000,0 0 0 3px rgba(255,229,59,.55)}
+#qpad button.hit{background:#39ff6a;color:#04140a;box-shadow:0 4px 0 #000,0 0 18px 6px rgba(57,255,106,.9)}#qpad button.miss{background:#ff4d2e;box-shadow:0 4px 0 #000,0 0 18px 6px rgba(255,77,46,.9)}
 #qtr.bad{animation:qbad .28s}@keyframes qbad{0%,100%{transform:translateX(0)}25%{transform:translateX(-9px)}75%{transform:translateX(9px)}}#qtr.bad i{border-color:#ff4d2e}
 #qtm{height:10px;width:min(360px,84vw);margin:0 auto;background:#000;border:2px solid #f2f5ff;border-radius:6px;overflow:hidden}
 #qtb{display:block;height:100%;background:#39ff6a;transform-origin:0 50%}#qtb.low{background:#ff4d2e}
@@ -503,6 +505,10 @@ body.mob #tip{display:block}body.mob .how{display:none}
 #odp .b{bottom:-3px;transform:scaleY(.34);transform-origin:50% 100%}#odp .t{top:-3px;transform:translateY(-15px) scaleY(-.3);height:44px;opacity:.5}
 #odp .l{left:-3px;transform:scaleX(.34);transform-origin:0 50%}#odp .r{right:-3px;transform:translateX(15px) scaleX(-.34)}
 #hud.pod #odp{opacity:1}#hud.pod.odon #odp{inset:9px}
+/* his Overdrive closes in as the strikes mount: the clear window shrinks and the dark gets heavier */
+#hud.pod.ks1 #odp{background:radial-gradient(ellipse at 50% 52%,rgba(90,10,0,0) 26%,rgba(60,6,0,.56) 58%,rgba(30,2,0,.92) 100%)}
+#hud.pod.ks2 #odp{background:radial-gradient(ellipse at 50% 52%,rgba(90,10,0,0) 20%,rgba(60,6,0,.72) 52%,rgba(24,1,0,.97) 96%)}
+#hud.pod.ks2 #odp::before{animation-duration:.4s}
 #hud.inplay #odv,#hud.inplay #odp{opacity:0!important} /* once the ball is in play the flames get out of the way; a foul brings them back for the rest of the at-bat */
 @media (prefers-reduced-motion:reduce){#odp i{animation:none}}
 @keyframes odvP{to{box-shadow:inset 0 0 46px 6px rgba(120,215,255,.95)}}
@@ -785,9 +791,10 @@ function cardTick(){
   _s0.project(camera);const cw=c.offsetWidth||150,ch=c.offsetHeight||44;
   const x=clamp((_s0.x*.5+.5)*W-cw*.5,4,W-cw-4),y=Math.max(150,(-_s0.y*.5+.5)*H-ch-2);
   c.style.transform='translate('+x.toFixed(0)+'px,'+y.toFixed(0)+'px)';}
-const pcutH=new V3(0,2.3,-18.4);let retTb=false,retT=-9,pcutT=-9,pcutOn=false,celOn=false,podOn=false,podLv=false,inplayOn=false;
+const pcutH=new V3(0,2.3,-18.4);let retTb=false,retT=-9,pcutT=-9,pcutOn=false,celOn=false,podOn=false,podLv=false,podKs=0,inplayOn=false;
 // the pitcher's fire border waits until the hitter is in the box; the batter card goes away once the ball is in play
 function podCls(){const st=S.state,on=pOD()&&!(st==='title'||st==='over'||st==='end'||st==='walkup'||st==='pchange');if(on!==podOn){podOn=on;$('hud').classList.toggle('pod',on);}
+  {const ks=on&&!(S.over&&S.overOn)?Math.min(2,S.strikes|0):0;if(ks!==podKs){podKs=ks;$('hud').classList.toggle('ks1',ks===1);$('hud').classList.toggle('ks2',ks===2);}}
   {const lv=on&&(st==='ready'||st==='windup'||st==='pitch')&&$('tut').hidden;if(lv!==podLv){podLv=lv;$('hud').classList.toggle('podlive',lv);}}
   const ip=st==='flight'||st==='result'||st==='trot'||st==='celebrate'||st==='celly2';if(ip!==inplayOn){inplayOn=ip;$('hud').classList.toggle('inplay',ip);}
   const ce=st==='celly2'||st==='trot'||!!(flight&&flight.orb&&!flight.done);if(ce!==celOn){celOn=ce;$('hud').classList.toggle('cel',ce);}}
@@ -2172,8 +2179,9 @@ function qteStart(kind){const M=QTE_MOVES[kind],Bp=M.base?[BASES[M.base][0],BASE
   // the men who are really standing there step out of the picture for the close-up; they are put back afterwards
   QT.hid=[];RUN.list.forEach(R=>{if(R.fig.root.visible){QT.hid.push(R.fig.root);R.fig.root.visible=false;}});fielders.forEach(f=>{const r=f.fig.root;if(!f.isP&&r.visible&&Math.hypot(r.position.x-Bp[0],r.position.z-Bp[1])<9){QT.hid.push(r);r.visible=false;}});
   ball.visible=false;ballShadow.visible=false;pop(M.call,'','hot');buzz([30,30,60]);crowdRise(.8,3,true);hud();}
-function qteShow(){const M=QT.M,e=$('qte');$('qtt').textContent=M.name;$('qtr').innerHTML=QT.code.map((c,i)=>`<i class="${i<QT.i?'ok':''}">${{U:'▲',D:'▼',L:'◀',R:'▶'}[c]}</i>`).join('');e.hidden=false;$('hud').classList.add('qon');}
+function qteShow(){const M=QT.M,e=$('qte');$('qtt').textContent=M.name;$('qtr').innerHTML=QT.code.map((c,i)=>`<i class="${i<QT.i?'ok':i===QT.i?'cur':''}">${{U:'▲',D:'▼',L:'◀',R:'▶'}[c]}</i>`).join('');e.hidden=false;$('hud').classList.add('qon');}
 function qteKey(d){if(S.state!=='qte'||QT.ph!=='input')return;
+  {const b=document.querySelector('#qpad [data-d='+d+']'),good=d===QT.code[QT.i];if(b){b.classList.remove('hit','miss');void b.offsetWidth;b.classList.add(good?'hit':'miss');setTimeout(()=>b.classList.remove('hit','miss'),220);}}
   if(d===QT.code[QT.i]){QT.i++;buzz(15);tone('triangle',520+110*QT.i,700+110*QT.i,.07,.3);if(QT.i>=QT.code.length){qteShow();qteDone(true);return;}}
   else{QT.i=0;buzz([30,30,30]);tone('sawtooth',160,90,.12,.3);const r=$('qtr');r.classList.remove('bad');void r.offsetWidth;r.classList.add('bad');} // a wrong arrow: start the code again
   qteShow();}
@@ -2185,7 +2193,7 @@ function qteTick(){const Q=QT,d0=9.5,d1=2.6,pe=now-Q.tp;
   else if(Q.ph==='run'){const k=clamp(pe/Q.runT,0,1),d=lerp(d0,d1,k);Q.rx=Q.bx+Q.ux*d;Q.rz=Q.bz+Q.uz*d;
     if(k>=1){Q.ph='input';Q.t1=now;Q.b={n:'run',t:now,freeze:((now-Q.b.t)*.5)%.7,loop:true};qteShow();buzz(40);tone('sine',880,880,.1,.3);}}
   else if(Q.ph==='input'){const left=1-(now-Q.t1)/Q.lim;$('qtb').style.transform='scaleX('+Math.max(0,left).toFixed(3)+')';$('qtb').classList.toggle('low',left<.35);if(left<=0)qteDone(false);}
-  else{const e=now-Q.t1,d=lerp(d1,Q.ok?1.15:1.0,ease(clamp(e/.45,0,1)));Q.rx=Q.bx+Q.ux*d;Q.rz=Q.bz+Q.uz*d;
+  else{const e=now-Q.t1,d=Q.ok?lerp(lerp(d1,1.05,ease(clamp(e/.45,0,1))),.15,ease(clamp((e-.5)/.6,0,1))):lerp(d1,1.0,ease(clamp(e/.45,0,1)));Q.rx=Q.bx+Q.ux*d;Q.rz=Q.bz+Q.uz*d; /* a made kick carries him through the fielder and onto the bag, and no further */
     if(!Q.hit&&e>=.42){Q.hit=true;const M=Q.M;SND.mitt();tone('sine',120,45,.2,.7);shake=Math.max(shake,.45*FX);flash(.5);burst(fxS,_p.set(Q.fx+Q.ux*.4,1.2,Q.fz+Q.uz*.4),22,4,.5,[1,.9,.5],2,1);
       if(Q.ok){Q.f={n:'p_dying',t:now,hold:true};Q.ball={t:now,x:Q.fx,z:Q.fz};rumble=1;crowdPump(1);M.ok();pop(M.okT[0],M.okT[1],'hot',true);}
       else{Q.b={n:'b_gut',t:now,hold:true};crowdDrop();M.no();pop(M.noT[0],M.noT[1],'cool',true);}
@@ -2281,7 +2289,7 @@ function choosePitch(){
     if(side===0)tx=ZONE.x0-o;else if(side===1)tx=ZONE.x1+o;else if(side===2)ty=ZONE.y0-o;else ty=ZONE.y1+o;}
   // Now and then one gets away from him (far more often when he is in Overdrive and throwing with bad intentions): it is headed for the hitter.
   // Never to the first three hitters of a new player's early games, and at most twice a game.
-  const hbp=S.bi>0&&!(S.over&&S.overOn)&&!(gamesPlayed<=3&&S.bi<3)&&(S.hbpN||0)<2&&(DBG.hbp||Math.random()<(S.bi===S.retalBi?(S.balls+S.strikes===0?.24:.06):S.pOver?.06:.01)); /* the hitter after a big homer or a showy celebration is far more likely to wear one: it reads as payback */ // never while the hitter is in Overdrive
+  const hbp=S.bi>0&&!(S.over&&S.overOn)&&!(gamesPlayed<=3&&S.bi<3)&&(S.hbpN||0)<3&&S.balls+S.strikes===0&&(DBG.hbp||Math.random()<(S.bi===S.retalBi?.3:S.pOver?.14:.05)); /* the hitter after a big homer or a showy celebration is far more likely to wear one: it reads as payback */ // never while the hitter is in Overdrive
   if(hbp){tx=(curBatter().lh?1:-1)*.68;ty=rand(1.05,1.3);}
   const sp=inningSp();
   return {P,tx,ty,hbp,dur:P.dur*sp*rand(.97,1.03),brk:new V3(P.brk[0]*rand(.8,1.15),P.brk[1]*rand(.8,1.15),0),arc:P.arc,rel:new V3(),t0:0,
@@ -2514,7 +2522,7 @@ function tryContact(){flight_pop=false;if(pitch.hbp){swing.done=true;swing.miss=
   if(play.type==='hr'&&MX.clip){const ft=play.dist*3.281,big=tb||ft>=500,r=Math.random(),early=earlyShow(S.hrs),kind=DBG.trail?'':DBG.admire||(early?'show':big?(r<.45?'show':r<.65?'admire':''):ft>=440?(r<.4?'admire':''):'');wildTrot=early;
     if(!kind&&!flight.orbit&&ft>=420&&(DBG.trail||Math.random()<.6))flight.trailCam=true; // some no-doubters are watched from right behind the ball
    
-    if(kind){flight.admire=kind;flight.trot=WALK.on&&RUN.list.length>0;flight.A=Math.max(1.2,Math.min(kind==='show'&&!flight.trot?3.9:2.5,play.endT-1.3));pop(['NO DOUBTER!','SEE YA!','CRANKED!','ABSOLUTE TANK!'][(Math.random()*4)|0],'',tb?'hot':'');}}
+    if(kind){flight.admire=kind;flight.trot=WALK.on&&RUN.list.length>0;flight.A=Math.max(1.2,Math.min(kind==='show'&&!flight.trot?3.9:2.5,play.endT-1.3));pop(['NO DOUBTER!','SEE YA!','CRANKED!','ABSOLUTE TANK!','MOONSHOT!'][(Math.random()*5)|0],'',tb?'hot':'');}}
   if(!flight.admire&&q>.82&&pw&&play.type!=='foul')pop(['CRUSHED!','SMOKED!','TATTOOED!','OBLITERATED!'][(Math.random()*4)|0],'',tb?'hot':'');
   if(play.type!=='foul'&&(tb||(S.over&&S.overOn)||(play.type==='hr'&&play.dist*3.281>=420)))sfx('crush',1);
   if(play.type==='hr'&&S.over&&S.overOn){const k=$('tmk');k.classList.add('pf','od');$('tim').dataset.rk=1;}else $('tmk').classList.remove('od'); // an Overdrive homer always gets the rocket, burning blue
@@ -2605,7 +2613,7 @@ function finishPlay(){
     {const deep=pl.air&&!dp&&pl.f&&pl.f.of&&Math.hypot(pl.p.x,pl.p.z)>70&&S.outs<3,k=deep?(S.bases[1]&&!S.bases[2]?'tag3':S.bases[0]&&!S.bases[1]?'tag2':''):''; // a deep fly with a man on: he tags up and goes
       if(k&&qteOK()){S.state='result';S.t=now;readyDur=1.3;S.next=()=>qteStart(k);hud();return;}} // the man from first is out at second; whether they turn two is up to him (and you)
     afterPA(dp?2.7:f.thr?2.1:1.5);return;}
-  S.hits++;S.streak++;S.bestStreak=Math.max(S.bestStreak,S.streak);if(!f.tb)S.juice=Math.min(1,S.juice+.25); // every hit is worth one quarter; // a Juice hit doesn't refill the bar it just spent
+  S.hits++;S.streak++;S.bestStreak=Math.max(S.bestStreak,S.streak);if(!f.tb)S.juice=Math.min(1,S.juice+(pl.type==='hr'?.5:.25)); // every hit is worth one quarter; // a Juice hit doesn't refill the bar it just spent
   if(pl.type==='hr'){
     const ft=Math.round(pl.dist*3.281);S.hrs++;S.longest=Math.max(S.longest,ft);const r=advance(4);f.rbi=r;
     buzz([40,50,90]);pop(r===4?'GRAND SLAM!':'GONE!',`${ft} FT · +${r} RUN${r>1?'S':''}`+(pl.tag?' · '+pl.tag:''),'hot',true);scoreboard('HOME RUN',ft+' FT');
@@ -2931,7 +2939,9 @@ function setupClip(obj,clip,B,sk){
   if(sc){C.strike=mixer.clipAction(sc);C.strike.play();C.strike.setEffectiveWeight(0);}
   // intros stay in the batter's box: work out how far each clip sits (or finishes) from where he stands in his stance
   const hipsAt=(c,ts)=>{const v=new V3(),sum=new V3();probe(c,at=>ts.forEach(t=>{at(t);C.hips.getWorldPosition(v);sum.add(v);}));return sum.multiplyScalar(1/ts.length);},home=hipsAt(ic||clip,[0]);
-  C.intros={};obj.animations.filter(c=>/^[wdcbq]_/.test(c.name)||c.name==='run'||/^p_(loser|twerk|chicken|runman|fist|clap|threat|dying)$/.test(c.name)).forEach(c=>{keep(c);const loop=c.duration<2.5,ref=hipsAt(c,loop?[0,1,2,3,4,5,6,7].map(k=>k/8*c.duration):[c.duration-.02]);
+  C.intros={};obj.animations.filter(c=>/^[wdcbq]_/.test(c.name)||c.name==='run'||/^p_(loser|twerk|chicken|runman|fist|clap|threat|dying)$/.test(c.name)).forEach(c=>{keep(c);
+    if(c.name==='q_flykick'||c.name==='run'){const ht=c.tracks.find(t=>/Hips\.position$/.test(t.name));if(ht){const v=ht.values;for(let k=3;k<v.length;k+=3){v[k]=v[0];v[k+2]=v[2];}}} /* these two play on the spot: the game moves him, so the kick lands him on the bag instead of carrying him past it */
+    const loop=c.duration<2.5,ref=hipsAt(c,loop?[0,1,2,3,4,5,6,7].map(k=>k/8*c.duration):[c.duration-.02]);
     const a=mixer.clipAction(c);a.play();a.setEffectiveWeight(0);C.intros[c.name]={a,dur:c.duration,loop,off:{x:home.x-ref.x,z:home.z-ref.z},loc:{x:-(ref.x-obj.position.x),z:-(ref.z-obj.position.z)}};}); // loc: where the routine sits relative to the model's own origin
 }
 const WHIFF_HOLD=1.15; // seconds of the swing-and-miss clip shown after the miss before he resets
