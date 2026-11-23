@@ -1947,7 +1947,7 @@ let hudOver=false,hudBars=0,ringEcho=null,lastWalk='';
 // Flavour first: the first home run and the first strikeout of every game always get the full, ridiculous treatment
 // (the first two of each for a player's first three games), so nobody plays a whole game without seeing what this game is.
 const WALK_ONLY=['w_milling','w_drive','w_golf','w_sad']; // routines that are walk-ups only, never celebrations
-let celLast='';const celClip=own=>{if(!WALK_ONLY.includes(own))return own;const C=MX.clip,w=C?WILD_CEL.filter(k=>C.intros[k]):[];return w.length?w[(Math.random()*w.length)|0]:own;}; // the milling routine is a walk-up only
+const CEL_FAV=['w_bboy','w_backflip','p_twerk','w_macarena'];let celLast='';const celClip=own=>{if(!WALK_ONLY.includes(own))return own;const C=MX.clip,w=C?WILD_CEL.filter(k=>C.intros[k]):[];return w.length?w[(Math.random()*w.length)|0]:own;}; // the milling routine is a walk-up only
 const earlyShow=n=>n<(gamesPlayed<=3?2:1);let wildTrot=false;
 const WILD_CEL=['w_backflip','w_bboy','w_macarena','w_salsa','w_bdance','w_flair','w_lift','w_pushup','p_loser','p_twerk','p_chicken','p_runman','p_fist','p_clap','p_threat','w_boxing','w_arrow','w_wave'],WILD_TAUNT=['p_twerk','p_chicken','p_backflip','p_bboy','p_macarena','p_runman'];
 const juiceOn=()=>juiceArmed||keys.ShiftLeft||keys.ShiftRight;
@@ -2022,7 +2022,7 @@ const TROT={dur:5.85,celT:3.05,cele:false,clip:'',R:null,cam:new V3(),segs:[[0,3
 function startTrot(){const R=RUN.list.find(R=>!R.active)||null;if(!R||!R.jogAct)return false;
   R.active=true;R.trot=true;R.delay=0;R.s=0;R.target=4;TROT.R=R;TROT.cele=false;TROT.cut=false;R.fig.root.scale.setScalar(FSCALE.inf);
   {const C=MX.clip,own=celClip(WALK.by[curBatter().name]);const wild=wildTrot&&C?WILD_CEL.filter(k=>C.intros[k]):[];wildTrot=false;
-    const all=C?WILD_CEL.filter(k=>C.intros[k]&&k!=='p_loser'&&k!==celLast):[],pick=a=>a[(Math.random()*a.length)|0],w2=wild.filter(k=>k!=='p_loser'&&k!==celLast);
+    const all0=C?WILD_CEL.filter(k=>C.intros[k]&&k!=='p_loser'&&k!==celLast):[],all=all0.concat(all0.filter(k=>CEL_FAV.includes(k)),all0.filter(k=>CEL_FAV.includes(k))),pick=a=>a[(Math.random()*a.length)|0], /* the crowd-pleasers (break dance, backflip, twerk, macarena) come up three times as often as the rest */w2=wild.filter(k=>k!=='p_loser'&&k!==celLast);
     // his own routine about a third of the time, the 'loser' sign at the pitcher now and then, otherwise anything from the whole book (dances, flexes, the pitcher's own strikeout taunts thrown back at him), never the same one twice running
     TROT.clip=w2.length&&!DBG.loser?pick(w2):C&&C.intros.p_loser&&(DBG.loser||Math.random()<.22)?'p_loser':C&&C.intros[own]&&own!==celLast&&Math.random()<.35?own:all.length?pick(all):C&&C.intros[own]?own:'';celLast=TROT.clip;} // sometimes he turns and gives the pitcher the 'loser' sign instead // his own routine once he has touched home
   // men already on base stay ahead of him: when the highlight cuts in, each is at least three-quarters of a base in front of the man behind, and they keep that lead home
@@ -2112,7 +2112,7 @@ const HB1=3.0,HBD=5.0;
 // THE BRAWL. Some hit-by-pitches don't end with a trot to first: the hitter charges the mound. He runs out, the pitcher squares up,
 // they trade three blows, and the third one puts somebody on the ground. Who wins is a coin flip. Win and the hitter's ratings go up
 // (and he gets two bars of Juice); lose and they may go down. Either way he takes his base. A new player's first hit-by-pitch is always one.
-const BRW={ch:1.7,st:1.0,rd:1.75,n:3,hold:2.3,dur:0,b:null,p:null,cur:null,r:-1,win:false,seq:[],bx:0,bz:0,x0:0,z0:0,ko:false};BRW.f0=BRW.ch+BRW.st;BRW.f1=BRW.f0+BRW.rd*BRW.n;BRW.dur=BRW.f1+BRW.hold;
+const BRW={ch:1.7,st:.3,rd:1.2,n:3,hold:2.3,dur:0,b:null,p:null,cur:null,r:-1,win:false,seq:[],bx:0,bz:0,x0:0,z0:0,ko:false};BRW.f0=BRW.ch+BRW.st;BRW.f1=BRW.f0+BRW.rd*BRW.n;BRW.dur=BRW.f1+BRW.hold;
 const BR_ATT={b_jab:.36,b_jabstep:.62,b_quad:.42,b_kickl:.95,b_kickr:.62,b_butt:.8},BR_Z=-17.2;
 let brawlSeen=false;try{brawlSeen=localStorage.getItem('mm_brawl')==='1';}catch(e){}
 function brawlNeed(){const C=MX.clip,P=MX.pit;if(!WALK.on||!C||!P||!MX.on||!C.intros.b_stance||!C.intros.run||!C.intros.p_dying||!P.taunts.b_stance||!P.taunts.p_dying)return false;return DBG.brawl||(S.hbpN||0)<=1||Math.random()<.3;} // the first hit-by-pitch of every game is a brawl; after that it is a roll of the dice
@@ -2128,7 +2128,7 @@ function brawlTick(el){const B=BRW;
   const r=el<B.f0?-1:Math.min(B.n-1,Math.floor((el-B.f0)/B.rd));
   if(r!==B.r&&r>=0&&el<B.f1){B.r=r;const q=B.seq[r];B.cur={q,t:now,hit:false};const a={n:q.clip,t:now};if(q.att==='b')B.b=a;else B.p=a;}
   if(B.cur&&!B.cur.hit&&now-B.cur.t>=BR_ATT[B.cur.q.clip]){B.cur.hit=true;const q=B.cur.q,last=B.r===B.n-1,d={n:q.react,t:now,hold:last};if(q.att==='b')B.p=d;else B.b=d;
-    SND.mitt();tone('sine',120,45,.2,.7);noise(.1,'lowpass',500,90,.7);buzz(last?[60,40,120]:[40]);shake=Math.max(shake,(last?.5:.3)*FX);flash(last?.6:.25);burst(fxS,_p.set(0,1.35,BR_Z-.6),last?26:12,4,.45,[1,.9,.5],2,1);
+    SND.mitt();tone('sine',120,45,.2,.7);noise(.1,'lowpass',500,90,.7);buzz(last?[60,40,120]:[40]);shake=Math.max(shake,(last?.6:.4)*FX);rumble=Math.max(rumble,last?1.4:1);flash(last?.6:.25);burst(fxS,_p.set(0,1.35,BR_Z-.6),last?26:12,4,.45,[1,.9,.5],2,1);
     {const e=$('shout'),ws=last?['LIGHTS OUT!','GOOD NIGHT!','DOWN HE GOES!']:['POW!','WHAM!','BAM!','OOF!','CRACK!'];e.textContent=ws[(Math.random()*ws.length)|0];e.style.left='50%';e.style.top=(MOB?'38%':'30%');e.classList.toggle('b',q.att==='p');e.classList.remove('go');void e.offsetWidth;e.classList.add('go');}
     if(q.att==='b')crowdPump(last?1:.6);else if(!roarG)boo(.6);if(last){B.ko=true;rumble=1;}}
   if(el>=B.f1+.9&&B.ko&&!B.taunt){B.taunt=true;const w={n:'p_fist',t:now,loop:true};if(B.win)B.b=w;else B.p=w;}
@@ -2201,7 +2201,7 @@ function qteTick(){const Q=QT,d0=9.5,d1=2.6,pe=now-Q.tp;
   else if(Q.ph==='input'){if(Q.mash){const dt=Math.min(.05,now-(Q.lt||now));Q.lt=now;Q.fill=Math.max(0,Q.fill-.11*dt);const f=$('qmf');if(f)f.style.transform='scaleX('+Math.min(1,Q.fill).toFixed(3)+')';} // the bar leaks, so you cannot stop
     const left=1-(now-Q.t1)/Q.lim;$('qtb').style.transform='scaleX('+Math.max(0,left).toFixed(3)+')';$('qtb').classList.toggle('low',left<.35);if(left<=0)qteDone(false);}
   else{const e=now-Q.t1,d=Q.ok?lerp(lerp(d1,1.05,ease(clamp(e/.45,0,1))),.15,ease(clamp((e-.5)/.6,0,1))):lerp(d1,1.0,ease(clamp(e/.45,0,1)));Q.rx=Q.bx+Q.ux*d;Q.rz=Q.bz+Q.uz*d; /* a made kick carries him through the fielder and onto the bag, and no further */
-    if(!Q.hit&&e>=.42){Q.hit=true;const M=Q.M;SND.mitt();tone('sine',120,45,.2,.7);shake=Math.max(shake,.45*FX);flash(.5);burst(fxS,_p.set(Q.fx+Q.ux*.4,1.2,Q.fz+Q.uz*.4),22,4,.5,[1,.9,.5],2,1);
+    if(!Q.hit&&e>=.42){Q.hit=true;const M=Q.M;SND.mitt();tone('sine',120,45,.2,.7);shake=Math.max(shake,.55*FX);rumble=Math.max(rumble,1.3);flash(.5);burst(fxS,_p.set(Q.fx+Q.ux*.4,1.2,Q.fz+Q.uz*.4),22,4,.5,[1,.9,.5],2,1);
       if(Q.ok){Q.f={n:'p_dying',t:now-1.1,hold:true};Q.fx0=Q.fx;Q.fz0=Q.fz;Q.blow=now;Q.ball={t:now,x:Q.fx,z:Q.fz};rumble=1;crowdPump(1);M.ok();pop(M.okT[0],M.okT[1],'hot',true);}
       else{Q.b={n:'b_gut',t:now,hold:true};crowdDrop();M.no();pop(M.noT[0],M.noT[1],'cool',true);}
       hud();}
@@ -2291,7 +2291,7 @@ function choosePitch(){
   const special=S.pOver||(S.bi>=3&&(due||(S.heat>=.333&&Math.random()<.38+.04*mad))); // new players don't see special pitches in their first inning // the Heat is only deducted once the pitch has been seen (payHeat), so the meter doesn't give it away
   const pool=PITCHES.filter(p=>S.pOver?p.sp:special?p.sp&&!p.od:!p.sp);let tw=0;pool.forEach(p=>tw+=p.w||1);let r=Math.random()*tw,P=pool[0];
   for(const p of pool){r-=p.w||1;if(r<=0){P=p;break;}}
-  const inZone=S.bi===0||(S.strikes===0&&S.balls>=2&&Math.random()<(S.balls===3?.98:.85))||Math.random()<.64; /* behind 2-0 or 3-0 he comes after the hitter: a four-pitch walk almost never happens */let tx,ty; // the first hitter of every game only sees strikes: nobody's first at-bat is a walk
+  const inZone=S.bi===0||(S.strikes===0&&S.balls>=2&&Math.random()<(S.balls===3?.98:.85))||(S.pOver&&!(S.over&&S.overOn)&&S.balls>=2&&Math.random()<(S.balls===3?.97:.8))||Math.random()<.64; /* behind 2-0 or 3-0 he comes after the hitter: a four-pitch walk almost never happens */let tx,ty; // the first hitter of every game only sees strikes: nobody's first at-bat is a walk
   if(inZone){tx=rand(ZONE.x0+.03,ZONE.x1-.03);ty=rand(ZONE.y0+.04,ZONE.y1-.04);}
   else{const side=(Math.random()*4)|0,o=rand(.1,.26);tx=rand(ZONE.x0,ZONE.x1);ty=rand(ZONE.y0,ZONE.y1);
     if(side===0)tx=ZONE.x0-o;else if(side===1)tx=ZONE.x1+o;else if(side===2)ty=ZONE.y0-o;else ty=ZONE.y1+o;}
@@ -2415,7 +2415,7 @@ function judge0(tr,bt){const spd=bt&&bt.spd||1; // batter's speed: 0.85 (plodder
       if(d<=c.reach+c.speed*hang*Math.max(0,q.t-c.react)){
         // now and then a rocket eats an infielder up: it is on him too fast, goes off him and he goes down. Rare, so it keeps its charm,
         // except in Overdrive: a liner hit right at an infielder by a hitter in Overdrive always goes through him.
-        if(!c.isP&&!c.of&&c.dieAct&&!tr.offF&&!tr.offP&&q.t<=1.05&&q.y>.35&&q.y<=1.9&&(DBG.drill||(S.over&&S.overOn)||Math.random()<.04)){tr.offF={t:q.t,f:c};continue;}
+        if(!c.isP&&!c.of&&c.dieAct&&!tr.offF&&!tr.offP&&q.t<=1.3&&q.y>.2&&q.y<=2.0&&(DBG.drill||(S.over&&S.overOn)||Math.random()<.24)){tr.offF={t:q.t,f:c};continue;}
         if(tr.offF&&tr.offF.f===c)continue;
         f=c;p=q;break outer;}}} // the pitcher only handles what comes straight back at him
   if(!f){p=tr.pts[tr.pts.length-1];let bd=1e9;for(const c of fielders){const d=Math.hypot(c.home.x-p.x,c.home.z-p.z);if(d<bd){bd=d;f=c;}}p={x:p.x,y:0,z:p.z,t:p.t};}
@@ -2653,7 +2653,7 @@ function finishPlay(){
   // Triples always get one, on third (they are rare, and a triple is the most exciting play there is short of a homer).
   if(pl.type==='hit'&&(pl.bases===2||pl.bases===3)&&S.state==='result'&&WALK.on&&MX.clip&&(pl.bases===3||DBG.dbl||earlyShow(S.d2||0)||Math.random()<.4)){
     const w=WILD_CEL.filter(k=>k!=='p_loser'&&k!=='w_lift'&&MX.clip.intros[k]); // the lift uses the bat as the barbell, so it is kept for home plate
-    if(w.length){S.d2=(S.d2||0)+1;S.next=()=>{D2.base=pl.bases;D2.rbi=f.rbi||0;{const w3=w.filter(k=>k!==celLast);D2.clip=(w3.length?w3:w)[(Math.random()*(w3.length||w.length))|0];celLast=D2.clip;}RUN.list.forEach(R=>{if(R.active&&R.target===D2.base)R.s=D2.base;});S.state='celly2';S.t=now;S.retalBi=S.bi;flash(.35);crowdPump();};}}
+    if(w.length){S.d2=(S.d2||0)+1;S.next=()=>{D2.base=pl.bases;D2.rbi=f.rbi||0;{const w3=w.filter(k=>k!==celLast),w4=(w3.length?w3:w),w5=w4.concat(w4.filter(k=>CEL_FAV.includes(k)),w4.filter(k=>CEL_FAV.includes(k)));D2.clip=w5[(Math.random()*w5.length)|0];celLast=D2.clip;}RUN.list.forEach(R=>{if(R.active&&R.target===D2.base)R.s=D2.base;});S.state='celly2';S.t=now;S.retalBi=S.bi;flash(.35);crowdPump();};}}
   // Now and then, after a hit that scores a run (or a triple), a quick cut to the pitcher wearing it. Never twice in a row, never on top of another cut.
   if(!S.next&&pl.type==='hit'&&S.state==='result'&&(f.rbi>0||pl.bases===3)&&WALK.on&&MX.pit&&MX.pit.defs.length&&!S.pdLast&&(DBG.pdef||Math.random()<.4)){S.pdLast=true;S.next=()=>{S.state='pdef';S.t=now;};}
   else if(pl.type==='hit')S.pdLast=false;
