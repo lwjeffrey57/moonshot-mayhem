@@ -148,3 +148,7 @@ different one each time, and a reason to want the next one. Reserved for no-doub
 ## Loading screen
 - Done 2026-11-23: animation file cut from 6.5 MB to 4 MB (finger motion only kept where a bat is held); the sky photo waits until the players are in; build number shown on the title screen.
 - Ideas to keep people interested while it loads: recorded commentary / a PA announcer reading the lineup, a tappable baseball that pops into fireworks, the badge case teaser ("3 of 25"), lore cards for each hitter with his portrait, a "today's pitcher" scouting card, last game's line score, tips with little looping demos.
+
+## Lore: the Lunar League (started 2026-11-23)
+- Eight clubs, named for where on the Moon they play, each with a colour (on the halo board): Tranquility Comets (orange), Kepler Krakens (ice blue), Tycho Thunder (yellow), Apollo Aces (red-pink), Mare Mammoths (violet), Crater Kings (gold), Eclipse Outlaws (steel), Darkside Djinn (green).
+- To do: logos, home parks, rosters built from the character bodies, rivalries, a league table.

@@ -846,7 +846,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 461</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 462</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <button class="tag wkopt sens" id="sens1" type="button"></button>
@@ -1041,6 +1041,9 @@ const TEXR=[];try{document.fonts.load('400 40px "Russo One"').then(()=>{TEXR.for
 function tex(w,h,draw,rep){const c=document.createElement('canvas');c.width=w;c.height=h;draw(c.getContext('2d'),w,h);
   const t=new T.CanvasTexture(c);if(/\.font\s*=|font\b/.test(String(draw)))TEXR.push({c,w,h,draw,t});if(rep){t.wrapS=t.wrapT=T.RepeatWrapping;t.repeat.set(rep[0],rep[1]);}return t;}
 
+let CROWD_WAVE=null;// THE LUNAR LEAGUE: eight clubs, each named for where on the Moon it plays, each with its own colour. (The start of the lore: only the Comets
+// and the Krakens are playable so far.)
+const LEAGUE=[['TRANQUILITY','COMETS','#ff8a3a'],['KEPLER','KRAKENS','#7fe6ff'],['TYCHO','THUNDER','#ffe53b'],['APOLLO','ACES','#ff4d6d'],['MARE','MAMMOTHS','#b79cff'],['CRATER','KINGS','#ffd08a'],['ECLIPSE','OUTLAWS','#9aa3c7'],['DARKSIDE','DJINN','#5dffb0']];
 const HALO={t:null,m:'',paint:null};let STAND_LIT=null,LED_T=null;const SKYG=[]; /* the sky and its stars: they travel with the camera, like anything infinitely far away */
 const hemi=new T.HemisphereLight(0xdde4ff,0x4a4a55,0.85);scene.add(hemi);
 const sun=new T.DirectionalLight(0xfff1dc,0.8);sun.position.set(-30,80,60);scene.add(sun);
@@ -1306,7 +1309,11 @@ gl_FragColor=vec4(col,1.0);
     g.globalCompositeOperation='destination-out';for(const cx of [0,w]){g.save();g.translate(cx,h*1.05);g.scale(w*.36/h,1.15);const rg=g.createRadialGradient(0,0,0,0,0,h);rg.addColorStop(0,'rgba(0,0,0,.95)');rg.addColorStop(.6,'rgba(0,0,0,.5)');rg.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=rg;g.fillRect(-h,-h,h*2,h*2);g.restore();}
     g.globalCompositeOperation='source-over';for(const cx of [0,w]){g.save();g.translate(cx,h*1.02);g.scale(w*.34/h,1.05);const rg=g.createRadialGradient(0,0,0,0,0,h);rg.addColorStop(0,'rgba(255,240,200,.42)');rg.addColorStop(.5,'rgba(255,240,200,.16)');rg.addColorStop(1,'rgba(255,240,200,0)');g.fillStyle=rg;g.fillRect(-h,-h,h*2,h*2);g.restore();}},[1,1]);
   standLight.repeat.set(1/44,1);
-  const litMat=new T.MeshBasicMaterial({map:standLight,transparent:true,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-4,fog:true}),lit=(a,b)=>{const m=new T.Mesh(ribbon(a,b,1),litMat);m.renderOrder=1;scene.add(m);};STAND_LIT=lit;
+  const litMat=new T.MeshBasicMaterial({map:standLight,transparent:true,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-4,fog:true}),
+    waveT=tex(256,8,(g,w,h)=>{g.clearRect(0,0,w,h);const gr=g.createLinearGradient(0,0,w,0);gr.addColorStop(0,'rgba(255,255,255,0)');gr.addColorStop(.42,'rgba(255,255,255,0)');gr.addColorStop(.5,'rgba(255,255,255,1)');gr.addColorStop(.58,'rgba(255,255,255,0)');gr.addColorStop(1,'rgba(255,255,255,0)');g.fillStyle=gr;g.fillRect(0,0,w,h);},[1,1]),
+    waveMat=new T.MeshBasicMaterial({map:waveT,color:0xfff0c8,transparent:true,opacity:0,blending:T.AdditiveBlending,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-3,polygonOffsetUnits:-6,fog:false});waveT.repeat.set(1/150,1);CROWD_WAVE=waveMat;
+  /* THE WAVE: when the place erupts a band of light rolls round the stands, the way a crowd getting to its feet catches the lamps */
+  const lit=(a,b)=>{const g=ribbon(a,b,1),m=new T.Mesh(g,litMat);m.renderOrder=1;scene.add(m);const w=new T.Mesh(g,waveMat);w.renderOrder=2;scene.add(w);};STAND_LIT=lit;
   lit(s1a,s1b);if(UPPER)split(s2a).forEach((a,k)=>scene.add(new T.Mesh(ribbon(a,split(s2b)[k],1),cm)));
   // luxury boxes between the decks
   const boxes=tex(256,32,(g,w,h)=>{g.fillStyle='#14122c';g.fillRect(0,0,w,h);for(let x=2;x<w;x+=16){g.fillStyle=Math.random()<.75?'#ffd98a':'#3a4a7a';g.fillRect(x,7,12,15);g.fillStyle='rgba(0,0,0,.3)';g.fillRect(x,16,12,6);}g.fillStyle='#ff4d2e';g.fillRect(0,26,w,6);g.fillStyle='#e8e8f0';g.fillRect(0,0,w,3);});
@@ -1314,12 +1321,12 @@ gl_FragColor=vec4(col,1.0);
   // THE HALO BOARD: a ring of LED all the way round the top of the outfield stands. It crawls, and it reacts to the game: gold for a home
   // run, Overdrive blue when you switch it on, danger red when the pitcher is in his. One canvas, repainted only when the message changes.
   {const hc=document.createElement('canvas');hc.width=2048;hc.height=128;const ht=new T.CanvasTexture(hc);ht.wrapS=T.RepeatWrapping;ht.anisotropy=ANISO;
-    let HL=0;for(let i=1;i<fca.length;i++)HL+=fca[i].distanceTo(fca[i-1]);ht.repeat.set(3/HL,1);
-    const MSG={idle:[['COMETS','#ff8a3a'],['VS','#eaf8ff'],['KRAKENS','#7fe6ff'],['MOONSHOT MAYHEM','#ffe53b']],hr:[['HOME RUN!','#ffe53b'],['GONE!','#ff8a3a'],['HOME RUN!','#ffe53b'],['SEE YA!','#fff']],
+    let HL=0;for(let i=1;i<fca.length;i++)HL+=fca[i].distanceTo(fca[i-1]);ht.repeat.set(2.6/HL,1);
+    const MSG={idle:LEAGUE.map(t=>[t[0]+' '+t[1],t[2]]),hr:[['HOME RUN!','#ffe53b'],['GONE!','#ff8a3a'],['HOME RUN!','#ffe53b'],['SEE YA!','#fff']],
       od:[['OVERDRIVE','#eaffff'],['OVERDRIVE','#7fe6ff'],['OVERDRIVE','#eaffff'],['OVERDRIVE','#7fe6ff']],pod:[['DANGER','#ff5a36'],['PITCHER OVERDRIVE','#ffd0c0'],['DANGER','#ff5a36'],['PITCHER OVERDRIVE','#ffd0c0']]},BG={idle:'#070b1e',hr:'#2a1602',od:'#031436',pod:'#2a0504'},EDGE={idle:'#ff4d2e',hr:'#ffd23b',od:'#3ad6ff',pod:'#ff2a1e'};
     HALO.paint=m=>{const g=hc.getContext('2d'),w=hc.width,h=hc.height;g.shadowBlur=0;g.fillStyle=BG[m];g.fillRect(0,0,w,h);
-      g.textAlign='center';g.textBaseline='middle';g.font='italic 400 78px "Russo One",Arial Black,Arial';MSG[m].forEach((q,i)=>{g.shadowColor=q[1];g.shadowBlur=18;g.fillStyle=q[1];g.fillText(q[0],w*(.125+.25*i),h*.54,w*.2);});g.shadowBlur=0;
-      g.fillStyle=EDGE[m];for(let i=0;i<4;i++){g.beginPath();g.arc(w*.25*i,h*.52,13,0,7);g.fill();}
+      g.textAlign='center';g.textBaseline='middle';g.font='italic 400 78px "Russo One",Arial Black,Arial';{const L=MSG[m],n=L.length;g.font='italic 400 '+(n>4?44:78)+'px "Russo One",Arial Black,Arial';L.forEach((q,i)=>{g.shadowColor=q[1];g.shadowBlur=18;g.fillStyle=q[1];g.fillText(q[0],w*(i+.5)/n,h*.54,w/n*.86);});g.shadowBlur=0;
+      g.fillStyle=EDGE[m];for(let i=0;i<n;i++){g.beginPath();g.arc(w*i/n,h*.52,n>4?8:13,0,7);g.fill();}}
       g.fillStyle='rgba(0,0,0,.2)';for(let y=0;y<h;y+=4)g.fillRect(0,y,w,1.5);const vg=g.createLinearGradient(0,0,0,h);vg.addColorStop(0,'rgba(255,255,255,.14)');vg.addColorStop(.4,'rgba(255,255,255,0)');vg.addColorStop(1,'rgba(0,0,0,.3)');g.fillStyle=vg;g.fillRect(0,0,w,h);
       g.fillStyle=EDGE[m];g.fillRect(0,0,w,8);g.fillRect(0,h-8,w,8);ht.needsUpdate=true;};
     HALO.t=ht;HALO.m='';scene.add(new T.Mesh(ribbon(fca,fcb,1),basic({map:ht})));
@@ -1871,7 +1878,8 @@ function standPt(o){const k=Math.random();
 function crowdFx(dt){
   if(REDUCE||!EYE.cm)return;
   crowdE=Math.max(0,crowdE-dt*.42);crowdShow+=(crowdE-crowdShow)*Math.min(1,dt*6);
-  const e=crowdShow,t=performance.now()/1000,b=1+.42*e+.05*e*Math.sin(t*9);
+  const e=crowdShow,t=performance.now()/1000,b=.8+.7*e+.06*e*Math.sin(t*9); /* a quiet crowd sits a shade darker under the lamps; an excited one is far brighter than before */
+  if(CROWD_WAVE){const k=clamp((e-.45)/.4,0,1);CROWD_WAVE.opacity=.5*k;if(k>0)CROWD_WAVE.map.offset.x=(-t*.55)%1;}
   EYE.cm.color.setScalar(b);EYE.fm.color.setScalar(b);
   EYE.crowd.offset.y=Math.sin(t*11)*.0035*e;EYE.fans.offset.y=Math.sin(t*11+2.1)*.012*e;
   if(!FLASH.pts){const g=new T.BufferGeometry();g.setAttribute('position',new T.BufferAttribute(new Float32Array(FLASH.n*3).fill(-999),3));
@@ -1944,7 +1952,7 @@ const fireworks=[];
 // ───────────────────────── audio (all synthesized)
 let AC=null,master=null,crowdGain=null,noiseBuf=null,crowdBase=.018,crowdReal=false; // the hiss stand-in is kept very low: it is only ever heard if the crowd recording is late
 // Recorded sounds (sfx/*.mp3). Each one replaces a synthesized sound once it has loaded; if a file is missing the synth version plays.
-const SFX={},SFX_FILES=['bed','cheer','cheer_big','strike','ball','swing1','swing2','swing3','swing4','playball','ball2','ball3','ball4','strike2','out','catch2','crush','boo1','boo2','boo3','pop_max','foul','horn','org_charge','org_chord','org_post','org_clap','org_letsgo','org_neenaa','org_mariachi','org_lgo','org_rise','vendor'];
+const SFX={},SFX_FILES=['bed','cheer','cheer_big','strike','ball','swing1','swing2','swing3','swing4','playball','ball2','ball3','ball4','strike2','out','catch2','crush','boo1','boo2','boo3','pop_max','foul','horn','clap1','clap2','org_charge','org_chord','org_post','org_clap','org_letsgo','org_neenaa','org_mariachi','org_lgo','org_rise','vendor'];
 // The sound files start downloading the moment the page opens (three at a time, the ones the first seconds of a game need first), so they
 // are already here when PLAY BALL is tapped. Before, nothing was fetched until that tap, and with the player models also downloading the
 // game started on its stand-in synth sounds: hiss for a crowd, a jingle instead of the umpire.
@@ -2100,6 +2108,13 @@ function laserTick(dt){if(!LAS.beams.length)return;
 let vendNext=0,vendSt='';
 function vendorTick(){if(!AC)return;const st=S.state;if(st===vendSt)return;vendSt=st;const t=AC.currentTime;if(!vendNext)vendNext=t+rand(25,45);
   if(st!=='ready'||t<vendNext||orgS||(roarG&&roarG.gain.value>.2)||pOD()||(S.over&&S.overOn))return;if(sfx('vendor',.55))vendNext=t+rand(50,95);}
+// Rhythmic clapping from the home crowd between pitches: when there is something to clap for (a man in scoring position, a full count,
+// a rally going) and now and then just because. Never over a roar, the organ or anybody's Overdrive.
+let clapNext=0,clapSt='';
+function clapTick(){if(!AC)return;const st=S.state;if(st===clapSt)return;clapSt=st;const t=AC.currentTime;if(!clapNext)clapNext=t+rand(10,20);
+  if(st!=='ready'||t<clapNext||orgS||(roarG&&roarG.gain.value>.2)||pOD()||(S.over&&S.overOn))return;
+  const rally=S.bases[1]||S.bases[2]||S.balls===3||S.streak>=2;if(!rally&&Math.random()<.6){clapNext=t+rand(8,16);return;}
+  if(sfx(Math.random()<.5?'clap1':'clap2',rally?.75:.5))clapNext=t+rand(rally?16:28,rally?30:50);}
 function organTick(){
   if(!AC)return;
   const st=S.state;if(st===orgSt)return;
@@ -4395,7 +4410,7 @@ function step(dt){
   // reticle
   const b=S.bi>=0?curBatter():LINEUP[0],tb=(S.over&&S.overOn)||(!S.over&&juiceOn()&&S.juice>=.25);
   if(QT.pb!=null&&S.state!=='qte'){QT.pb=null;pitcherModel();}
-  stickHint();sbTick();zapTick();crowdTick(dt);shoutTick();poleTick();satTick();lampTick(dt);laserTick(dt);organTick();vendorTick();roarTick();heartTick();zoneTick();
+  stickHint();sbTick();zapTick();crowdTick(dt);shoutTick();poleTick();satTick();lampTick(dt);laserTick(dt);organTick();vendorTick();clapTick();roarTick();heartTick();zoneTick();
   if(flight&&flight.play.type==='hr'&&!flight.sbHit&&!flight.noSb&&!flight.orbit&&ball.visible&&Math.abs(ball.position.x-SBX)<24&&ball.position.y>30&&ball.position.y<48&&ball.position.z<-(fenceR(0)+15)&&ball.position.z>-(fenceR(0)+24)){flight.sbHit=true;badge('board');pop('OFF THE SCOREBOARD!','','hot');zapStart(ball.position,true);burst(fxL,ball.position,26,9,.7,[.6,.85,1],7,1);}
   if(!!MX.lefty!==lhCls){lhCls=!!MX.lefty;$('hud').classList.toggle('lh',lhCls);}
   if(rawMouse&&rawMouse.d){rawMouse.d=0;pointerAim(rawMouse);}
