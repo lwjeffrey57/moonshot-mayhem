@@ -3518,10 +3518,22 @@ if(T.FBXLoader)loadBuf('bat.txt').then(buf=>{
   let M=new T.Matrix4().set(...row(o1,1),...row(ax,sign),...row(o2,1),0,0,0,1);
   if(M.determinant()<0)M=new T.Matrix4().set(...row(o2,1),...row(ax,sign),...row(o1,1),0,0,0,1);
   g.translate(-c.x,-c.y,-c.z).applyMatrix4(M);const k=.9/sz[ax];g.scale(k*1.1,k,k*1.1).translate(0,.43,0);
-  const Q=g.attributes.position,col=new Float32Array(Q.count*3),ash=new T.Color(0xdcb37a),dark=new T.Color(0x2e1c10),band=new T.Color(0x14204a);
-  for(let i=0;i<Q.count;i++){const y=Q.getY(i),cc=y<.3?dark:(y>.5&&y<.525)?band:ash;col[i*3]=cc.r;col[i*3+1]=cc.g;col[i*3+2]=cc.b;}
-  g.setAttribute('color',new T.BufferAttribute(col,3));
-  const mat=new T.MeshPhongMaterial({vertexColors:true,shininess:45,specular:0x443322}),mesh=new T.Mesh(g,mat);mesh.castShadow=true;
+  // The finish is a painted texture wrapped round the bat by height (not colours per vertex, which gave ragged edges): a taped handle,
+  // ash with long grain, a crisp navy band edged in gold with the club mark, a darker barrel end.
+  const Q=g.attributes.position,uv=new Float32Array(Q.count*2),y0=-.02,yL=.9;
+  for(let i=0;i<Q.count;i++){uv[i*2]=Math.atan2(Q.getZ(i),Q.getX(i))/(2*PI)+.5;uv[i*2+1]=clamp((Q.getY(i)-y0)/yL,0,1);}
+  g.setAttribute('uv',new T.BufferAttribute(uv,2));g.computeVertexNormals();
+  const wood=tex(128,1024,(c,w,h)=>{const Y=v=>h*(1-v); // v: 0 at the knob, 1 at the barrel end
+    const gr=c.createLinearGradient(0,Y(0),0,Y(1));gr.addColorStop(0,'#c99b5e');gr.addColorStop(.55,'#e4bf86');gr.addColorStop(.9,'#e9c88f');gr.addColorStop(1,'#b98a50');c.fillStyle=gr;c.fillRect(0,0,w,h);
+    for(let i=0;i<70;i++){c.strokeStyle=`rgba(${Math.random()<.5?'120,80,40':'255,235,190'},${rand(.05,.16)})`;c.lineWidth=rand(.6,2.2);const x=rand(0,w);c.beginPath();c.moveTo(x,0);c.bezierCurveTo(x+rand(-5,5),h*.3,x+rand(-5,5),h*.7,x+rand(-4,4),h);c.stroke();} // grain, running the length
+    c.fillStyle='#1d1a18';c.fillRect(0,Y(.36),w,Y(.03)-Y(.36));                                                      // grip tape
+    c.strokeStyle='rgba(255,255,255,.1)';c.lineWidth=2;for(let y=Y(.36);y<Y(.03);y+=13){c.beginPath();c.moveTo(0,y);c.lineTo(w,y+9);c.stroke();} // the wrap
+    c.fillStyle='#caa064';c.fillRect(0,Y(.03),w,h-Y(.03));                                                           // the knob stays bare wood
+    const b0=Y(.60),b1=Y(.55);c.fillStyle='#14204a';c.fillRect(0,b0,w,b1-b0);c.fillStyle='#ffd23b';c.fillRect(0,b0-3,w,3);c.fillRect(0,b1,w,3); // navy band, gold edges
+    c.fillStyle='#3ad6ff';c.fillRect(0,(b0+b1)/2-1.5,w,3);
+    c.fillStyle='rgba(60,36,14,.5)';c.fillRect(0,0,w,Y(.985));},[1,1]);                                                // end grain at the tip
+  wood.anisotropy=ANISO;wood.wrapS=T.RepeatWrapping;
+  const mat=new T.MeshPhongMaterial({map:wood,shininess:70,specular:0x554433}),mesh=new T.Mesh(g,mat);mesh.castShadow=true;
   bat.children.filter(ch=>ch.isMesh).forEach(ch=>bat.remove(ch));bat.add(mesh);bat.userData.wood=mat;
 }).catch(e=>console.warn('bat model unavailable, using built-in bat',e));
 const loadImg=url=>new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=()=>rej(new Error(url));i.src=url;});
