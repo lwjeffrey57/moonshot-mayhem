@@ -878,7 +878,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 510</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 511</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <button class="tag wkopt sens" id="sens1" type="button"></button>
@@ -1430,8 +1430,18 @@ gl_FragColor=vec4(col,1.0);
       for(let x=0;x<w;x+=32)for(let y=0;y<h;y+=32){const cg=g.createLinearGradient(x,y,x+32,y+32);cg.addColorStop(0,'rgba(120,160,255,.13)');cg.addColorStop(.45,'rgba(120,160,255,.02)');cg.addColorStop(1,'rgba(0,0,0,.22)');g.fillStyle=cg;g.fillRect(x+2,y+2,28,28);}
       {const eg=g.createLinearGradient(0,0,w,0);eg.addColorStop(0,'rgba(150,190,255,.2)');eg.addColorStop(.16,'rgba(150,190,255,0)');eg.addColorStop(.84,'rgba(150,190,255,0)');eg.addColorStop(1,'rgba(150,190,255,.2)');g.fillStyle=eg;g.fillRect(0,0,w,h);
         const vg=g.createLinearGradient(0,0,0,h);vg.addColorStop(0,'rgba(255,255,255,.1)');vg.addColorStop(.25,'rgba(255,255,255,0)');vg.addColorStop(1,'rgba(0,0,0,.3)');g.fillStyle=vg;g.fillRect(0,0,w,h);}
-      g.strokeStyle='rgba(180,190,210,.5)';g.lineWidth=4;g.strokeRect(2,2,w-4,h-4);g.strokeStyle='rgba(255,255,255,.55)';g.lineWidth=2;g.beginPath();g.moveTo(2,3);g.lineTo(w-2,3);g.stroke();});
-    EYE.mat=basic({map:sol});scene.add(new T.Mesh(ribbon(a,b,.03),EYE.mat));} // the batter's eye is a dark solar array: still a clean backdrop to pick the ball up against
+      /* (the frame is real geometry below: a lit cyan surround, not a grey line) */});
+    EYE.mat=basic({map:sol});scene.add(new T.Mesh(ribbon(a,b,.03),EYE.mat));
+    // A PROPER SURROUND: a dark metal frame with a glowing cyan inner edge all the way round, corner beacons, and a soft pool of its glow on the
+    // wall-top below. Lit like a piece of the stadium, and the panel itself stays dark so the ball still shows against it.
+    {const up=new V3().subVectors(b[0],a[0]).normalize(),off=(q,k)=>q.clone().addScaledVector(up,k),fr=new T.MeshBasicMaterial({color:0x1a2148,side:T.DoubleSide,fog:false}),gl=new T.MeshBasicMaterial({color:0x3ad6ff,side:T.DoubleSide,fog:false}),
+      bar=(P,Q,m)=>scene.add(new T.Mesh(ribbon(P,Q),m)),lift=(arr,d)=>arr.map(q=>{const n=q.clone().setY(0).normalize();return q.clone().addScaledVector(n,-d);});
+      const a1=lift(a,.12),b1=lift(b,.12);
+      bar(b1.map(q=>off(q,1.5)),b1,fr);bar(a1,a1.map(q=>off(q,-1.1)),fr);bar(b1.map(q=>off(q,.42)),b1.map(q=>off(q,.06)),gl);bar(a1.map(q=>off(q,-.06)),a1.map(q=>off(q,-.4)),gl);
+      [0,a.length-1].forEach((i,k)=>{const sd=k?1:-1,tan=new V3().subVectors(a[k?a.length-1:1],a[k?a.length-2:0]).normalize().multiplyScalar(sd),P0=off(a1[i],-1.1),P1=off(b1[i],1.5);
+        bar([P0.clone().addScaledVector(tan,1.4),P1.clone().addScaledVector(tan,1.4)],[P0,P1],fr);bar([off(a1[i],-.4).addScaledVector(tan,.42),off(b1[i],.42).addScaledVector(tan,.42)],[off(a1[i],-.4).addScaledVector(tan,.06),off(b1[i],.42).addScaledVector(tan,.06)],gl);
+        [P0,P1].forEach(q=>{const sp=new T.Sprite(new T.SpriteMaterial({map:glowTex,color:0x7fe6ff,blending:T.AdditiveBlending,depthWrite:false,transparent:true,opacity:.85,fog:false}));sp.position.copy(q).addScaledVector(tan,.7);sp.scale.set(5,5,1);scene.add(sp);});});
+      const halo=new T.Sprite(new T.SpriteMaterial({map:glowTex,color:0x3a8cff,blending:T.AdditiveBlending,depthWrite:false,transparent:true,opacity:.22,fog:false}));halo.position.copy(a[4]).lerp(b[4],.5);halo.scale.set(64,30,1);halo.renderOrder=-1;scene.add(halo);}} // the batter's eye is a dark solar array: still a clean backdrop to pick the ball up against
   // beyond the park: the lunar surface, crater-rim ridges on the horizon, and a small moon base with a rocket on the pad
   {const fb=x=>Math.sin(x*1.7)*.5+Math.sin(x*4.3+1.3)*.27+Math.sin(x*9.1+.4)*.14+Math.sin(x*19.7+2.2)*.09;
     // PAINTED LIGHT ON THE RANGES (PS2 style: all in the texture, nothing computed per frame). Hard low sunlight from the left: every spur has a
@@ -1699,7 +1709,7 @@ function sbDraw(force){
   // the man at the plate
   g.fillStyle='rgba(3,4,13,.7)';sbRR(g,30,246,964,112,14);g.fill();g.strokeStyle='rgba(255,255,255,.3)';g.lineWidth=2;sbRR(g,30,246,964,112,14);g.stroke();
   g.fillStyle='#ff8a3a';sbRR(g,30,246,128,112,14);g.fill();g.textAlign='center';sbText(g,String(b.num),94,304,'italic 400 76px "Russo One",Arial Black,Arial','#fff',110);
-  g.textAlign='left';g.fillStyle='#9fb0e0';g.font='400 24px "Russo One",Arial Black,Arial';g.fillText('NOW BATTING',178,272);sbText(g,b.name,178,318,'italic 400 62px "Russo One",Arial Black,Arial','#ffe53b',430,'#ffb21e');
+  g.textAlign='left';g.fillStyle='#9fb0e0';g.font='400 24px "Russo One",Arial Black,Arial';g.fillText('NOW BATTING',178,272);sbText(g,bdn(b),178,318,'italic 400 62px "Russo One",Arial Black,Arial','#ffe53b',430,'#ffb21e');
   [['PWR',b.pwr],['CON',b.con],['SPD',b.spd]].forEach((q,k)=>{const x=650+k*112,gr=statGrade(q[1]),col={S:'#ffe53b',A:'#39ff6a',B:'#7fe6ff',C:'#fff',D:'#ffb070',F:'#ff5a36'}[gr];g.textAlign='center';g.fillStyle='#9fb0e0';g.font='400 24px "Russo One",Arial Black,Arial';g.fillText(q[0],x+40,272);sbText(g,gr,x+40,320,'400 60px "Russo One",Arial Black,Arial',col,80,col);});
   sbTex.needsUpdate=true;}
 function sbTick(){if(sbMsgT<0)sbMsgT=now+4.5;else if(sbMsgT&&now>sbMsgT&&S.state!=='title'&&S.state!=='over'){sbMsgT=0;sbDraw(true);}}
@@ -1881,11 +1891,11 @@ function ik(sh,el,target,L1,L2,poleV){
 const HOME={base:'#1b2a6b',trim:'#f26a1b',ink:'#f4f4f0',word:'Comets'};
 const AWAY={base:'#f4f4f0',trim:'#0e7c86',ink:'#0e3c46',pin:'rgba(14,60,70,.35)',word:'Krakens'};
 const LINEUP=[
-  {name:'VASQUEZ',num:27,spd:1.0,pwr:1.0,con:1.05,skin:0xb9794f},{name:'OKAFOR',body:1,lh:true,num:8,spd:1.14,pwr:.96,con:1.12,skin:0x6b4226},
-  {name:'DELACROIX',body:7,num:3,crouch:true,spd:1.02,pwr:1.06,con:1.0,skin:0xe2b08a},{name:'BRICKHOUSE',body:2,num:44,spd:0.78,pwr:1.16,con:.82,skin:0xd9a47c},
-  {name:'TANAKA',body:6,lh:true,num:51,spd:1.1,pwr:1.02,con:1.08,skin:0xe6bd94},{name:'MONTOYA',num:19,crouch:true,spd:0.95,pwr:1.1,con:.95,skin:0xa8683e},
-  {name:'ABERNATHY',body:4,lh:true,num:12,spd:1.15,pwr:.94,con:1.1,skin:0xf0c4a0},{name:'JACKSON-BELL',body:8,num:35,crouch:true,spd:0.81,pwr:1.12,con:.93,skin:0x5a3820},
-  {name:'KOWALSKI',body:5,num:6,spd:1.04,pwr:.98,con:1.04,skin:0xe8b690},
+  {name:'VASQUEZ',ini:'R',num:27,spd:1.0,pwr:1.0,con:1.05,skin:0xb9794f},{name:'OKAFOR',ini:'D',body:1,lh:true,num:8,spd:1.14,pwr:.96,con:1.12,skin:0x6b4226},
+  {name:'DELACROIX',ini:'O',body:7,num:3,crouch:true,spd:1.02,pwr:1.06,con:1.0,skin:0xe2b08a},{name:'BRICKHOUSE',ini:'T',body:2,num:44,spd:0.78,pwr:1.16,con:.82,skin:0xd9a47c},
+  {name:'TANAKA',ini:'K',body:6,lh:true,num:51,spd:1.1,pwr:1.02,con:1.08,skin:0xe6bd94},{name:'MONTOYA',ini:'E',num:19,crouch:true,spd:0.95,pwr:1.1,con:.95,skin:0xa8683e},
+  {name:'ABERNATHY',ini:'J',body:4,lh:true,num:12,spd:1.15,pwr:.94,con:1.1,skin:0xf0c4a0},{name:'JACKSON-BELL',ini:'M',body:8,num:35,crouch:true,spd:0.81,pwr:1.12,con:.93,skin:0x5a3820},
+  {name:'KOWALSKI',ini:'A',body:5,num:6,spd:1.04,pwr:.98,con:1.04,skin:0xe8b690},
 ];
 const batter=makeFigure({skin:0xb9794f,pants:0xb9bcc8,stripe:0x1b2a6b,trimC:0xf26a1b,sleeve:0x1b2a6b,cap:0x14204a,helmet:true,bglove:0xf26a1b,jersey:Object.assign({name:'VASQUEZ',num:27},HOME)});
 batter.root.position.set(-.97,0,.12);batter.root.rotation.y=PI/2;scene.add(batter.root);
@@ -1900,7 +1910,7 @@ const batGlow=new T.Sprite(new T.SpriteMaterial({map:glowTex,color:0x3ad6ff,blen
 batGlow.position.y=.6;batGlow.scale.set(.5,.5,1);bat.add(batGlow);
 
 const mkFielder=(name,num)=>makeFigure({skin:[0xe2b08a,0x8a5a3a,0xc98f62,0x6b4226][(Math.random()*4)|0],pants:0xf0f0ec,stripe:0x0e7c86,trimC:0x0e7c86,sleeve:0xf4f4f0,cap:0x0e7c86,glove:true,jersey:Object.assign({name,num},AWAY)});
-const pitcher=mkFielder('STORM',99);pitcher.root.position.set(0,.25,-18.4);scene.add(pitcher.root);
+const pitcher=mkFielder('MACDONALD',99);pitcher.root.position.set(0,.25,-18.4);scene.add(pitcher.root);
 // Fielders are drawn larger than life so they read at distance (taller, not bulkier): outfielders most, since they are furthest away.
 const FSCALE={inf:1.22,of:1.55,p:1.1};
 const FIELD=[['1B',16,-23,0],['2B',9,-34,0],['SS',-10,-34,0],['3B',-16,-23,0],['LF',-36,-71,1],['CF',0,-90,1],['RF',36,-71,1]];
@@ -2012,7 +2022,7 @@ function tagsTick(){
   fielders.forEach((f,i)=>{const T=TAGS[i];let on=live;
     if(on){const r=f.fig.root;const under=!!f.of;_s0.set(r.position.x,under?-.3:2.15*(f.scale||1),r.position.z);const d=_s0.distanceTo(camera.position);_s0.project(camera);
       on=_s0.z<1&&Math.abs(_s0.x)<1.05&&Math.abs(_s0.y)<1.05&&d<95&&(f===flight.play.f||d<60);
-      if(on){const t=f.isP?(S.pName?'#'+S.pName[1]+' '+S.pName[0]:'#99 STORM'):'#'+f.num+' '+f.name;if(t!==T.t){T.t=t;T.e.textContent=t;}
+      if(on){const t=f.isP?(S.pName?'#'+S.pName[1]+' '+pdn(S.pName):'#99 J. MACDONALD'):'#'+f.num+' '+f.name;if(t!==T.t){T.t=t;T.e.textContent=t;}
         T.e.style.transform='translate(-50%,'+(under?'0':'-100%')+') translate('+((_s0.x*.5+.5)*W).toFixed(0)+'px,'+((-_s0.y*.5+.5)*H).toFixed(0)+'px)';T.e.classList.toggle('me',f===flight.play.f);}}
     if(on!==T.on){T.on=on;T.e.style.display=on?'block':'none';}});}
 function sharpInit(){
@@ -2321,7 +2331,7 @@ const SW_T=.07; // tap-to-contact time. Short on purpose: the swing has to feel 
 const curBatter=()=>LINEUP[S.bi%LINEUP.length];
 // the name-and-ratings card follows the hitter the player is looking at, not the one who is merely due up
 const POS_BY={VASQUEZ:'CF',OKAFOR:'SS',DELACROIX:'2B',BRICKHOUSE:'1B',TANAKA:'RF',MONTOYA:'3B',ABERNATHY:'LF','JACKSON-BELL':'C',KOWALSKI:'DH'}; /* where each Comet plays in the field */
-function showCard(){if(S.bi<0)return;S.cardBi=S.bi;const b=curBatter();$('cnum').textContent=b.num;$('cname').innerHTML='<small>#'+b.num+' · '+(POS_BY[b.name]||'DH')+' · BATS '+(b.lh?'L':'R')+'</small>'+b.name+(b.hb>0?' <i class="hbu">▲</i>':b.hb<0?' <i class="hbd">▼</i>':''); /* one arrow by the name says his ratings are up or down for the game; the letters stay clean so nothing overlaps on a phone */cardStats(b);}
+function showCard(){if(S.bi<0)return;S.cardBi=S.bi;const b=curBatter();$('cnum').textContent=b.num;$('cname').innerHTML='<small>#'+b.num+' · '+(POS_BY[b.name]||'DH')+' · BATS '+(b.lh?'L':'R')+'</small>'+bdn(b)+(b.hb>0?' <i class="hbu">▲</i>':b.hb<0?' <i class="hbd">▼</i>':''); /* one arrow by the name says his ratings are up or down for the game; the letters stay clean so nothing overlaps on a phone */cardStats(b);}
 
 function pop(t,s='',cls='',long=false){
   // A NEW BADGE IS THE CALL: if a feat has just earned one, its badge (icon and name, in gold) goes up as the big callout in place of the
@@ -2550,7 +2560,7 @@ function startWalkup(){
     const first=Object.keys(S.seen).length===1&&MX.clip.intros.w_walkin; // the game always opens with a plain walk to the plate; the silliness starts with the second hitter
     S.walkClip=forced&&MX.clip.intros[forced]?forced:first?'w_walkin':(gamesPlayed<=3&&S.bi===1&&rare.length)?rare[(Math.random()*rare.length)|0]:r<rare.length?rare[r]:WALK.by[b.name];} // new players: the second hitter always brings one of the surprise walk-ups
   {const I=MX.clip.intros,forcedWalk=DBG.trip===true?'w_trip':DBG.trip;if(S.walkClip===lastWalk&&!(forcedWalk&&I[forcedWalk])){const alt=Object.keys(I).filter(k=>/^w_/.test(k)&&k!==lastWalk&&k!=='w_walkin');if(alt.length)S.walkClip=alt[(Math.random()*alt.length)|0];}lastWalk=S.walkClip;} // never the same walk-up twice in a row
-  $('wnum').textContent=b.num;$('wname').textContent=b.name;
+  $('wnum').textContent=b.num;$('wname').textContent=bdn(b);
   {const gb=v=>{const g=statGrade(v);return `<b class="gr g${g}"><u>${g}</u></b>`;};$('wrat').innerHTML=`<span>POWER ${gb(b.pwr)}</span><span>CONTACT ${gb(b.con)}</span><span>SPEED ${gb(b.spd)}</span><span>BATS <b class="hand">${b.lh?'L':'R'}</b></span>`;}
   $('wspot').textContent='BATTING '+['1ST','2ND','3RD','4TH','5TH','6TH','7TH','8TH','9TH'][i];$('wskip').textContent=MOB?'TAP TO SKIP':'SWING TO SKIP';
   $('walk').hidden=false;$('hud').classList.add('wk');cheer(.16,2);
@@ -2688,10 +2698,13 @@ function toReady(d){if(S.walkoff&&S.state!=='end'&&S.state!=='over'){S.walkoff=f
   camMode='bat';hud();syncRunners();
   if(S.pcPending){S.pcPending=false;S.state='pchange';S.t=now; // the scene: the man who got knocked out trudges off, then a cut to the mound for the new arm, then the hitter comes up as usual
     S.pcI=false;S.pcW=WALK.on&&MX.pit&&MX.pit.taunts.p_sadwalk?PCW:0;
-    if(S.pcW){const old=BULLPEN[(S.pChanges+BULLPEN.length-1)%BULLPEN.length];flash(.3);pop('HIT THE SHOWERS, SCRUB!',old[0]+' IS DONE','cool',true);cheer(.3,2.4);}else pcIntro();
+    if(S.pcW){const old=BULLPEN[(S.pChanges+BULLPEN.length-1)%BULLPEN.length];flash(.3);pop('HIT THE SHOWERS, SCRUB!',pdn(old)+' IS DONE','cool',true);cheer(.3,2.4);}else pcIntro();
     return;}
   if(WALK.on&&S.fresh&&S.bi>=0&&walkWant()&&MX.clip&&MX.clip.intros[WALK.by[curBatter().name]])startWalkup();}
-const BULLPEN=[['STORM',99,'',0],['VOLKOV',47,'L',1],['DIAZ',13,'',2],['NITRO',7,'',3],['ZLORP',50,'L',4],['DRAKE',25,'',5],['MAYNAR',30,'',6],['JONES',4,'L',7],['PARKER',21,'',8],['RIPTIDE',54,'L',9],['ROMERO',66,'',10],['ASTRA',48,'L',11],['BRADY',40,'',12],['DEMON',6,'',13]] /* name, number, 'L' = left-hander (the same delivery mirrored), which body he wears */,PCH=2.7,PCW=2.8;
+// The Krakens' arms. name, number, 'L' = left-hander, which body he wears, first initial. The human ones have everyday surnames; the aliens go
+// by a single name, the way it is said where they come from (no initial).
+const BULLPEN=[['MACDONALD',99,'',0,'J'],['ARCHER',47,'L',1,'R'],['VREL',13,'',2,''],['HOLLIS',7,'',3,'T'],['ZLORP',50,'L',4,''],["DRA'AK",25,'',5,''],["M'NAR",30,'',6,''],['XANDU',4,'L',7,''],['PARKER',21,'',8,'D'],['WHITLOCK',54,'L',9,'S'],['ROMERO',66,'',10,'C'],['HARGROVE',48,'L',11,'L'],['BRAXX',40,'',12,''],['MALGOR',6,'',13,'']],
+  pdn=P=>(P&&P[4]?P[4]+'. ':'')+(P?P[0]:''),bdn=b=>(b.ini?b.ini+'. ':'')+b.name /* how a pitcher's and a hitter's name are written out: initial and surname */,PCH=2.7,PCW=2.8;
 // HIT BY PITCH. He wears it: down in a heap, a beat on the ground, back to his feet, then he limps to first with an extra bar of Juice for his trouble.
 const HB1=3.0,HBD=5.0;
 // THE BRAWL. Some hit-by-pitches don't end with a trot to first: the hitter charges the mound. He runs out, the pitcher squares up,
@@ -2746,7 +2759,7 @@ function hbpEnd(fk,title){const b=curBatter(),r0=Math.random(),k=fk!==undefined?
   showCard();
   // He heads for first with the camera in front of him, and the walk-up banner comes back to show what getting hit (or the fight) did to his ratings.
   {const gb=v=>{const g=statGrade(v);return `<b class="gr g${g}"><u>${g}</u></b>`;},ch=(lab,o,n)=>`<span>${lab} ${gb(o)}${k?` <i class="${k>0?'hbu':'hbd'}">➜</i> ${gb(n)}`:''}</span>`;
-    $('wnum').textContent=b.num;$('wname').textContent=b.name;$('wrat').innerHTML=ch(MOB?'PWR':'POWER',was.pwr,b.pwr)+ch(MOB?'CON':'CONTACT',was.con,b.con)+ch(MOB?'SPD':'SPEED',was.spd,b.spd);$('shout').classList.remove('go');
+    $('wnum').textContent=b.num;$('wname').textContent=bdn(b);$('wrat').innerHTML=ch(MOB?'PWR':'POWER',was.pwr,b.pwr)+ch(MOB?'CON':'CONTACT',was.con,b.con)+ch(MOB?'SPD':'SPEED',was.spd,b.spd);$('shout').classList.remove('go');
     $('wspot').textContent=k>0?'RATINGS UP · +2 JUICE':k<0?'RATINGS DOWN FOR THE GAME':'NO HARM DONE';$('wskip').textContent='';$('walk').hidden=false;$('hud').classList.add('wk');}
   {const e=$('statfx');e.className='';e.innerHTML='';if(k){let h='';for(let i=0;i<12;i++){const left=i%2,x=left?rand(2,17):rand(83,96);h+=`<i style="left:${x.toFixed(1)}%;top:45%;font-size:${rand(26,50).toFixed(0)}px;animation-delay:${(-rand(0,1.5)).toFixed(2)}s;animation-duration:${rand(1.1,1.8).toFixed(2)}s">${k>0?'▲':'▼'}</i>`;}e.innerHTML=h;e.className=k>0?'up':'dn';}}
   S.state='hbprun';S.t=now;hud();}
@@ -2843,7 +2856,7 @@ function podReveal(){S.podPending=false;S.state='pod';S.t=now;
   flash(.5);boo(.6);SND.zap();setTimeout(()=>SND.zap(),200);buzz([40,40,40,40,90]);shake=Math.max(shake,.45*FX);
   pop('PITCHER OVERDRIVE!','EVERY PITCH IS A JUICE PITCH','hot pod',true);duelCheck();hud();}
 function pcIntro(){if(S.pcI)return;S.pcI=true;pitcherModel();const P=S.pName;
-  flash(.45);pop('PITCHING CHANGE','NOW PITCHING: #'+P[1]+' '+P[0],'hot',true);boo(.55);if(organPlay('neenaa',.55))orgNext+=6;buzz([40,60,40]);$('pcap').textContent='PITCHER · '+P[0];
+  flash(.45);pop('PITCHING CHANGE','NOW PITCHING: #'+P[1]+' '+pdn(P),'hot',true);boo(.55);if(organPlay('neenaa',.55))orgNext+=6;buzz([40,60,40]);$('pcap').textContent='PITCHER · '+pdn(P);
   S.pcS=0;} // (he then throws one warm-up pitch, in updatePitcher, so it is plain there is a new arm out there)
 const pcWalk=()=>S.state==='pchange'&&S.pcW&&now-S.t<S.pcW; // the outgoing pitcher is still walking off
 // Starting before the player models have arrived left an empty batter's box and skipped the first walk-up, so Play Ball waits for them.
@@ -3943,7 +3956,7 @@ function pitcherModel(force){if(!MX.pitVar||!MX.pit||!MX.pitLoad)return;const bi
 function setupPitcher(obj,custom){
   const {sk,B,D}=prepModel(obj,pitT,custom),clip=obj.animations&&obj.animations.find(c=>c.duration>.5);if(!clip)return;
   clip.tracks=clip.tracks.filter(t=>/quaternion$/.test(t.name)||/Hips\.position$/.test(t.name));
-  paintAtlas({name:'STORM',num:99,skin:0xc98f62},Object.assign({},AWAY,{glove:'#c98f62',stripe:'#0e7c86'}),pitC,pitT,'#f0f0ec');
+  paintAtlas({name:'MACDONALD',num:99,skin:0xc98f62},Object.assign({},AWAY,{glove:'#c98f62',stripe:'#0e7c86'}),pitC,pitT,'#f0f0ec');
   scene.add(obj);obj.scale.multiplyScalar(FSCALE.p);obj.position.set(0,.25,-18.4);
   const mixer=new T.AnimationMixer(obj),pact=mixer.clipAction(clip);pact.play();
   const hand=B('RightHand'),lh=B('LeftHand'),v0=new V3(),v1=new V3();
