@@ -343,6 +343,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
 #tbar .gp{background:linear-gradient(90deg,rgba(255,77,46,.3),rgba(255,77,46,.8) 36%,#ff8a70 42%,#ff8a70 58%,rgba(255,77,46,.8) 64%,rgba(255,77,46,.3))}
 #tbar .jx{background:#ffd23b;box-shadow:0 0 8px 1px rgba(255,210,59,.8)} /* same colours as the bat: green = CONTACT window, red core = POWER window, gold ends = Juice */
 #tbar .dim{opacity:.22}
+#hud.ttl>#card{display:none!important} /* no batter plate behind the title or the end-of-game screen */
 /* THE PLAYER CARD, bigger: who is up and what he can do is information you play off, so it is sized to be read at a glance */
 #hud:not(.mob)>#card{padding:10px 16px 10px 12px;gap:14px}#hud:not(.mob)>#card #cnum{font-size:50px}#hud:not(.mob)>#card #cname{font-size:25px}
 #hud:not(.mob)>#card .stat{font-size:14px;gap:7px}#hud:not(.mob)>#card .stat b{width:86px;height:7px}#hud:not(.mob)>#card .stat em{font-size:24px}
@@ -859,7 +860,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 479</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 480</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <button class="tag wkopt sens" id="sens1" type="button"></button>
@@ -984,13 +985,13 @@ function cardTick(){
   _s0.project(camera);const cw=c.offsetWidth||150,ch=c.offsetHeight||44;
   const x=clamp((_s0.x*.5+.5)*W-cw*.5,4,W-cw-4),y=Math.max(150,(-_s0.y*.5+.5)*H-ch-2);
   c.style.transform='translate('+x.toFixed(0)+'px,'+y.toFixed(0)+'px)';}
-const pcutH=new V3(0,2.3,-18.4);let brwOn=false,lhCls=false,retOdC=false,retTb=false,retT=-9,retOd=false,pcutT=-9,pcutOn=false,celOn=false,qsOn=false,hbOn=false,podOn=false,podLv=false,podKs=0,inplayOn=false;
+const pcutH=new V3(0,2.3,-18.4);let ttlOn=null,brwOn=false,lhCls=false,retOdC=false,retTb=false,retT=-9,retOd=false,pcutT=-9,pcutOn=false,celOn=false,qsOn=false,hbOn=false,podOn=false,podLv=false,podKs=0,inplayOn=false;
 // the pitcher's fire border waits until the hitter is in the box; the batter card goes away once the ball is in play
 function podCls(){const st=S.state,on=pOD()&&!(st==='title'||st==='over'||st==='end'||st==='walkup'||st==='pchange');if(on!==podOn){podOn=on;$('hud').classList.toggle('pod',on);}
   {const np=(S.balls|0)+(S.strikes|0),ks=on&&!(S.over&&S.overOn)?((S.strikes|0)>=2||np>=3?2:np>=1?1:0):0; /* it closes in with every pitch he throws, ball or strike: no waiting him out */if(ks!==podKs){podKs=ks;$('hud').classList.toggle('ks1',ks===1);$('hud').classList.toggle('ks2',ks===2);}}
   {const lv=on&&(st==='ready'||st==='windup'||st==='pitch')&&$('tut').hidden;if(lv!==podLv){podLv=lv;$('hud').classList.toggle('podlive',lv);}}
   const ip=st==='flight'||st==='result'||st==='trot'||st==='celebrate'||st==='celly2';if(ip!==inplayOn){inplayOn=ip;$('hud').classList.toggle('inplay',ip);}
-  const ce=st==='celly2'||st==='trot'||st==='qte'||st==='brawl'||st==='hbprun'||!!(flight&&flight.orb&&!flight.done);if(ce!==celOn){celOn=ce;$('hud').classList.toggle('cel',ce);}if((st==='brawl')!==brwOn){brwOn=st==='brawl';$('hud').classList.toggle('brw',brwOn);}
+  const ce=st==='celly2'||st==='trot'||st==='qte'||st==='brawl'||st==='hbprun'||!!(flight&&flight.orb&&!flight.done);if(ce!==celOn){celOn=ce;$('hud').classList.toggle('cel',ce);}if((st==='brawl')!==brwOn){brwOn=st==='brawl';$('hud').classList.toggle('brw',brwOn);}{const tt=st==='title'||st==='over';if(tt!==ttlOn){ttlOn=tt;$('hud').classList.toggle('ttl',tt);}}
   if((st==='qte')!==qsOn){qsOn=st==='qte';$('hud').classList.toggle('qs',qsOn);}
   if((st==='hbp')!==hbOn){hbOn=st==='hbp';$('hud').classList.toggle('hbps',hbOn);}}
  // while the camera is close on the pitcher, call-outs drop to a smaller line along the bottom so the words never sit on him
