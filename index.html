@@ -360,7 +360,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
 #hud:not(.mob)>#card,#hud.kr:not(.mob)>#card{left:auto;right:5%;top:auto;bottom:54.5%;max-width:24vw} /* right-hander: lower and further right, beside the second baseman, never on him */#hud.lh:not(.mob)>#card,#hud.kr.lh:not(.mob)>#card{left:5%;right:auto;bottom:54.5%;max-width:24vw}
 #hud.mob>#card,#hud.mob.lh>#card{top:auto!important;bottom:57.5%!important;max-width:calc(50vw - 40px)!important} /* wholly above the pitcher's head, and never wide enough to reach across to him: he stays in the clear */
 #hud.mob>#card #cname{max-width:100%;overflow:hidden!important;text-overflow:ellipsis}#hud.mob>#card{right:max(16px,env(safe-area-inset-right,0px))!important}#hud.mob.lh>#card{left:max(16px,env(safe-area-inset-left,0px))!important;right:auto!important}
-#hud.mob:not(.lh)>#card #cname{font-size:clamp(16px,4.7vw,20px)!important}#hud.mob:not(.lh)>#card .stat em{font-size:21px!important}#hud.mob:not(.lh)>#card .stat{font-size:10px!important}#hud.mob:not(.lh)>#card{padding:5px 8px 6px!important;bottom:55%!important}#hud.mob.lh>#card{bottom:55%!important} /* a touch smaller for right-handed hitters */
+#hud.mob:not(.lh)>#card #cname{font-size:clamp(16px,4.7vw,20px)!important}#hud.mob:not(.lh)>#card .stat em{font-size:21px!important}#hud.mob:not(.lh)>#card .stat{font-size:10px!important}#hud.mob:not(.lh)>#card{padding:5px 8px 6px!important;bottom:57.5%!important}#hud.mob.lh>#card{bottom:57.5%!important} /* (raised when the number-and-position line made the plate taller: its foot stays above the pitcher's head) */ /* a touch smaller for right-handed hitters */
 /* during a walk-up any callout still on screen (the inning line, PLAY BALL) is held small along the top, well above the man walking in */
 #hud.wk #pop.logo{top:10%!important}#hud.mob.wk #pop.logo{top:17%!important}#hud.wk #pop.logo .t{font-size:clamp(40px,10.5vw,92px)!important}#hud.mob.wk #pop.logo .t{font-size:clamp(44px,14vw,64px)!important} /* PLAY BALL: big, right over the head of the first man walking up, with clear air between them */
 #hud.mob.podlive>#card{bottom:66%!important} /* the batter plate steps up out of the way of the pitcher's Overdrive tag */
@@ -878,7 +878,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 507</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 508</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <button class="tag wkopt sens" id="sens1" type="button"></button>
