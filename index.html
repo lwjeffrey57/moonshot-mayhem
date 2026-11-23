@@ -841,7 +841,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 457</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 458</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <button class="tag wkopt sens" id="sens1" type="button"></button>
@@ -994,7 +994,8 @@ let dftEl=null,dftOn=false,dftV=-1;function dftDom(){const on=!!(flight&&!flight
   const v=flight.dLast|0;if(v!==dftV){dftV=v;dftEl.firstChild.textContent=v;dftEl.classList.toggle('big',v>=450);dftEl.classList.toggle('huge',v>=500);}
   const W=canvas.clientWidth||innerWidth,H=canvas.clientHeight||innerHeight;_s0.copy(ball.position).project(camera);const x=clamp((_s0.x*.5+.5)*W,70,W-70),y=clamp((-_s0.y*.5+.5)*H-H*.11,H*.14,H*.8);
   dftEl.style.transform='translate('+x.toFixed(1)+'px,'+y.toFixed(1)+'px) translate(-50%,-100%)';}
-function draw(){if(LED_T)LED_T.offset.x=(performance.now()*.000028)%1; /* the ribbon board crawls, like a real park's (moving a texture costs nothing) */podCls();shTick();hbpPop();markDom();dftDom();{const pc=now-pcutT<.06,e=$('pop');if(pc!==pcutOn){pcutOn=pc;$('hud').classList.toggle('pcut',pc);if(!pc){e.style.top='';e.style.bottom='';e.className='';}}
+function draw(){if(HALO.paint){const hm=flight&&!flight.done&&flight.play.type==='hr'&&flight.clr||S.state==='trot'?'hr':S.over&&S.overOn?'od':pOD()?'pod':'idle';if(hm!==HALO.m){HALO.m=hm;HALO.paint(hm);}HALO.t.offset.x=(performance.now()*(hm==='idle'?.00003:.00009))%1;}
+  if(LED_T)LED_T.offset.x=(performance.now()*.000028)%1; /* the ribbon board crawls, like a real park's (moving a texture costs nothing) */podCls();shTick();hbpPop();markDom();dftDom();{const pc=now-pcutT<.06,e=$('pop');if(pc!==pcutOn){pcutOn=pc;$('hud').classList.toggle('pcut',pc);if(!pc){e.style.top='';e.style.bottom='';e.className='';}}
   if(pc){_s0.copy(pcutH).project(camera);const H=canvas.clientHeight||innerHeight;e.style.bottom='auto';{const t1=e.querySelector('.t'),s1=e.querySelector('.s');e.style.top=Math.max(MOB?112:84 /* every close-up call stays clear of the scoreboard and the meters along the top */,(-_s0.y*.5+.5)*H-t1.offsetHeight-(s1.textContent?s1.offsetHeight+6:0)).toFixed(0)+'px';}}} // call-outs sit just above the head of whoever the close-up is on
  lodTick();gloveTick();if(composer)composer.render();else renderer.render(scene,camera);sharpTick();tagsTick();cardTick();}
 const scene=new T.Scene();
@@ -1029,7 +1030,7 @@ const TEXR=[];try{document.fonts.load('400 40px "Russo One"').then(()=>{TEXR.for
 function tex(w,h,draw,rep){const c=document.createElement('canvas');c.width=w;c.height=h;draw(c.getContext('2d'),w,h);
   const t=new T.CanvasTexture(c);if(/\.font\s*=|font\b/.test(String(draw)))TEXR.push({c,w,h,draw,t});if(rep){t.wrapS=t.wrapT=T.RepeatWrapping;t.repeat.set(rep[0],rep[1]);}return t;}
 
-let STAND_LIT=null,LED_T=null;const SKYG=[]; /* the sky and its stars: they travel with the camera, like anything infinitely far away */
+const HALO={t:null,m:'',paint:null};let STAND_LIT=null,LED_T=null;const SKYG=[]; /* the sky and its stars: they travel with the camera, like anything infinitely far away */
 const hemi=new T.HemisphereLight(0xdde4ff,0x4a4a55,0.85);scene.add(hemi);
 const sun=new T.DirectionalLight(0xfff1dc,0.8);sun.position.set(-30,80,60);scene.add(sun);
 const rim=new T.DirectionalLight(0xffc890,0.45);rim.position.set(-9,13,-11);rim.castShadow=true;scene.add(rim);
@@ -1299,7 +1300,19 @@ gl_FragColor=vec4(col,1.0);
   // luxury boxes between the decks
   const boxes=tex(256,32,(g,w,h)=>{g.fillStyle='#14122c';g.fillRect(0,0,w,h);for(let x=2;x<w;x+=16){g.fillStyle=Math.random()<.75?'#ffd98a':'#3a4a7a';g.fillRect(x,7,12,15);g.fillStyle='rgba(0,0,0,.3)';g.fillRect(x,16,12,6);}g.fillStyle='#ff4d2e';g.fillRect(0,26,w,6);g.fillStyle='#e8e8f0';g.fillRect(0,0,w,3);});
   boxes.wrapS=T.RepeatWrapping;boxes.repeat.set(1/40,1);
-  scene.add(new T.Mesh(ribbon(fca,fcb,1),basic({color:0x161a3c}))); /* the row of lit boxes along the top of the outfield stands is gone: a plain dark rim */
+  // THE HALO BOARD: a ring of LED all the way round the top of the outfield stands. It crawls, and it reacts to the game: gold for a home
+  // run, Overdrive blue when you switch it on, danger red when the pitcher is in his. One canvas, repainted only when the message changes.
+  {const hc=document.createElement('canvas');hc.width=2048;hc.height=128;const ht=new T.CanvasTexture(hc);ht.wrapS=T.RepeatWrapping;ht.anisotropy=ANISO;
+    let HL=0;for(let i=1;i<fca.length;i++)HL+=fca[i].distanceTo(fca[i-1]);ht.repeat.set(3/HL,1);
+    const MSG={idle:[['MOONSHOT MAYHEM','#ffe53b'],['LUNAR LEAGUE','#eaf8ff'],['GO COMETS','#ff8a3a'],['SEA OF TRANQUILITY','#7fe6ff']],hr:[['HOME RUN!','#ffe53b'],['GONE!','#ff8a3a'],['HOME RUN!','#ffe53b'],['SEE YA!','#fff']],
+      od:[['OVERDRIVE','#eaffff'],['OVERDRIVE','#7fe6ff'],['OVERDRIVE','#eaffff'],['OVERDRIVE','#7fe6ff']],pod:[['DANGER','#ff5a36'],['PITCHER OVERDRIVE','#ffd0c0'],['DANGER','#ff5a36'],['PITCHER OVERDRIVE','#ffd0c0']]},BG={idle:'#070b1e',hr:'#2a1602',od:'#031436',pod:'#2a0504'},EDGE={idle:'#ff4d2e',hr:'#ffd23b',od:'#3ad6ff',pod:'#ff2a1e'};
+    HALO.paint=m=>{const g=hc.getContext('2d'),w=hc.width,h=hc.height;g.shadowBlur=0;g.fillStyle=BG[m];g.fillRect(0,0,w,h);
+      g.textAlign='center';g.textBaseline='middle';g.font='italic 400 78px "Russo One",Arial Black,Arial';MSG[m].forEach((q,i)=>{g.shadowColor=q[1];g.shadowBlur=18;g.fillStyle=q[1];g.fillText(q[0],w*(.125+.25*i),h*.54,w*.2);});g.shadowBlur=0;
+      g.fillStyle=EDGE[m];for(let i=0;i<4;i++){g.beginPath();g.arc(w*.25*i,h*.52,13,0,7);g.fill();}
+      g.fillStyle='rgba(0,0,0,.2)';for(let y=0;y<h;y+=4)g.fillRect(0,y,w,1.5);const vg=g.createLinearGradient(0,0,0,h);vg.addColorStop(0,'rgba(255,255,255,.14)');vg.addColorStop(.4,'rgba(255,255,255,0)');vg.addColorStop(1,'rgba(0,0,0,.3)');g.fillStyle=vg;g.fillRect(0,0,w,h);
+      g.fillStyle=EDGE[m];g.fillRect(0,0,w,8);g.fillRect(0,h-8,w,8);ht.needsUpdate=true;};
+    HALO.t=ht;HALO.m='';scene.add(new T.Mesh(ribbon(fca,fcb,1),basic({map:ht})));
+    try{document.fonts.load('400 40px "Russo One"').then(()=>{HALO.m='';});}catch(e){}}
   // roof over the upper deck: back wall, canopy, white fascia, columns, lights, flags
   const ra=[],rb=[],rc=[],bw=[];
   for(let i=0;i<=N;i++){const phi=lerp(-PI/4,PI/4,i/N),r=fenceR(phi);bw.push(pol(r+54,phi,48));ra.push(pol(r+63,phi,57));rb.push(pol(r+47,phi,60));rc.push(pol(r+47,phi,58.4));
