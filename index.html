@@ -858,7 +858,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 477</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 478</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <button class="tag wkopt sens" id="sens1" type="button"></button>
@@ -1012,7 +1012,11 @@ let dftEl=null,dftOn=false,dftV=-1;function dftDom(){const on=!!(flight&&!flight
   const v=flight.dLast|0;if(v!==dftV){dftV=v;dftEl.firstChild.textContent=v;dftEl.classList.toggle('big',v>=450);dftEl.classList.toggle('huge',v>=500);}
   const W=canvas.clientWidth||innerWidth,H=canvas.clientHeight||innerHeight;_s0.copy(ball.position).project(camera);const x=clamp((_s0.x*.5+.5)*W,70,W-70),y=clamp((-_s0.y*.5+.5)*H-H*.11,H*.14,H*.8);
   dftEl.style.transform='translate('+x.toFixed(1)+'px,'+y.toFixed(1)+'px) translate(-50%,-100%)';}
-function draw(){{const ad=!!(flight&&flight.admire&&!flight.done&&now-flight.t0<(flight.A||0)+.4);if(ad!==admCls){admCls=ad;$('hud').classList.toggle('adm',ad);}}trackRing.visible=landRing.visible;if(landRing.visible){trackRing.position.set(landRing.position.x,.09,landRing.position.z);trackRing.scale.setScalar(landRing.scale.x*1.15);trackRing.rotation.z=now*1.2;}{const du=!!(S.over&&S.overOn&&pOD());if(du!==duelTag){duelTag=du;const e=$('podtag');e.innerHTML=du?'OVERCHARGED<br>DUEL!':'PITCHER OVERDRIVE<br>ACTIVE';e.classList.toggle('du',du);}}if(HALO.paint){const hm=flight&&!flight.done&&flight.play.type==='hr'&&flight.clr||S.state==='trot'?'hr':S.over&&S.overOn?'od':pOD()?'pod':'idle';if(hm!==HALO.m){HALO.m=hm;HALO.paint(hm);}HALO.t.offset.x=(performance.now()*(hm==='idle'?.00003:.00009))%1;}
+function draw(){{const ad=!!(flight&&flight.admire&&!flight.done&&now-flight.t0<(flight.A||0)+.4);if(ad!==admCls){admCls=ad;$('hud').classList.toggle('adm',ad);}}trackRing.visible=landRing.visible;if(landRing.visible){trackRing.position.set(landRing.position.x,.09,landRing.position.z);trackRing.scale.setScalar(landRing.scale.x*1.15);trackRing.rotation.z=now*1.2;}{const du=!!(S.over&&S.overOn&&pOD());if(du!==duelTag){duelTag=du;const e=$('podtag');e.innerHTML=du?'OVERCHARGED<br>DUEL!':'PITCHER OVERDRIVE<br>ACTIVE';e.classList.toggle('du',du);}}if(HALO.paint){const F=flight&&!flight.done?flight:null,st=S.state,pn=performance.now(),cnt=st==='ready'||st==='windup'||st==='pitch';
+    const hm=S.walkoff||st==='end'&&S.runs>S.opp?'walkoff':F&&F.rev&&F.revOn||F&&F.orbit&&F.orb?'orbit':F&&F.play.type==='hr'&&F.clr&&S.bases.filter(Boolean).length===3?'slam':F&&F.play.type==='hr'&&F.admire?'nodoubt':F&&F.play.type==='hr'&&F.clr||st==='trot'?'hr':st==='brawl'?'fight':st==='pchange'?'change':S.kOut&&now<S.kOut.t+3&&st==='result'?'k'
+      :S.over&&S.overOn&&pOD()?'duel':S.over&&S.overOn?'od':pOD()?'pod':F&&F.play.type==='hit'&&F.landed?'hit':cnt&&S.balls===3&&S.strikes===2?'full':cnt&&S.strikes===2?'two':cnt&&(S.bases[1]||S.bases[2])?'rally':'idle'+(((pn/9000)|0)%4);
+    if(hm!==HALO.m){HALO.m=hm;HALO.paint(hm);}const hy=HALO.hype[hm];HALO.t.offset.x=(pn*(hy?.00011:/^idle/.test(hm)?.00003:.00006))%1;
+    if(HALO.mat)HALO.mat.color.setScalar(hy?1.02+.22*Math.sin(pn*.012):1); /* a smooth pulse about twice a second, never a hard strobe */}
   if(LED_T)LED_T.offset.x=(performance.now()*.000028)%1; /* the ribbon board crawls, like a real park's (moving a texture costs nothing) */podCls();shTick();hbpPop();markDom();dftDom();{const pc=now-pcutT<.06,e=$('pop');if(pc!==pcutOn){pcutOn=pc;$('hud').classList.toggle('pcut',pc);if(!pc){e.style.top='';e.style.bottom='';e.className='';}}
   if(pc){ // CLOSE-UPS: the call sits in the gap between the top bar and the head of whoever is on camera. If the gap is too small for it, the
     // call is SHRUNK to fit (down to 40%); it is never slid down across him. Only if there is no usable gap at all does it go to the foot of the screen.
@@ -1335,14 +1339,24 @@ gl_FragColor=vec4(col,1.0);
   // run, Overdrive blue when you switch it on, danger red when the pitcher is in his. One canvas, repainted only when the message changes.
   {const hc=document.createElement('canvas');hc.width=2048;hc.height=128;const ht=new T.CanvasTexture(hc);ht.wrapS=T.RepeatWrapping;ht.anisotropy=ANISO;
     let HL=0;for(let i=1;i<fca.length;i++)HL+=fca[i].distanceTo(fca[i-1]);ht.repeat.set(2.6/HL,1);
-    const MSG={idle:LEAGUE.map(t=>[t[0]+' '+t[1],t[2]]),hr:[['HOME RUN!','#ffe53b'],['GONE!','#ff8a3a'],['HOME RUN!','#ffe53b'],['SEE YA!','#fff']],
-      od:[['OVERDRIVE','#eaffff'],['OVERDRIVE','#7fe6ff'],['OVERDRIVE','#eaffff'],['OVERDRIVE','#7fe6ff']],pod:[['DANGER','#ff5a36'],['PITCHER OVERDRIVE','#ffd0c0'],['DANGER','#ff5a36'],['PITCHER OVERDRIVE','#ffd0c0']]},BG={idle:'#070b1e',hr:'#2a1602',od:'#031436',pod:'#2a0504'},EDGE={idle:'#ff4d2e',hr:'#ffd23b',od:'#3ad6ff',pod:'#ff2a1e'};
+    // What the board says. Quiet moments rotate through a few programmes (the league, the matchup, the park, a crowd prompt); the game takes
+    // it over for anything worth shouting about, each with its own colours, and the hype ones strobe.
+    const Y='#ffe53b',O='#ff8a3a',W='#ffffff',I='#7fe6ff',R='#ff5a36',G='#5dffb0',P='#ff5ad8',four=(a,b,c,d)=>[a,b,c||a,d||b],
+      MSG={idle0:LEAGUE.map(t=>[t[0]+' '+t[1],t[2]]),idle1:four(['TRANQUILITY COMETS',O],['VS',W],['KEPLER KRAKENS',I],['LUNAR LEAGUE BASEBALL',Y]),
+        idle2:four(['MOONSHOT PARK',Y],['SEA OF TRANQUILITY',I],['ONE-SIXTH GRAVITY',G],['SIX TIMES THE DISTANCE',O]),idle3:four(['MAKE SOME NOISE',Y],['LET\'S GO COMETS',O],['EVERYBODY CLAP',W],['LET\'S GO COMETS',O]),
+        hr:four(['HOME RUN!',Y],['GONE!',O],['HOME RUN!',Y],['SEE YA!',W]),nodoubt:four(['NO DOUBTER',Y],['NO DOUBTER',W]),slam:four(['GRAND SLAM',Y],['GRAND SLAM',O]),orbit:four(['INTO ORBIT',I],['MOONSHOT',W]),
+        od:four(['OVERDRIVE',W],['OVERDRIVE',I]),pod:four(['DANGER',R],['PITCHER OVERDRIVE','#ffd0c0']),duel:four(['OVERCHARGED DUEL',W],['OVERDRIVE',I],['OVERCHARGED DUEL',W],['DANGER',R]),
+        rally:four(['RALLY TIME',Y],['BRING HIM IN',O],['RALLY TIME',Y],['LET\'S GO COMETS',W]),two:four(['TWO STRIKES',I],['HANG IN THERE',W]),full:four(['FULL COUNT',Y],['HERE IT COMES',W]),
+        k:four(['K',I],['STRUCK HIM OUT',W],['K',I],['SIT DOWN',W]),fight:four(['FIGHT!',R],['FIGHT!',Y]),change:four(['PITCHING CHANGE',W],['HIT THE SHOWERS',O]),walkoff:four(['WALK-OFF!',Y],['COMETS WIN',O]),hit:four(['BASE HIT',G],['KEEP IT ROLLING',W])},
+      THEME={idle:['#070b1e','#ff4d2e'],hr:['#2a1602',Y],nodoubt:['#2a1602',Y],slam:['#3a0a02',O],orbit:['#031436',I],od:['#031436','#3ad6ff'],pod:['#2a0504','#ff2a1e'],duel:['#1a0424',P],rally:['#1c1602',Y],two:['#04122a',I],full:['#1c1602',Y],k:['#04122a',I],fight:['#2a0504',R],change:['#101326',W],walkoff:['#2a1602',Y],hit:['#04201a',G]},
+      BG=new Proxy({},{get:(_,m)=>(THEME[String(m).replace(/\d+$/,'')]||THEME.idle)[0]}),EDGE=new Proxy({},{get:(_,m)=>(THEME[String(m).replace(/\d+$/,'')]||THEME.idle)[1]});
+    HALO.hype={hr:1,nodoubt:1,slam:1,orbit:1,od:1,duel:1,fight:1,walkoff:1,pod:1};HALO.mat=null;
     HALO.paint=m=>{const g=hc.getContext('2d'),w=hc.width,h=hc.height;g.shadowBlur=0;g.fillStyle=BG[m];g.fillRect(0,0,w,h);
       g.textAlign='center';g.textBaseline='middle';g.font='italic 400 78px "Russo One",Arial Black,Arial';{const L=MSG[m],n=L.length;g.font='italic 400 '+(n>4?44:78)+'px "Russo One",Arial Black,Arial';L.forEach((q,i)=>{g.shadowColor=q[1];g.shadowBlur=18;g.fillStyle=q[1];g.fillText(q[0],w*(i+.5)/n,h*.54,w/n*.86);});g.shadowBlur=0;
       g.fillStyle=EDGE[m];for(let i=0;i<n;i++){g.beginPath();g.arc(w*i/n,h*.52,n>4?8:13,0,7);g.fill();}}
       g.fillStyle='rgba(0,0,0,.2)';for(let y=0;y<h;y+=4)g.fillRect(0,y,w,1.5);const vg=g.createLinearGradient(0,0,0,h);vg.addColorStop(0,'rgba(255,255,255,.14)');vg.addColorStop(.4,'rgba(255,255,255,0)');vg.addColorStop(1,'rgba(0,0,0,.3)');g.fillStyle=vg;g.fillRect(0,0,w,h);
       g.fillStyle=EDGE[m];g.fillRect(0,0,w,8);g.fillRect(0,h-8,w,8);ht.needsUpdate=true;};
-    HALO.t=ht;HALO.m='';scene.add(new T.Mesh(ribbon(fca,fcb,1),basic({map:ht})));
+    HALO.t=ht;HALO.m='';HALO.mat=basic({map:ht});scene.add(new T.Mesh(ribbon(fca,fcb,1),HALO.mat));
     try{document.fonts.load('400 40px "Russo One"').then(()=>{HALO.m='';});}catch(e){}}
   // roof over the upper deck: back wall, canopy, white fascia, columns, lights, flags
   const ra=[],rb=[],rc=[],bw=[];
