@@ -1592,7 +1592,7 @@ const fireworks=[];
 // ───────────────────────── audio (all synthesized)
 let AC=null,master=null,crowdGain=null,noiseBuf=null,crowdBase=.018,crowdReal=false; // the hiss stand-in is kept very low: it is only ever heard if the crowd recording is late
 // Recorded sounds (sfx/*.mp3). Each one replaces a synthesized sound once it has loaded; if a file is missing the synth version plays.
-const SFX={},SFX_FILES=['bed','cheer','cheer_big','strike','ball','swing1','swing2','swing3','swing4','playball','ball2','ball3','ball4','strike2','out','catch2','crush','boo1','boo2','boo3','pop_max','foul','org_charge','org_chord','org_post','org_clap','org_letsgo','org_neenaa','org_mariachi','org_lgo','org_rise'];
+const SFX={},SFX_FILES=['bed','cheer','cheer_big','strike','ball','swing1','swing2','swing3','swing4','playball','ball2','ball3','ball4','strike2','out','catch2','crush','boo1','boo2','boo3','pop_max','foul','org_charge','org_chord','org_post','org_clap','org_letsgo','org_neenaa','org_mariachi','org_lgo','org_rise','vendor'];
 // The sound files start downloading the moment the page opens (three at a time, the ones the first seconds of a game need first), so they
 // are already here when PLAY BALL is tapped. Before, nothing was fetched until that tap, and with the player models also downloading the
 // game started on its stand-in synth sounds: hiss for a crowd, a jingle instead of the umpire.
@@ -1715,6 +1715,10 @@ function organStop(fade=.3){if(!orgS)return;const t=AC.currentTime;try{orgG.gain
 function organPlay(name,vol=.5){const b=SFX['org_'+name];if(!AC||!b)return false;organStop(.15);
   const t=AC.currentTime;orgS=AC.createBufferSource();orgG=AC.createGain();orgS.buffer=b;orgG.gain.value=vol;orgS.connect(orgG);orgG.connect(master);orgS.start(t);
   const me=orgS;orgS.onended=()=>{if(orgS===me)orgS=null;};orgLast=name;orgN[name]=(orgN[name]||0)+1;orgNext=t+b.duration+rand(5,10);return true;}
+// A vendor working the aisles: now and then, between pitches when the park is quiet, you hear him calling. Never over a roar or the organ.
+let vendNext=0,vendSt='';
+function vendorTick(){if(!AC)return;const st=S.state;if(st===vendSt)return;vendSt=st;const t=AC.currentTime;if(!vendNext)vendNext=t+rand(25,45);
+  if(st!=='ready'||t<vendNext||orgS||(roarG&&roarG.gain.value>.2)||pOD()||(S.over&&S.overOn))return;if(sfx('vendor',.55))vendNext=t+rand(50,95);}
 function organTick(){
   if(!AC)return;
   const st=S.state;if(st===orgSt)return;
@@ -3687,7 +3691,7 @@ function step(dt){
   ptarget.visible=pring.visible;if(pring.visible)ptarget.position.copy(pring.position);
   // reticle
   const b=S.bi>=0?curBatter():LINEUP[0],tb=(S.over&&S.overOn)||(!S.over&&juiceOn()&&S.juice>=.25);
-  stickHint();sbTick();zapTick();crowdTick(dt);shoutTick();poleTick();satTick();organTick();roarTick();heartTick();zoneTick();
+  stickHint();sbTick();zapTick();crowdTick(dt);shoutTick();poleTick();satTick();organTick();vendorTick();roarTick();heartTick();zoneTick();
   if(flight&&flight.play.type==='hr'&&!flight.sbHit&&!flight.orbit&&ball.visible&&Math.abs(ball.position.x-SBX)<24&&ball.position.y>30&&ball.position.y<48&&ball.position.z<-(fenceR(0)+15)&&ball.position.z>-(fenceR(0)+24)){flight.sbHit=true;zapStart(ball.position,true);burst(fxL,ball.position,26,9,.7,[.6,.85,1],7,1);}
   reticle.position.set(aim.x,aim.y,0);
   {const ez=easyAB()?1.3:1;if(!!tb!==retTb){retTb=!!tb;retT=now+(tb&&S.over&&S.overOn?.42:0);retOd=!!(tb&&S.over&&S.overOn);} /* Overdrive lights the whole screen for a moment as it comes on: the rings wait for that to clear, then swell where you can see it */
