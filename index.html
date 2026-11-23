@@ -2269,7 +2269,6 @@ function brawlTick(el){const B=BRW;
     SND.mitt();tone('sine',120,45,.2,.7);noise(.1,'lowpass',500,90,.7);buzz(last?[60,40,120]:[40]);B.hits=(B.hits||0)+1;shake=Math.max(shake,(.3+.17*B.hits)*FX);rumble=Math.max(rumble,.7+.4*B.hits);flash(last?.6:.25); /* every blow hits harder than the one before */burst(fxS,_p.set(0,1.35,BR_Z-.6),last?26:12,4,.45,[1,.9,.5],2,1);
     {const e=$('shout'),ws=last?['LIGHTS OUT!','GOOD NIGHT!','DOWN HE GOES!']:['POW!','WHAM!','BAM!','OOF!','CRACK!'];e.textContent=ws[(Math.random()*ws.length)|0];brawlShoutPos(e);e.classList.toggle('b',q.att==='p');e.classList.remove('go');void e.offsetWidth;e.classList.add('go');}
     if(q.att==='b')crowdPump(last?1:.6);else if(!roarG)boo(.6);if(last){B.ko=true;rumble=1;}}
-  if(B.ko&&!B.brth&&el>=B.f1+.1){B.brth=true;const w={n:'b_breath',t:now,loop:true};if(B.win)B.b=w;else B.p=w;} // the winner stands over him getting his breath back, then lets him hear about it
   if(el>=B.f1+1.1&&B.ko&&!B.taunt){B.taunt=true;const w={n:'p_fist',t:now,loop:true};if(B.win)B.b=w;else B.p=w;}
   if(el>=B.dur){B.taunt=false;const k=B.win?1:Math.random()<.6?-1:0;hbpEnd(k,B.win?'WON THE BRAWL!':'LOST THE BRAWL');}}
 function hbpStart(){S.state='hbp';S.t=now;S.hbpN=(S.hbpN||0)+1;S.hbpF=false;S.hbpR=false;S.hbpWill=undefined;ball.visible=false;ballShadow.visible=false;pring.visible=false;swing=null;
