@@ -303,11 +303,13 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
 #pop .s:empty{display:none}#hud.pcut #pop .s{font-size:clamp(13px,2.6vw,22px);margin-top:6px}
 #shout{color:#ffe53b;text-shadow:0 clamp(4px,.6vw,6px) 0 #05060f,0 0 24px rgba(255,229,59,.5)}#shout.b{color:#7fe6ff;text-shadow:0 clamp(4px,.6vw,6px) 0 #05060f,0 0 24px rgba(58,214,255,.6)}
 /* BRAWL: comic-book hits. The word sits on a spiky burst (yours gold, his blue) with a black edge, in the same spot the shouts already use, clear of both men. */
-#hud.brw #bdg{display:none} /* nothing else on the glass during the fight */
-#hud.brw #shout{isolation:isolate;color:#fff;font-size:clamp(30px,8vw,70px);-webkit-text-stroke:clamp(6px,1.1vw,10px) #05060f;text-shadow:0 clamp(4px,.6vw,6px) 0 #05060f;padding:.1em .2em}
-#hud.brw #shout::before,#hud.brw #shout::after{content:'';position:absolute;z-index:-1;inset:-42% -13%;clip-path:polygon(50.0% 1.8%,57.3% 20.2%,73.9% 4.4%,70.0% 27.4%,91.4% 21.4%,80.0% 38.6%,95.2% 44.5%,82.8% 54.0%,92.4% 66.1%,76.8% 68.5%,80.3% 84.2%,64.1% 76.8%,61.8% 97.8%,50.0% 85.2%,38.9% 94.9%,35.5% 77.6%,16.0% 88.4%,20.4% 70.4%,2.5% 68.0%,17.9% 53.9%,-4.4% 43.4%,21.9% 39.4%,5.9% 19.6%,29.0% 26.3%,28.4% 8.9%,42.7% 20.4%);-webkit-clip-path:polygon(50.0% 1.8%,57.3% 20.2%,73.9% 4.4%,70.0% 27.4%,91.4% 21.4%,80.0% 38.6%,95.2% 44.5%,82.8% 54.0%,92.4% 66.1%,76.8% 68.5%,80.3% 84.2%,64.1% 76.8%,61.8% 97.8%,50.0% 85.2%,38.9% 94.9%,35.5% 77.6%,16.0% 88.4%,20.4% 70.4%,2.5% 68.0%,17.9% 53.9%,-4.4% 43.4%,21.9% 39.4%,5.9% 19.6%,29.0% 26.3%,28.4% 8.9%,42.7% 20.4%)}
-#hud.brw #shout::after{background:radial-gradient(ellipse at 50% 50%,#fffbd0 0,#ffe53b 38%,#ff9a1e 72%,#ff4d2e 100%)}
-#hud.brw #shout::before{z-index:-2;inset:-50% -16%;background:#05060f}
+#hud.brw #bdg{display:none}#hud.brw #meters,#hud.brw #keys{visibility:hidden} /* nothing else on the glass during the fight: the bursts get the top of the screen to themselves */
+#hud.brw #shout{isolation:isolate;color:#fff;font-size:clamp(22px,5.6vw,36px);-webkit-text-stroke:clamp(5px,.9vw,7px) #05060f;text-shadow:0 4px 0 #05060f;
+  box-sizing:border-box;width:clamp(150px,36vw,208px);height:clamp(112px,27vw,156px);display:flex;align-items:center;justify-content:center;text-align:center;white-space:normal;line-height:.95;padding:0 13%}
+/* a compact burst of fixed proportions (4:3) with the word inside it, however long the word is: never a stretched banner */
+#hud.brw #shout::before,#hud.brw #shout::after{content:'';position:absolute;z-index:-1;inset:0;clip-path:polygon(50.0% 0.4%,59.1% 15.9%,76.7% 3.8%,74.6% 25.4%,93.4% 25.0%,84.3% 40.8%,97.5% 50.0%,83.9% 59.1%,94.2% 75.5%,75.9% 75.9%,73.4% 90.5%,58.8% 82.7%,50.0% 96.7%,40.5% 85.5%,24.2% 94.6%,27.1% 72.9%,3.4% 76.9%,13.7% 59.7%,-1.2% 50.0%,15.6% 40.8%,9.1% 26.4%,27.2% 27.2%,24.9% 6.5%,41.6% 18.6%);-webkit-clip-path:polygon(50.0% 0.4%,59.1% 15.9%,76.7% 3.8%,74.6% 25.4%,93.4% 25.0%,84.3% 40.8%,97.5% 50.0%,83.9% 59.1%,94.2% 75.5%,75.9% 75.9%,73.4% 90.5%,58.8% 82.7%,50.0% 96.7%,40.5% 85.5%,24.2% 94.6%,27.1% 72.9%,3.4% 76.9%,13.7% 59.7%,-1.2% 50.0%,15.6% 40.8%,9.1% 26.4%,27.2% 27.2%,24.9% 6.5%,41.6% 18.6%)}
+#hud.brw #shout::after{inset:4%;background:radial-gradient(ellipse at 50% 50%,#fffbd0 0,#ffe53b 38%,#ff9a1e 72%,#ff4d2e 100%)}
+#hud.brw #shout::before{z-index:-2;background:#05060f}
 #hud.brw #shout.b::after{background:radial-gradient(ellipse at 50% 50%,#f2fdff 0,#8fe6ff 38%,#3aa8ff 72%,#1e5fe0 100%)}
 /* a new badge as the callout: the same gold oval plate as the badge case, big */
 #pop.bdgp .t,#hud.pcut #pop.bdgp .t{display:inline-block;padding:clamp(8px,1.6vw,14px) clamp(20px,4vw,40px);border-radius:999px;background:linear-gradient(#3a2f0a,#0e0b02);border:clamp(3px,.5vw,5px) solid #ffd23b;box-shadow:0 5px 0 #000,0 0 34px 6px rgba(255,210,59,.6);
@@ -356,7 +358,13 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
 #hud.mob #bdg{top:152px;padding:5px 12px 5px 7px;gap:8px}#bdg.go{animation:bdgIn 3.1s cubic-bezier(.2,1.3,.3,1) both}
 @keyframes bdgIn{0%{transform:translate(-50%,-140px) scale(.7);opacity:0}9%{transform:translate(-50%,0) scale(calc(var(--bs,1)*1.08));opacity:1}14%{transform:translate(-50%,0) scale(var(--bs,1))}86%{transform:translate(-50%,0) scale(var(--bs,1));opacity:1}100%{transform:translate(-50%,-30px) scale(calc(var(--bs,1)*.96));opacity:0}}
 #bdg{transform-origin:50% 0;white-space:normal}#bdg.lead{--bs:1.28}#hud.mob #bdg.lead{--bs:1.18}
-#bdg>div{text-align:left}#bdg b{max-width:min(58vw,330px);white-space:normal}#bdg span{max-width:min(58vw,330px);white-space:normal;color:#fff;line-height:1.2}#bdg em{white-space:nowrap}
+/* EVERY BADGE PLATE IS THE SAME SIZE AND SHAPE, whatever it says, so the eye learns it: "that outline means a badge". A long name takes two lines inside it. */
+#bdg,#hud.mob #bdg{box-sizing:border-box;width:330px;height:108px;padding:8px 20px 8px 14px;gap:12px;border-radius:54px;justify-content:flex-start}
+#hud.mob #bdg{width:min(292px,78vw);height:100px;border-radius:50px;padding:6px 16px 6px 11px;gap:9px}
+#bdg i{flex:0 0 auto;width:54px;text-align:center;font-size:44px!important}#hud.mob #bdg i{width:46px;font-size:38px!important}
+#bdg>div{flex:1 1 auto;min-width:0;text-align:left;display:flex;flex-direction:column;justify-content:center}
+#bdg b{max-width:none;white-space:normal;font-size:23px!important;line-height:1.04}#hud.mob #bdg b{font-size:20px!important}
+#bdg span{max-width:none;white-space:normal;color:#fff;line-height:1.15;font-size:12.5px!important;margin-top:2px}#hud.mob #bdg span{font-size:11.5px!important}#bdg em{white-space:nowrap}
 #bdg i{font-style:normal;font-size:clamp(34px,8vw,50px);line-height:1;filter:drop-shadow(0 2px 0 #000)}#bdg em{display:block;font-family:var(--hud);font-style:normal;font-weight:800;font-size:10px;letter-spacing:.16em;color:#ffd23b}
 #bdg b{display:block;font-family:var(--display);font-style:italic;font-weight:400;font-size:clamp(22px,6vw,38px);line-height:1.05;color:#fff;text-shadow:0 2px 0 #000}#bdg span{display:block;font-family:var(--hud);font-size:clamp(11px,2.8vw,14px);color:var(--chrome);letter-spacing:.03em}
 #bdgs{position:absolute;inset:0;z-index:80;display:flex;flex-direction:column;align-items:center;gap:10px;padding:18px 12px;background:rgba(4,5,16,.95);overflow-y:auto;pointer-events:auto;-webkit-overflow-scrolling:touch}#bdgs[hidden]{display:none}
@@ -831,7 +839,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 448</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 450</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <button class="tag wkopt sens" id="sens1" type="button"></button>
@@ -1249,6 +1257,14 @@ gl_FragColor=vec4(col,1.0);
         g.strokeStyle='rgba(255,255,255,.55)';g.lineWidth=2;g.strokeRect(px+5,25,pwx-10,74);
         text(n[0],x0+pw/2,62,'italic 400 46px "Russo One",Arial Black,Arial',n[2],pw-1.6);}}
     const ao=g.createLinearGradient(0,h-34,0,h);ao.addColorStop(0,'rgba(0,0,0,0)');ao.addColorStop(1,'rgba(0,0,0,.55)');g.fillStyle=ao;g.fillRect(0,h-34,w,34);
+    // BAKED LIGHT (the way a PS2 park is lit: painted into the wall, so it costs nothing to draw and looks the same on a phone as on a PC).
+    // Each pad bulges (bright where it faces the lights, dark in the seams); the whole wall is brightest near the top and falls into shadow
+    // at the foot; and every thirty metres a pool of warm floodlight washes down it, with dimmer stretches in between.
+    for(let m=0;m<WL;m+=2.4){const x0=X(m),pwid=X(2.4),cg=g.createLinearGradient(x0,0,x0+pwid,0);cg.addColorStop(0,'rgba(0,0,0,.34)');cg.addColorStop(.1,'rgba(255,255,255,.13)');cg.addColorStop(.45,'rgba(255,255,255,0)');cg.addColorStop(.88,'rgba(0,0,0,.14)');cg.addColorStop(1,'rgba(0,0,0,.36)');g.fillStyle=cg;g.fillRect(x0,12,pwid,h-12);}
+    {const vg=g.createLinearGradient(0,0,0,h);vg.addColorStop(0,'rgba(255,255,255,.2)');vg.addColorStop(.28,'rgba(255,255,255,.05)');vg.addColorStop(.6,'rgba(0,0,0,.1)');vg.addColorStop(1,'rgba(0,0,0,.5)');g.fillStyle=vg;g.fillRect(0,0,w,h);}
+    g.fillStyle='rgba(4,6,18,.2)';g.fillRect(0,12,w,h-12); // the stretches between the lights sit a shade darker...
+    g.save();g.globalCompositeOperation='overlay';for(let m=9;m<WL;m+=30){const R0=h*1.5;g.save();g.translate(X(m),h*.02);g.scale(X(15)/R0,1);const rg=g.createRadialGradient(0,0,0,0,0,R0);rg.addColorStop(0,'rgba(255,246,220,.95)');rg.addColorStop(.45,'rgba(255,240,205,.5)');rg.addColorStop(1,'rgba(255,240,205,0)');g.fillStyle=rg;g.fillRect(-R0,0,R0*2,h);g.restore();}g.restore(); // ...and the pools of light lift them back
+    g.fillStyle='rgba(255,255,255,.09)';g.fillRect(0,h*.19,w,2); // a thin sheen where the padding catches the lamps
     g.fillStyle='#e8c92a';g.fillRect(0,0,w,9);g.fillStyle='rgba(0,0,0,.3)';g.fillRect(0,9,w,3);
   },[1,1]);
   ads.repeat.set(1/WL,1);ads.anisotropy=ANISO;
@@ -2497,7 +2513,7 @@ function brawlStart(){S.state='brawl';S.t=now;S.brawled=true;brawlSeen=true;try{
   BRW.b={n:'run',t:now,loop:true};BRW.p={n:'b_stance',t:now,loop:true};
   pop('CHARGING THE MOUND!','','hot',true);roar(1.05,.4);crowdE=1;buzz([40,40,40,40,120]);shake=Math.max(shake,.3*FX);}
 // every call in the brawl sits in the strip of sky above the two heads, never on a body
-function brawlShoutPos(e){_s0.set(0,2.3,BR_Z-.6).project(camera);const H=canvas.clientHeight||innerHeight,y=(-_s0.y*.5+.5)*H;e.style.left='50%';e.style.top=Math.max(MOB?196:176,y-6).toFixed(0)+'px';$('pop').className='';} /* low enough that the burst behind the word is wholly on screen */
+function brawlShoutPos(e){_s0.set(0,2.55,BR_Z-.6).project(camera);const H=canvas.clientHeight||innerHeight,y=(-_s0.y*.5+.5)*H,bh=Math.min(156,Math.max(112,(canvas.clientWidth||innerWidth)*.27));e.style.left='50%';e.style.top=Math.max((MOB?150:58)+bh,Math.min(y-8,H*.46)).toFixed(0)+'px'; /* its bottom edge sits above both men's heads; never off the top, never down across them */$('pop').className='';} /* low enough that the burst behind the word is wholly on screen */
 function brawlTick(el){const B=BRW;
   if(el<B.ch){const k=ease(el/B.ch);B.bx=lerp(B.x0,0,k);B.bz=lerp(B.z0,BR_Z,k);}
   else{B.bx=0;B.bz=BR_Z;if(B.b.n==='run')B.b=B.cur&&B.cur.wait?B.cur.wait:{n:'b_stance',t:now,loop:true};}
