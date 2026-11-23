@@ -3258,15 +3258,16 @@ function clipBat(){const C=MX.clip;C.hL.getWorldPosition(_pl);C.mL.getWorldPosit
 const _bk0=new V3(),_bk1=new V3();
 // A body with broader shoulders or shorter arms than the one the swing was made on ends up with its hands apart. Whenever the top hand is
 // near the handle (so it is meant to be holding it), the arm is bent and swung just enough to put that hand back on the bat, above the bottom hand.
-const _ik=[new V3(),new V3(),new V3(),new V3(),new V3(),new V3()],_ikq=new T.Quaternion(),_ikb=new T.Quaternion(),_ikp=new T.Quaternion();
+const _ik=[new V3(),new V3(),new V3(),new V3(),new V3(),new V3()],_ikq=new T.Quaternion(),_ikh=new T.Quaternion(),_ikb=new T.Quaternion(),_ikp=new T.Quaternion();
 function ikTurn(bone,q){bone.getWorldQuaternion(_ikb);bone.parent.getWorldQuaternion(_ikp);bone.quaternion.copy(_ikp.invert()).multiply(q).multiply(_ikb);bone.updateMatrixWorld(true);}
 function gripIK(C){if(!C.aR||!C.fR||!C.hR||C.upW||C.dnW||C.flatW||C.liftW)return;const [Sp,E,H,G,Tg,ax]=_ik;
   C.hR.getWorldPosition(H);C.mR.getWorldPosition(G);G.lerp(H,.45);Tg.copy(_pl).addScaledVector(_bd,.1); /* G: where the top hand grips; Tg: where on the handle it belongs */
-  const far=G.distanceTo(Tg);if(far<.012||far>.34)return;const k=1-clamp((far-.2)/.14,0,1);Tg.sub(G).multiplyScalar(k).add(H); /* Tg is now where the hand joint itself must go */
+  const far=G.distanceTo(Tg);if(far<.012||far>.34)return;C.hR.getWorldQuaternion(_ikh); /* the hand keeps the grip it had: only the arm moves to carry it there */const k=1-clamp((far-.2)/.14,0,1);Tg.sub(G).multiplyScalar(k).add(H); /* Tg is now where the hand joint itself must go */
   C.aR.getWorldPosition(Sp);C.fR.getWorldPosition(E);const l1=Sp.distanceTo(E),l2=E.distanceTo(H),d=clamp(Sp.distanceTo(Tg),Math.abs(l1-l2)+.01,l1+l2-.004);
   const a0=_t1.copy(Sp).sub(E).angleTo(_t2.copy(H).sub(E)),a1=Math.acos(clamp((l1*l1+l2*l2-d*d)/(2*l1*l2),-1,1));ax.copy(_t1).cross(_t2);
   if(ax.lengthSq()>1e-10){ikTurn(C.fR,_ikq.setFromAxisAngle(ax.normalize(),a1-a0));C.hR.getWorldPosition(H);}
-  _t1.copy(H).sub(Sp).normalize();_t2.copy(Tg).sub(Sp).normalize();ikTurn(C.aR,_ikq.setFromUnitVectors(_t1,_t2));}
+  _t1.copy(H).sub(Sp).normalize();_t2.copy(Tg).sub(Sp).normalize();ikTurn(C.aR,_ikq.setFromUnitVectors(_t1,_t2));
+  C.hR.parent.getWorldQuaternion(_ikp);C.hR.quaternion.copy(_ikp.invert()).multiply(_ikh);C.hR.updateMatrixWorld(true);}
 const BOX_EDGE=-.52; // nearest a foot bone may get to the middle of the plate (the box's inside line is at 0.35 m)
 function setupClip(obj,clip,B,sk){
   const keep=c=>{if(c)c.tracks=c.tracks.filter(t=>/quaternion$/.test(t.name)||/Hips\.position$/.test(t.name));return c;};
