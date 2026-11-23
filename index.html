@@ -2425,7 +2425,7 @@ function podReveal(){S.podPending=false;S.state='pod';S.t=now;
   {const ts=MX.pit?Object.keys(MX.pit.taunts).filter(k=>/clap|threat/.test(k)):[];if(ts.length)S.sTaunt={t:now+.05,clip:ts[(Math.random()*ts.length)|0],dur:POD-.1};}
   flash(.5);boo(.6);SND.zap();setTimeout(()=>SND.zap(),200);buzz([40,40,40,40,90]);shake=Math.max(shake,.45*FX);
   pop('PITCHER OVERDRIVE!','EVERY PITCH THIS AT-BAT IS A JUICE PITCH','hot',true);duelCheck();hud();}
-function pcIntro(){if(S.pcI)return;S.pcI=true;const P=S.pName;
+function pcIntro(){if(S.pcI)return;S.pcI=true;pitcherModel();const P=S.pName;
   flash(.45);pop('PITCHING CHANGE','NOW PITCHING: #'+P[1]+' '+P[0],'hot',true);boo(.55);if(organPlay('neenaa',.55))orgNext+=6;buzz([40,60,40]);$('pcap').textContent='PITCHER · '+P[0];
   S.pcS=0;} // (he then throws one warm-up pitch, in updatePitcher, so it is plain there is a new arm out there)
 const pcWalk=()=>S.state==='pchange'&&S.pcW&&now-S.t<S.pcW; // the outgoing pitcher is still walking off
@@ -2453,7 +2453,7 @@ function gameRating(){const G=S.goal,pts=S.runs*10+S.hits*4+S.hrs*8+(S.longest>=
   const T=[[0,'D','BENCH WARMER'],[20,'C','ROOKIE'],[45,'B','EVERYDAY STARTER'],[75,'A','ALL-STAR'],[110,'S','MOONSHOT LEGEND']];let i=0;T.forEach((t,j)=>{if(pts>=t[0])i=j;});
   return {pts,stars:i+1,grade:T[i][1],title:T[i][2],next:T[i+1]?T[i+1][0]-pts:0,nextTitle:T[i+1]?T[i+1][2]:''};}
 function newGame(){LINEUP.forEach(b=>{if(b.base)Object.assign(b,b.base);b.hb=0;}); /* stat changes from getting hit last only for the game */gamesPlayed++;try{localStorage.setItem('mm_games',gamesPlayed);}catch(e){}
-  Object.assign(S,{inning:1,outs:0,balls:0,strikes:0,runs:0,bases:[0,0,0],hits:0,hrs:0,longest:0,streak:0,bestStreak:0,juice:.5,heat:.2,over:false,stk:false,opp:0,bi:-1,pitches:0,seen:{},kOut:null});S.podN=0;S.podBi=-9;S.goal=null; /* per-game goals are switched off for now: pickGoal() is still here to bring them back */S.ks=0;S.d2=0;S.cardBi=-1;S.pChanges=0;S.pRuns0=0;S.pc3=false;S.pcPending=false;S.pStart=gamesPlayed%BULLPEN.length;S.pName=BULLPEN[S.pStart]; /* a different starter each game, so left-handers start some of them */$('pcap').textContent='PITCHER';S.sTaunt=null;S.stLast=false;jPend=false;S.orbN=0;S.odUses=0;S.brawled=false;S.qteN=0;S.goK=null;S.retalBi=-9;S.forceHbpBi=-9;S.walkoff=false;S.duel=false;$('hud').classList.remove('duel');S.pdLast=false;S.pOver=false;S.podPending=false;S.jSaid=false;S.overOn=false;S.spSeen=false;lastWalk='';
+  Object.assign(S,{inning:1,outs:0,balls:0,strikes:0,runs:0,bases:[0,0,0],hits:0,hrs:0,longest:0,streak:0,bestStreak:0,juice:.5,heat:.2,over:false,stk:false,opp:0,bi:-1,pitches:0,seen:{},kOut:null});S.podN=0;S.podBi=-9;S.goal=null; /* per-game goals are switched off for now: pickGoal() is still here to bring them back */S.ks=0;S.d2=0;S.cardBi=-1;S.pChanges=0;S.pRuns0=0;S.pc3=false;S.pcPending=false;S.pStart=gamesPlayed%BULLPEN.length;S.pName=BULLPEN[S.pStart];setTimeout(pitcherModel,0); /* a different starter each game, so left-handers start some of them */$('pcap').textContent='PITCHER';S.sTaunt=null;S.stLast=false;jPend=false;S.orbN=0;S.odUses=0;S.brawled=false;S.qteN=0;S.goK=null;S.retalBi=-9;S.forceHbpBi=-9;S.walkoff=false;S.duel=false;$('hud').classList.remove('duel');S.pdLast=false;S.pOver=false;S.podPending=false;S.jSaid=false;S.overOn=false;S.spSeen=false;lastWalk='';
   $('title').hidden=true;$('over').hidden=true;$('pausebtn').hidden=false;$('mutebtn').hidden=false;setBatter();renderRep();scoreboard('PLAY BALL','INNING 1');S.opp=0;toReady(2);pop('PLAY BALL!','','logo');hud();SND.playball();cheer(.14,1.5);}
 
 // ───────────────────────── pitching
@@ -3059,7 +3059,9 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden&&inPlay())s
 const MX={ready:false,map:[],on:true,token:0,kind:'ely'};
 // player looks you can switch between on the title screen
 const MODELS={ely:{label:'armoured',body:'ely.txt',clips:'ely_clips.min.json',tex:{d:'ely_d.jpg',n:'ely_n.jpg',s:'ely_s.jpg',g:'ely_g.jpg'},
-  def:{body:'van.txt',tex:{d:'van_d.jpg',n:'van_n.jpg',s:'van_s.jpg'}},ump:{body:'exo.txt',tex:{Body_MAT:'exo_body.jpg',Exo_MAT:'exo_suit.jpg'}}}},ORDER=['ely']; // one look for now; add entries here to offer more on the title screen
+  def:{body:'van.txt',tex:{d:'van_d.jpg',n:'van_n.jpg',s:'van_s.jpg'}},ump:{body:'exo.txt',tex:{Body_MAT:'exo_body.jpg',Exo_MAT:'exo_suit.jpg'}},
+  // other bodies for the mound: every pitching change brings a different-looking arm (each material: colour map, normal map)
+  pit:[{body:'crypto.txt',tex:{Ch45_Body:['crypto_d.jpg','crypto_n.jpg']}},{body:'alien.txt',tex:{Ch44_Body:['alien_d0.jpg','alien_n0.jpg'],Ch44_body1:['alien_d1.jpg','alien_n1.jpg']}}]}},ORDER=['ely']; // one look for now; add entries here to offer more on the title screen
 try{const k=localStorage.getItem('mm_kind');if(MODELS[k])MX.kind=k;}catch(e){}
 const atlasC=document.createElement('canvas');atlasC.width=atlasC.height=1024;const atlasT=new T.CanvasTexture(atlasC);
 const SW={skin:[800,544],sleeve:[864,544],trim:[928,544],glove:[992,544],shoe:[800,608],sole:[864,608],band:[928,608],hair:[992,608],belt:[800,672]};
@@ -3359,9 +3361,9 @@ function prepModel(obj,tx,custom){ // dress + bulk a Mixamo mannequin; returns i
   const D={armX:la.x,armY:la.y,armZ:la.z,hipsY:W('Hips').y,neckY:W('Neck').y,headY:W('Head').y,topY:B('HeadTop_End')?W('HeadTop_End').y:W('Head').y+24,chestZ:W('Spine1').z+1,
     legX:ul.x,legY:ul.y,footX:ft.x,thigh:ul.distanceTo(kn),shin:kn.distanceTo(ft),footY:ft.y,uarm:la.distanceTo(fa),farm:fa.distanceTo(hd)};
   const mat=custom?custom.mat:new T.MeshPhongMaterial({map:tx,skinning:true,shininess:18,specular:0x303038});
-  meshes.forEach(m=>{const mn=m.material&&m.material.name||'';let g=m.geometry.index?m.geometry.toNonIndexed():m.geometry;
-    if(custom)g=custom.trim?custom.trim(g,D):g;else{dress(g,D);if(MX.bulk)bulk(g,D);}   // a textured character keeps its own UVs and look
-    m.geometry=g;m.material=custom&&custom.mats&&custom.mats[mn]||mat;if(custom&&custom.hide&&custom.hide.test(mn))m.visible=false;m.castShadow=true;m.frustumCulled=false; // a model in several parts keeps a material per part
+  meshes.forEach(m=>{const multi=Array.isArray(m.material),mn=!multi&&m.material&&m.material.name||'';let g=m.geometry.index&&!multi?m.geometry.toNonIndexed():m.geometry;
+    if(multi){} /* one mesh wearing several materials keeps its geometry (and its material groups) exactly as it came */ else if(custom)g=custom.trim?custom.trim(g,D):g;else{dress(g,D);if(MX.bulk)bulk(g,D);}   // a textured character keeps its own UVs and look
+    m.geometry=g;m.material=multi?m.material.map(x=>custom&&custom.mats&&custom.mats[x.name]||mat):custom&&custom.mats&&custom.mats[mn]||mat;if(custom&&custom.hide&&custom.hide.test(mn))m.visible=false;m.castShadow=true;m.frustumCulled=false; // a model in several parts keeps a material per part
     if(g.userData.lite){m.userData.full=g;m.userData.lite=g.userData.lite;m.userData.isLite=false;LODM.push(m);}});
   obj.scale.setScalar(s);
   const K=MX.spineK;if(K!==1){B('Spine').scale.setScalar(K);B('Head').scale.setScalar(1.03/K);}
@@ -3375,6 +3377,10 @@ function addHat(B,D,hm,flap){
   const hh=D.topY-D.headY;hg.scale.setScalar(MX.helmK||96*hh/21.3);hg.position.set(0,hh*(MX.helmY||.5),MX.helmZ??1);B('Head').add(hg);return hg;
 }
 const pitC=document.createElement('canvas');pitC.width=pitC.height=1024;const pitT=new T.CanvasTexture(pitC);
+// Which body the man on the mound should be wearing (by his place in the bullpen), and the swap itself. Only ever done between hitters.
+function pitcherModel(){if(!MX.pitVar||!MX.pit)return;const bi=Math.max(0,BULLPEN.indexOf(S.pName)),want=[0,1,2,1][bi%4],tgt=MX.pitVar[want]?want:0;if(tgt===MX.pitCur)return;
+  const old=MX.pit,v=MX.pitVar[tgt];try{setupPitcher(v.make(),v.skin);MX.pitCur=tgt;scene.remove(old.obj);for(let i=LODM.length-1;i>=0;i--){let q=LODM[i];while(q&&q!==old.obj)q=q.parent;if(q)LODM.splice(i,1);}}
+  catch(e){console.warn('pitcher swap failed',e);MX.pit=old;if(!old.obj.parent)scene.add(old.obj);}}
 function setupPitcher(obj,custom){
   const {sk,B,D}=prepModel(obj,pitT,custom),clip=obj.animations&&obj.animations.find(c=>c.duration>.5);if(!clip)return;
   clip.tracks=clip.tracks.filter(t=>/quaternion$/.test(t.name)||/Hips\.position$/.test(t.name));
@@ -3583,7 +3589,18 @@ function loadPlayers(kind){ // body file = character mesh; clips.json = motion-c
     }catch(e){console.warn('defence model failed, using the hitters model',e);makeD=make;defSkin=skins&&skins.away;}
     try{setupModel(make(['hit','idle','idle2','strike'].filter(k=>cj[k]).concat(Object.keys(cj).filter(k=>/^[wdcbq]_/.test(k)||k==='run'||/^p_(loser|twerk|chicken|runman|fist|clap|threat|dying)$/.test(k)))),skins&&skins.home);}catch(e){console.warn('batter model failed, using built-in figure',e);fallback(batter);}
     playersDone();
-    try{setupPitcher(makeD(['pitch',...Object.keys(cj).filter(k=>/^[pdb]_/.test(k))]),defSkin);}catch(e){console.warn('pitcher model failed, using built-in figure',e);fallback(pitcher);}
+    const pitNames=['pitch',...Object.keys(cj).filter(k=>/^[pdb]_/.test(k))];
+    try{setupPitcher(makeD(pitNames),defSkin);}catch(e){console.warn('pitcher model failed, using built-in figure',e);fallback(pitcher);}
+    // The mound's wardrobe. Body 0 is the defence's usual one; the others are fetched quietly once the game is up, and from then on each
+    // pitcher in the bullpen wears his own. A body that has not arrived yet (or fails) just means he comes in wearing the usual one.
+    MX.pitVar=[{make:()=>makeD(pitNames),skin:defSkin}];MX.pitCur=0;
+    if(cfg.pit&&canClone)cfg.pit.forEach((v,vi)=>setTimeout(()=>{if(my!==MX.token)return;const keys=Object.keys(v.tex);
+      Promise.all([loadBuf(v.body),...keys.map(k=>Promise.all(v.tex[k].map(loadImg)))]).then(r=>{if(my!==MX.token)return;
+        const vb=new T.FBXLoader().parse(r[0],''),tx=i=>{const t=new T.Texture(i);t.needsUpdate=true;t.anisotropy=ANISO;return t;},mats={},geos=new Map();
+        keys.forEach((k,i)=>{mats[k]=new T.MeshPhongMaterial({map:tx(r[1+i][0]),normalMap:tx(r[1+i][1]),color:0xffffff,emissive:0x1c1c22,specular:0x333340,shininess:26,skinning:true});});
+        MX.pitVar[vi+1]={make:()=>{const o=T.SkeletonUtils.clone(vb);o.animations=pitNames.map(n=>mkClip(cj[n],n));return o;},
+          skin:{mat:mats[keys[0]],mats,trim:g=>{let o=geos.get(g.uuid);if(!o){o=weld(g);o.userData.lite=liteGeo(o,LOD_CELL);geos.set(g.uuid,o);}return o;}}};
+        if(S.state==='title'||S.state==='over')pitcherModel();}).catch(e=>console.warn('pitcher body '+v.body+' not loaded',e));},3500+vi*2500));
     // fielders are built one at a time so the page doesn't freeze while seven more models are prepared
     fielders.filter(f=>!f.isP).forEach((f,i)=>setTimeout(()=>{if(my!==MX.token)return;
       try{setupFielder(f,makeD(['catch','run','strafe','throw','x_dive','p_dying','d_1','d_2','d_3'].filter(k=>cj[k])),defSkin);}catch(e){console.warn('fielder model failed, using built-in figure',e);fallback(f.fig);}},400+i*220));
@@ -4055,7 +4072,7 @@ $('shbtn').addEventListener('click',()=>{SHQ=!SHQ;if(SHQ&&!rim.castShadow)rim.ca
 shApply();
 resize();hud();
 const DBG={dive:'',hbp:false,pcut:false,fl:'',rob:false,pc:false,staunt:false,pod:false,trail:false,orbit:false,sat:false,drill:false,brawl:false,qte:false,mash:false,slide:false,pn:'',laser:false,lamp:false,mw:false,pdef:false,dbl:false,cam:false,admire:'',trip:false,fist:false,pop:false,loser:false}; // test hook: pin the camera to CAM_HOME/CAM_LOOK
-window.__mm={crowdFx,setE:v=>{crowdE=v;crowdShow=v;},GLOVE,renderer,scene,LODM,camera,zapStart,acState:()=>AC?(zoneLP?"lp="+Math.round(zoneLP.frequency.value)+" ":"")+AC.state+" t="+AC.currentTime.toFixed(1)+" real="+crowdReal+" roar="+(roarG?roarG.gain.value.toFixed(2)+(roarTop?"T":""):"off")+" bed="+crowdGain.gain.value.toFixed(2):"none",roar,roarOff,boo,cheer,crowdRise,crowdDrop,S,aim,MX,DBG,landRingOn:()=>landRing.visible,hud,tutAnim,draw:()=>draw(),endGame,TROT,SFX,RUN,ballPos:()=>ball.position,ballVisible:()=>ball.visible,fielders,toReady,CAM_HOME,CAM_LOOK,now:()=>now,simulate,judge,get pitch(){return pitch;},get flight(){return flight;},lastSwing:()=>{const t=swing&&swing.type;swing=null;return t;},lastSwingTurbo:()=>!!(swing&&swing.turbo),doSwing,newGame,V3,
+window.__bp=k=>BULLPEN[k];window.__mm={pitcherModel,crowdFx,setE:v=>{crowdE=v;crowdShow=v;},GLOVE,renderer,scene,LODM,camera,zapStart,acState:()=>AC?(zoneLP?"lp="+Math.round(zoneLP.frequency.value)+" ":"")+AC.state+" t="+AC.currentTime.toFixed(1)+" real="+crowdReal+" roar="+(roarG?roarG.gain.value.toFixed(2)+(roarTop?"T":""):"off")+" bed="+crowdGain.gain.value.toFixed(2):"none",roar,roarOff,boo,cheer,crowdRise,crowdDrop,S,aim,MX,DBG,landRingOn:()=>landRing.visible,hud,tutAnim,draw:()=>draw(),endGame,TROT,SFX,RUN,ballPos:()=>ball.position,ballVisible:()=>ball.visible,fielders,toReady,CAM_HOME,CAM_LOOK,now:()=>now,simulate,judge,get pitch(){return pitch;},get flight(){return flight;},lastSwing:()=>{const t=swing&&swing.type;swing=null;return t;},lastSwingTurbo:()=>!!(swing&&swing.turbo),doSwing,newGame,V3,
   sim:(dt)=>{hitstop=0;now+=dt;step(dt);},
   step:(n,dt=1/60)=>{for(let i=0;i<n;i++){if(hitstop>0)hitstop=0;now+=dt;step(dt);}updateCamera(dt);draw();}};
 if(!window.__mmManual)requestAnimationFrame(frame);
