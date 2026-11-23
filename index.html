@@ -393,6 +393,8 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
 #bdg b{display:block;font-family:var(--display);font-style:italic;font-weight:400;font-size:clamp(22px,6vw,38px);line-height:1.05;color:#fff;text-shadow:0 2px 0 #000}#bdg span{display:block;font-family:var(--hud);font-size:clamp(11px,2.8vw,14px);color:var(--chrome);letter-spacing:.03em}
 #bdgs{position:absolute;inset:0;z-index:80;display:flex;flex-direction:column;align-items:center;gap:10px;padding:18px 12px;background:rgba(4,5,16,.95);overflow-y:auto;pointer-events:auto;-webkit-overflow-scrolling:touch}#bdgs[hidden]{display:none}
 #bdgs h2{font-family:var(--display);font-style:italic;font-weight:400;font-size:clamp(24px,6vw,40px);color:#ffd23b;text-shadow:0 3px 0 #000;margin:0}#bdgs p{margin:0;font-size:12px;letter-spacing:.14em;color:var(--dim)}
+#bdgtree{width:min(920px,100%);box-sizing:border-box;padding:10px 14px 12px;border:2px solid #ffd23b;border-radius:12px;background:linear-gradient(#2a2208,#151104);text-align:left}#bdgtree b{display:block;font-family:var(--hud);font-size:11px;letter-spacing:.16em;color:#ffd23b}#bdgtree em{display:block;font-family:var(--display);font-style:italic;font-size:clamp(26px,7vw,44px);line-height:1.05;color:#fff;text-shadow:0 3px 0 #000}
+#bdgtree i{display:block;position:relative;height:12px;margin:8px 0 7px;border-radius:6px;background:rgba(255,255,255,.12)}#bdgtree u{display:block;height:100%;border-radius:6px;background:linear-gradient(90deg,#ffd23b,#ff8a2e);text-decoration:none}#bdgtree s{position:absolute;top:-3px;width:4px;height:18px;margin-left:-2px;border-radius:2px;background:rgba(255,255,255,.35);text-decoration:none}#bdgtree s.on{background:#fff}#bdgtree span{font-size:11px;letter-spacing:.06em;color:var(--chrome)}
 #bdgl{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px;width:min(920px,100%)}
 #bdgl div{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:10px;border:2px solid rgba(242,245,255,.16);background:rgba(20,22,48,.7);text-align:left;opacity:.5}
 #bdgl div.got{opacity:1;border-color:#ffd23b;background:linear-gradient(#2a2208,#151104);box-shadow:0 0 10px 1px rgba(255,210,59,.3)}#bdgl i{font-style:normal;font-size:26px;filter:grayscale(1)}#bdgl .got i{filter:none}
@@ -864,7 +866,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 490</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 491</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <button class="tag wkopt sens" id="sens1" type="button"></button>
@@ -3247,7 +3249,7 @@ function finishPlay(){revOff();
   badge('hit');if(S.streak>=4)badge('heater');if(false)setTimeout(()=>{const e=$('shout');if(S.state==='result'||S.state==='flight'){e.textContent='ON A HEATER!';e.style.left='50%';e.style.top=(MOB?'30%':'24%');e.classList.remove('b','go');void e.offsetWidth;e.classList.add('go');}},700);
   S.hits++;S.streak++;S.bestStreak=Math.max(S.bestStreak,S.streak);if(!f.tb)S.juice=Math.min(1,S.juice+(pl.type==='hr'?.5:.25));else if(pl.type==='hr'&&!S.over)S.juice=Math.min(1,S.juice+.25); /* a homer on a Juice swing gives one bar back */ // every hit is worth one quarter; // a Juice hit doesn't refill the bar it just spent
   if(pl.type==='hr'){
-    {const ft0=Math.round(pl.dist*3.281);badge('hr');if(ft0>=450)badge('hr450');if(ft0>=500)badge('hr500');if(f.od)badge('odhr');if(f.jp)badge('juicehr');if(f.pod){badge('aura');badge('duel');}if(f.fp)badge('ambush');if(S.bases.filter(Boolean).length===3)badge('slam');
+    {const ft0=Math.round(pl.dist*3.281);hrFeetAdd(ft0);badge('hr');if(ft0>=450)badge('hr450');if(ft0>=500)badge('hr500');if(f.od)badge('odhr');if(f.jp)badge('juicehr');if(f.pod){badge('aura');badge('duel');}if(f.fp)badge('ambush');if(S.bases.filter(Boolean).length===3)badge('slam');
       S.b2b=S.lastHRbi===S.bi-1;if(S.b2b)badge('b2b');S.lastHRbi=S.bi;if(S.hrs>=4)badge('five');if(f.sat)badge('sat');else if(f.lamp)badge('lamp');else if(f.rev)badge('rev');else if(f.orbit)badge('earth');else if(f.sbHit)badge('board');else if(f.tr.eyeT)badge('eye');}
     const ft=Math.round(pl.dist*3.281);S.hrs++;S.longest=Math.max(S.longest,ft);const r=advance(4);f.rbi=r;
     // The badge feats double as the call, ONCE EACH: the first time a feat happens its badge name is what goes up. After that (and once every
@@ -3337,6 +3339,9 @@ const BADGES=[['hit','KNOCK','Get your first hit','🧢'],['hr','WENT YARD','Hit
   ['slam','GRAND SALAMI','Hit a grand slam','🍖'],['b2b','BACK TO BACK','Homers in consecutive at-bats','👯'],['five','DERBY NIGHT','Five homers in one game','🎆'],['heater','ON A HEATER','Five hits in a row','♨️'],
   ['rev','IN ORBIT','Put one into orbit round the Moon','🌕'],['earth','NEXT STOP: EARTH','Hit one clean off the Moon','🌍'],['sat','SPACE JUNK','Take out the satellite','🛰️'],['lamp','LIGHTS OUT','Smash a light tower','💡'],['board','OFF THE SCOREBOARD','Homer off the scoreboard','📺'],['eye','OFF THE BATTER\'S EYE','Homer off the batter\'s eye','👁️'],
   ['send','WHEELS','Win a showdown at the bag','👟'],['jump','PERFECT JUMP','Stop the needle on gold','🥇'],['brawl','LAST MAN STANDING','Win a brawl','🥊'],['wore','WORE IT','Get hit by a pitch','🩹'],
+  // THE DISTANCE TREE: every home run's feet are added to a career total, kept on the device. Seven rungs, from a thousand feet to a million.
+  ['ft1','FIRST THOUSAND','1,000 career feet of home runs','📐'],['ft2','MILE HIGH','5,280 career feet: one mile of homers','🏔️'],['ft3','CRATER HOPPER','26,400 career feet: five miles','🦘'],['ft4','MARATHON','138,336 career feet: a marathon of homers','🏅'],
+  ['ft5','LOW ORBIT','250,000 career feet','🛰️'],['ft6','HUNDRED MILER','528,000 career feet: one hundred miles','💯'],['ft7','MILLION FOOT CLUB','1,000,000 career feet','👑'],
   ['walkoff','WALK-OFF','Win it in your last at-bat','🏃'],['win','IN THE WIN COLUMN','Win a game','🏆'],['ten','DOUBLE DIGITS','Score ten runs in a game','🔟']];
 let bdgGot={};try{bdgGot=JSON.parse(localStorage.getItem('mm_badges3')||'{}')||{};}catch(e){}
 let wkFov=0,wkFovT=0,admCls=false,duelTag=false,hrShowLast='',hrCamLast='';
@@ -3345,14 +3350,18 @@ let callShown={};try{callShown=JSON.parse(localStorage.getItem('mm_calls')||'{}'
 function callOnce(L){for(const [ok,id,txt] of L)if(ok&&!callShown[id]){callShown[id]=1;try{localStorage.setItem('mm_calls',JSON.stringify(callShown));}catch(e){}return txt;}return '';} /* the first applicable feat whose call has never been shown, or nothing */
 // A badge is UNLOCKED once, for good. But its plate is also the game's way of calling the feat, so it comes up again the first time that
 // feat happens in each new game (marked BADGE rather than BADGE UNLOCKED). After that, in the same game, the ordinary callouts take over.
-function badge(id){const B=BADGES.find(b=>b[0]===id);if(!B)return;const G=S.bdgGame||(S.bdgGame={});if(G[id])return;G[id]=1;const isNew=!bdgGot[id];if(!isNew&&id==='hit')return; /* a first hit is only worth a plate the first time ever */
+function badge(id){const B=BADGES.find(b=>b[0]===id);if(!B)return;const G=S.bdgGame||(S.bdgGame={});if(G[id])return;G[id]=1;const isNew=!bdgGot[id];if(!isNew&&(id==='hit'||/^ft\d/.test(id)))return; /* a first hit is only worth a plate the first time ever */
   if(isNew){bdgGot[id]=1;try{localStorage.setItem('mm_badges3',JSON.stringify(bdgGot));}catch(e){}}const q=B.slice();q.tq=performance.now();q.isNew=isNew;bdgQ.push(q);bdgLabel();}
 function bdgLabel(){const e=$('bdgbtn');if(e)e.textContent='Achievements: '+BADGES.filter(b=>bdgGot[b[0]]).length+' / '+BADGES.length;}
 setInterval(()=>{if(!bdgQ.length||performance.now()<bdgBusy||S.state==='title')return; /* (plates DO show during the orbit shot: that is exactly when IN ORBIT should drop in) */bdgShow(bdgQ.shift(),false);},250);
 function bdgShow(B,lead){const e=$('bdg');e.querySelector('em').textContent=B.isNew===false?'ACHIEVEMENT':'ACHIEVEMENT UNLOCKED';bdgCur=B;bdgCurEnd=performance.now()+3000;e.querySelector('i').textContent=B[3];e.querySelector('b').textContent=B[1];e.querySelector('span').textContent=B[2];
   e.classList.remove('go','lead');void e.offsetWidth;e.classList.add('go');if(lead)e.classList.add('lead');bdgBusy=performance.now()+3300;popUntil=Math.max(popUntil,bdgBusy);buzz([20,40,20,40,90]);[660,880,1100,1320].forEach((f,i)=>tone('triangle',f,f*1.02,.12,.4,i*.07));}
 function bdgOpen(){let e=$('bdgs');if(!e){e=document.createElement('div');e.id='bdgs';e.innerHTML='<h2>ACHIEVEMENTS</h2><p></p><div id="bdgl"></div><button class="cta alt" type="button">BACK</button>';document.body.appendChild(e);e.addEventListener('click',ev=>{if(ev.target===e||ev.target.tagName==='BUTTON')e.hidden=true;});}
-  e.querySelector('p').textContent=BADGES.filter(b=>bdgGot[b[0]]).length+' OF '+BADGES.length+' EARNED';$('bdgl').innerHTML=BADGES.map(b=>'<div class="'+(bdgGot[b[0]]?'got':'')+'"><i>'+b[3]+'</i><p style="margin:0"><b>'+b[1]+'</b><span>'+b[2]+'</span></p></div>').join('');e.hidden=false;}
+  e.querySelector('p').textContent=BADGES.filter(b=>bdgGot[b[0]]).length+' OF '+BADGES.length+' EARNED';
+  {let t=$('bdgtree');if(!t){t=document.createElement('div');t.id='bdgtree';e.insertBefore(t,$('bdgl'));}const ni=FT_TREE.findIndex(T=>hrFeet<T),prev=ni>0?FT_TREE[ni-1]:0,nx=ni<0?null:FT_TREE[ni],pc=nx?(ni+clamp((hrFeet-prev)/(nx-prev),0,1))/FT_TREE.length*100:100,nm=nx?BADGES.find(b=>b[0]==='ft'+(ni+1))[1]:'';
+    t.innerHTML='<b>CAREER HOME RUN DISTANCE</b><em>'+Math.round(hrFeet).toLocaleString('en-US')+' FT</em><i><u style="width:'+pc.toFixed(1)+'%"></u>'+FT_TREE.map((T,i)=>'<s class="'+(hrFeet>=T?'on':'')+'" style="left:'+((i+1)/FT_TREE.length*100)+'%"></s>').join('')+'</i><span>'+(nx?'NEXT: '+nm+' AT '+nx.toLocaleString('en-US')+' FT ('+(nx-Math.round(hrFeet)).toLocaleString('en-US')+' TO GO)':'EVERY RUNG CLIMBED')+'</span>';}$('bdgl').innerHTML=BADGES.map(b=>'<div class="'+(bdgGot[b[0]]?'got':'')+'"><i>'+b[3]+'</i><p style="margin:0"><b>'+b[1]+'</b><span>'+b[2]+'</span></p></div>').join('');e.hidden=false;}
+const FT_TREE=[1000,5280,26400,138336,250000,528000,1000000];let hrFeet=0;try{hrFeet=+localStorage.getItem('mm_hrft')||0;}catch(e){}
+function hrFeetAdd(ft){hrFeet+=ft;try{localStorage.setItem('mm_hrft',Math.round(hrFeet));}catch(e){}FT_TREE.forEach((T,i)=>{if(hrFeet>=T)badge('ft'+(i+1));});}
 let odEver=false;try{odEver=localStorage.getItem('mm_od')==='1';}catch(e){}
 let orbSeen=false;try{orbSeen=localStorage.getItem('mm_orbit')==='1';}catch(e){} // the very first Overdrive homer a player ever hits always leaves orbit; after that it is about one in three
 const D2={clip:'',dur:2.9,base:2},PDEF=2.0,ORB_TO=new V3(94,462,-858);
