@@ -161,7 +161,8 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 #hud.wk #card,#hud.inplay #card{visibility:hidden}
 #hud.hbpc #card{visibility:visible!important;transform-origin:0 50%;animation:hbpCard 3.6s ease-out both}
 @keyframes hbpCard{0%{scale:1}8%{scale:1.45}16%{scale:1.25}24%{scale:1.4}85%{scale:1.3}100%{scale:1}}
-#card .hbu{color:#39ff6a;font-style:normal;font-size:.7em;margin-left:1px}#card .hbd{color:#ff4d2e;font-style:normal;font-size:.7em;margin-left:1px}
+#walk .hbu{color:#39ff6a;font-style:normal;font-size:1.5em;vertical-align:.1em}#walk .hbd{color:#ff4d2e;font-style:normal;font-size:1.5em;vertical-align:.1em}
+#card .hbu{color:#39ff6a;font-style:normal}#card .hbd{color:#ff4d2e;font-style:normal}
 /* stat grades, S to F, colour-coded */
 #hud>#card .stat em.up{color:#8fe8ff;text-shadow:0 2px 0 #000,0 0 10px #3aa8ff;width:auto;min-width:.9em;animation:statup .5s cubic-bezier(.2,1.6,.4,1)}
 #hud>#card .stat em.up::after{content:'▲';font-size:.5em;vertical-align:.5em;margin-left:1px;color:#58d6ff}
@@ -223,6 +224,7 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 #hud.pcut #pop .t{font-size:clamp(24px,6.2vw,64px)}
 #hud.pcut #pop{left:14%;right:14%}
 #hud.pcut #pop .s{font-size:clamp(12px,2.4vw,22px);margin-top:3px}
+#hud.mob #pop.logo{top:21%} /* PLAY BALL sits higher, clear of the hitter */
 #hud.mob #pop{top:31.5%} /* on phones: clear of the batter card and the buttons above it */
 /* the shout over a player celebrating on the bag */
 #shout{position:absolute;left:50%;top:30%;z-index:6;pointer-events:none;white-space:nowrap;opacity:0;font-family:var(--display);font-style:italic;font-size:clamp(34px,9vw,84px);line-height:1;color:var(--volt);-webkit-text-stroke:2px #000;text-shadow:0 4px 0 #000,0 0 22px rgba(255,229,59,.55);transform:translate(-50%,-100%) rotate(-6deg)}
@@ -1753,7 +1755,7 @@ const batS={b:0,h:new V3(-.36,1.36,.36),d:new V3(-.25,1,-.15).normalize(),pose:l
 const SW_T=.07; // tap-to-contact time. Short on purpose: the swing has to feel instant
 const curBatter=()=>LINEUP[S.bi%LINEUP.length];
 // the name-and-ratings card follows the hitter the player is looking at, not the one who is merely due up
-function showCard(){if(S.bi<0)return;S.cardBi=S.bi;const b=curBatter();$('cnum').textContent=b.num;$('cname').textContent=b.name+(b.lh?' · L':' · R')+(b.hb>0?' ▲':b.hb<0?' ▼':'');cardStats(b);}
+function showCard(){if(S.bi<0)return;S.cardBi=S.bi;const b=curBatter();$('cnum').textContent=b.num;$('cname').innerHTML=b.name+(b.lh?' · L':' · R')+(b.hb>0?' <i class="hbu">▲</i>':b.hb<0?' <i class="hbd">▼</i>':''); /* one arrow by the name says his ratings are up or down for the game; the letters stay clean so nothing overlaps on a phone */cardStats(b);}
 
 function pop(t,s='',cls='',long=false){const e=$('pop');e.className='';e.querySelector('.t').textContent=t;e.querySelector('.s').textContent=s;void e.offsetWidth;e.className='go '+cls+(long?' long':'');}
 let MOB=false;function setMob(){MOB=matchMedia('(pointer:coarse)').matches||innerWidth<=560;$('hud').classList.toggle('mob',MOB);document.body.classList.toggle('mob',MOB);}setMob();addEventListener('resize',setMob); // narrow a desktop window to preview the phone layout
@@ -1927,7 +1929,7 @@ function statGrade(v){const t=(v-.85)/.32;return t>=.9?'S':t>=.72?'A':t>=.52?'B'
 const GRADES=['F','D','C','B','A','S','S+'];
 function cardStats(b){const od=!!(S.over&&S.overOn);$('card').classList.toggle('odc',od);
   [['pw',b.pwr],['co',b.con],['sp',b.spd]].forEach(([k,v])=>{const g0=statGrade(v),g=od?GRADES[Math.min(6,GRADES.indexOf(g0)+1)]:g0,base=g==='S+'?'S':g;
-    $('s'+k).style.width=clamp((v-.85)/.32*100+(od?22:0),6,100)+'%';$('s'+k).style.background=od?'#58d6ff':GRADE_COL[base];const e=$('g'+k);e.innerHTML=g+(b.hb>0?'<i class="hbu">▲</i>':b.hb<0?'<i class="hbd">▼</i>':'');e.className='g'+base+(od?' up':'');});}
+    $('s'+k).style.width=clamp((v-.85)/.32*100+(od?22:0),6,100)+'%';$('s'+k).style.background=od?'#58d6ff':GRADE_COL[base];const e=$('g'+k);e.textContent=g;e.className='g'+base+(od?' up':'');});}
 function setBatter(){
   if(S.over&&S.overOn&&S.walked){} // a walk doesn't use it up: it stays on for the next hitter
   else if(S.over&&S.overOn){S.over=false;S.overOn=false;S.juice=0;}
@@ -2108,15 +2110,21 @@ function hbpStart(){S.state='hbp';S.t=now;S.hbpN=(S.hbpN||0)+1;S.hbpF=false;ball
 // Getting hit is a gamble for both sides. The hitter takes his base either way, but how he takes it is a roll of the dice:
 // 35% it fires him up (all three ratings up for the rest of the game, two bars of Juice), 40% it shakes him up (ratings down, one bar),
 // 25% he shrugs it off (no change, one bar). So plunking a man can hand the hitters a better player than the one who got hit.
-function hbpEnd(fk,title){const b=curBatter(),r0=Math.random(),k=fk!==undefined?fk:r0<.35?1:r0<.75?-1:0;
+function hbpEnd(fk,title){const b=curBatter(),r0=Math.random(),k=fk!==undefined?fk:r0<.35?1:r0<.75?-1:0,was={pwr:b.pwr,con:b.con,spd:b.spd};
   if(k){if(!b.base)b.base={spd:b.spd,pwr:b.pwr,con:b.con};const m=k>0?1.1:.9;b.spd=clamp(b.spd*m,.7,1.25);b.pwr=clamp(b.pwr*m,.7,1.25);b.con=clamp(b.con*m,.7,1.25);b.hb=(b.hb||0)+k;}
   S.walked=true;S.juice=Math.min(1,S.juice+(k>0?.5:.25));walkRunners();{const R=RUN.list.find(R=>R.active&&R.target===1&&R.s<1);if(R)R.hurt=k<=0;}
   const r=advance(1,true),run=r?'+1 RUN · ':'';
   if(k>0){pop(title||'FIRED UP!',run+b.name+' · RATINGS UP · +2 JUICE','hot',true);cheer(.5,3);roar(.9,.3);buzz([30,40,80]);}
   else if(k<0){pop(title||'SHAKEN UP',run+b.name+' · RATINGS DOWN','cool',true);crowdDrop();}
   else{pop(title||'SHOOK IT OFF',run+'TAKE YOUR BASE','plain');cheer(.3,2);}
-  showCard();if(k){const H=$('hud');H.classList.remove('hbpc');void H.offsetWidth;H.classList.add('hbpc');setTimeout(()=>H.classList.remove('hbpc'),3600);} // ratings changed: the card comes up and shows it
-  afterPA(1.9);}
+  showCard();
+  // He heads for first with the camera in front of him, and the walk-up banner comes back to show what getting hit (or the fight) did to his ratings.
+  {const gb=v=>{const g=statGrade(v);return `<b class="gr g${g}"><u>${g}</u></b>`;},ch=(lab,o,n)=>`<span>${lab} ${gb(o)}${k?` <i class="${k>0?'hbu':'hbd'}">${k>0?'▲':'▼'}</i> ${gb(n)}`:''}</span>`;
+    $('wnum').textContent=b.num;$('wname').textContent=b.name;$('wrat').innerHTML=ch(MOB?'PWR':'POWER',was.pwr,b.pwr)+ch(MOB?'CON':'CONTACT',was.con,b.con)+ch(MOB?'SPD':'SPEED',was.spd,b.spd);$('shout').classList.remove('go');
+    $('wspot').textContent=k>0?'RATINGS UP · +2 JUICE':k<0?'RATINGS DOWN FOR THE GAME':'NO HARM DONE';$('wskip').textContent='';$('walk').hidden=false;$('hud').classList.add('wk');}
+  S.state='hbprun';S.t=now;hud();}
+const HBR=3.2;
+function hbpRunEnd(){$('walk').hidden=true;$('hud').classList.remove('wk');afterPA(.5);}
 // The pitcher's Overdrive is revealed with a cut to the mound, after the hitter's own entrance is over: he flexes, the screen goes red, then the news.
 const POD=2.1;
 function podReveal(){S.podPending=false;S.state='pod';S.t=now;
@@ -2589,6 +2597,7 @@ function doSwing(type){
   if(S.state==='celly2'){S.t=now-D2.dur;return;}
   if(S.state==='hbp'){S.t=now-HBD;return;}
   if(S.state==='brawl'){S.t=now-BRW.dur;return;}
+  if(S.state==='hbprun'){S.t=now-HBR;return;}
   if(S.state==='pod'){S.t=now-POD;return;}
   if(S.state==='pdef'){S.t=now-PDEF;return;}
   if(S.state==='pchange'){if(pcWalk()){S.t=now-S.pcW;return;} /* first tap skips the walk-off, the second skips the new arm */S.t=now-PCH-(S.pcW||0);return;}
@@ -2655,7 +2664,7 @@ function cornerTap(x,y){
   for(const id of ['pausebtn','mutebtn']){const b=$(id);if(b.hidden)continue;const r=b.getBoundingClientRect();if(r.width&&x>=r.left-6&&x<=r.right+6&&y>=r.top-6&&y<=r.bottom+6)return false;} // PAUSE and SOUND always work, even mid-cutscene; a tap anywhere else skips
   if(performance.now()<tapBlock)return true;
   if(S.state==='walkup'){doSwing('contact');return true;}
-  if(S.state==='trot'||S.state==='celly2'||S.state==='hbp'||S.state==='brawl'||S.state==='pod'||S.state==='pdef'||S.state==='pchange'||(flight&&flight.admire&&!flight.done&&S.state==='flight')){doSwing('contact');return true;} // with the buttons away, a touch anywhere skips the cutscene
+  if(S.state==='trot'||S.state==='celly2'||S.state==='hbp'||S.state==='brawl'||S.state==='hbprun'||S.state==='pod'||S.state==='pdef'||S.state==='pchange'||(flight&&flight.admire&&!flight.done&&S.state==='flight')){doSwing('contact');return true;} // with the buttons away, a touch anywhere skips the cutscene
   if(ctlHidden)return false; // during a walk-up nothing is a button: a touch anywhere on the screen skips it, and that is all it does
   const c=id=>{const r=$(id).getBoundingClientRect();return {x:r.left+r.width/2,y:r.top+r.height/2,r:r.width/2,l:r.left,t:r.top};},d=o=>Math.hypot(x-o.x,y-o.y);
   const J=c('tj'),C=c('tc'),P=c('tp');if(!C.r)return false;
@@ -3445,6 +3454,7 @@ function step(dt){
   else if(st==='celly2'&&el>=D2.dur){toReady(PACE.newBatter);}
   else if(st==='hbp'){if(!S.hbpF&&el>=HB1){S.hbpF=true;flash(.35);}if(el>=HBD){if(brawlNeed())brawlStart();else hbpEnd();}}
   else if(st==='brawl')brawlTick(el);
+  else if(st==='hbprun'&&el>=HBR)hbpRunEnd();
   else if(st==='pdef'&&el>=PDEF){toReady(PACE.newBatter);}
   else if(st==='pchange'&&S.pcW&&!S.pcI&&el>=S.pcW){pcIntro();}
   else if(st==='pod'&&el>=POD){toReady(1.3);}
@@ -3519,7 +3529,7 @@ function step(dt){
   if(shock.userData.t!==undefined&&shock.userData.t<.3){shock.userData.t+=dt;const k=shock.userData.t/.3;shock.scale.setScalar(.06+k*shock.userData.s*.9);shock.material.opacity=(1-k)*.9;}else shock.material.opacity=0;
 
   updateBatter(dt);updatePitcher();updateFielders(dt);updatePlateCrew();updateRunners(dt);updateTrot(dt);updateThrow();
-  if(MX.ready&&MX.clip&&MX.obj){const v=S.state!=='trot';MX.obj.visible=v||TROT.cele;bat.visible=(v||(TROT.cele&&TROT.clip==='w_lift'))&&S.state!=='brawl';} // the man at the plate is the one trotting
+  if(MX.ready&&MX.clip&&MX.obj){const v=S.state!=='trot'&&S.state!=='hbprun';MX.obj.visible=v||TROT.cele;bat.visible=(v||(TROT.cele&&TROT.clip==='w_lift'))&&S.state!=='brawl';} // the man at the plate is the one trotting
   fxS.update(dt);fxL.update(dt);fxT.update(dt);
 
   ptarget.visible=pring.visible;if(pring.visible)ptarget.position.copy(pring.position);
@@ -3571,6 +3581,8 @@ function updateCamera(rdt){
     const e=clamp((now-S.kOut.t)/DEFEAT,0,1);MX.clip.hips.getWorldPosition(_a);const sd=_a.x<0?1:-1;
     camLook.set(_a.x,1.2,_a.z);camPos.set(_a.x+sd*lerp(1.5,1.0,ease(e)),1.25,_a.z-lerp(3.2,2.5,ease(e)));}
   else if(flight&&flight.thr&&flight.thr.safe&&now>flight.thr.t0+.45&&S.state==='result'){camPos.set(25.4,1.5,-16.2);camLook.set(17.6,1.05,-18.6);} // the race: from foul ground past the bag, the runner coming up the line and the first baseman stretching for the throw
+  else if(S.state==='hbprun'){const R=RUN.list.find(R=>R.active&&R.target===1); // in front of him, up the first-base line, as he comes
+    if(R){R.fig.root.getWorldPosition(_a);camPos.set(_a.x+3.9,1.25,_a.z-3.1);camLook.set(_a.x,1.05,_a.z);}}
   else if(S.state==='brawl'){const el=now-S.t;pcutT=now;pcutH.set(0,2.75,BR_Z-.6);
     if(el<BRW.ch){camPos.set(BRW.bx+1.5,1.55,BRW.bz+3.4);camLook.set(0,1.2,-18.4);}                       // behind him as he goes
     else if(el<BRW.f0){camPos.set(-1.5,1.5,BR_Z+1.9);camLook.set(.1,1.35,-18.4);}                          // over the hitter's shoulder: the pitcher is ready for him
