@@ -848,7 +848,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 465</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 467</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <button class="tag wkopt sens" id="sens1" type="button"></button>
@@ -988,7 +988,8 @@ let hbTop=false;function hbpPop(){const e=$('pop');if(S.state==='hbp'&&MX.clip&&
     e.style.bottom='auto';e.style.top=Math.min(H-eh-10,Math.max(y+14,H*.4)).toFixed(0)+'px';hbTop=true;}else if(hbTop){hbTop=false;e.style.top='';e.style.bottom='';}}
 // THE CENTRE MARKER, RAZOR SHARP: an SVG laid over the canvas at the exact point where the middle of the bat ring is on screen. White with a black edge.
 let markEl=null,markK=-1;function markDom(){if(!markEl){markEl=document.createElement('div');markEl.id='pmark';$('hud').appendChild(markEl);}
-  const on=markI>0&&reticle.visible&&!paused&&S.state!=='title';if(!on){if(markEl.style.display!=='none')markEl.style.display='none';return;}
+  const bat=S.state==='ready'||S.state==='windup'||S.state==='pitch',on=markI>0&&bat&&!paused; /* steady for the whole at-bat: it never blinks off after a swing or between pitches */
+  {const cur=!MOB&&bat&&!paused&&(markI>0||MSENS[sensI]>1)?'none':'';if(cur!==canvas._cur){canvas._cur=cur;canvas.style.cursor=cur;}} /* and the system pointer stays hidden for that whole time too, so there is one aiming mark, not two swapping */if(!on){if(markEl.style.display!=='none')markEl.style.display='none';return;}
   if(markK!==markI){markK=markI; /* the ORIGINAL marker shapes and proportions (thin cross, small dot, small ring), just drawn sharp */
     markEl.innerHTML='<svg viewBox="-50 -50 100 100" width="100%" height="100%" style="overflow:visible;display:block">'+(markI===1?'<circle r="50" fill="rgba(0,0,0,.7)"/><circle r="35" fill="#fff"/>':markI===2?'<path d="M-50 0H50M0 -50V50" stroke="rgba(0,0,0,.7)" stroke-width="21" fill="none"/><path d="M-44 0H44M0 -44V44" stroke="#fff" stroke-width="9.5" fill="none"/>':'<circle r="37.5" stroke="rgba(0,0,0,.7)" stroke-width="25" fill="none"/><circle r="37.5" stroke="#fff" stroke-width="13" fill="none"/>')+'</svg>';}
   const W=canvas.clientWidth||innerWidth,H=canvas.clientHeight||innerHeight;_s0.set(reticle.position.x,reticle.position.y,0).project(camera);const x=(_s0.x*.5+.5)*W,y=(-_s0.y*.5+.5)*H;
@@ -1863,6 +1864,13 @@ function markSet(){retMarks.forEach((g,i)=>{if(g)g.visible=false;}); /* the mark
 // where a ball hit in the air is going to come down
 const landRing=new T.Mesh(new T.RingGeometry(.8,1,36),new T.MeshBasicMaterial({color:0xffe53b,transparent:true,opacity:.9,depthWrite:false,side:T.DoubleSide,fog:false,polygonOffset:true,polygonOffsetFactor:-6,polygonOffsetUnits:-12})); // the original thin ring, kept clear of the shadow layer so it cannot be buried
 landRing.rotation.x=-PI/2;landRing.renderOrder=3;landRing.visible=false;scene.add(landRing);
+// THE BALL MARKER: a bold yellow-and-black ring on the ground straight under any ball in the air. The higher the ball, the wider the ring;
+// as the ball comes down it closes in, and it is at its tightest when the ball is at the ground. It turns slowly so it catches the eye.
+const trackRing=new T.Mesh(new T.PlaneGeometry(2,2),new T.MeshBasicMaterial({map:tex(256,256,(g,w)=>{g.clearRect(0,0,w,w);const c=w/2;g.lineCap='butt';
+  g.strokeStyle='rgba(0,0,0,.85)';g.lineWidth=40;g.beginPath();g.arc(c,c,96,0,7);g.stroke();
+  g.strokeStyle='#ffe53b';g.lineWidth=26;for(let i=0;i<8;i++){g.beginPath();g.arc(c,c,96,i*PI/4+.07,i*PI/4+PI/4-.07);g.stroke();}
+  g.strokeStyle='rgba(0,0,0,.85)';g.lineWidth=10;g.beginPath();g.arc(c,c,58,0,7);g.stroke();g.strokeStyle='#ffe53b';g.lineWidth=5;g.beginPath();g.arc(c,c,58,0,7);g.stroke();},[1,1]),transparent:true,depthWrite:false,fog:false,polygonOffset:true,polygonOffsetFactor:-6,polygonOffsetUnits:-12}));
+trackRing.rotation.x=-PI/2;trackRing.renderOrder=3;trackRing.visible=false;scene.add(trackRing);
 const echoBall=new T.Mesh(new T.RingGeometry(.026,.04,20),overlayMat(0xffffff,1));echoBall.renderOrder=11;echoBall.visible=false;scene.add(echoBall); // marks where the pitch was after a miss
 const PT_R=.068;
 // Sharp outlines. The 3D picture is drawn below the screen's full resolution on phones, which softens thin lines; the strike zone and
@@ -2216,7 +2224,7 @@ function pop(t,s='',cls='',long=false){
   let _bq=null;try{_bq=bdgQ;}catch(e){}
   // CALLOUT AND BADGE PLATE NEVER SHARE THE SCREEN: a callout always wins. A plate that is up when one arrives is taken down and comes back afterwards.
   if(_bq){const pn=performance.now();if(bdgCur&&pn<bdgCurEnd){$('bdg').classList.remove('go');if(!bdgCur.re&&pn<bdgCurEnd-1900){bdgCur.old=1;bdgCur.re=1;_bq.unshift(bdgCur);}bdgCur=null;} /* it comes back ONCE, and only if it had been up for under a second: never again and again through a run of callouts */popUntil=pn+(long?3300:1700);bdgBusy=Math.max(bdgBusy,popUntil);}
-  if(_bq&&cls!=='logo'&&_bq.some(b=>!b.old&&performance.now()-b.tq<80)){const fresh=_bq.filter(b=>!b.old&&performance.now()-b.tq<80);const R=['slam','b2b','five','hr500','rev','earth','sat','lamp','board','eye','aura','duel','juicehr','ambush','odhr','hr450','hr','walkoff','jump','brawl','send','heater','ten','win','wore','hit'];
+  if(_bq&&cls!=='logo'&&_bq.some(b=>!b.old&&performance.now()-b.tq<80)){const fresh=_bq.filter(b=>!b.old&&performance.now()-b.tq<80);const R=['slam','b2b','five','hr500','rev','earth','sat','lamp','board','eye','aura','duel','showboat','juicehr','ambush','odhr','hr450','hr','walkoff','jump','brawl','send','heater','ten','win','wore','hit'];
     fresh.sort((a,b)=>R.indexOf(a[0])-R.indexOf(b[0]));const B=fresh[0];bdgQ.splice(bdgQ.indexOf(B),1);$('pop').className='';bdgShow(B,true);return;} /* the badge plate IS the call: the ordinary callout is not shown at all, so the two can never collide */
   const e=$('pop');e.className='';e.querySelector('.t').textContent=t;e.querySelector('.s').textContent=s;void e.offsetWidth;e.className='go '+cls+(long?' long':'');}
 let MOB=false;function setMob(){MOB=matchMedia('(pointer:coarse)').matches||innerWidth<=560;$('hud').classList.toggle('mob',MOB);document.body.classList.toggle('mob',MOB);}setMob();addEventListener('resize',setMob); // narrow a desktop window to preview the phone layout
@@ -3032,7 +3040,7 @@ function tryContact(){flight_pop=false;if(pitch.hbp){swing.done=true;swing.miss=
   let tr=simulate(p0,v0,spin,fopt);
   // a liner that would die at the foot of the wall carries a touch further and bangs off it instead: more balls off the wall, fewer dropping at its base
   for(let i=0;i<7&&!tr.hr&&!tr.foul&&tr.land&&!(tr.wall&&tr.wallT<tr.land.t)&&Math.atan2(v0.y,Math.hypot(v0.x,v0.z))<26*DEG;i++){const L=tr.land,gap=fenceR(Math.atan2(L.x,-L.z))-Math.hypot(L.x,L.z),hard=v0.length()>=37;if(gap<0||gap>(hard?24:9))break;v0.multiplyScalar(hard?1.055:1.04);if(hard&&v0.y>2)v0.y*=.97;tr=simulate(p0,v0,spin,fopt);} /* a hard liner headed for the deep outfield keeps going on a rope, a laser off the wall */
-  const play=judge(tr,S.over&&S.overOn?Object.assign({},b,{spd:b.spd*1.08}):b);play.tag=play.tag||tr.tag||(kind==='TOPSPIN SINKER'?'':kind);if(tr.offP&&play.type==='hit'&&!play.infield)play.tag='ERROR · OFF THE PITCHER';if(tr.offF&&play.type==='hit')play.tag='ERROR · ATE HIM UP'; /* a ball a fielder should have handled and didn't is scored as his error */
+  const play=judge(tr,S.over&&S.overOn?Object.assign({},b,{spd:b.spd*1.08}):b);play.tag=play.tag||tr.tag||(kind==='TOPSPIN SINKER'?'':kind);/* a bad hop is only called when it beat the fielder: if he still made the play, nobody mentions it */if(play.tag==='BAD HOP'&&play.type!=='hit')play.tag='';if(tr.offP&&play.type==='hit'&&!play.infield)play.tag='ERROR · OFF THE PITCHER';if(tr.offF&&play.type==='hit')play.tag='ERROR · ATE HIM UP'; /* a ball a fielder should have handled and didn't is scored as his error */
   flight={tr,play,t0:now,q,pw,tb,jp:!!(pitch&&pitch.P&&pitch.P.sp),pod:!!pOD(),fp:(S.balls|0)+(S.strikes|0)===0,od:!!(S.over&&S.overOn),v,done:false,called:false,trailC:S.over&&S.overOn?[.2,.55,1]:tb?[1,.45,.1]:pw&&q>.75?[1,.85,.25]:[.5,.5,.55]}; // Overdrive hits burn blue, Juice hits orange
   // Some Overdrive home runs don't come down: the ball leaves the Moon's orbit, headed for Earth. Always the first one a player ever hits; after that, about a third of them.
   if(flight.od&&play.type==='hr'&&(DBG.orbit||DBG.sat||DBG.lamp||DBG.rev||!orbSeen||Math.random()<.65)){const kd=DBG.lamp?'lamp':DBG.sat?'sat':DBG.rev?'rev':(DBG.orbit||!orbSeen)?'earth':odPick(),lampH=kd==='lamp'&&TOWERS.length>0,sat=kd==='sat',rev=kd==='rev';S.orbN=(S.orbN||0)+1;orbSeen=true;try{localStorage.setItem('mm_orbit','1');}catch(e){}flight.orbit=true;flight.rev=rev;play.endT+=9;
@@ -3076,7 +3084,7 @@ function tryContact(){flight_pop=false;if(pitch.hbp){swing.done=true;swing.miss=
     flight.noSb=hrShowLast==='board'&&Math.random()<.92;flight.noEye=hrShowLast==='eye'&&Math.random()<.92; /* the scoreboard light-show almost never comes up on two homers running: the second one just sails by */ // some no-doubters are watched from right behind the ball
    
     lasWant=!!(kind&&(DBG.laser||Math.random()<.45)); // a no-doubter: now and then the lasers come on, but never before the ball has actually cleared the wall
-    if(kind){flight.admire=kind;flight.trot=WALK.on&&RUN.list.length>0;flight.A=Math.max(1.2,Math.min(kind==='show'&&!flight.trot?3.9:2.5,play.endT-1.3));{const c=['NO DOUBTER!','SEE YA!','CRANKED!','ABSOLUTE TANK!','MOONSHOT!','ABSOLUTE NUKE!','ABSOLUTE BOMB!','LIFT OFF!','PIMPED IT!','PIMPED IT!'][(Math.random()*10)|0];flight.pimp=c==='PIMPED IT!';if(flight.pimp){const F=flight,hot=tb?'hot':'';setTimeout(()=>{if(flight===F&&!F.done)pop(c,'',hot);},1000);}else pop(c,'',tb?'hot':'');} /* PIMPED IT waits a second: you see the bat flip first, then the word */ /* pimp: said here, so the home-plate shout will not say it again */}}
+    if(kind){flight.admire=kind;{const F=flight;setTimeout(()=>{if(flight===F)badge('showboat');},1100);} /* after the flip has been seen */flight.trot=WALK.on&&RUN.list.length>0;flight.A=Math.max(1.2,Math.min(kind==='show'&&!flight.trot?3.9:2.5,play.endT-1.3));{const c=['NO DOUBTER!','SEE YA!','CRANKED!','ABSOLUTE TANK!','MOONSHOT!','ABSOLUTE NUKE!','ABSOLUTE BOMB!','LIFT OFF!','PIMPED IT!','PIMPED IT!'][(Math.random()*10)|0];flight.pimp=c==='PIMPED IT!';if(flight.pimp){const F=flight,hot=tb?'hot':'';setTimeout(()=>{if(flight===F&&!F.done)pop(c,'',hot);},1000);}else pop(c,'',tb?'hot':'');} /* PIMPED IT waits a second: you see the bat flip first, then the word */ /* pimp: said here, so the home-plate shout will not say it again */}}
   if(!flight.admire&&q>.82&&pw&&play.type!=='foul')pop(['CRUSHED!','SMOKED!','TATTOOED!','OBLITERATED!'][(Math.random()*4)|0],'',tb?'hot':'');
   if(play.type!=='foul'&&(tb||(S.over&&S.overOn)||(play.type==='hr'&&play.dist*3.281>=420)))sfx('crush',1);
   if(play.type==='hr'&&S.over&&S.overOn){const k=$('tmk');k.classList.add('pf','od');$('tim').dataset.rk=1;}else $('tmk').classList.remove('od'); // an Overdrive homer always gets the rocket, burning blue
@@ -3255,7 +3263,7 @@ let odBag=[],odLastK='';function odPick(){if(!odBag.length){odBag=['rev','lamp',
   let r=Math.random()*c.reduce((a,k)=>a+W[k],0),k=c[0];for(const q of c){r-=W[q];if(r<=0){k=q;break;}}odBag.splice(odBag.indexOf(k),1);odLastK=k;return k;}
 // BADGES. Earned once, kept on the device. Each has a name (ballplayer talk), what it takes, and an icon. badge(id) is called from wherever the feat happens.
 const BADGES=[['hit','KNOCK','Get your first hit','🧢'],['hr','WENT YARD','Hit your first home run','💥'],['hr450','TAPE MEASURE','Hit one 450 feet or more','📏'],['hr500','FIVE HUNDRED CLUB','Hit one 500 feet or more','🚀'],
-  ['odhr','OVERDRIVEN','Homer in Overdrive','🔥'],['juicehr','GOT HEEEM!','Homer off a Juice pitch','😂'],['duel','BEAT THE HEAT','Homer while the pitcher is in Overdrive','🥵'],['aura','MAX AURA','Take a pitcher deep while he is in Overdrive','✨'],['ambush','AMBUSH','Homer on the first pitch','⚡'],
+  ['odhr','OVERDRIVEN','Homer in Overdrive','🔥'],['juicehr','GOT HEEEM!','Homer off a Juice pitch','😂'],['duel','BEAT THE HEAT','Homer while the pitcher is in Overdrive','🥵'],['showboat','SHOWBOAT','Admire one and flip the bat','🕺'],['aura','MAX AURA','Take a pitcher deep while he is in Overdrive','✨'],['ambush','AMBUSH','Homer on the first pitch','⚡'],
   ['slam','GRAND SALAMI','Hit a grand slam','🍖'],['b2b','BACK TO BACK','Homers in consecutive at-bats','👯'],['five','DERBY NIGHT','Five homers in one game','🎆'],['heater','ON A HEATER','Five hits in a row','♨️'],
   ['rev','IN ORBIT','Put one into orbit round the Moon','🌕'],['earth','NEXT STOP: EARTH','Hit one clean off the Moon','🌍'],['sat','SPACE JUNK','Take out the satellite','🛰️'],['lamp','LIGHTS OUT','Smash a light tower','💡'],['board','OFF THE SCOREBOARD','Homer off the scoreboard','📺'],['eye','OFF THE BATTER\'S EYE','Homer off the batter\'s eye','👁️'],
   ['send','WHEELS','Win a showdown at the bag','👟'],['jump','PERFECT JUMP','Stop the needle on gold','🥇'],['brawl','LAST MAN STANDING','Win a brawl','🥊'],['wore','WORE IT','Get hit by a pitch','🩹'],
@@ -3333,7 +3341,7 @@ function pointerAim(e){
   ray.setFromCamera({x:(e.clientX-r.left)/r.width*2-1,y:-((e.clientY-r.top)/r.height*2-1)},aimCam);
   const o=ray.ray.origin,d=ray.ray.direction,t=-o.z/d.z,g=MOBILE_UI()?1:MSENS[sensI]; /* mouse: the ring travels further than the hand, measured from the middle of the zone, so the corners are a short flick away */
   setAim(o.x+d.x*t*g,.825+(o.y+d.y*t-.825)*g);mouseLast={x:e.clientX,y:e.clientY,t:performance.now()};
-  {const cur=g>1&&/^(ready|pitch|swing|walkup)$/.test(S.state)?'none':'';if(cur!==canvas._cur){canvas._cur=cur;canvas.style.cursor=cur;}} /* the arrow would sit apart from the ring, so it is hidden while hitting */
+ /* the arrow would sit apart from the ring, so it is hidden while hitting */
 }
 let mouseLast=null;const MOBILE_UI=()=>document.body.classList.contains('mob'),MSENS=[1,1.2,1.4,1.7,2,2.4],
   mouseKeep=()=>{if(mouseLast&&!MOBILE_UI()&&performance.now()-mouseLast.t<5000)pointerAim({clientX:mouseLast.x,clientY:mouseLast.y});}; /* the ring goes back to where the mouse is, not to the middle, when a new pitch is set up */
@@ -4296,7 +4304,7 @@ function trail(o,c,far,hot,pat){
 function step(dt){
   overCheck();if(hudLater)hud(); // checked every frame, so the bar and the button switch the instant the meter fills
   {const hide=MOB&&!(S.state==='ready'||S.state==='windup'||S.state==='pitch');if(hide!==ctlHidden){ctlHidden=hide;$('hud').classList.toggle('noctl',hide);if(!hide&&jPend)hud();}} // the stick and buttons are only on screen while there is a pitch to hit
-  landRing.visible=false;
+  landRing.visible=false;if(!(flight&&!flight.done))trackRing.visible=false;
   // aim by keyboard
   const kx=(keys.ArrowRight||keys.KeyD?1:0)-(keys.ArrowLeft||keys.KeyA?1:0),ky=(keys.ArrowUp||keys.KeyW?1:0)-(keys.ArrowDown||keys.KeyS?1:0);
   if(kx||ky)setAim(aim.x+kx*1.5*dt,aim.y+ky*1.5*dt);
@@ -4383,6 +4391,7 @@ function step(dt){
     if(tr.eyeT&&!flight.orbit&&!flight.eyeHit&&tf>=tr.eyeT){flight.eyeHit=true;if(flight.play.type==='hr'&&!flight.noEye){badge('eye');pop("OFF THE BATTER'S EYE!",'','hot');}if(!flight.noEye)zapStart(ball.position,false);burst(fxL,ball.position,26,9,.7,[.6,.85,1],7,1);SND.mitt();tone('sine',120,50,.25,.5);} // thud off the batter's eye
     if(tr.land&&!flight.orbit&&!flight.landed&&tf>=tr.land.t){flight.landed=true;if(flight.play.type==='hit')roar(.75,.3); /* it drops in: the cheer starts now, not when the fielder finally gets to it */_p.set(tr.land.x,.05,tr.land.z);burst(fxL,_p,10,3,.5,[.75,.6,.42],4,2);} // dust where it comes down, so fair or foul is clear
     const dc=camera.position.distanceTo(ball.position);ball.scale.setScalar(Math.max(1,dc*.05));
+    {const on=!flight.orbit&&ball.visible&&p.y>.6&&flight.play.type!=='foul';trackRing.visible=on;if(on){trackRing.position.set(p.x,.08,p.z);trackRing.scale.setScalar(.9+Math.min(7,p.y*.2));trackRing.rotation.z=now*1.2;trackRing.material.opacity=Math.min(1,.55+p.y*.05);}}
     ballShadow.visible=!flight.orbit;ballShadow.position.set(p.x,.03,p.z);ballShadow.scale.setScalar(.2+Math.min(1.2,p.y*.03));
     trail(flight,flight.trailC,dc>9,flight.tb||(flight.pw&&flight.q>.75));
     ballGlow.position.copy(ball.position);ballGlow.material.opacity=flight.tb?.8:flight.q>.75?.4:0;ballGlow.scale.setScalar(Math.max(.3,dc*.04));
