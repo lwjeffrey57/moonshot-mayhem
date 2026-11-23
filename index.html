@@ -244,14 +244,15 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 #qmw span{position:relative;display:block;line-height:clamp(40px,11vw,54px);font-size:clamp(15px,4.4vw,22px);color:#fff;-webkit-text-stroke:3px #000;paint-order:stroke fill;letter-spacing:.05em}
 #qtm{height:10px;width:min(360px,84vw);margin:0 auto;background:#000;border:2px solid #f2f5ff;border-radius:6px;overflow:hidden}
 #qtb{display:block;height:100%;background:#39ff6a;transform-origin:0 50%}#qtb.low{background:#ff4d2e}
-#qpad{position:absolute;left:50%;margin-left:-135px;bottom:max(64px,calc(env(safe-area-inset-bottom,0px) + 54px));width:270px;height:270px;display:none;z-index:48;pointer-events:auto;touch-action:none;border-radius:50%;background:radial-gradient(circle,rgba(10,12,34,.55) 0 62%,rgba(10,12,34,0) 72%)}
+#qpad{position:absolute;left:50%;margin-left:-162px;bottom:max(40px,calc(env(safe-area-inset-bottom,0px) + 30px));width:324px;height:324px;display:none;z-index:48;pointer-events:auto;touch-action:none;border-radius:50%;background:radial-gradient(circle,rgba(10,12,34,.55) 0 62%,rgba(10,12,34,0) 72%)}
 #hud.mob.qon #qpad{display:block}#hud.mob.qon.qm #qpad{display:none}
 /* the tap-furiously kind gets one big button instead of the d-pad */
 #qmash{position:absolute;left:50%;top:62%;margin-left:-88px;width:176px;height:176px;display:none;z-index:48;pointer-events:auto;padding:0;border-radius:50%;font-family:var(--display);font-style:italic;font-size:44px;color:#fff;text-shadow:0 3px 0 #000;background:radial-gradient(circle at 50% 35%,#ff8a5c,#ff3b3b 60%,#a0140c);border:5px solid #000;box-shadow:0 7px 0 #000,0 0 0 5px rgba(255,255,255,.6),0 0 34px 10px rgba(255,80,50,.7);touch-action:none}
 #hud.mob.qon.qm #qmash{display:block}#qmash:active{transform:translateY(5px) scale(.96);box-shadow:0 2px 0 #000,0 0 0 5px rgba(255,255,255,.9),0 0 40px 14px rgba(255,160,80,.9)}
-#qpad button{position:absolute;width:90px;height:90px;padding:0;font-size:36px;pointer-events:none;color:#fff;background:linear-gradient(#3a4190,#1b1f4a);border:3px solid #000;border-radius:12px;box-shadow:0 4px 0 #000,0 0 0 3px rgba(242,245,255,.5);touch-action:none}
+#qpad button{position:absolute;width:108px;height:108px;padding:0;font-size:44px;transition:none;pointer-events:none;color:#fff;background:linear-gradient(#3a4190,#1b1f4a);border:3px solid #000;border-radius:12px;box-shadow:0 4px 0 #000,0 0 0 3px rgba(242,245,255,.5);touch-action:none}
 #qpad button:active{transform:translateY(3px);background:#39ff6a;color:#04140a}
-#qpad [data-d=U]{left:90px;top:0}#qpad [data-d=D]{left:90px;bottom:0}#qpad [data-d=L]{left:0;top:90px}#qpad [data-d=R]{right:0;top:90px} /* centred low on the screen so both thumbs can work it */
+#qpad [data-d=U]{left:108px;top:0}#qpad [data-d=D]{left:108px;bottom:0}#qpad [data-d=L]{left:0;top:108px}#qpad [data-d=R]{right:0;top:108px}
+#qpad::before{content:'';position:absolute;left:-60px;right:-60px;top:-40px;bottom:-40px} /* touches that land outside the arrows, even off the pad, still count toward the nearest one */ /* centred low on the screen so both thumbs can work it */
 /* walk-off: gold light pours in from the edges and pulses */
 #hud.woff::after{content:'';position:absolute;inset:0;z-index:3;pointer-events:none;box-shadow:inset 0 0 90px 30px rgba(255,214,60,.75);animation:woff .5s ease-in-out infinite alternate}
 @keyframes woff{from{opacity:.35}to{opacity:1}}
@@ -2219,12 +2220,13 @@ function qteStart(kind,noPA){QT.noPA=!!noPA;goHide();const M=QTE_MOVES[kind],Bp=
   ball.visible=false;ballShadow.visible=false;pop(M.call,'','hot');buzz([30,30,60]);crowdRise(.8,3,true);hud();}
 function qteShow(){const M=QT.M,e=$('qte');$('qtt').textContent=M.name;
   if(QT.mash){if(!$('qmf')){$('qtr').innerHTML='<div id="qmw"><em id="qmf"></em><span>'+(MOB?'TAP! TAP! TAP!':'MASH SPACE!')+'</span></div>';}$('hud').classList.add('qm');$('qmf').style.transform='scaleX('+Math.min(1,QT.fill).toFixed(3)+')';e.hidden=false;$('hud').classList.add('qon');return;} // the other kind: no code, just hammer the arrows until the bar is full
- $('qtr').innerHTML=QT.code.map((c,i)=>`<i class="${i<QT.i?'ok':i===QT.i?'cur':''}">${{U:'▲',D:'▼',L:'◀',R:'▶'}[c]}</i>`).join('');e.hidden=false;$('hud').classList.add('qon');}
+ {const r=$('qtr');if(r.children.length!==QT.code.length||r.firstChild.tagName!=='I')r.innerHTML=QT.code.map(c=>`<i>${{U:'▲',D:'▼',L:'◀',R:'▶'}[c]}</i>`).join('');for(let i=0;i<QT.code.length;i++){const c=i<QT.i?'ok':i===QT.i?'cur':'';if(r.children[i].className!==c)r.children[i].className=c;}}e.hidden=false;$('hud').classList.add('qon');}
+const QPB={};
 function qteKey(d){if(S.state!=='qte'||QT.ph!=='input')return;
-  {const b=document.querySelector('#qpad [data-d='+d+']'),good=QT.mash||d===QT.code[QT.i];if(b){b.classList.remove('hit','miss');void b.offsetWidth;b.classList.add(good?'hit':'miss');setTimeout(()=>b.classList.remove('hit','miss'),220);}}
+  {const b=QPB[d]||(QPB[d]=document.querySelector('#qpad [data-d='+d+']')),good=QT.mash||d===QT.code[QT.i];if(b){b.className=good?'hit':'miss';clearTimeout(b._t);b._t=setTimeout(()=>{b.className='';},150);}}
   if(QT.mash){QT.fill+=1/15;buzz(10);tone('triangle',380+520*Math.min(1,QT.fill),420+560*Math.min(1,QT.fill),.05,.25);qteShow();if(QT.fill>=1)qteDone(true);return;}
   if(d===QT.code[QT.i]){QT.i++;buzz(15);tone('triangle',520+110*QT.i,700+110*QT.i,.07,.3);if(QT.i>=QT.code.length){qteShow();qteDone(true);return;}}
-  else{QT.i=0;buzz([30,30,30]);tone('sawtooth',160,90,.12,.3);const r=$('qtr');r.classList.remove('bad');void r.offsetWidth;r.classList.add('bad');} // a wrong arrow: start the code again
+  else{QT.t1-=.3;buzz([30,30,30]);tone('sawtooth',160,90,.12,.3);const r=$('qtr');r.classList.remove('bad');requestAnimationFrame(()=>r.classList.add('bad'));} // a wrong arrow costs a third of a second off the clock; your progress stays
   qteShow();}
 function qteDone(ok){QT.ph='out';QT.ok=ok;QT.t1=now;QT.hit=false;qteSeen=true;try{localStorage.setItem('mm_qte','1');}catch(e){}
   $('hud').classList.remove('qon','qm');setTimeout(()=>{$('qte').hidden=true;},ok?350:120);
@@ -3828,9 +3830,10 @@ function shTick(){if(!(SHQ&&rim.castShadow))return;const st=S.state,wide=!(st===
 // The d-pad takes a touch anywhere on it: the direction is whichever way the finger is from the middle, so there are no dead gaps between
 // the arrows and a near miss still counts. Every finger that comes down is read at once (touchstart), with nothing waiting on a tap or a release.
 {const pad=$('qpad'),dir=(x,y)=>{const r=pad.getBoundingClientRect(),dx=x-(r.left+r.width/2),dy=y-(r.top+r.height/2);return Math.abs(dx)>Math.abs(dy)?(dx>0?'R':'L'):(dy>0?'D':'U');};
-  pad.addEventListener('touchstart',e=>{e.preventDefault();e.stopPropagation();},{passive:false}); // stops the browser treating fast taps as a scroll or zoom
-  pad.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();qteKey(dir(e.clientX,e.clientY));});} // one press per finger, the instant it lands
-{const q=$('qmash');q.addEventListener('touchstart',e=>{e.preventDefault();e.stopPropagation();},{passive:false});q.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();qteKey('U');});}
+  // fingers are read on touchstart, the earliest moment the browser reports them; a mouse (or anything that is not a finger) uses pointerdown
+  pad.addEventListener('touchstart',e=>{e.preventDefault();e.stopPropagation();for(const t of e.changedTouches)qteKey(dir(t.clientX,t.clientY));},{passive:false});
+  pad.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();if(e.pointerType==='touch')return;qteKey(dir(e.clientX,e.clientY));});}
+{const q=$('qmash');q.addEventListener('touchstart',e=>{e.preventDefault();e.stopPropagation();for(const t of e.changedTouches)qteKey('U');},{passive:false});q.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();if(e.pointerType==='touch')return;qteKey('U');});}
 {const g=$('gobtn'),go=e=>{e.preventDefault();e.stopPropagation();goTap();};g.addEventListener('pointerdown',go);}
 $('shbtn').addEventListener('click',()=>{SHQ=!SHQ;if(SHQ&&!rim.castShadow)rim.castShadow=true;try{localStorage.setItem('mm_shadows',SHQ?'1':'0');}catch(e){}shApply();});
 shApply();
