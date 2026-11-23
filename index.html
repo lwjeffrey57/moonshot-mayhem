@@ -353,8 +353,9 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
 #hud.mob>#card,#hud.mob.lh>#card{max-width:52vw;padding:7px 9px 8px;overflow:visible}#hud.mob>#card #cname{font-size:clamp(17px,5.2vw,22px)!important}#hud.mob>#card .stat{font-size:10px!important;gap:2px}#hud.mob>#card .stat em{font-size:22px!important}#hud.mob>#card .stats{gap:4px!important}
 /* WHERE IT SITS: just over the head of the infielder on the open side of the plate (second baseman for a right-handed hitter, shortstop for
    a left-handed one), on phones and computers alike: where the eyes already are, and never across the hitter or the strike zone. */
-#hud:not(.mob)>#card,#hud.kr:not(.mob)>#card{left:54%;right:auto;top:auto;bottom:58%}#hud.lh:not(.mob)>#card,#hud.kr.lh:not(.mob)>#card{left:19%}
+#hud:not(.mob)>#card,#hud.kr:not(.mob)>#card{left:auto;right:12%;top:auto;bottom:58%}#hud.lh:not(.mob)>#card,#hud.kr.lh:not(.mob)>#card{left:12%;right:auto}
 #hud.mob>#card,#hud.mob.lh>#card{top:auto!important;bottom:54.5%!important;max-width:70vw!important}#hud.mob>#card{right:max(16px,env(safe-area-inset-right,0px))!important}#hud.mob.lh>#card{left:max(16px,env(safe-area-inset-left,0px))!important;right:auto!important}
+#hud.mob:not(.lh)>#card #cname{font-size:clamp(16px,4.7vw,20px)!important}#hud.mob:not(.lh)>#card .stat em{font-size:21px!important}#hud.mob:not(.lh)>#card .stat{font-size:10px!important}#hud.mob:not(.lh)>#card{padding:5px 8px 6px!important} /* a touch smaller for right-handed hitters */
 /* during a walk-up any callout still on screen (the inning line, PLAY BALL) is held small along the top, well above the man walking in */
 #hud.wk #pop{top:9%!important}#hud.mob.wk #pop{top:15%!important}#hud.wk #pop .t{font-size:clamp(22px,5.2vw,50px)!important}#hud.wk #pop .s{font-size:clamp(11px,2.4vw,20px)!important;margin-top:5px}
 #hud.mob>#card #cname{font-size:clamp(19px,5.6vw,24px)!important;overflow:visible!important}#hud.mob>#card .stat{font-size:11px!important}#hud.mob>#card .stat em{font-size:25px!important}
@@ -860,7 +861,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 480</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 481</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <button class="tag wkopt sens" id="sens1" type="button"></button>
