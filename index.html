@@ -3001,7 +3001,10 @@ function finishPlay(){revOff();
     const ft=Math.round(pl.dist*3.281);S.hrs++;S.longest=Math.max(S.longest,ft);const r=advance(4);f.rbi=r;
     // The badge feats double as the call: when a homer is one of them, its name is what goes up (most of the time), whether or not the badge is new.
     const feat=r===4?(Math.random()<.5?'GRAND SALAMI!':'GRAND SLAM!'):Math.random()<.75?(S.b2b?'BACK TO BACK!':f.fp?'AMBUSH!':f.pod?'BEAT THE HEAT!':f.jp?'TOOK HIS BEST!':ft>=500?'FIVE HUNDRED CLUB!':ft>=450?'TAPE MEASURE!':''):'';
-    buzz([40,50,90]);pop(feat||'GONE!',`${ft} FT · +${r} RUN${r>1?'S':''}`+(pl.tag?' · '+pl.tag:''),'hot',true);scoreboard('HOME RUN',ft+' FT');
+    // THE NUMBER IS HONEST: it is how far the ball would have gone had nothing been in its way. When something was (the scoreboard, the
+    // batter's eye, the seats), the call says so, the way a broadcast does: PROJECTED 523 FT.
+    const proj=!f.orbit&&!!(f.tr.eyeT||f.sbHit||f.tr.poleT),ftT=(proj?'PROJECTED ':'')+ft+' FT';
+    buzz([40,50,90]);pop(feat||'GONE!',`${ftT} · +${r} RUN${r>1?'S':''}`+(pl.tag?' · '+pl.tag:''),'hot',true);scoreboard('HOME RUN',(proj?'PROJ. ':'')+ft+' FT');
     if(!LAS.on&&!LAMP.on&&(DBG.laser||lasWant||Math.random()<(S.over?.4:.12)))laserStart();lasWant=false;
     S.state='celebrate';S.t=now;readyDur=3.1;
     if(S.hrs===1)S.forceHbpBi=S.bi+1; // the first homer of the game always gets answered: the next man wears the first pitch, and (it being the first of the game) charges the mound

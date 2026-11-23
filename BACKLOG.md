@@ -130,3 +130,8 @@ different one each time, and a reason to want the next one. Reserved for no-doub
 ## Modes
 - Story / roguelike campaign. Inspiration for the STRUCTURE only (nothing copied): the roguelike story campaign in a well-known sci-fi podracing game the owner likes: a run of events on a branching map, choices between stops, upgrades and crew picked up along the way, permanent unlocks between runs, a rival who keeps turning up. Ours: a barnstorming tour of Moon ballparks, drafting hitters (the different bodies), buying Juice/ring/speed perks between games, boss pitchers with their own Overdrive pitches, and badges as run goals.
 - Home Run Derby.
+- Teams and rosters: named clubs with their own lineups, bullpens, colours and home parks; pick your team; each body gets a name, number and ratings that fit it.
+
+## Home-run distance
+- Built 2026-11-23: a homer stopped by the scoreboard, batter's eye, seats or pole reads PROJECTED n FT (the number was always the projected carry).
+- Ideas: a live distance counter that keeps climbing past the obstacle, a "longest ever" banner when the personal record falls, distance tiers that change the crowd and the call (400 / 450 / 500 / 550), a tape-measure graphic on the replay.
