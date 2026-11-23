@@ -862,7 +862,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 484</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 486</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <button class="tag wkopt sens" id="sens1" type="button"></button>
@@ -993,7 +993,7 @@ function podCls(){const st=S.state,on=pOD()&&!(st==='title'||st==='over'||st==='
   {const np=(S.balls|0)+(S.strikes|0),ks=on&&!(S.over&&S.overOn)?((S.strikes|0)>=2||np>=3?2:np>=1?1:0):0; /* it closes in with every pitch he throws, ball or strike: no waiting him out */if(ks!==podKs){podKs=ks;$('hud').classList.toggle('ks1',ks===1);$('hud').classList.toggle('ks2',ks===2);}}
   {const lv=on&&(st==='ready'||st==='windup'||st==='pitch')&&$('tut').hidden;if(lv!==podLv){podLv=lv;$('hud').classList.toggle('podlive',lv);}}
   const ip=st==='flight'||st==='result'||st==='trot'||st==='celebrate'||st==='celly2';if(ip!==inplayOn){inplayOn=ip;$('hud').classList.toggle('inplay',ip);}
-  const ce=st==='celly2'||st==='trot'||st==='qte'||st==='brawl'||st==='hbprun'||!!(flight&&flight.orb&&!flight.done);if(ce!==celOn){celOn=ce;$('hud').classList.toggle('cel',ce);}if((st==='brawl')!==brwOn){brwOn=st==='brawl';$('hud').classList.toggle('brw',brwOn);}{const tt=st==='title'||st==='over'||st==='result'||st==='end';if(tt!==ttlOn){ttlOn=tt;$('hud').classList.toggle('ttl',tt);}} /* (also while a play's result is being called: the plate and the callout never share the screen) */
+  const ce=st==='celly2'||st==='trot'||st==='qte'||st==='brawl'||st==='hbprun'||!!(flight&&flight.orb&&!flight.done);if(ce!==celOn){celOn=ce;$('hud').classList.toggle('cel',ce);}if((st==='brawl')!==brwOn){brwOn=st==='brawl';$('hud').classList.toggle('brw',brwOn);}{const tt=st==='title'||st==='over'||st==='result'||st==='end'||st==='hbp'||st==='brawl'; /* hit by a pitch: no ratings on screen while he is down or fighting. They come back with the outcome (the ratings banner as he takes his base). */if(tt!==ttlOn){ttlOn=tt;$('hud').classList.toggle('ttl',tt);}} /* (also while a play's result is being called: the plate and the callout never share the screen) */
   if((st==='qte')!==qsOn){qsOn=st==='qte';$('hud').classList.toggle('qs',qsOn);}
   if((st==='hbp')!==hbOn){hbOn=st==='hbp';$('hud').classList.toggle('hbps',hbOn);}}
  // while the camera is close on the pitcher, call-outs drop to a smaller line along the bottom so the words never sit on him
@@ -1491,6 +1491,14 @@ gl_FragColor=vec4(col,1.0);
     scene.add(new T.Mesh(ribbon(line.map(p=>p.clone().addScaledVector(n,1).setY(1.9)),line.map(p=>p.clone().addScaledVector(n,34).setY(23)),1),fm));if(STAND_LIT)STAND_LIT(line.map(p=>p.clone().addScaledVector(n,1).setY(1.9)),line.map(p=>p.clone().addScaledVector(n,34).setY(23)));
     scene.add(new T.Mesh(ribbon(line.map(p=>p.clone().addScaledVector(n,30).setY(23)),line.map(p=>p.clone().addScaledVector(n,30).setY(30))),basic({color:0x1a1838})));
     scene.add(new T.Mesh(ribbon(line.map(p=>p.clone().addScaledVector(n,30).setY(30)),line.map(p=>p.clone().addScaledVector(n,58).setY(52)),1),fm));if(STAND_LIT)STAND_LIT(line.map(p=>p.clone().addScaledVector(n,30).setY(30)),line.map(p=>p.clone().addScaledVector(n,58).setY(52)));
+    // THE GRANDSTAND IS A SOLID BUILDING, not a sheet of seats: a back wall from the top row down to the ground, and a closed end wall at
+    // each end, so from any angle (a foul ball, a liner down the line, the camera swinging round) it has thickness like the outfield bowl.
+    {const hull=new T.MeshBasicMaterial({color:0x14183a,side:T.DoubleSide}),hull2=new T.MeshBasicMaterial({color:0x1d2250,side:T.DoubleSide}),P=(q,o,y)=>q.clone().addScaledVector(n,o).setY(y);
+      scene.add(new T.Mesh(ribbon(line.map(q=>P(q,58,52)),line.map(q=>P(q,58,0))),hull));                                   // back wall
+      scene.add(new T.Mesh(ribbon(line.map(q=>P(q,34,23)),line.map(q=>P(q,30,23))),hull2));                                 // the walkway between the decks
+      [line[0],line[line.length-1]].forEach(q=>{                                                                           // end walls: the stepped side profile, filled in
+        scene.add(new T.Mesh(ribbon([P(q,1,1.9),P(q,34,23)],[P(q,1,0),P(q,34,0)]),hull2));
+        scene.add(new T.Mesh(ribbon([P(q,30,30),P(q,58,52)],[P(q,30,0),P(q,58,0)]),hull2));});}
     // dugout
     {const A=new V3(30*s,0,-4),B=new V3(70*s,0,-70),c=A.clone().lerp(B,.26),dir=B.clone().sub(A).normalize(),ry=-Math.atan2(dir.z,dir.x);
       const mk=(w,h,d,col,y,off)=>{const m=new T.Mesh(new T.BoxGeometry(w,h,d),new T.MeshBasicMaterial({color:col}));m.position.copy(c).addScaledVector(n,off);m.position.y=y;m.rotation.y=ry;scene.add(m);};
@@ -2941,7 +2949,7 @@ function simulate(p0,v0,spin,opt){spin=spin||{side:0,lift:0};opt=opt||{};const G
     else if(p.y<=0){
       if(!land){land={x:p.x,z:p.z,t};if(Math.abs(p.x)>.216-p.z+LINE_TOL)foul=true;} // fair or foul is settled by where it first lands, measured from the chalked lines
       p.y=0;if(v.y<-1.6){const big=opt.chop&&!nb;nb++;v.y*=big?-.45:-.42;v.x*=big?.84:.8;v.z*=big?.84:.8;
-        if(!big&&!tag&&!foul&&nb<=3&&Math.hypot(v.x,v.z)>8&&Math.random()<.011){const a=(Math.random()<.5?-1:1)*rand(.25,.55),cs=Math.cos(a),sn=Math.sin(a),x=v.x;v.x=x*cs-v.z*sn;v.z=x*sn+v.z*cs;v.y*=1.6;tag='BAD HOP';}} // now and then it takes a wicked hop
+        if(!big&&!tag&&!foul&&nb<=3&&Math.hypot(v.x,v.z)>8&&Math.random()<.011){const a=(Math.random()<.5?-1:1)*rand(.25,.55),cs=Math.cos(a),sn=Math.sin(a),x=v.x;v.x=x*cs-v.z*sn;v.z=x*sn+v.z*cs;v.y*=1.6;tag='MOON HOP!';}} // now and then it takes a wicked hop
       else{v.y=0;const h=Math.hypot(v.x,v.z);if(h<.6){pts.push({x:p.x,y:0,z:p.z,t});break;}const k=Math.max(0,h-5.5*dt)/h;v.x*=k;v.z*=k;}
     }
     if(land&&!tag&&!foul&&p.y<.3){for(const B of [[19.4,-19.4],[0,-38.8],[-19.4,-19.4]])if(Math.hypot(p.x-B[0],p.z-B[1])<.36){ // kicks off the bag
@@ -3087,7 +3095,7 @@ function tryContact(){flight_pop=false;if(pitch.hbp){swing.done=true;swing.miss=
   let tr=simulate(p0,v0,spin,fopt);
   // a liner that would die at the foot of the wall carries a touch further and bangs off it instead: more balls off the wall, fewer dropping at its base
   for(let i=0;i<7&&!tr.hr&&!tr.foul&&tr.land&&!(tr.wall&&tr.wallT<tr.land.t)&&Math.atan2(v0.y,Math.hypot(v0.x,v0.z))<26*DEG;i++){const L=tr.land,gap=fenceR(Math.atan2(L.x,-L.z))-Math.hypot(L.x,L.z),hard=v0.length()>=37;if(gap<0||gap>(hard?24:9))break;v0.multiplyScalar(hard?1.055:1.04);if(hard&&v0.y>2)v0.y*=.97;tr=simulate(p0,v0,spin,fopt);} /* a hard liner headed for the deep outfield keeps going on a rope, a laser off the wall */
-  const play=judge(tr,S.over&&S.overOn?Object.assign({},b,{spd:b.spd*1.08}):b);play.tag=play.tag||tr.tag||(kind==='TOPSPIN SINKER'?'':kind);/* a bad hop is only called when it beat the fielder: if he still made the play, nobody mentions it */if(play.tag==='BAD HOP'&&play.type!=='hit')play.tag='';if(tr.offP&&play.type==='hit'&&!play.infield)play.tag='ERROR · OFF THE PITCHER';if(tr.offF&&play.type==='hit')play.tag='ERROR · ATE HIM UP'; /* a ball a fielder should have handled and didn't is scored as his error */
+  const play=judge(tr,S.over&&S.overOn?Object.assign({},b,{spd:b.spd*1.08}):b);play.tag=play.tag||tr.tag||(kind==='TOPSPIN SINKER'?'':kind);/* a bad hop is only called when it beat the fielder: if he still made the play, nobody mentions it */if(play.tag==='MOON HOP!'&&play.type!=='hit')play.tag='';if(tr.offP&&play.type==='hit'&&!play.infield)play.tag='ERROR · OFF THE PITCHER';if(tr.offF&&play.type==='hit')play.tag='ERROR · ATE HIM UP'; /* a ball a fielder should have handled and didn't is scored as his error */
   flight={tr,play,t0:now,q,pw,tb,jp:!!(pitch&&pitch.P&&pitch.P.sp),pod:!!pOD(),fp:(S.balls|0)+(S.strikes|0)===0,od:!!(S.over&&S.overOn),v,done:false,called:false,trailC:S.over&&S.overOn?[.2,.55,1]:tb?[1,.45,.1]:pw&&q>.75?[1,.85,.25]:[.5,.5,.55]}; // Overdrive hits burn blue, Juice hits orange
   // Some Overdrive home runs don't come down: the ball leaves the Moon's orbit, headed for Earth. Always the first one a player ever hits; after that, about a third of them.
   if(flight.od&&play.type==='hr'&&(DBG.orbit||DBG.sat||DBG.lamp||DBG.rev||!orbSeen||Math.random()<.65)){const kd=DBG.lamp?'lamp':DBG.sat?'sat':DBG.rev?'rev':(DBG.orbit||!orbSeen)?'earth':odPick(),lampH=kd==='lamp'&&TOWERS.length>0,sat=kd==='sat',rev=kd==='rev';S.orbN=(S.orbN||0)+1;orbSeen=true;try{localStorage.setItem('mm_orbit','1');}catch(e){}flight.orbit=true;flight.rev=rev;play.endT+=9;
