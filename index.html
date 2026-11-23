@@ -314,6 +314,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
 #tbar .gp{background:linear-gradient(90deg,rgba(255,77,46,.3),rgba(255,77,46,.8) 36%,#ff8a70 42%,#ff8a70 58%,rgba(255,77,46,.8) 64%,rgba(255,77,46,.3))}
 #tbar .jx{background:#ffd23b;box-shadow:0 0 8px 1px rgba(255,210,59,.8)} /* same colours as the bat: green = CONTACT window, red core = POWER window, gold ends = Juice */
 #tbar .dim{opacity:.22}
+#opts{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 10px;max-width:min(820px,96vw);pointer-events:none}#opts .wkopt{font-size:clamp(10px,2.6vw,13px);padding:6px 10px}
 /* BADGES: a gold plate drops in under the meters when one is earned; the full case is on the title screen */
 #bdg{position:absolute;left:50%;top:92px;z-index:60;display:flex;align-items:center;gap:10px;padding:7px 16px 7px 9px;pointer-events:none;white-space:nowrap;border-radius:26px;background:linear-gradient(#2a2208,#0e0b02);border:2px solid #ffd23b;box-shadow:0 4px 0 #000,0 0 22px 4px rgba(255,210,59,.55);transform:translate(-50%,-140px);opacity:0;visibility:visible!important}
 #hud.mob #bdg{top:132px;padding:5px 12px 5px 7px;gap:8px}#bdg.go{animation:bdgIn 3.1s cubic-bezier(.2,1.3,.3,1) both}
@@ -449,7 +450,9 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
 #hud.mob #apad{display:block}#hud.wk #apad{visibility:hidden}
 #hud.mob #touch{display:flex}#hud.mob #keys{display:none}#hud.mob #rep{display:none}
 /* the swing buttons own the bottom edge: the batter card moves up under the scoreboard */
-#hud.mob>#card,#hud.mob.kr #card{left:max(12px,env(safe-area-inset-left,0px));right:auto;top:166px;bottom:auto;padding:4px 10px}
+#hud.mob>#card{left:auto;right:max(6px,env(safe-area-inset-right,0px));top:41%;bottom:auto;padding:4px 7px 5px;gap:0;max-width:32.5vw;overflow:hidden} /* right-handed hitter: above the second baseman's head */
+#hud.mob.lh>#card{left:max(6px,env(safe-area-inset-left,0px));right:auto;top:51.5%;bottom:auto; /* left-handed hitter: under the shortstop */padding:4px 7px 5px;gap:0;max-width:32.5vw;overflow:hidden} /* under the shortstop, beside the strike zone and never across it: where the eye already is */
+#hud.mob>#card #cnum{display:none}#hud.mob>#card #cname{font-size:clamp(12px,3.6vw,15px);overflow:hidden;text-overflow:ellipsis}#hud.mob>#card .stats{gap:4px}#hud.mob>#card .stat{font-size:8px;gap:2px;letter-spacing:.02em}#hud.mob>#card .stat em{font-size:19px}
 #hud.mob>#card #cnum{font-size:24px}
 /* overlays */
 .overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;
@@ -789,11 +792,15 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
+    <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <button class="tag wkopt sens" id="sens1" type="button"></button>
     <button class="tag wkopt" id="mark1" type="button"></button>
+    <button class="tag wkopt" id="ring1" type="button"></button>
+    <button class="tag wkopt" id="diff1" type="button"></button>
     <button class="tag wkopt" id="mute1" type="button"></button>
     <button class="tag wkopt" id="bdgbtn" type="button"></button>
+    </div>
     <button class="tag" id="mdl" type="button" hidden style="pointer-events:auto;background:none;border:1px solid var(--dim);padding:6px 12px;cursor:pointer;font-family:var(--hud)"></button>
     <div class="tag" id="best"></div>
   </div>
@@ -810,6 +817,8 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta alt" id="cambtn" type="button">CAMERA</button>
     <button class="cta alt sens" id="sens2" type="button"></button>
     <button class="cta alt" id="mark2" type="button"></button>
+    <button class="cta alt" id="ring2" type="button"></button>
+    <button class="cta alt" id="diff2" type="button"></button>
     <button class="cta alt" id="howbtn" type="button">HOW TO PLAY</button>
     <button class="cta alt" id="shbtn" type="button">FIELD SHADOWS: OFF</button>
     <button class="cta alt" id="fpsbtn" type="button">SHOW SPEED: OFF</button>
@@ -907,7 +916,7 @@ function cardTick(){
   _s0.project(camera);const cw=c.offsetWidth||150,ch=c.offsetHeight||44;
   const x=clamp((_s0.x*.5+.5)*W-cw*.5,4,W-cw-4),y=Math.max(150,(-_s0.y*.5+.5)*H-ch-2);
   c.style.transform='translate('+x.toFixed(0)+'px,'+y.toFixed(0)+'px)';}
-const pcutH=new V3(0,2.3,-18.4);let retOdC=false,retTb=false,retT=-9,retOd=false,pcutT=-9,pcutOn=false,celOn=false,qsOn=false,hbOn=false,podOn=false,podLv=false,podKs=0,inplayOn=false;
+const pcutH=new V3(0,2.3,-18.4);let lhCls=false,retOdC=false,retTb=false,retT=-9,retOd=false,pcutT=-9,pcutOn=false,celOn=false,qsOn=false,hbOn=false,podOn=false,podLv=false,podKs=0,inplayOn=false;
 // the pitcher's fire border waits until the hitter is in the box; the batter card goes away once the ball is in play
 function podCls(){const st=S.state,on=pOD()&&!(st==='title'||st==='over'||st==='end'||st==='walkup'||st==='pchange');if(on!==podOn){podOn=on;$('hud').classList.toggle('pod',on);}
   {const np=(S.balls|0)+(S.strikes|0),ks=on&&!(S.over&&S.overOn)?((S.strikes|0)>=2||np>=3?2:np>=1?1:0):0; /* it closes in with every pitch he throws, ball or strike: no waiting him out */if(ks!==podKs){podKs=ks;$('hud').classList.toggle('ks1',ks===1);$('hud').classList.toggle('ks2',ks===2);}}
@@ -2617,6 +2626,11 @@ function payHeat(){if(pitch&&pitch.P.sp&&!pitch.paid){pitch.paid=true;if(!S.pOve
 // Welcome at-bat: a new player's first hitter of the game sees slow, straight pitches down the middle and gets a more forgiving bat,
 // for their first three games on this device. Early success matters more than realism here.
 let gamesPlayed=0;try{gamesPlayed=+localStorage.getItem('mm_games')||0;}catch(e){}
+// DIFFICULTY (a setting, first pass). PRO is the game as it has always been. ROOKIE: bigger rings, a wider timing window and slower pitches.
+// ALL-STAR: smaller rings, a tighter window and more velocity. (More to come: how often he throws Juice, how often he goes into Overdrive, the defence.)
+const DIFF=[{n:'ROOKIE',ring:1.18,dur:1.1},{n:'PRO',ring:1,dur:1},{n:'ALL-STAR',ring:.85,dur:.93}];let diffI=1;try{const v=localStorage.getItem('mm_diff');if(v!==null)diffI=clamp(+v|0,0,2);}catch(e){}
+let ringsOff=false;try{ringsOff=localStorage.getItem('mm_rings')==='0';}catch(e){}
+function optLabels(){const set=(id,t)=>{const e=document.getElementById(id);if(e)e.textContent=t;};set('diff1','Difficulty: '+DIFF[diffI].n.toLowerCase());set('diff2','DIFFICULTY: '+DIFF[diffI].n);set('ring1','Bat rings: '+(ringsOff?'hidden':'shown'));set('ring2','BAT RINGS: '+(ringsOff?'HIDDEN':'SHOWN'));}
 const easyAB=()=>S.bi===0&&S.inning===1&&gamesPlayed<=3;
 function choosePitch(){
   if(easyAB()){const P=PITCHES[0],tx=rand(-.11,.11),ty=rand(.72,.94);
@@ -2641,7 +2655,7 @@ function choosePitch(){
   const hbp=(S.bi===S.forceHbpBi&&S.balls+S.strikes===0&&!(S.over&&S.overOn)&&!S.hbpN)||S.bi>0&&!(S.over&&S.overOn)&&!(gamesPlayed<=3&&S.bi<3)&&(S.hbpN||0)<3&&S.balls+S.strikes===0&&(DBG.hbp||Math.random()<(S.bi===S.retalBi?.3:S.pOver?.14:.05)); /* the hitter after a big homer or a showy celebration is far more likely to wear one: it reads as payback */ // never while the hitter is in Overdrive
   if(hbp){tx=(curBatter().lh?1:-1)*.68;ty=rand(1.05,1.3);}
   const sp=inningSp();
-  return {P,tx,ty,hbp,dur:P.dur*sp*rand(.97,1.03),brk:new V3(P.brk[0]*rand(.8,1.15),P.brk[1]*rand(.8,1.15),0),arc:P.arc,rel:new V3(),t0:0,
+  return {P,tx,ty,hbp,dur:P.dur*sp*DIFF[diffI].dur*rand(.97,1.03),brk:new V3(P.brk[0]*rand(.8,1.15),P.brk[1]*rand(.8,1.15),0),arc:P.arc,rel:new V3(),t0:0,
     inZone:tx>=ZONE.x0&&tx<=ZONE.x1&&ty>=ZONE.y0&&ty<=ZONE.y1};
 }
 function pitchPos(pt,u,out){
@@ -2799,7 +2813,7 @@ function tryContact(){flight_pop=false;if(pitch.hbp){swing.done=true;swing.miss=
   swing.done=true;
   const b=curBatter(),tCross=pitch.t0+pitch.dur,dt=(swing.t0+SW_T)-tCross;
   const pw=swing.type==='power',tb=swing.turbo;
-  const odOn=!!(S.over&&S.overOn),ez=easyAB()?1.3:1,JT=odOn?1.85:tb?1.35:1,SK=pitch.P.sp?(odOn?.8:.52):1, /* Overdrive: the timing window is nearly twice as wide, and a Juice pitch takes much less of it away */win=.118*(pw?.85:1.2)*JT*ez*SK,n=dt/win;
+  const odOn=!!(S.over&&S.overOn),ez=(easyAB()?1.3:1)*DIFF[diffI].ring,JT=odOn?1.85:tb?1.35:1,SK=pitch.P.sp?(odOn?.8:.52):1, /* Overdrive: the timing window is nearly twice as wide, and a Juice pitch takes much less of it away */win=.118*(pw?.85:1.2)*JT*ez*SK,n=dt/win;
   // chasing: how far outside the strike zone the pitch is (0 in the zone → 1 well off the plate)
   const offX=Math.max(ZONE.x0-pitch.tx,pitch.tx-ZONE.x1,0),offY=Math.max(ZONE.y0-pitch.ty,pitch.ty-ZONE.y1,0),chase=clamp(Math.hypot(offX,offY)/.16,0,1);
   const R=.17*b.con*(pw?(tb?.8:.63):1.25)*(tb?(S.over&&S.overOn?1.85:1.2):1)*(1-.3*chase)*ez; /* Overdrive: both sweet spots are 85% bigger (Juice alone is a fifth) */ // the power core is 10% smaller without Juice; Juice gives the old size back, then its usual boost
@@ -2978,13 +2992,15 @@ function finishPlay(){revOff();
     {const deep=pl.air&&!dp&&pl.f&&pl.f.of&&Math.hypot(pl.p.x,pl.p.z)>70&&S.outs<3,k=deep?(S.bases[1]&&!S.bases[2]?'tag3':S.bases[0]&&!S.bases[1]?'tag2':''):''; // a deep fly with a man on: he tags up and goes
       if(k&&S.outs<2&&qteParts()){afterPA(dp?2.7:f.thr?2.1:1.5);if(DBG.qte===k){S.goD=qteRisk(k,pl);S.next=()=>qteStart(k,true);}else goOffer(k,pl);return;}}
     afterPA(dp?2.7:f.thr?2.1:1.5);return;}
-  badge('hit');if(S.streak>=4)badge('heater');
+  badge('hit');if(S.streak>=4)badge('heater');if(S.streak===4&&pl.type!=='hr')setTimeout(()=>{const e=$('shout');if(S.state==='result'||S.state==='flight'){e.textContent='ON A HEATER!';e.style.left='50%';e.style.top=(MOB?'30%':'24%');e.classList.remove('b','go');void e.offsetWidth;e.classList.add('go');}},700);
   S.hits++;S.streak++;S.bestStreak=Math.max(S.bestStreak,S.streak);if(!f.tb)S.juice=Math.min(1,S.juice+(pl.type==='hr'?.5:.25));else if(pl.type==='hr'&&!S.over)S.juice=Math.min(1,S.juice+.25); /* a homer on a Juice swing gives one bar back */ // every hit is worth one quarter; // a Juice hit doesn't refill the bar it just spent
   if(pl.type==='hr'){
     {const ft0=Math.round(pl.dist*3.281);badge('hr');if(ft0>=450)badge('hr450');if(ft0>=500)badge('hr500');if(f.od)badge('odhr');if(f.jp)badge('juicehr');if(f.pod)badge('duel');if(f.fp)badge('ambush');if(S.bases.filter(Boolean).length===3)badge('slam');
-      if(S.lastHRbi===S.bi-1)badge('b2b');S.lastHRbi=S.bi;if(S.hrs>=4)badge('five');if(f.sat)badge('sat');else if(f.lamp)badge('lamp');else if(f.rev)badge('rev');else if(f.orbit)badge('earth');}
+      S.b2b=S.lastHRbi===S.bi-1;if(S.b2b)badge('b2b');S.lastHRbi=S.bi;if(S.hrs>=4)badge('five');if(f.sat)badge('sat');else if(f.lamp)badge('lamp');else if(f.rev)badge('rev');else if(f.orbit)badge('earth');}
     const ft=Math.round(pl.dist*3.281);S.hrs++;S.longest=Math.max(S.longest,ft);const r=advance(4);f.rbi=r;
-    buzz([40,50,90]);pop(r===4?'GRAND SLAM!':'GONE!',`${ft} FT · +${r} RUN${r>1?'S':''}`+(pl.tag?' · '+pl.tag:''),'hot',true);scoreboard('HOME RUN',ft+' FT');
+    // The badge feats double as the call: when a homer is one of them, its name is what goes up (most of the time), whether or not the badge is new.
+    const feat=r===4?(Math.random()<.5?'GRAND SALAMI!':'GRAND SLAM!'):Math.random()<.75?(S.b2b?'BACK TO BACK!':f.fp?'AMBUSH!':f.pod?'BEAT THE HEAT!':f.jp?'TOOK HIS BEST!':ft>=500?'FIVE HUNDRED CLUB!':ft>=450?'TAPE MEASURE!':''):'';
+    buzz([40,50,90]);pop(feat||'GONE!',`${ft} FT · +${r} RUN${r>1?'S':''}`+(pl.tag?' · '+pl.tag:''),'hot',true);scoreboard('HOME RUN',ft+' FT');
     if(!LAS.on&&!LAMP.on&&(DBG.laser||lasWant||Math.random()<(S.over?.4:.12)))laserStart();lasWant=false;
     S.state='celebrate';S.t=now;readyDur=3.1;
     if(S.hrs===1)S.forceHbpBi=S.bi+1; // the first homer of the game always gets answered: the next man wears the first pitch, and (it being the first of the game) charges the mound
@@ -3208,6 +3224,8 @@ document.addEventListener('touchstart',e=>{let hit=false;for(const t of e.change
 ['tc','tp','tj'].forEach(id=>$(id).addEventListener('click',e=>{if(e.detail===0){press(id);if(id==='tj')juiceTap();else doSwing(id==='tp'?'power':'contact');}})); // keyboard activation
 $('start').addEventListener('click',()=>{audioInit();if(AC&&AC.state==='suspended')AC.resume();startGame();});
 $('title').addEventListener('click',e=>{if(e.target.closest('button'))return;$('start').click();}); // a tap anywhere on the title screen starts the game; the option buttons keep their own jobs
+optLabels();['diff1','diff2'].forEach(id=>$(id).addEventListener('click',e=>{e.stopPropagation();diffI=(diffI+1)%DIFF.length;try{localStorage.setItem('mm_diff',diffI);}catch(x){}optLabels();}));
+['ring1','ring2'].forEach(id=>$(id).addEventListener('click',e=>{e.stopPropagation();ringsOff=!ringsOff;try{localStorage.setItem('mm_rings',ringsOff?'0':'1');}catch(x){}if(ringsOff&&markI===0){markI=1;try{localStorage.setItem('mm_mark',markI);}catch(x){}markSet();}optLabels();})); /* with the rings hidden there has to be something to aim with: the dot comes on */
 markSet();['mark1','mark2'].forEach(id=>$(id).addEventListener('click',e=>{e.stopPropagation();markI=(markI+1)%4;try{localStorage.setItem('mm_mark',markI);}catch(x){}markSet();}));
 bdgLabel();$('bdgbtn').addEventListener('click',e=>{e.stopPropagation();bdgOpen();});
 muteLabel();$('mutebtn').addEventListener('click',e=>{e.stopPropagation();toggleMute();});$('mute1').addEventListener('click',toggleMute);
@@ -4203,8 +4221,9 @@ function step(dt){
   if(QT.pb!=null&&S.state!=='qte'){QT.pb=null;pitcherModel();}
   stickHint();sbTick();zapTick();crowdTick(dt);shoutTick();poleTick();satTick();lampTick(dt);laserTick(dt);organTick();vendorTick();roarTick();heartTick();zoneTick();
   if(flight&&flight.play.type==='hr'&&!flight.sbHit&&!flight.orbit&&ball.visible&&Math.abs(ball.position.x-SBX)<24&&ball.position.y>30&&ball.position.y<48&&ball.position.z<-(fenceR(0)+15)&&ball.position.z>-(fenceR(0)+24)){flight.sbHit=true;zapStart(ball.position,true);burst(fxL,ball.position,26,9,.7,[.6,.85,1],7,1);}
+  if(!!MX.lefty!==lhCls){lhCls=!!MX.lefty;$('hud').classList.toggle('lh',lhCls);}
   touchSettle();reticle.position.set(aim.x,aim.y,0);
-  {const ez=easyAB()?1.3:1;if(!!tb!==retTb){retTb=!!tb;retT=now; /* the rings answer the press at once: no wait for the flash to clear */retOd=!!(tb&&S.over&&S.overOn);} /* Overdrive lights the whole screen for a moment as it comes on: the rings wait for that to clear, then swell where you can see it */
+  {const ez=(easyAB()?1.3:1)*DIFF[diffI].ring;if(!!tb!==retTb){retTb=!!tb;retT=now; /* the rings answer the press at once: no wait for the flash to clear */retOd=!!(tb&&S.over&&S.overOn);} /* Overdrive lights the whole screen for a moment as it comes on: the rings wait for that to clear, then swell where you can see it */
    // Juice and Overdrive make both rings bigger, and they visibly swell into it (overshoot, then settle) so nobody misses that it happened
    const k=clamp((now-retT)/(retOd?.24:.18),0,1),ov=retOd&&retTb?4.2:2.9,eo=1+ov*Math.pow(k-1,3)+(ov-1)*Math.pow(k-1,2),f=retTb?eo:1-eo,big=retOd?1.85:1.2,kc=lerp(1,big,f),kp=lerp(.63,.8*big,f);
    {const oc=!!(S.over&&S.overOn);if(oc!==retOdC){retOdC=oc;retC.traverse(m=>{if(m.material)m.material.color.setHex(oc?0x4fc3ff:0x3ddc6a);});retP.traverse(m=>{if(m.material)m.material.color.setHex(oc?0x1f48ff:0xff4d2e);});}} /* OVERDRIVE: the rings turn blue, the power core a deeper blue */
@@ -4215,6 +4234,7 @@ function step(dt){
   if(ringEcho){const e=now-ringEcho.t;if(e>.75||S.state==='ready'||S.state==='windup')ringEcho=null;
     else{showRet=true;reticle.position.set(ringEcho.x,ringEcho.y,0);retC.visible=!ringEcho.pw;retP.visible=ringEcho.pw;echoBall.visible=true;echoBall.position.set(ringEcho.bx,ringEcho.by,.001);}}
   retCfill.visible=!retP.visible;
+  if(ringsOff&&!ringEcho&&!tutStep){retC.visible=retP.visible=false;} /* a setting: play with only the centre marker. The zones still decide every swing, and the miss replay still shows them */
   reticle.visible=showRet;zone.visible=S.state==='ready'||S.state==='windup'||S.state==='pitch';
 }
 // Batting cameras. Each is a position and a look-at point; 'side' ones sit on the open side of the plate, away from the hitter.

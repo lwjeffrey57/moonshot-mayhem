@@ -126,3 +126,7 @@ different one each time, and a reason to want the next one. Reserved for no-doub
 ## Bat ring (PCI) settings
 - Built 2026-11-23: centre marker choice (none / dot / crosshair / ring), on the title screen and in the pause menu, saved per device.
 - Ideas: marker colour and size, ring thickness, ring opacity, a colour-blind palette for the green/red zones, hide the fill and keep only outlines, a "pro" ring with no timing ring.
+
+## Modes
+- Story / roguelike campaign. Inspiration for the STRUCTURE only (nothing copied): the roguelike story campaign in a well-known sci-fi podracing game the owner likes: a run of events on a branching map, choices between stops, upgrades and crew picked up along the way, permanent unlocks between runs, a rival who keeps turning up. Ours: a barnstorming tour of Moon ballparks, drafting hitters (the different bodies), buying Juice/ring/speed perks between games, boss pitchers with their own Overdrive pitches, and badges as run goals.
+- Home Run Derby.
