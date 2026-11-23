@@ -89,6 +89,12 @@ Recordings to find or make (the game currently fakes most of these by reshaping 
   - Possible in-game help, later: a "save that clip" button that records the last few seconds of play, and a clean-HUD replay mode so
     clips are not covered in buttons. Pairs with the share button above.
 
+## Motion capture (parked until we really need it)
+- Mixamo cannot capture; it is only the library and the skeleton everything uses. Capture needs a video-to-animation tool, then an FBX on the Mixamo skeleton.
+- First choice to try: Rokoko Vision free tier (30 s of video a month, FBX export); about $12 for one month of 600 s would cover a full batch.
+- Check before shipping: commercial-use terms of the tier used, and that the export lands on the Mixamo skeleton.
+- Best uses: baseball-specific moves the library lacks (bat flip, follow-through, slide, tag, pitcher's delivery, the owner's own celebrations).
+
 ## Known gaps in testing
 - Audio has never been listened to by the developer side; all levels and mixes need a human ear.
 - Real-phone frame rate and feel are only checked on the owner's iPhone XR.
