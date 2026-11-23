@@ -316,11 +316,11 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
 #tbar .dim{opacity:.22}
 #opts{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 10px;max-width:min(820px,96vw);pointer-events:none}#opts .wkopt{font-size:clamp(10px,2.6vw,13px);padding:6px 10px}
 /* BADGES: a gold plate drops in under the meters when one is earned; the full case is on the title screen */
-#bdg{position:absolute;left:50%;top:92px;z-index:60;display:flex;align-items:center;gap:10px;padding:7px 16px 7px 9px;pointer-events:none;white-space:nowrap;border-radius:26px;background:linear-gradient(#2a2208,#0e0b02);border:2px solid #ffd23b;box-shadow:0 4px 0 #000,0 0 22px 4px rgba(255,210,59,.55);transform:translate(-50%,-140px);opacity:0;visibility:visible!important}
+#bdg{position:absolute;left:50%;top:92px;z-index:60;display:flex;align-items:center;gap:10px;padding:9px 22px 9px 12px;pointer-events:none;white-space:nowrap;border-radius:34px;background:linear-gradient(#2a2208,#0e0b02);border:2px solid #ffd23b;box-shadow:0 4px 0 #000,0 0 22px 4px rgba(255,210,59,.55);transform:translate(-50%,-140px);opacity:0;visibility:visible!important}
 #hud.mob #bdg{top:132px;padding:5px 12px 5px 7px;gap:8px}#bdg.go{animation:bdgIn 3.1s cubic-bezier(.2,1.3,.3,1) both}
 @keyframes bdgIn{0%{transform:translate(-50%,-140px) scale(.7);opacity:0}9%{transform:translate(-50%,0) scale(1.08);opacity:1}14%{transform:translate(-50%,0) scale(1)}86%{transform:translate(-50%,0) scale(1);opacity:1}100%{transform:translate(-50%,-30px) scale(.96);opacity:0}}
-#bdg i{font-style:normal;font-size:30px;line-height:1;filter:drop-shadow(0 2px 0 #000)}#bdg em{display:block;font-family:var(--hud);font-style:normal;font-weight:800;font-size:10px;letter-spacing:.16em;color:#ffd23b}
-#bdg b{display:block;font-family:var(--display);font-style:italic;font-weight:400;font-size:clamp(17px,4.4vw,24px);line-height:1.05;color:#fff;text-shadow:0 2px 0 #000}#bdg span{display:block;font-family:var(--hud);font-size:11px;color:var(--chrome);letter-spacing:.03em}
+#bdg i{font-style:normal;font-size:clamp(34px,8vw,50px);line-height:1;filter:drop-shadow(0 2px 0 #000)}#bdg em{display:block;font-family:var(--hud);font-style:normal;font-weight:800;font-size:10px;letter-spacing:.16em;color:#ffd23b}
+#bdg b{display:block;font-family:var(--display);font-style:italic;font-weight:400;font-size:clamp(22px,6vw,38px);line-height:1.05;color:#fff;text-shadow:0 2px 0 #000}#bdg span{display:block;font-family:var(--hud);font-size:clamp(11px,2.8vw,14px);color:var(--chrome);letter-spacing:.03em}
 #bdgs{position:absolute;inset:0;z-index:80;display:flex;flex-direction:column;align-items:center;gap:10px;padding:18px 12px;background:rgba(4,5,16,.95);overflow-y:auto;pointer-events:auto;-webkit-overflow-scrolling:touch}#bdgs[hidden]{display:none}
 #bdgs h2{font-family:var(--display);font-style:italic;font-weight:400;font-size:clamp(24px,6vw,40px);color:#ffd23b;text-shadow:0 3px 0 #000;margin:0}#bdgs p{margin:0;font-size:12px;letter-spacing:.14em;color:var(--dim)}
 #bdgl{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px;width:min(920px,100%)}
@@ -2993,14 +2993,15 @@ function finishPlay(){revOff();
     {const deep=pl.air&&!dp&&pl.f&&pl.f.of&&Math.hypot(pl.p.x,pl.p.z)>70&&S.outs<3,k=deep?(S.bases[1]&&!S.bases[2]?'tag3':S.bases[0]&&!S.bases[1]?'tag2':''):''; // a deep fly with a man on: he tags up and goes
       if(k&&S.outs<2&&qteParts()){afterPA(dp?2.7:f.thr?2.1:1.5);if(DBG.qte===k){S.goD=qteRisk(k,pl);S.next=()=>qteStart(k,true);}else goOffer(k,pl);return;}}
     afterPA(dp?2.7:f.thr?2.1:1.5);return;}
-  badge('hit');if(S.streak>=4)badge('heater');if(S.streak===4&&pl.type!=='hr')setTimeout(()=>{const e=$('shout');if(S.state==='result'||S.state==='flight'){e.textContent='ON A HEATER!';e.style.left='50%';e.style.top=(MOB?'30%':'24%');e.classList.remove('b','go');void e.offsetWidth;e.classList.add('go');}},700);
+  badge('hit');if(S.streak>=4)badge('heater');if(false)setTimeout(()=>{const e=$('shout');if(S.state==='result'||S.state==='flight'){e.textContent='ON A HEATER!';e.style.left='50%';e.style.top=(MOB?'30%':'24%');e.classList.remove('b','go');void e.offsetWidth;e.classList.add('go');}},700);
   S.hits++;S.streak++;S.bestStreak=Math.max(S.bestStreak,S.streak);if(!f.tb)S.juice=Math.min(1,S.juice+(pl.type==='hr'?.5:.25));else if(pl.type==='hr'&&!S.over)S.juice=Math.min(1,S.juice+.25); /* a homer on a Juice swing gives one bar back */ // every hit is worth one quarter; // a Juice hit doesn't refill the bar it just spent
   if(pl.type==='hr'){
     {const ft0=Math.round(pl.dist*3.281);badge('hr');if(ft0>=450)badge('hr450');if(ft0>=500)badge('hr500');if(f.od)badge('odhr');if(f.jp)badge('juicehr');if(f.pod)badge('duel');if(f.fp)badge('ambush');if(S.bases.filter(Boolean).length===3)badge('slam');
       S.b2b=S.lastHRbi===S.bi-1;if(S.b2b)badge('b2b');S.lastHRbi=S.bi;if(S.hrs>=4)badge('five');if(f.sat)badge('sat');else if(f.lamp)badge('lamp');else if(f.rev)badge('rev');else if(f.orbit)badge('earth');}
     const ft=Math.round(pl.dist*3.281);S.hrs++;S.longest=Math.max(S.longest,ft);const r=advance(4);f.rbi=r;
-    // The badge feats double as the call: when a homer is one of them, its name is what goes up (most of the time), whether or not the badge is new.
-    const feat=r===4?(Math.random()<.5?'GRAND SALAMI!':'GRAND SLAM!'):Math.random()<.75?(S.b2b?'BACK TO BACK!':f.fp?'AMBUSH!':f.pod?'BEAT THE HEAT!':f.jp?'TOOK HIS BEST!':ft>=500?'FIVE HUNDRED CLUB!':ft>=450?'TAPE MEASURE!':''):'';
+    // The badge feats double as the call, ONCE EACH: the first time a feat happens its badge name is what goes up. After that (and once every
+    // feat that applies has had its turn) the call is the ordinary one again.
+    const feat=r===4?'GRAND SLAM!':''; /* the feats are called by their badge plate (icon and all) the first time they happen; the text call stays the ordinary one */
     // THE NUMBER IS HONEST: it is how far the ball would have gone had nothing been in its way. When something was (the scoreboard, the
     // batter's eye, the seats), the call says so, the way a broadcast does: PROJECTED 523 FT.
     const proj=!f.orbit&&!!(f.tr.eyeT||f.sbHit||f.tr.poleT),ftT=(proj?'PROJECTED ':'')+ft+' FT';
@@ -3086,6 +3087,8 @@ const BADGES=[['hit','KNOCK','Get your first hit','🧢'],['hr','WENT YARD','Hit
   ['walkoff','WALK-OFF','Win it in your last at-bat','🏃'],['win','IN THE WIN COLUMN','Win a game','🏆'],['ten','DOUBLE DIGITS','Score ten runs in a game','🔟']];
 let bdgGot={};try{bdgGot=JSON.parse(localStorage.getItem('mm_badges')||'{}')||{};}catch(e){}
 const bdgQ=[];let bdgBusy=0;
+let callShown={};try{callShown=JSON.parse(localStorage.getItem('mm_calls')||'{}')||{};}catch(e){}
+function callOnce(L){for(const [ok,id,txt] of L)if(ok&&!callShown[id]){callShown[id]=1;try{localStorage.setItem('mm_calls',JSON.stringify(callShown));}catch(e){}return txt;}return '';} /* the first applicable feat whose call has never been shown, or nothing */
 function badge(id){if(bdgGot[id])return;const B=BADGES.find(b=>b[0]===id);if(!B)return;bdgGot[id]=1;try{localStorage.setItem('mm_badges',JSON.stringify(bdgGot));}catch(e){}bdgQ.push(B);bdgLabel();}
 function bdgLabel(){const e=$('bdgbtn');if(e)e.textContent='Badges: '+BADGES.filter(b=>bdgGot[b[0]]).length+' / '+BADGES.length;}
 setInterval(()=>{if(!bdgQ.length||performance.now()<bdgBusy||$('hud').classList.contains('rv')||S.state==='title')return;const B=bdgQ.shift(),e=$('bdg');e.querySelector('i').textContent=B[3];e.querySelector('b').textContent=B[1];e.querySelector('span').textContent=B[2];
@@ -4230,7 +4233,7 @@ function step(dt){
   {const ez=(easyAB()?1.3:1)*DIFF[diffI].ring;if(!!tb!==retTb){retTb=!!tb;retT=now; /* the rings answer the press at once: no wait for the flash to clear */retOd=!!(tb&&S.over&&S.overOn);} /* Overdrive lights the whole screen for a moment as it comes on: the rings wait for that to clear, then swell where you can see it */
    // Juice and Overdrive make both rings bigger, and they visibly swell into it (overshoot, then settle) so nobody misses that it happened
    const k=clamp((now-retT)/(retOd?.24:.18),0,1),ov=retOd&&retTb?4.2:2.9,eo=1+ov*Math.pow(k-1,3)+(ov-1)*Math.pow(k-1,2),f=retTb?eo:1-eo,big=retOd?1.85:1.2,kc=lerp(1,big,f),kp=lerp(.63,.8*big,f);
-   {const oc=!!(S.over&&S.overOn);if(oc!==retOdC){retOdC=oc;retC.traverse(m=>{if(m.material)m.material.color.setHex(oc?0x4fc3ff:0x3ddc6a);});retP.traverse(m=>{if(m.material)m.material.color.setHex(oc?0x1f48ff:0xff4d2e);});}} /* OVERDRIVE: the rings turn blue, the power core a deeper blue */
+   {const oc=!!(S.over&&S.overOn);if(oc!==retOdC){retOdC=oc;retC.traverse(m=>{if(m.material)m.material.color.setHex(oc?(m===retC?0xaaf0ff:0x4fc3ff):0x3ddc6a);});retP.traverse(m=>{if(m.material){m.material.color.setHex(oc?(m===retP?0x8fb0ff:0x2452ff):0xff4d2e);m.material.opacity=m===retP?.95:oc?.62:.4;}}); /* bright outlines, so both rings stand out against the dark strike zone; the core is a deep blue you can still see */}} /* OVERDRIVE: the rings turn blue, the power core a deeper blue */
    retC.scale.setScalar(.17*b.con*1.25*kc*ez);retP.scale.setScalar(.17*b.con*kp*ez);}
   let showRet=(S.state==='ready'||S.state==='windup'||S.state==='pitch')&&!(swing&&swing.done);
   retC.visible=retP.visible=true;echoBall.visible=false;
