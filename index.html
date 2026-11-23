@@ -307,7 +307,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
 #shout{color:#ffe53b;text-shadow:0 clamp(4px,.6vw,6px) 0 #05060f,0 0 24px rgba(255,229,59,.5)}#shout.b{color:#7fe6ff;text-shadow:0 clamp(4px,.6vw,6px) 0 #05060f,0 0 24px rgba(58,214,255,.6)}
 /* BRAWL: comic-book hits. The word sits on a spiky burst (yours gold, his blue) with a black edge, in the same spot the shouts already use, clear of both men. */
 #hud.hbps #bdg,#hud.mob.hbps #bdg{top:70%} /* hit by a pitch: the plate goes under his feet, in the middle, never across him */
-#hud.brw #bdg,#hud.mob.brw #bdg{top:76%} /* during a fight a plate goes below the fighters' feet */#hud.brw #meters,#hud.brw #keys{visibility:hidden} /* nothing else on the glass during the fight: the bursts get the top of the screen to themselves */
+#hud.brw #bdg,#hud.mob.brw #bdg,#hud.mob.adm #bdg{top:76%}#hud.adm #bdg{top:calc(100% - 96px)} /* admiring a homer: the plate goes under his feet (right at the foot of a wide screen, where he stands lower in the picture) */ /* during a fight a plate goes below the fighters' feet */#hud.brw #meters,#hud.brw #keys{visibility:hidden} /* nothing else on the glass during the fight: the bursts get the top of the screen to themselves */
 #hud.brw #shout{isolation:isolate;color:#fff;font-size:clamp(22px,5.6vw,36px);-webkit-text-stroke:clamp(5px,.9vw,7px) #05060f;text-shadow:0 4px 0 #05060f;
   box-sizing:border-box;width:clamp(150px,36vw,208px);height:clamp(112px,27vw,156px);display:flex;align-items:center;justify-content:center;text-align:center;white-space:normal;line-height:.95;padding:0 13%}
 /* a compact burst of fixed proportions (4:3) with the word inside it, however long the word is: never a stretched banner */
@@ -852,7 +852,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 471</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 472</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <button class="tag wkopt sens" id="sens1" type="button"></button>
@@ -1006,7 +1006,7 @@ let dftEl=null,dftOn=false,dftV=-1;function dftDom(){const on=!!(flight&&!flight
   const v=flight.dLast|0;if(v!==dftV){dftV=v;dftEl.firstChild.textContent=v;dftEl.classList.toggle('big',v>=450);dftEl.classList.toggle('huge',v>=500);}
   const W=canvas.clientWidth||innerWidth,H=canvas.clientHeight||innerHeight;_s0.copy(ball.position).project(camera);const x=clamp((_s0.x*.5+.5)*W,70,W-70),y=clamp((-_s0.y*.5+.5)*H-H*.11,H*.14,H*.8);
   dftEl.style.transform='translate('+x.toFixed(1)+'px,'+y.toFixed(1)+'px) translate(-50%,-100%)';}
-function draw(){trackRing.visible=landRing.visible;if(landRing.visible){trackRing.position.set(landRing.position.x,.09,landRing.position.z);trackRing.scale.setScalar(landRing.scale.x*1.15);trackRing.rotation.z=now*1.2;}{const du=!!(S.over&&S.overOn&&pOD());if(du!==duelTag){duelTag=du;const e=$('podtag');e.innerHTML=du?'OVERCHARGED<br>DUEL!':'PITCHER OVERDRIVE<br>ACTIVE';e.classList.toggle('du',du);}}if(HALO.paint){const hm=flight&&!flight.done&&flight.play.type==='hr'&&flight.clr||S.state==='trot'?'hr':S.over&&S.overOn?'od':pOD()?'pod':'idle';if(hm!==HALO.m){HALO.m=hm;HALO.paint(hm);}HALO.t.offset.x=(performance.now()*(hm==='idle'?.00003:.00009))%1;}
+function draw(){{const ad=!!(flight&&flight.admire&&!flight.done&&now-flight.t0<(flight.A||0)+.4);if(ad!==admCls){admCls=ad;$('hud').classList.toggle('adm',ad);}}trackRing.visible=landRing.visible;if(landRing.visible){trackRing.position.set(landRing.position.x,.09,landRing.position.z);trackRing.scale.setScalar(landRing.scale.x*1.15);trackRing.rotation.z=now*1.2;}{const du=!!(S.over&&S.overOn&&pOD());if(du!==duelTag){duelTag=du;const e=$('podtag');e.innerHTML=du?'OVERCHARGED<br>DUEL!':'PITCHER OVERDRIVE<br>ACTIVE';e.classList.toggle('du',du);}}if(HALO.paint){const hm=flight&&!flight.done&&flight.play.type==='hr'&&flight.clr||S.state==='trot'?'hr':S.over&&S.overOn?'od':pOD()?'pod':'idle';if(hm!==HALO.m){HALO.m=hm;HALO.paint(hm);}HALO.t.offset.x=(performance.now()*(hm==='idle'?.00003:.00009))%1;}
   if(LED_T)LED_T.offset.x=(performance.now()*.000028)%1; /* the ribbon board crawls, like a real park's (moving a texture costs nothing) */podCls();shTick();hbpPop();markDom();dftDom();{const pc=now-pcutT<.06,e=$('pop');if(pc!==pcutOn){pcutOn=pc;$('hud').classList.toggle('pcut',pc);if(!pc){e.style.top='';e.style.bottom='';e.className='';}}
   if(pc){ // CLOSE-UPS: the call sits in the gap between the top bar and the head of whoever is on camera. If the gap is too small for it, the
     // call is SHRUNK to fit (down to 40%); it is never slid down across him. Only if there is no usable gap at all does it go to the foot of the screen.
@@ -3279,7 +3279,7 @@ const BADGES=[['hit','KNOCK','Get your first hit','🧢'],['hr','WENT YARD','Hit
   ['send','WHEELS','Win a showdown at the bag','👟'],['jump','PERFECT JUMP','Stop the needle on gold','🥇'],['brawl','LAST MAN STANDING','Win a brawl','🥊'],['wore','WORE IT','Get hit by a pitch','🩹'],
   ['walkoff','WALK-OFF','Win it in your last at-bat','🏃'],['win','IN THE WIN COLUMN','Win a game','🏆'],['ten','DOUBLE DIGITS','Score ten runs in a game','🔟']];
 let bdgGot={};try{bdgGot=JSON.parse(localStorage.getItem('mm_badges3')||'{}')||{};}catch(e){}
-let duelTag=false,hrShowLast='',hrCamLast='';
+let admCls=false,duelTag=false,hrShowLast='',hrCamLast='';
 const bdgQ=[];let bdgBusy=0,bdgCur=null,bdgCurEnd=0,popUntil=0;
 let callShown={};try{callShown=JSON.parse(localStorage.getItem('mm_calls')||'{}')||{};}catch(e){}
 function callOnce(L){for(const [ok,id,txt] of L)if(ok&&!callShown[id]){callShown[id]=1;try{localStorage.setItem('mm_calls',JSON.stringify(callShown));}catch(e){}return txt;}return '';} /* the first applicable feat whose call has never been shown, or nothing */
