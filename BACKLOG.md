@@ -144,3 +144,7 @@ different one each time, and a reason to want the next one. Reserved for no-doub
 - A card per player: portrait (his body), ratings (power / contact / speed), handedness, a signature walk-up and celebration, and one PERK.
 - Perk ideas: CLUTCH (bigger rings with two strikes), JUICED (starts every at-bat with a bar), WHEELS (showdowns are a tier easier), BAD-BALL HITTER (less penalty for chasing), MOON LEGS (extra carry), ICE (the pitcher's Overdrive closes in slower), BRAWLER (wins brawls more often), GLASS BAT (huge power, tiny contact ring).
 - Rarity tiers, earned from badges/wins or packs opened between games; build a nine from your collection (ties in with teams/rosters and the campaign mode).
+
+## Loading screen
+- Done 2026-11-23: animation file cut from 6.5 MB to 4 MB (finger motion only kept where a bat is held); the sky photo waits until the players are in; build number shown on the title screen.
+- Ideas to keep people interested while it loads: recorded commentary / a PA announcer reading the lineup, a tappable baseball that pops into fireworks, the badge case teaser ("3 of 25"), lore cards for each hitter with his portrait, a "today's pitcher" scouting card, last game's line score, tips with little looping demos.

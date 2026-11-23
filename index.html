@@ -818,6 +818,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 440</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <button class="tag wkopt sens" id="sens1" type="button"></button>
@@ -1020,7 +1021,9 @@ const shBig=new T.Mesh(new T.PlaneGeometry(280,230),new T.ShadowMaterial({opacit
   scene.add(m);SKYG.push(m);
   // The real sky: a photograph of the whole Milky Way, all the way round (ESO / S. Brunier). It replaces the painted one when it arrives,
   // turned so the galaxy climbs out of the horizon and arcs over the outfield.
-  new T.TextureLoader().load(SKW>2048?'sky.jpg':'sky_m.jpg',tx=>{tx.anisotropy=ANISO;m.material.map=tx;m.material.color.setScalar(.72); /* held under the glow threshold, so the bright heart of the galaxy doesn't flare like a floodlight */m.material.needsUpdate=true;m.rotation.set(SKY_ROT[0],SKY_ROT[1],SKY_ROT[2]);t.dispose();},undefined,()=>{});
+  /* fetched only once the players are in (or after eight seconds): at start-up it would be competing with them for the connection */
+  const skyGo=()=>new T.TextureLoader().load(SKW>2048?'sky.jpg':'sky_m.jpg',tx=>{tx.anisotropy=ANISO;m.material.map=tx;m.material.color.setScalar(.72); /* held under the glow threshold, so the bright heart of the galaxy doesn't flare like a floodlight */m.material.needsUpdate=true;m.rotation.set(SKY_ROT[0],SKY_ROT[1],SKY_ROT[2]);t.dispose();},undefined,()=>{});
+  {const t0=performance.now(),iv=setInterval(()=>{let rdy=false;try{rdy=!!(MX&&MX.ready);}catch(e){}if(rdy||performance.now()-t0>8000){clearInterval(iv);skyGo();}},400);}
   // The stars are real points of light, not paint on the backdrop: each is drawn at its own fixed size on screen, so they stay pin-sharp on any display.
   {const dot=tex(32,32,(g,w)=>{const r=g.createRadialGradient(w/2,w/2,0,w/2,w/2,w/2);r.addColorStop(0,'rgba(255,255,255,1)');r.addColorStop(.35,'rgba(255,255,255,.85)');r.addColorStop(1,'rgba(255,255,255,0)');g.fillStyle=r;g.fillRect(0,0,w,w);});
     const mk=(n,size,lo,hi,band)=>{const P=new Float32Array(n*3),C=new Float32Array(n*3),tint=[[1,1,1],[.78,.86,1],[1,.9,.78],[1,1,1]];
