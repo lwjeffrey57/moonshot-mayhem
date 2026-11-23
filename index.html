@@ -304,6 +304,13 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
 #tbar .gp{background:linear-gradient(90deg,rgba(255,77,46,.3),rgba(255,77,46,.8) 36%,#ff8a70 42%,#ff8a70 58%,rgba(255,77,46,.8) 64%,rgba(255,77,46,.3))}
 #tbar .jx{background:#ffd23b;box-shadow:0 0 8px 1px rgba(255,210,59,.8)} /* same colours as the bat: green = CONTACT window, red core = POWER window, gold ends = Juice */
 #tbar .dim{opacity:.22}
+/* OVERDRIVE CONTACT: the timing window burns as a live blue flame (a white-hot bar with tongues of fire licking up off it) */
+#tbar.odz .trk i.jx,#tbar.odz .trk i.gc:not(.dim),#tbar.odz .trk i.gp:not(.dim){background:linear-gradient(90deg,rgba(30,110,255,.5),#1e7bff 22%,#7fe0ff 40%,#f2fdff 50%,#7fe0ff 60%,#1e7bff 78%,rgba(30,110,255,.5));box-shadow:0 0 9px 2px rgba(80,180,255,.95),0 0 22px 6px rgba(30,100,255,.6);animation:odzGlow .13s steps(2) infinite}
+#tbar.odz .trk i.jx::before,#tbar.odz .trk i.jx::after{content:'';position:absolute;left:-3px;right:-3px;bottom:55%;height:30px;transform-origin:50% 100%;pointer-events:none;mix-blend-mode:screen;filter:blur(.7px);
+  background:radial-gradient(ellipse 6px 26px at 50% 100%,#f2fdff 0,#8fe6ff 30%,rgba(40,130,255,.85) 58%,rgba(30,90,255,0) 74%) 0 100%/13px 100% repeat-x,radial-gradient(ellipse 8px 18px at 50% 100%,#c9f4ff 0,#55c8ff 36%,rgba(30,100,255,.7) 60%,rgba(30,90,255,0) 76%) 5px 100%/19px 100% repeat-x;animation:odzLick .34s linear infinite}
+#tbar.odz .trk i.jx::after{height:20px;opacity:.85;animation-duration:.23s;animation-direction:reverse;background-size:9px 100%,15px 100%}
+@keyframes odzLick{0%{transform:scaleY(.72);background-position:0 100%,5px 100%}35%{transform:scaleY(1.18)}60%{transform:scaleY(.9)}100%{transform:scaleY(.72);background-position:-13px 100%,24px 100%}}
+@keyframes odzGlow{0%{filter:brightness(1)}100%{filter:brightness(1.28)}}
 #tbar em{position:absolute;left:0;right:0;top:calc(100% + 15px);text-align:center;font-family:var(--display);font-style:italic;font-weight:400;font-size:14px;letter-spacing:.05em;color:var(--volt);text-shadow:0 2px 0 #000,0 0 5px #000;white-space:nowrap} /* the pitch this timing was against */
 #tbar .trk i.mk{top:-4px;bottom:-4px;width:5px;margin-left:-2.5px;border-radius:2.5px;background:#fff;border:1.5px solid #000;box-sizing:content-box}
 /* the target: a fixed green hash at dead centre. Line your marker up with it for PERFECT. */
@@ -2089,7 +2096,7 @@ function timeBar(x,pw,jt,perfect,sk=1,rocket=false){const e=$('tbar');e.classNam
   band($('tgc'),hc);band($('tgp'),hp);band($('tjx'),jt>1?used:0);$('tgc').classList.toggle('dim',!!pw);$('tgp').classList.toggle('dim',!pw);
   let mx=clamp(x/SPAN,-1,1)*50;const miss=Math.abs(mx)>used;
   {const tw=$('tmk').parentNode.clientWidth||150,gap=1700/tw;if(perfect)mx=0;else if(Math.abs(mx)<gap)mx=(x<0?-1:1)*gap;} // at least 17 px of daylight between the two marks /* the picture never contradicts the verdict: a PERFECT sits exactly on the target, and anything else is drawn visibly clear of it */
- $('tmk').style.left=(50+mx)+'%';{const mc=miss?'#ff4d2e':'#39ff6a'; /* the target is white; your swing is green (red if it missed the window) */$('tmk').style.background=mc;$('tmk').style.setProperty('--mc',mc);}$('tmk').classList.toggle('pf',!!rocket);void e.offsetWidth;e.className='go';}
+ $('tmk').style.left=(50+mx)+'%';{const mc=miss?'#ff4d2e':'#39ff6a'; /* the target is white; your swing is green (red if it missed the window) */$('tmk').style.background=mc;$('tmk').style.setProperty('--mc',mc);}$('tmk').classList.toggle('pf',!!rocket);void e.offsetWidth;e.className='go'+(S.over&&S.overOn&&!miss?' odz':'');} /* odz: Overdrive contact, the window you hit it in burns blue */
 function timing(t,c,l){const e=$('tim');e.className='';e.textContent=t;e.style.color=c;e.dataset.l=l||2;e.dataset.rk=$('tmk').classList.contains('pf')?1:0;void e.offsetWidth;e.className='go';}
 function flash(a){const e=$('flash');e.style.transition='none';e.style.opacity=a*FX;void e.offsetWidth;e.style.transition='opacity .35s';e.style.opacity=0;}
 // OVERDRIVE: fill the Juice meter all the way and it is charged. The meter burns and reads OVERDRIVE READY and the JUICE button becomes the
@@ -2977,7 +2984,7 @@ function doSwing(type){
   if(!(S.state==='pitch'||(S.state==='windup'&&now-windupT0>.55)))return;
   if(S.over&&!S.overOn&&(keys.ShiftLeft||keys.ShiftRight))juiceTap(); // desktop: Shift switches Overdrive on
   const od=S.over&&S.overOn,turbo=od||(!S.over&&juiceOn()&&S.juice>=.25);
-  swing={t0:now,type,turbo,done:false,miss:false};SND.whoosh();
+  swing={t0:now,type,turbo,done:false,miss:false,od:!!od};SND.whoosh();
   if(turbo&&!od){S.juice=Math.max(0,S.juice-.25);juiceArmed=false;hud();} // every Juice swing costs a full bar, hit or miss
 }
 const ray=new T.Raycaster(),aimCam=new T.PerspectiveCamera();
