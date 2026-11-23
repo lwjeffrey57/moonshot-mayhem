@@ -31,7 +31,7 @@ Recordings to find or make (the game currently fakes most of these by reshaping 
 ## Home-run show (the soul of the game)
 North star for these: the over-the-top screen animations a bowling alley plays after a strike. Loud, silly, instantly readable, a
 different one each time, and a reason to want the next one. Reserved for no-doubters and Overdrive homers so they stay a reward.
-- Built so far: power surge / short circuit, ball leaves orbit, satellite knocked out, laser show, walk-off.
+- Built so far: power surge / short circuit, ball leaves orbit, satellite knocked out, laser show, lights out (smashed light tower), walk-off.
 - Ideas to pick from:
   - The scoreboard takes over with a full-screen cartoon: a ball smashing through the glass, a rocket launching, an alien abducting
     the outfielder, a slot machine landing on three baseballs.

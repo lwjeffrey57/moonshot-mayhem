@@ -1306,7 +1306,7 @@ gl_FragColor=vec4(col,1.0);
   }
 }
 // light towers + scoreboard
-const towerGlows=[];
+const towerGlows=[],TOWERS=[];
 // Each tower: a tapering steel lattice mast (two crossed panels with a see-through truss painted on them), a service platform, and a
 // framed bank of individual lamps, with a soft glow and a wide lens streak. A handful of flat panels per tower: nothing for a phone.
 {const lat=tex(128,512,(g,w,h)=>{g.clearRect(0,0,w,h);g.strokeStyle='#c9cfe6';g.lineCap='square';
@@ -1324,7 +1324,7 @@ const towerGlows=[];
     {const pf=new T.Mesh(new T.BoxGeometry(9,.7,7),steel);pf.position.y=79;T0.add(pf);const rl=new T.Mesh(new T.BoxGeometry(9,.25,.25),steel);rl.position.set(0,81.2,3.4);T0.add(rl);}
     const bank=new T.Group();bank.position.set(p.x,87,p.z);bank.lookAt(0,20,0);scene.add(bank);
     {const fr=new T.Mesh(new T.BoxGeometry(27,12.6,1.4),dark);bank.add(fr);const hood=new T.Mesh(new T.BoxGeometry(28,.8,3.4),steel);hood.position.set(0,6.6,1.2);bank.add(hood);
-      const lamps=new T.Mesh(new T.PlaneGeometry(25.6,11.2),lampM);lamps.position.z=.74;bank.add(lamps);
+      const lm2=lampM.clone(),lamps=new T.Mesh(new T.PlaneGeometry(25.6,11.2),lm2);TOWERS.push({p:new V3(p.x,87,p.z),m:lm2,d});lamps.position.z=.74;bank.add(lamps);
       [-9,9].forEach(x=>{const st=new T.Mesh(new T.BoxGeometry(.7,5.5,.7),steel);st.position.set(x,-8.6,-.4);bank.add(st);});}
     const mk=(sx,sy,op)=>{const sp=new T.Sprite(new T.SpriteMaterial({map:glowTex,color:0xdbe7ff,blending:T.AdditiveBlending,depthWrite:false,fog:false,transparent:true,opacity:op}));sp.position.set(p.x*.975,87,p.z*.975);sp.scale.set(sx,sy,1);scene.add(sp);towerGlows.push(sp);};
     mk(46,46,.8);mk(150,7,.55);}); // the soft bloom, and a long thin streak across it like a lens flare
@@ -1375,12 +1375,12 @@ const ZAP={t:-9,p:new V3(),sb:false,bolts:[],glow:null,nb:0};
 }
 // the stadium lights during a short: floodlight glows, the light on the players, and a dimming veil over the picture
 function zapLights(lv){hemi.intensity=.85*lv;sun.intensity=.8*lv;ZAP.lv=lv;$('surge').style.opacity=REDUCE?0:Math.max(0,(1-lv)*.6);}
-function zapStart(p,sb){ZAP.t=now;ZAP.p.copy(p);ZAP.sb=sb;ZAP.nb=0;SND.zap();[160,420,900,1500,2200].forEach(ms=>setTimeout(()=>SND.zap(),ms));}
+function zapStart(p,sb,noEye){ZAP.t=now;ZAP.p.copy(p);ZAP.sb=sb;ZAP.noEye=!!noEye;ZAP.nb=0;SND.zap();[160,420,900,1500,2200].forEach(ms=>setTimeout(()=>SND.zap(),ms));}
 function zapTick(){
   const ZD=3.4,e0=now-ZAP.t,trotOn=e0>=ZD&&e0<16&&S.state==='trot'&&TROT.R&&!TROT.cut,e=trotOn?1.2+(e0%1.2):e0,on=e>=0&&e<ZD; /* a homer that shorted the park out: the lights keep flickering for as long as he is shown rounding the bases */
   if(!on){if(ZAP.glow.visible){ZAP.glow.visible=false;ZAP.bolts.forEach(l=>{l.visible=false;});if(EYE.mat)EYE.mat.color.setScalar(1);sbMat.color.setScalar(1);zapLights(1);}return;}
   const k=1-e/ZD,fl=Math.random();
-  if(EYE.mat&&!ZAP.sb)EYE.mat.color.setScalar(fl<.35*k?9:fl<.6?.25:1);
+  if(EYE.mat&&!ZAP.sb&&!ZAP.noEye)EYE.mat.color.setScalar(fl<.35*k?9:fl<.6?.25:1);
   if(ZAP.sb||e<1.8)sbMat.color.setScalar(fl<.3?.12:fl<.45*k?1.8:1);
   ZAP.glow.visible=true;ZAP.glow.position.copy(ZAP.p);ZAP.glow.position.z+=.6;ZAP.glow.scale.setScalar((6+Math.random()*16)*k+2);
   if(now>ZAP.nb){ZAP.nb=now+.05;
@@ -1817,6 +1817,19 @@ function organStop(fade=.3){if(!orgS)return;const t=AC.currentTime;try{orgG.gain
 function organPlay(name,vol=.5){const b=SFX['org_'+name];if(!AC||!b)return false;organStop(.15);
   const t=AC.currentTime;orgS=AC.createBufferSource();orgG=AC.createGain();orgS.buffer=b;orgG.gain.value=vol;orgS.connect(orgG);orgG.connect(master);orgS.start(t);
   const me=orgS;orgS.onended=()=>{if(orgS===me)orgS=null;};orgLast=name;orgN[name]=(orgN[name]||0)+1;orgNext=t+b.duration+rand(5,10);return true;}
+// LIGHTS OUT. An Overdrive homer that goes into a light tower: the bank shatters in a shower of sparks, arcs crawl over it, that tower stays
+// dead and the whole park drops into half-darkness (with the surge flickering what is left) for as long as he is rounding the bases.
+// The lights are back for the next hitter.
+const LAMP={out:-1,on:false,k:0,sp:0,t:0,dim:null};
+function lampSmash(i){const T0=TOWERS[i];if(!T0)return;LAMP.out=i;LAMP.on=true;LAMP.t=now;LAS.on=false;T0.m.color.setHex(0x16161e);
+  zapStart(T0.p,false,true);flash(.8);shake=Math.max(shake,.5*FX);rumble=1;buzz([60,40,60,40,200]);SND.boom();noise(.5,'highpass',3200,1100,.7);noise(.25,'bandpass',1800,500,.6,1,.08);
+  burst(fxL,T0.p,140,40,2,[1,.95,.6],14,4);burst(fxL,T0.p,70,22,1.5,[.7,.9,1],10,2);burst(fxL,T0.p,40,60,.5,[1,1,1],0,0);pop('LIGHTS OUT!','BROKE THE TOWER','hot',true);crowdPump(1);}
+function lampFix(){if(LAMP.out<0)return;const T0=TOWERS[LAMP.out];if(T0)T0.m.color.setHex(0xffffff);LAMP.out=-1;LAMP.on=false;}
+function lampTick(dt){LAMP.k=clamp(LAMP.k+(LAMP.on&&now-LAMP.t>.7?dt*2.2:LAMP.on?0:-dt*1.5),0,1); // the dark comes down a beat after the smash, so the shower of sparks is seen first
+  if(LAMP.k<=.01){if(LAMP.dim)LAMP.dim.visible=false;return;}
+  if(!LAMP.dim){LAMP.dim=new T.Mesh(new T.PlaneGeometry(2,2),new T.MeshBasicMaterial({color:0x02030c,transparent:true,opacity:0,depthTest:false,depthWrite:false,fog:false}));LAMP.dim.renderOrder=3.4;LAMP.dim.frustumCulled=false;scene.add(LAMP.dim);}
+  const d=LAMP.dim;d.visible=true;d.material.opacity=.42*LAMP.k;d.position.copy(camera.position);d.quaternion.copy(camera.quaternion);d.translateZ(-1);d.scale.setScalar(40);
+  if(LAMP.on&&LAMP.out>=0&&now>LAMP.sp){LAMP.sp=now+rand(.08,.22);burst(fxL,TOWERS[LAMP.out].p,4,9,1.1,[1,.9,.5],12,1);}} // the dead bank keeps spitting sparks
 // LASER SHOW. Some home runs set the park's lasers off: a dozen coloured beams from the roof line sweeping the sky and the field, strobing
 // in time. It keeps going for as long as the hitter is shown rounding the bases, then fades. Twelve thin tubes: nothing for a phone.
 const LAS={beams:[],t:-99,k:0,on:false};
@@ -2245,7 +2258,7 @@ function updateThrow(){
     if(Th.safe){const r=flight.raceR||0;pop('SAFE!',[r?`+${r} RUN${r>1?'S':''}`:'','BEAT THE THROW'].filter(Boolean).join(' · '),'',true);buzz([30,40,70]);roar(1,.15);sfxSlice('cheer_big',.8,rand(1,1.08),rand(0,.25),2.8);if(AC)cheerBusy=AC.currentTime+2.4;}}}
 }
 function toReady(d){if(S.walkoff&&S.state!=='end'&&S.state!=='over'){S.walkoff=false;roarOff(4);S.state='end';S.t=now;readyDur=1.6;hud();return;} // nobody else needs to bat: that was the ballgame
-  roarOff();showCard();$('hitinfo').hidden=true;S.state='ready';S.t=now;aim.x=0;aim.y=.825; /* ring back to the middle of the zone before every pitch */if(d)readyDur=d;swing=null;pitch=null;flight=null;decoy.visible=false;ball.visible=false;ballShadow.visible=false;pring.visible=false;ballGlow.material.opacity=0;
+  roarOff();showCard();$('hitinfo').hidden=true;S.state='ready';S.t=now;aim.x=0;aim.y=.825; /* ring back to the middle of the zone before every pitch */lampFix();if(d)readyDur=d;swing=null;pitch=null;flight=null;decoy.visible=false;ball.visible=false;ballShadow.visible=false;pring.visible=false;ballGlow.material.opacity=0;
   fielders.forEach(f=>{if(!f.isP){f.fig.root.position.copy(f.home);f.fig.root.rotation.y=Math.atan2(-f.home.x,-f.home.z);}f.run=null;});
   camMode='bat';hud();syncRunners();
   if(S.pcPending){S.pcPending=false;S.state='pchange';S.t=now; // the scene: the man who got knocked out trudges off, then a cut to the mound for the new arm, then the hitter comes up as usual
@@ -2265,18 +2278,19 @@ let brawlSeen=false;try{brawlSeen=localStorage.getItem('mm_brawl')==='1';}catch(
 function brawlNeed(){const C=MX.clip,P=MX.pit;if(!WALK.on||!C||!P||!MX.on||!C.intros.b_stance||!C.intros.run||!C.intros.p_dying||!P.taunts.b_stance||!P.taunts.p_dying)return false;return DBG.brawl||(S.hbpN||0)<=1||Math.random()<.3;} // the first hit-by-pitch of every game is a brawl; after that it is a roll of the dice
 function brawlStart(){S.state='brawl';S.t=now;S.brawled=true;brawlSeen=true;try{localStorage.setItem('mm_brawl','1');}catch(e){}
   MX.clip.hips.getWorldPosition(_p);BRW.x0=_p.x;BRW.z0=_p.z;BRW.bx=_p.x;BRW.bz=_p.z;BRW.win=DBG.brawl==='lose'?false:DBG.brawl==='win'?true:Math.random()<.5;BRW.r=-1;BRW.cur=null;BRW.ko=false;BRW.brth=false;BRW.hits=0;BRW.zd=4.1;
-  const W=BRW.win?'b':'p',L=BRW.win?'p':'b',att=Math.random()<.5?[L,W,W]:[W,L,W],pool=Object.keys(BR_ATT).sort(()=>Math.random()-.5);
+  const W=BRW.win?'b':'p',L=BRW.win?'p':'b',att=Math.random()<.5?[L,W,W]:[W,L,W],pool=Object.keys(BR_ATT).sort(()=>Math.random()-.5);{const q=pool.findIndex(k=>k==='b_jab'||k==='b_quad');if(q>0){const t=pool[0];pool[0]=pool[q];pool[q]=t;}} // the first blow is a quick one: fists are flying the moment he gets there
   // the first two blows: sometimes one is blocked (the eventual loser's are blocked more often); reactions are drawn from all three hit clips
   BRW.seq=att.map((a,i)=>({att:a,clip:pool[i],block:i<2&&Math.random()<(a===L?.45:.15),react:i===2?'p_dying':/kick|butt/.test(pool[i])?'b_gut':['b_hit2','b_gut','b_hit1'][(Math.random()*3)|0]}));
+  BRW.f0=BRW.ch-(att[0]==='p'?.34:.12);BRW.f1=BRW.f0+BRW.rd*BRW.n;BRW.dur=BRW.f1+BRW.hold; // the first swing is already on its way as he arrives (the pitcher's a little sooner, to meet him)
   BRW.b={n:'run',t:now,loop:true};BRW.p={n:'b_stance',t:now,loop:true};
   pop('CHARGING THE MOUND!','','hot',true);roar(1.05,.4);crowdE=1;buzz([40,40,40,40,120]);shake=Math.max(shake,.3*FX);}
 // every call in the brawl sits in the strip of sky above the two heads, never on a body
 function brawlShoutPos(e){_s0.set(0,2.3,BR_Z-.6).project(camera);const H=canvas.clientHeight||innerHeight,y=(-_s0.y*.5+.5)*H;e.style.left='50%';e.style.top=Math.max(MOB?178:110,y-6).toFixed(0)+'px';$('pop').className='';}
 function brawlTick(el){const B=BRW;
   if(el<B.ch){const k=ease(el/B.ch);B.bx=lerp(B.x0,0,k);B.bz=lerp(B.z0,BR_Z,k);}
-  else{B.bx=0;B.bz=BR_Z;if(B.b.n==='run')B.b={n:'b_stance',t:now,loop:true};}
+  else{B.bx=0;B.bz=BR_Z;if(B.b.n==='run')B.b=B.cur&&B.cur.wait?B.cur.wait:{n:'b_stance',t:now,loop:true};}
   const r=el<B.f0?-1:Math.min(B.n-1,Math.floor((el-B.f0)/B.rd));
-  if(r!==B.r&&r>=0&&el<B.f1){B.r=r;const q=B.seq[r];B.cur={q,t:now,hit:false};const a={n:q.clip,t:now};if(q.att==='b')B.b=a;else B.p=a;if(q.block){const g={n:'b_block',t:now-.35};if(q.att==='b')B.p=g;else B.b=g;}}
+  if(r!==B.r&&r>=0&&el<B.f1){B.r=r;const q=B.seq[r];B.cur={q,t:now,hit:false};const a={n:q.clip,t:now};if(q.att==='b'&&el<B.ch){B.cur.wait=a;}else if(q.att==='b')B.b=a;else B.p=a;if(q.block){const g={n:'b_block',t:now-.35};if(q.att==='b')B.p=g;else B.b=g;}}
   if(B.cur&&!B.cur.hit&&now-B.cur.t>=BR_ATT[B.cur.q.clip]){B.cur.hit=true;const q=B.cur.q,last=B.r===B.n-1,d={n:q.react,t:now,hold:last};
     if(q.block){noise(.08,'bandpass',900,400,.6);tone('triangle',300,180,.08,.4);buzz(25);shake=Math.max(shake,.18*FX);const e=$('shout');e.textContent='BLOCKED!';brawlShoutPos(e);e.classList.toggle('b',q.att==='b');e.classList.remove('go');void e.offsetWidth;e.classList.add('go');return;}
     if(q.att==='b')B.p=d;else B.b=d;
@@ -2683,11 +2697,14 @@ function tryContact(){flight_pop=false;if(pitch.hbp){swing.done=true;swing.miss=
   const play=judge(tr,S.over&&S.overOn?Object.assign({},b,{spd:b.spd*1.08}):b);play.tag=play.tag||tr.tag||(kind==='TOPSPIN SINKER'?'':kind);if(tr.offP&&play.type==='hit'&&!play.infield)play.tag='OFF THE PITCHER';if(tr.offF&&play.type==='hit')play.tag='ATE HIM UP';
   flight={tr,play,t0:now,q,pw,tb,od:!!(S.over&&S.overOn),v,done:false,called:false,trailC:S.over&&S.overOn?[.2,.55,1]:tb?[1,.45,.1]:pw&&q>.75?[1,.85,.25]:[.5,.5,.55]}; // Overdrive hits burn blue, Juice hits orange
   // Some Overdrive home runs don't come down: the ball leaves the Moon's orbit, headed for Earth. Always the first one a player ever hits; after that, about a third of them.
-  if(flight.od&&play.type==='hr'&&(DBG.orbit||DBG.sat||!orbSeen||Math.random()<.45)){const sat=DBG.sat||(orbSeen&&!DBG.orbit&&Math.random()<.5);S.orbN=(S.orbN||0)+1;orbSeen=true;try{localStorage.setItem('mm_orbit','1');}catch(e){}flight.orbit=true;play.endT+=9;
+  if(flight.od&&play.type==='hr'&&(DBG.orbit||DBG.sat||DBG.lamp||!orbSeen||Math.random()<.5)){const pick3=Math.random(),lampH=DBG.lamp||(orbSeen&&!DBG.orbit&&!DBG.sat&&pick3<.34&&TOWERS.length>0),sat=!lampH&&(DBG.sat||(orbSeen&&!DBG.orbit&&pick3<.67));S.orbN=(S.orbN||0)+1;orbSeen=true;try{localStorage.setItem('mm_orbit','1');}catch(e){}flight.orbit=true;play.endT+=9;
     // its own flight from the moment it leaves the bat: one smooth climb out over the wall and away, never the normal arc
     const hd=Math.hypot(v0.x,v0.z)||1,dx=v0.x/hd,dz=v0.z/hd;flight.orbP=[p0.clone(),new V3(p0.x+dx*46,p0.y+15,p0.z+dz*46),new V3(p0.x+dx*135,96,p0.z+dz*135),ORB_TO.clone()];
     // ...or it never gets as far as Earth: there is a satellite in the way
-    if(sat){flight.sat=true;const T0=new V3(p0.x+dx*430,500,p0.z+dz*430);flight.orbP[2].set(p0.x+dx*190,250,p0.z+dz*190);flight.orbP[3]=T0;satPlace(T0,Math.atan2(dx,dz));}}
+    if(sat){flight.sat=true;const T0=new V3(p0.x+dx*430,500,p0.z+dz*430);flight.orbP[2].set(p0.x+dx*190,250,p0.z+dz*190);flight.orbP[3]=T0;satPlace(T0,Math.atan2(dx,dz));}
+    // ...or it finds a light tower
+    if(lampH){const ph=Math.atan2(dx,-dz)/DEG;let bi=0,bd=1e9;TOWERS.forEach((t,i)=>{const e=Math.abs(t.d-ph);if(e<bd){bd=e;bi=i;}});const T1=TOWERS[bi].p;flight.lamp=bi+1;
+      flight.orbP[1].set(lerp(p0.x,T1.x,.22),p0.y+18,lerp(p0.z,T1.z,.22));flight.orbP[2].set(lerp(p0.x,T1.x,.62),T1.y+34,lerp(p0.z,T1.z,.62));flight.orbP[3]=T1.clone();}}
   pitch.hit=true;pring.visible=false;decoy.visible=false;S.state='flight';payHeat();$('mph').textContent=pitchMph(pitch.dur);$('plast').textContent=pitch.P.n+' · '+pitchMph(pitch.dur)+' MPH';$('pitchinfo').classList.add('on'),$('plast').classList.add('on');renderRep(pitch.P);
   if(tb)juiceArmed=false;
   // ── the payoff
@@ -2813,7 +2830,7 @@ function finishPlay(){
   if(pl.type==='hr'){
     const ft=Math.round(pl.dist*3.281);S.hrs++;S.longest=Math.max(S.longest,ft);const r=advance(4);f.rbi=r;
     buzz([40,50,90]);pop(r===4?'GRAND SLAM!':'GONE!',`${ft} FT · +${r} RUN${r>1?'S':''}`+(pl.tag?' · '+pl.tag:''),'hot',true);scoreboard('HOME RUN',ft+' FT');
-    if(!LAS.on&&(DBG.laser||Math.random()<(S.over?.4:.12)))laserStart();
+    if(!LAS.on&&!LAMP.on&&(DBG.laser||Math.random()<(S.over?.4:.12)))laserStart();
     S.state='celebrate';S.t=now;readyDur=3.1;
     if(S.hrs===1)S.forceHbpBi=S.bi+1; // the first homer of the game always gets answered: the next man wears the first pitch, and (it being the first of the game) charges the mound
     if(f.admire||ft>=470)S.retalBi=S.bi+1; // he showed the pitcher up: the next man may pay for it
@@ -3821,8 +3838,8 @@ function step(dt){
     const tf=now-flight.t0,tr=flight.tr,i=Math.min(tr.pts.length-1,Math.floor(tf*120)),p=tr.pts[i];
     ball.visible=true;ball.position.set(p.x,p.y,p.z);
     if(flight.orbit){const B=flight.orbP,bez=(u,o)=>{const v=1-u;return o.set(0,0,0).addScaledVector(B[0],v*v*v).addScaledVector(B[1],3*v*v*u).addScaledVector(B[2],3*v*u*u).addScaledVector(B[3],u*u*u);};
-      if(!flight.orb&&tf>=1.1&&!(flight.admire&&tf<flight.A)){flight.orb=now;flight.orbFrom=bez(.22,new V3());flight.play.endT=tf+(flight.sat?4.7:3.1);if(flight.sat)pop('WAY UP THERE!','','cool');else pop('LEFT ORBIT!','NEXT STOP: EARTH','cool',true);SND.boom();SND.zap();buzz([40,40,40,40,120]);}
-      bez(flight.orb?.22+.78*Math.pow(clamp((now-flight.orb)/3.1,0,1),1.5):.22*ease(Math.min(1,tf/1.1)),ball.position);}
+      if(!flight.orb&&tf>=1.1&&!(flight.admire&&tf<flight.A)){flight.orb=now;flight.orbFrom=bez(.22,new V3());flight.play.endT=tf+(flight.sat?4.7:flight.lamp?3.6:3.1);if(flight.lamp)pop('HEADED FOR THE LIGHTS!','','cool');else if(flight.sat)pop('WAY UP THERE!','','cool');else pop('LEFT ORBIT!','NEXT STOP: EARTH','cool',true);SND.boom();SND.zap();buzz([40,40,40,40,120]);}
+      bez(flight.orb?.22+.78*Math.pow(clamp((now-flight.orb)/(flight.lamp?1.9:3.1),0,1),flight.lamp?1.15:1.5):.22*ease(Math.min(1,tf/1.1)),ball.position);}
     if(flight.dShow){const ft=Math.round(flight.dFt*Math.min(1,Math.hypot(p.x,p.z)/(flight.dEnd||1)));if(ft!==flight.dLast){flight.dLast=ft;$('hds').textContent=ft+' FT';}}
     if(flight.play.type==='out'&&flight.play.air&&tf<flight.play.endT){const pl=flight.play,k=1-tf/pl.endT; // every ball that is going to be caught in the air gets the ring, under the spot where it will be caught: liners, pop-ups, foul outs, robberies
       landRing.visible=true;landRing.position.set(pl.p.x,.07,pl.p.z);landRing.scale.setScalar(lerp(1.4,5,k));landRing.material.opacity=.55+.4*(1-k);}
@@ -3842,6 +3859,7 @@ function step(dt){
     ballGlow.position.copy(ball.position);ballGlow.material.opacity=flight.tb?.8:flight.q>.75?.4:0;ballGlow.scale.setScalar(Math.max(.3,dc*.04));
     ballGlow.material.color.setHex(flight.od?0x3a9bff:flight.tb?0xff6a1a:0xffe53b);
     if(flight.orb){ballGlow.material.opacity=1;ballGlow.scale.setScalar(Math.max(5,dc*.11));ball.scale.setScalar(Math.max(1,dc*.075));}
+    if(flight.lamp&&flight.orb){if(!flight.lampHit&&now-flight.orb>=1.9){flight.lampHit=now;lampSmash(flight.lamp-1);}if(flight.lampHit){ball.visible=false;ballGlow.material.opacity=0;}}
     if(flight.sat&&flight.orb){if(!flight.satHit&&now-flight.orb>=3.1){flight.satHit=now;satBreak();flash(.8);burst(fxL,SAT.g.position,90,95,1.7,[1,.85,.4],0,0);burst(fxL,SAT.g.position,60,50,1.3,[.6,.85,1],0,0);SND.boom();SND.zap();setTimeout(()=>SND.zap(),160);buzz([60,40,60,40,160]);shake=Math.max(shake,.4*FX);rumble=1;pop('DIRECT HIT!','','hot');}
       if(flight.satHit){ball.visible=false;ballGlow.material.opacity=0;}}
     if(flight.play.type==='hr'&&!flight.called&&tf>=tr.hrT-.9){flight.called=true;pop("OUTTA HERE!",'','hot');SND.boom();}
@@ -3862,7 +3880,7 @@ function step(dt){
   ptarget.visible=pring.visible;if(pring.visible)ptarget.position.copy(pring.position);
   // reticle
   const b=S.bi>=0?curBatter():LINEUP[0],tb=(S.over&&S.overOn)||(!S.over&&juiceOn()&&S.juice>=.25);
-  stickHint();sbTick();zapTick();crowdTick(dt);shoutTick();poleTick();satTick();laserTick(dt);organTick();vendorTick();roarTick();heartTick();zoneTick();
+  stickHint();sbTick();zapTick();crowdTick(dt);shoutTick();poleTick();satTick();lampTick(dt);laserTick(dt);organTick();vendorTick();roarTick();heartTick();zoneTick();
   if(flight&&flight.play.type==='hr'&&!flight.sbHit&&!flight.orbit&&ball.visible&&Math.abs(ball.position.x-SBX)<24&&ball.position.y>30&&ball.position.y<48&&ball.position.z<-(fenceR(0)+15)&&ball.position.z>-(fenceR(0)+24)){flight.sbHit=true;zapStart(ball.position,true);burst(fxL,ball.position,26,9,.7,[.6,.85,1],7,1);}
   reticle.position.set(aim.x,aim.y,0);
   {const ez=easyAB()?1.3:1;if(!!tb!==retTb){retTb=!!tb;retT=now+(tb&&S.over&&S.overOn?.42:0);retOd=!!(tb&&S.over&&S.overOn);} /* Overdrive lights the whole screen for a moment as it comes on: the rings wait for that to clear, then swell where you can see it */
@@ -3900,7 +3918,8 @@ function updateCamera(rdt){
     _a.set(q.x-p0.x,q.y-p0.y,q.z-p0.z);if(_a.lengthSq()<1e-6)_a.set(0,0,-1);_a.normalize(); // riding just behind and above the ball, looking where it is going
     camPos.set(p0.x,p0.y,p0.z).addScaledVector(_a,-7).add(_b.set(0,1.7,0));camLook.set(p0.x,p0.y,p0.z).addScaledVector(_a,14);}
   else if(flight&&flight.orb&&!flight.done){ // from just outside the park, watching it climb away toward Earth
-    if(flight.sat){camPos.set(flight.orbFrom.x*.45+16,104,flight.orbFrom.z*.45+34).addScaledVector(_b.copy(ball.position).sub(flight.orbFrom),.04);camLook.copy(flight.satHit?SAT.g.position:ball.position);} // from high over the park, clear of every deck and roof, looking up and out at it
+    if(flight.lamp){const T1=TOWERS[flight.lamp-1].p;camPos.set(T1.x*.56,38,T1.z*.56);camLook.copy(flight.lampHit?T1:_b.copy(ball.position).lerp(T1,.7));pcutT=now;pcutH.set(T1.x,T1.y+11,T1.z);} // from the outfield grass, looking up at the tower as it comes in
+    else if(flight.sat){camPos.set(flight.orbFrom.x*.45+16,104,flight.orbFrom.z*.45+34).addScaledVector(_b.copy(ball.position).sub(flight.orbFrom),.04);camLook.copy(flight.satHit?SAT.g.position:ball.position);} // from high over the park, clear of every deck and roof, looking up and out at it
     else{camPos.copy(flight.orbFrom).add(_a.set(34,6,62)).addScaledVector(_b.copy(ball.position).sub(flight.orbFrom),.12);camLook.copy(ball.position);}camera.position.lerp(camPos,now-flight.orb<.08?1:.2);}
   else if(S.kOut&&S.kOut.taunt&&MX.pit&&now>S.kOut.t+DEF_CUT&&now<S.kOut.t+DEFEAT&&S.state==='result'){ // ...then the pitcher, from the plate side
     pcutT=now;pcutH.set(0,2.3,-18.4);const e=clamp((now-S.kOut.t-DEF_CUT)/(DEFEAT-DEF_CUT),0,1);camLook.set(0,1.45,-18.4);camPos.set(lerp(1.6,1.1,e),1.35,-18.4+lerp(4.6,3.8,ease(e)));}
@@ -3950,7 +3969,7 @@ function updateCamera(rdt){
   if(rumble>.02){const t=performance.now()/1000,a=rumble*FX; // the whole picture trembles, like a broadcast camera on a deck that 50,000 people are jumping on: the frame shakes, not the stands (applied after the camera is aimed, or the aim would undo it)
     camera.rotateZ((Math.sin(t*47)+Math.sin(t*71.3))*.007*a);camera.rotateX((Math.sin(t*53.7)+Math.sin(t*83.1))*.0045*a);camera.rotateY(Math.sin(t*61.3)*.0035*a);rumble*=Math.exp(-3.5*rdt);}
   fovKick*=Math.exp(-5*rdt);const f=camera.userData.baseFov+fovKick;if(Math.abs(f-camera.fov)>.01){camera.fov=f;camera.updateProjectionMatrix();}
-  towerGlows.forEach((g,i)=>g.material.opacity=Math.min(1,(i%2?.5:.75)*(1+.1*Math.sin(performance.now()*.004+i))*(ZAP.lv===undefined?1:ZAP.lv)));
+  towerGlows.forEach((g,i)=>g.material.opacity=Math.min(1,(LAMP.out===(i>>1)?0:1)*(i%2?.5:.75)*(1+.1*Math.sin(performance.now()*.004+i))*(ZAP.lv===undefined?1:ZAP.lv)));
 }
 let last=performance.now();
 // Keeps the game responsive on slower phones: if frames are slow for a while, drop a quality level (never goes back up).
@@ -4006,7 +4025,7 @@ function shTick(){if(!(SHQ&&rim.castShadow))return;const st=S.state,wide=!(st===
 $('shbtn').addEventListener('click',()=>{SHQ=!SHQ;if(SHQ&&!rim.castShadow)rim.castShadow=true;try{localStorage.setItem('mm_shadows',SHQ?'1':'0');}catch(e){}shApply();});
 shApply();
 resize();hud();
-const DBG={dive:'',hbp:false,pcut:false,fl:'',rob:false,pc:false,staunt:false,pod:false,trail:false,orbit:false,sat:false,drill:false,brawl:false,qte:false,mash:false,slide:false,pn:'',laser:false,pdef:false,dbl:false,cam:false,admire:'',trip:false,fist:false,pop:false,loser:false}; // test hook: pin the camera to CAM_HOME/CAM_LOOK
+const DBG={dive:'',hbp:false,pcut:false,fl:'',rob:false,pc:false,staunt:false,pod:false,trail:false,orbit:false,sat:false,drill:false,brawl:false,qte:false,mash:false,slide:false,pn:'',laser:false,lamp:false,pdef:false,dbl:false,cam:false,admire:'',trip:false,fist:false,pop:false,loser:false}; // test hook: pin the camera to CAM_HOME/CAM_LOOK
 window.__mm={crowdFx,setE:v=>{crowdE=v;crowdShow=v;},GLOVE,renderer,scene,LODM,camera,zapStart,acState:()=>AC?(zoneLP?"lp="+Math.round(zoneLP.frequency.value)+" ":"")+AC.state+" t="+AC.currentTime.toFixed(1)+" real="+crowdReal+" roar="+(roarG?roarG.gain.value.toFixed(2)+(roarTop?"T":""):"off")+" bed="+crowdGain.gain.value.toFixed(2):"none",roar,roarOff,boo,cheer,crowdRise,crowdDrop,S,aim,MX,DBG,landRingOn:()=>landRing.visible,hud,tutAnim,draw:()=>draw(),endGame,TROT,SFX,RUN,ballPos:()=>ball.position,ballVisible:()=>ball.visible,fielders,toReady,CAM_HOME,CAM_LOOK,now:()=>now,simulate,judge,get pitch(){return pitch;},get flight(){return flight;},lastSwing:()=>{const t=swing&&swing.type;swing=null;return t;},lastSwingTurbo:()=>!!(swing&&swing.turbo),doSwing,newGame,V3,
   sim:(dt)=>{hitstop=0;now+=dt;step(dt);},
   step:(n,dt=1/60)=>{for(let i=0;i<n;i++){if(hitstop>0)hitstop=0;now+=dt;step(dt);}updateCamera(dt);draw();}};
