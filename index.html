@@ -841,7 +841,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 456</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 457</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <button class="tag wkopt sens" id="sens1" type="button"></button>
@@ -1290,16 +1290,16 @@ gl_FragColor=vec4(col,1.0);
   scene.add(new T.Mesh(ribbon(s1a,s1b,1),cm));
   // THE STANDS ARE LIT TOO, the same painted way: a see-through layer over each bank of seats, bright pools where the floodlights land,
   // falling away to shadow between them and up toward the back rows. One small texture, drawn once per bank: nothing to slow a phone down.
-  const standLight=tex(512,128,(g,w,h)=>{g.clearRect(0,0,w,h);const vg=g.createLinearGradient(0,0,0,h);vg.addColorStop(0,'rgba(3,4,16,.62)');vg.addColorStop(.45,'rgba(3,4,16,.3)');vg.addColorStop(1,'rgba(3,4,16,.08)');g.fillStyle=vg;g.fillRect(0,0,w,h);
+  const standLight=tex(512,128,(g,w,h)=>{g.clearRect(0,0,w,h);const vg=g.createLinearGradient(0,0,0,h);vg.addColorStop(0,'rgba(3,4,16,.8)');vg.addColorStop(.45,'rgba(3,4,16,.5)');vg.addColorStop(1,'rgba(3,4,16,.2)');g.fillStyle=vg;g.fillRect(0,0,w,h);
     g.globalCompositeOperation='destination-out';for(const cx of [0,w]){g.save();g.translate(cx,h*1.05);g.scale(w*.36/h,1.15);const rg=g.createRadialGradient(0,0,0,0,0,h);rg.addColorStop(0,'rgba(0,0,0,.95)');rg.addColorStop(.6,'rgba(0,0,0,.5)');rg.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=rg;g.fillRect(-h,-h,h*2,h*2);g.restore();}
-    g.globalCompositeOperation='source-over';for(const cx of [0,w]){g.save();g.translate(cx,h*1.02);g.scale(w*.3/h,.9);const rg=g.createRadialGradient(0,0,0,0,0,h);rg.addColorStop(0,'rgba(255,244,214,.2)');rg.addColorStop(1,'rgba(255,244,214,0)');g.fillStyle=rg;g.fillRect(-h,-h,h*2,h*2);g.restore();}},[1,1]);
+    g.globalCompositeOperation='source-over';for(const cx of [0,w]){g.save();g.translate(cx,h*1.02);g.scale(w*.34/h,1.05);const rg=g.createRadialGradient(0,0,0,0,0,h);rg.addColorStop(0,'rgba(255,240,200,.42)');rg.addColorStop(.5,'rgba(255,240,200,.16)');rg.addColorStop(1,'rgba(255,240,200,0)');g.fillStyle=rg;g.fillRect(-h,-h,h*2,h*2);g.restore();}},[1,1]);
   standLight.repeat.set(1/44,1);
   const litMat=new T.MeshBasicMaterial({map:standLight,transparent:true,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-4,fog:true}),lit=(a,b)=>{const m=new T.Mesh(ribbon(a,b,1),litMat);m.renderOrder=1;scene.add(m);};STAND_LIT=lit;
   lit(s1a,s1b);if(UPPER)split(s2a).forEach((a,k)=>scene.add(new T.Mesh(ribbon(a,split(s2b)[k],1),cm)));
   // luxury boxes between the decks
   const boxes=tex(256,32,(g,w,h)=>{g.fillStyle='#14122c';g.fillRect(0,0,w,h);for(let x=2;x<w;x+=16){g.fillStyle=Math.random()<.75?'#ffd98a':'#3a4a7a';g.fillRect(x,7,12,15);g.fillStyle='rgba(0,0,0,.3)';g.fillRect(x,16,12,6);}g.fillStyle='#ff4d2e';g.fillRect(0,26,w,6);g.fillStyle='#e8e8f0';g.fillRect(0,0,w,3);});
   boxes.wrapS=T.RepeatWrapping;boxes.repeat.set(1/40,1);
-  scene.add(new T.Mesh(ribbon(fca,fcb,1),basic({map:boxes})));
+  scene.add(new T.Mesh(ribbon(fca,fcb,1),basic({color:0x161a3c}))); /* the row of lit boxes along the top of the outfield stands is gone: a plain dark rim */
   // roof over the upper deck: back wall, canopy, white fascia, columns, lights, flags
   const ra=[],rb=[],rc=[],bw=[];
   for(let i=0;i<=N;i++){const phi=lerp(-PI/4,PI/4,i/N),r=fenceR(phi);bw.push(pol(r+54,phi,48));ra.push(pol(r+63,phi,57));rb.push(pol(r+47,phi,60));rc.push(pol(r+47,phi,58.4));
