@@ -3810,8 +3810,8 @@ try{const b=+localStorage.getItem('mm_best')||0;if(b)$('best').textContent='Best
 // Phones start on a lighter setup so the controls stay snappy: no bloom/edge-smoothing pass, a smaller and harder-edged shadow, slightly lower resolution.
 const LITE=matchMedia('(pointer:coarse)').matches;
 if(LITE){QS=.85;rim.shadow.mapSize.set(512,512);renderer.shadowMap.type=T.PCFShadowMap;}else initPost();
-// Field shadows: on by default on computers, off on phones (it draws every player a second time); the choice is remembered.
-let SHQ=!LITE,shWide=null;try{const v=localStorage.getItem('mm_shadows');if(v!==null)SHQ=v==='1';}catch(e){}
+// Field shadows: on by default everywhere (it draws every player a second time, so the game switches them off by itself if frames get slow); the choice is remembered.
+let SHQ=true,shWide=null;try{const v=localStorage.getItem('mm_shadows');if(v!==null)SHQ=v==='1';}catch(e){}
 const SH_DIR=new V3(-9,13,-11).normalize();
 function shFrame(cx,cz,half){const c=rim.shadow.camera;rim.target.position.set(cx,0,cz);rim.position.set(cx,0,cz).addScaledVector(SH_DIR,150);c.left=-half;c.right=half;c.top=half;c.bottom=-half;c.near=20;c.far=320;c.updateProjectionMatrix();rim.target.updateMatrixWorld();}
 function shApply(){const on=SHQ&&rim.castShadow;shBig.visible=on;if(shMound)shMound.visible=on;shSmall.visible=!on;blobMat.visible=!on;shWide=null;
