@@ -135,3 +135,12 @@ different one each time, and a reason to want the next one. Reserved for no-doub
 ## Home-run distance
 - Built 2026-11-23: a homer stopped by the scoreboard, batter's eye, seats or pole reads PROJECTED n FT (the number was always the projected carry).
 - Ideas: a live distance counter that keeps climbing past the obstacle, a "longest ever" banner when the personal record falls, distance tiers that change the crowd and the call (400 / 450 / 500 / 550), a tape-measure graphic on the replay.
+
+## Look and feel: one theme (started 2026-11-23)
+- Done: every painted surface in the park (scoreboard, wall distances, signs) now uses the same display face as the screen text (Russo One); screen text is Russo One for headlines and Saira Condensed for small labels.
+- Next: one colour palette written down and applied (navy / chrome / volt yellow / heat red / ice blue / Overdrive blue / Juice orange); one button shape; one callout style (size tiers: shout, call, caption); same plate style for badges, batter card, walk-up banner, hit info; emoji icons replaced with drawn icons in the same style; a short style guide in the repo.
+
+## Player cards and perks
+- A card per player: portrait (his body), ratings (power / contact / speed), handedness, a signature walk-up and celebration, and one PERK.
+- Perk ideas: CLUTCH (bigger rings with two strikes), JUICED (starts every at-bat with a bar), WHEELS (showdowns are a tier easier), BAD-BALL HITTER (less penalty for chasing), MOON LEGS (extra carry), ICE (the pitcher's Overdrive closes in slower), BRAWLER (wins brawls more often), GLASS BAT (huge power, tiny contact ring).
+- Rarity tiers, earned from badges/wins or packs opened between games; build a nine from your collection (ties in with teams/rosters and the campaign mode).
