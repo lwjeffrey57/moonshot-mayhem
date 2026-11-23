@@ -122,3 +122,7 @@ different one each time, and a reason to want the next one. Reserved for no-doub
 ## Badges (built 2026-11-23, first pass)
 - 23 badges, gold toast on unlock, badge case on the title screen, kept per device.
 - Ideas not built: tiers (bronze/silver/gold), a badge shown on the end-of-game screen, hitting for the cycle, a no-strikeout game, beating each pitcher, career counters (100 homers), sharing a badge card for TikTok/Reels.
+
+## Bat ring (PCI) settings
+- Built 2026-11-23: centre marker choice (none / dot / crosshair / ring), on the title screen and in the pause menu, saved per device.
+- Ideas: marker colour and size, ring thickness, ring opacity, a colour-blind palette for the green/red zones, hide the fill and keep only outlines, a "pro" ring with no timing ring.
