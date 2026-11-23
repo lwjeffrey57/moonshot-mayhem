@@ -909,13 +909,20 @@ const shBig=new T.Mesh(new T.PlaneGeometry(280,230),new T.ShadowMaterial({opacit
     g.fillStyle='#020207';g.fillRect(0,0,w,h);
     g.save();g.translate(w*.5,h*.2);g.rotate(-.32);const mw=g.createLinearGradient(0,-60,0,60);mw.addColorStop(0,'rgba(120,130,190,0)');mw.addColorStop(.5,'rgba(150,150,210,.16)');mw.addColorStop(1,'rgba(120,130,190,0)');g.fillStyle=mw;g.fillRect(-w,-60,w*2,120);
     for(let i=0;i<900;i++){g.fillStyle=`rgba(255,255,255,${rand(.15,.7)})`;g.fillRect(rand(-w,w),rand(-34,34)*rand(.2,1),1,1);}g.restore();
-    for(let i=0;i<1500;i++){const y=rand(0,h*.56),big=Math.random()<.05;g.fillStyle=['rgba(255,255,255,','rgba(190,210,255,','rgba(255,225,190,'][(Math.random()*3)|0]+rand(.35,1)+')';g.fillRect(rand(0,w),y,big?2:1,big?2:1);}
     g.fillStyle='#07070b';g.fillRect(0,h*.56,w,h*.44);
   });
   // a real photograph of a star field is laid over the painted sky once it has loaded (tiled, mirrored tile to tile so no seam shows)
-  {const im=new Image();im.onload=()=>{try{const g=t.image.getContext('2d'),w=t.image.width,h=t.image.height,sz=h*.56;g.save();g.globalCompositeOperation='lighter';g.globalAlpha=.95;for(let k=0,x=0;x<w;k++,x+=sz){g.save();if(k%2){g.translate(x+sz,0);g.scale(-1,1);g.drawImage(im,0,0,sz,sz);}else g.drawImage(im,x,0,sz,sz);g.restore();}g.restore();t.needsUpdate=true;}catch(e){}};im.src='stars.jpg';}
+  {const im=new Image();im.onload=()=>{try{const g=t.image.getContext('2d'),w=t.image.width,h=t.image.height,sz=h*.56;g.save();g.globalCompositeOperation='lighter';g.globalAlpha=.3; /* only as a faint glow of far-off dust: stretched this far, the photo's own stars turn into soft blocks, so the stars themselves are drawn as points below */for(let k=0,x=0;x<w;k++,x+=sz){g.save();if(k%2){g.translate(x+sz,0);g.scale(-1,1);g.drawImage(im,0,0,sz,sz);}else g.drawImage(im,x,0,sz,sz);g.restore();}g.restore();t.needsUpdate=true;}catch(e){}};im.src='stars.jpg';}
   const m=new T.Mesh(new T.SphereGeometry(1200,24,16),new T.MeshBasicMaterial({map:t,side:T.BackSide,fog:false}));
   scene.add(m);
+  // The stars are real points of light, not paint on the backdrop: each is drawn at its own fixed size on screen, so they stay pin-sharp on any display.
+  {const dot=tex(32,32,(g,w)=>{const r=g.createRadialGradient(w/2,w/2,0,w/2,w/2,w/2);r.addColorStop(0,'rgba(255,255,255,1)');r.addColorStop(.35,'rgba(255,255,255,.85)');r.addColorStop(1,'rgba(255,255,255,0)');g.fillStyle=r;g.fillRect(0,0,w,w);});
+    const mk=(n,size,lo,hi,band)=>{const P=new Float32Array(n*3),C=new Float32Array(n*3),tint=[[1,1,1],[.78,.86,1],[1,.9,.78],[1,1,1]];
+      for(let i=0;i<n;i++){let x,y,z;do{const u=Math.random()*2-1,a=Math.random()*PI*2,q=Math.sqrt(1-u*u);x=q*Math.cos(a);y=u;z=q*Math.sin(a);if(band){const d=x*.3+y*.9-z*.3;y-=d*.8;const L=Math.hypot(x,y,z);x/=L;y/=L;z/=L;}}while(y<.03);
+        P[i*3]=x*1150;P[i*3+1]=y*1150;P[i*3+2]=z*1150;const c=tint[(Math.random()*4)|0],b=lo+(hi-lo)*Math.pow(Math.random(),2.2);C[i*3]=c[0]*b;C[i*3+1]=c[1]*b;C[i*3+2]=c[2]*b;}
+      const g=new T.BufferGeometry();g.setAttribute('position',new T.BufferAttribute(P,3));g.setAttribute('color',new T.BufferAttribute(C,3));
+      const pts=new T.Points(g,new T.PointsMaterial({size,map:dot,vertexColors:true,sizeAttenuation:false,transparent:true,blending:T.AdditiveBlending,depthWrite:false,fog:false}));pts.frustumCulled=false;pts.renderOrder=-1;scene.add(pts);};
+    mk(2600,2.2,.3,1,false);mk(1400,1.8,.25,.8,true);mk(170,4.2,.7,1,false);}
   // Earth, hanging over centre field
   const et=tex(512,512,(g,w,h)=>{const c=w/2,R=w*.44;g.clearRect(0,0,w,h);
     const halo=g.createRadialGradient(c,c,R*.92,c,c,R*1.13);halo.addColorStop(0,'rgba(120,190,255,.75)');halo.addColorStop(1,'rgba(120,190,255,0)');g.fillStyle=halo;g.fillRect(0,0,w,h);
@@ -1550,11 +1557,11 @@ function ik(sh,el,target,L1,L2,poleV){
 const HOME={base:'#1b2a6b',trim:'#f26a1b',ink:'#f4f4f0',word:'Comets'};
 const AWAY={base:'#f4f4f0',trim:'#0e7c86',ink:'#0e3c46',pin:'rgba(14,60,70,.35)',word:'Krakens'};
 const LINEUP=[
-  {name:'VASQUEZ',num:27,spd:1.0,pwr:1.0,con:1.05,skin:0xb9794f},{name:'OKAFOR',lh:true,num:8,spd:1.14,pwr:.96,con:1.12,skin:0x6b4226},
-  {name:'DELACROIX',num:3,crouch:true,spd:1.02,pwr:1.06,con:1.0,skin:0xe2b08a},{name:'BRICKHOUSE',num:44,spd:0.78,pwr:1.16,con:.82,skin:0xd9a47c},
-  {name:'TANAKA',lh:true,num:51,spd:1.1,pwr:1.02,con:1.08,skin:0xe6bd94},{name:'MONTOYA',num:19,crouch:true,spd:0.95,pwr:1.1,con:.95,skin:0xa8683e},
-  {name:'ABERNATHY',lh:true,num:12,spd:1.15,pwr:.94,con:1.1,skin:0xf0c4a0},{name:'JACKSON-BELL',num:35,crouch:true,spd:0.81,pwr:1.12,con:.93,skin:0x5a3820},
-  {name:'KOWALSKI',num:6,spd:1.04,pwr:.98,con:1.04,skin:0xe8b690},
+  {name:'VASQUEZ',num:27,spd:1.0,pwr:1.0,con:1.05,skin:0xb9794f},{name:'OKAFOR',body:1,lh:true,num:8,spd:1.14,pwr:.96,con:1.12,skin:0x6b4226},
+  {name:'DELACROIX',num:3,crouch:true,spd:1.02,pwr:1.06,con:1.0,skin:0xe2b08a},{name:'BRICKHOUSE',body:2,num:44,spd:0.78,pwr:1.16,con:.82,skin:0xd9a47c},
+  {name:'TANAKA',lh:true,num:51,spd:1.1,pwr:1.02,con:1.08,skin:0xe6bd94},{name:'MONTOYA',body:3,num:19,crouch:true,spd:0.95,pwr:1.1,con:.95,skin:0xa8683e},
+  {name:'ABERNATHY',body:4,lh:true,num:12,spd:1.15,pwr:.94,con:1.1,skin:0xf0c4a0},{name:'JACKSON-BELL',num:35,crouch:true,spd:0.81,pwr:1.12,con:.93,skin:0x5a3820},
+  {name:'KOWALSKI',body:5,num:6,spd:1.04,pwr:.98,con:1.04,skin:0xe8b690},
 ];
 const batter=makeFigure({skin:0xb9794f,pants:0xb9bcc8,stripe:0x1b2a6b,trimC:0xf26a1b,sleeve:0x1b2a6b,cap:0x14204a,helmet:true,bglove:0xf26a1b,jersey:Object.assign({name:'VASQUEZ',num:27},HOME)});
 batter.root.position.set(-.97,0,.12);batter.root.rotation.y=PI/2;scene.add(batter.root);
@@ -2139,7 +2146,7 @@ const GRADES=['F','D','C','B','A','S','S+'];
 function cardStats(b){const od=!!(S.over&&S.overOn);$('card').classList.toggle('odc',od);
   [['pw',b.pwr],['co',b.con],['sp',b.spd]].forEach(([k,v])=>{const g0=statGrade(v),g=od?GRADES[Math.min(6,GRADES.indexOf(g0)+1)]:g0,base=g==='S+'?'S':g;
     $('s'+k).style.width=clamp((v-.85)/.32*100+(od?22:0),6,100)+'%';$('s'+k).style.background=od?'#58d6ff':GRADE_COL[base];const e=$('g'+k);e.textContent=g;e.className='g'+base+(od?' up':'');});}
-function setBatter(){if(MX.pitVar&&S.pName&&MX.pitVar[S.pName[3]||0]&&MX.pitCur!==(S.pName[3]||0))setTimeout(pitcherModel,0);
+function setBatter(){if(MX.batPrep)setTimeout(MX.batPrep,700);if(MX.pitVar&&S.pName&&MX.pitVar[S.pName[3]||0]&&MX.pitCur!==(S.pName[3]||0))setTimeout(pitcherModel,0);
   if(S.over&&S.overOn&&S.walked){} // a walk doesn't use it up: it stays on for the next hitter
   else if(S.over&&S.overOn){S.over=false;S.overOn=false;S.juice=0;}
   juiceArmed=false; // Juice armed for one hitter never carries over to the next
@@ -2183,10 +2190,16 @@ function endWalkup(){$('walk').hidden=true;$('hud').classList.remove('wk');S.sta
 // re-synced to it before every pitch. On contact they are sent toward where the play will leave them.
 const BASES=[[0,0],[19.4,-19.4],[0,-38.8],[-19.4,-19.4],[0,0]],RUN={list:[],pose:null};
 function basePos(sv,out){const i=clamp(Math.floor(sv),0,3),u=sv-i;return out.set(lerp(BASES[i][0],BASES[i+1][0],u),0,lerp(BASES[i][1],BASES[i+1][1],u));}
-function setupRunners(make,skins,cj){
-  RUN.pose=pose({y:.88,lean:.22,hL:[-.3,0,.3],kL:.5,hR:[-.3,0,-.3],kR:.5,sL:[-.2,0,.25],eL:-.5,sR:[-.2,0,-.25],eR:-.5}); // a short lead: knees bent, hands loose
-  for(let i=0;i<4;i++){const R={fig:mkFielder('RUN',i),s:0,target:0,active:false,jog:false,delay:0};R.fig.root.scale.setScalar(1.25);R.fig.root.visible=false;scene.add(R.fig.root);
-    setupFielder(R,make(['run','jog','turn','c_fist','x_limp','c_moonwalk'].filter(k=>!cj||cj[k])),skins.home,true);
+// A baserunner can wear any hitter's body. Each body is dressed once per runner and kept; putting one on is just a switch.
+const RUN_CLIPS=['run','jog','turn','c_fist','x_limp','c_moonwalk'],RUN_KEYS=['obj','rt','mixer','act','runAct','runDur','strAct','strDur','thrAct','thrDur','dieAct','defActs','turnAct','fistAct','hurtAct','mwAct','jogAct','jogDur','sx'];
+function runSnap(R){const o={},d=R.fig;RUN_KEYS.forEach(k=>o[k]=R[k]);o.dm={hipW:d.hipW,hipDrop:d.hipDrop,yOff:d.yOff,L1:d.L1,L2:d.L2,k:d.kneeL.position.y,f:d.footL.position.y,e:d.elL.position.y,sl:d.shL.position.clone(),sr:d.shR.position.clone()};return o;}
+function runWear(R,k){const b=R.bods&&R.bods[k];if(!b)return false;for(const j in R.bods){const on=+j===k;R.bods[j].obj.traverse(m=>{if(m.isMesh)m.visible=on;});}
+  RUN_KEYS.forEach(q=>R[q]=b[q]);const d=R.fig,m=b.dm;d.hipW=m.hipW;d.hipDrop=m.hipDrop;d.yOff=m.yOff;d.L1=m.L1;d.L2=m.L2;d.kneeL.position.y=d.kneeR.position.y=m.k;d.footL.position.y=d.footR.position.y=m.f;d.elL.position.y=d.elR.position.y=m.e;d.shL.position.copy(m.sl);d.shR.position.copy(m.sr);
+  R.bk=k;R.mode=null;return true;}
+function runBuild(R,k,obj,skin){if(R.bods[k])return;const cur=R.bk,T2={fig:R.fig};dressRunner(T2,obj,skin);R.bods[k]=runSnap(T2);runWear(R,cur);} /* dressed on a stand-in, so the man himself is not disturbed if he is on base right now */
+function runnerWear(R){const k=MX.bcur||0;if(R.bk!==k&&!runWear(R,k))runWear(R,0);} /* the man leaving the box wears the hitter's body (the house body if his isn't ready) */
+function dressRunner(R,obj,skin){
+    setupFielder(R,obj,skin,true);
     R.obj.traverse(o=>{if(o.isMesh&&o.material&&!Array.isArray(o.material)){o.material=o.material.clone();o.material.transparent=false;o.material.opacity=1;o.material.depthWrite=true;}}); // runners get their own copy of the uniform material: the hitter's fades in and out as batters change, and that was fading the men on base with him
     const still=name=>{const c=R.obj.animations.find(c=>c.name===name);if(!c)return null;c.tracks=c.tracks.filter(t=>/quaternion$/.test(t.name)||/Hips\.position$/.test(t.name));
       const ht=c.tracks.find(t=>/Hips\.position$/.test(t.name));if(ht){const v=ht.values;for(let k=3;k<v.length;k+=3){v[k]=v[0];v[k+2]=v[2];}}const a=R.mixer.clipAction(c);a.dur=c.duration;return a;};
@@ -2194,13 +2207,21 @@ function setupRunners(make,skins,cj){
     const jc=R.obj.animations.find(c=>c.name==='jog');
     if(jc){jc.tracks=jc.tracks.filter(t=>/quaternion$/.test(t.name)||/Hips\.position$/.test(t.name));const ht=jc.tracks.find(t=>/Hips\.position$/.test(t.name));if(ht){const v=ht.values;for(let k=3;k<v.length;k+=3){v[k]=v[0];v[k+2]=v[2];}}
       R.jogAct=R.mixer.clipAction(jc);R.jogDur=jc.duration;}
+}
+// The hitter's own body. Each one is measured for the swing once and kept; a new hitter stepping in while the box is empty just switches rigs.
+function batSwap(k){const r=MX.brigs&&MX.brigs[k],o=MX.clip;if(!r||k===MX.bcur)return;scene.remove(MX.obj);MX.obj=r.obj;MX.clip=r.clip;MX.D=r.D;MX.helmet=r.helmet;scene.add(MX.obj);MX.bcur=k;
+  const C=MX.clip;C.bi=o.bi;C.swap=o.swap;C.mode='idle';C.h=0;C.sk=0;C.t=0;}
+function setupRunners(make,skins,cj){
+  RUN.pose=pose({y:.88,lean:.22,hL:[-.3,0,.3],kL:.5,hR:[-.3,0,-.3],kR:.5,sL:[-.2,0,.25],eL:-.5,sR:[-.2,0,-.25],eR:-.5}); // a short lead: knees bent, hands loose
+  for(let i=0;i<4;i++){const R={fig:mkFielder('RUN',i),s:0,target:0,active:false,jog:false,delay:0};R.fig.root.scale.setScalar(1.25);R.fig.root.visible=false;scene.add(R.fig.root);
+    dressRunner(R,make(RUN_CLIPS.filter(k=>!cj||cj[k])),skins.home);R.bk=0;R.bods={0:runSnap(R)};
     RUN.list.push(R);}
   syncRunners();
 }
 // ── Home-run trot, shown as a highlight cut on no-doubters: rounding second, then touching home and a fist pump on the plate.
 const TROT={dur:5.85,celT:3.05,cele:false,clip:'',R:null,cam:new V3(),segs:[[0,3.05,1.7,3.5]]}; // rounds second and third, then halfway down the line it cuts to him at the plate, already celebrating // one continuous run: round second, round third, home // rounding second, then the last steps home; the fist pump fills the rest
 function startTrot(){const R=RUN.list.find(R=>!R.active)||null;if(!R||!R.jogAct)return false;
-  R.active=true;R.trot=true;R.delay=0;R.s=0;R.target=4;TROT.R=R;TROT.cele=false;TROT.cut=false;TROT.mwS=false;R.fig.root.scale.setScalar(FSCALE.inf);
+  runnerWear(R);R.active=true;R.trot=true;R.delay=0;R.s=0;R.target=4;TROT.R=R;TROT.cele=false;TROT.cut=false;TROT.mwS=false;R.fig.root.scale.setScalar(FSCALE.inf);
   {const C=MX.clip,own=celClip(WALK.by[curBatter().name]);const wild=wildTrot&&C?WILD_CEL.filter(k=>C.intros[k]):[];wildTrot=false;
     const all0=C?WILD_CEL.filter(k=>C.intros[k]&&k!=='p_loser'&&k!==celLast):[],all=all0.concat(all0.filter(k=>CEL_FAV.includes(k)),all0.filter(k=>CEL_FAV.includes(k))),pick=a=>a[(Math.random()*a.length)|0], /* the crowd-pleasers (break dance, backflip, twerk, macarena) come up three times as often as the rest */w2=wild.filter(k=>k!=='p_loser'&&k!==celLast);
     // his own routine about a third of the time, the 'loser' sign at the pitcher now and then, otherwise anything from the whole book (dances, flexes, the pitcher's own strikeout taunts thrown back at him), never the same one twice running
@@ -2240,12 +2261,12 @@ function updateTrot(dt){
   const a=mode==='mw'?R.mwAct:mode==='turn'?R.turnAct:mode==='fist'?R.fistAct:R.jogAct,d=mode==='jog'?R.jogDur:a.dur;R.runT=(R.runT+dt*(mode==='jog'?1.25:mode==='mw'?1.35:1))%d;a.time=R.runT;R.mixer.update(0);
 }
 function syncRunners(){const L=RUN.list;TROT.R=null;TROT.cele=false;L.forEach(R=>{R.keep=false;R.trot=false;R.lead=false;R.fig.root.scale.setScalar(1.25);if(R.obj)R.obj.scale.x=R.sx;});
-  for(let b=0;b<3;b++)if(S.bases[b]){const R=L.find(R=>R.active&&!R.keep&&Math.round(R.target)===b+1)||L.find(R=>!R.keep&&!R.active)||L.find(R=>!R.keep);
+  for(let b=0;b<3;b++)if(S.bases[b]){const R=L.find(R=>R.active&&!R.keep&&Math.round(R.target)===b+1)||L.filter(R=>R.active&&!R.keep&&!S.bases[Math.round(R.target)-1]).sort((x,y)=>Math.abs(x.target-b-1)-Math.abs(y.target-b-1))[0]||L.find(R=>!R.keep&&!R.active)||L.find(R=>!R.keep); /* a man who has moved up (or back) a base is still the same man, in the same body */
     if(R){R.keep=true;R.active=true;R.s=R.target=b+1;R.delay=0;R.jog=false;}}
   L.forEach(R=>{if(!R.keep)R.active=false;});}
 function sendRunners(n,o){ // n bases for men on; o.batter = base the hitter is headed for; o.jog = trot
   RUN.list.forEach(R=>{if(R.active&&n>0){R.target=Math.min(4,R.s+n);R.jog=!!o.jog;}});
-  if(o.batter){const R=RUN.list.find(R=>!R.active);if(R){R.active=true;R.s=0;R.target=Math.min(4,o.batter);R.delay=.4;R.jog=!!o.jog;}}}
+  if(o.batter){const R=RUN.list.find(R=>!R.active);if(R){runnerWear(R);R.active=true;R.s=0;R.target=Math.min(4,o.batter);R.delay=.4;R.jog=!!o.jog;}}}
 function walkRunners(){let b=1;const at=k=>RUN.list.find(R=>R.active&&R.s===k&&R.target===k),forced=[];
   for(;b<=3;b++){const R=at(b);if(!R)break;forced.push(R);}
   forced.forEach(R=>{R.target=R.s+1;R.jog=true;});sendRunners(0,{batter:1,jog:true});}
@@ -3067,6 +3088,8 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden&&inPlay())s
 const MX={ready:false,map:[],on:true,token:0,kind:'ely'};
 // player looks you can switch between on the title screen
 const MODELS={ely:{label:'armoured',body:'ely.txt',clips:'ely_clips.min.json',tex:{d:'ely_d.jpg',n:'ely_n.jpg',s:'ely_s.jpg',g:'ely_g.jpg'},
+  bat:[{body:'exored.txt',hide:/Eye_Spec|Brows/,tex:{Body_MAT:['exored_d0.jpg','exored_n0.jpg'],Exo_MAT:['exored_d1.jpg','exored_n1.jpg']}},{body:'dreyar.txt',tex:{dreyar_M3:['dreyar_d0.jpg','dreyar_n0.jpg']}},
+    {body:'david.txt',tex:{Ch28_body:['david_d0.jpg','david_n0.jpg']}},{body:'jolleen.txt',tex:{phong1:['jolleen_d0.jpg','jolleen_n0.jpg']}},{body:'abe.txt',tex:{Ch39_Body:['abe_d0.jpg','abe_n0.jpg']}}], /* hitters who are not the house model: LINEUP[..].body is 1-based into this list */
   def:{body:'van.txt',tex:{d:'van_d.jpg',n:'van_n.jpg',s:'van_s.jpg'}},ump:{body:'exo.txt',tex:{Body_MAT:'exo_body.jpg',Exo_MAT:'exo_suit.jpg'}},
   // other bodies for the mound: every pitching change brings a different-looking arm (each material: colour map, normal map)
   pit:[{body:'crypto.txt',tex:{Ch45_Body:['crypto_d.jpg','crypto_n.jpg']}},{body:'alien.txt',tex:{Ch44_Body:['alien_d0.jpg','alien_n0.jpg'],Ch44_body1:['alien_d1.jpg','alien_n1.jpg']}},
@@ -3211,6 +3234,7 @@ const WHIFF_HOLD=1.15; // seconds of the swing-and-miss clip shown after the mis
 function batterOpacity(k){const set=m=>{if(m){m.transparent=k<1;m.opacity=k;}};
   if(MX.obj)MX.obj.traverse(n=>{if(n.userData.helm){n.visible=k>.5;return;}if(n.isMesh)[].concat(n.material).forEach(set);});set(bat.userData.wood);} // the glass helmet has its own shared material: just hide it when he fades
 function updateClip(dt){
+  if(MX.brigs&&MX.clip.bi!==undefined&&MX.clip.bi!==MX.bshown){MX.bshown=MX.clip.bi;const b=LINEUP[MX.clip.bi%LINEUP.length].body||0;batSwap(MX.brigs[b]?b:0);} /* decided once, as the new man is about to fade in */
   const C=MX.clip,o=MX.obj;let w=0,want=0,rate=.55,skT=0;
   o.rotation.y=PI;o.scale.x=Math.abs(o.scale.x);o.position.x=C.baseX;o.position.z=C.baseZ; // everything below is worked out right-handed; a lefty is mirrored at the end
   // The next hitter is announced as soon as a play ends, but the man on screen is still the one who just swung.
@@ -3363,7 +3387,7 @@ function gloveTick(){
     const full=DBG.glove==='real'||(DBG.glove!=='simple'&&u.own&&!u.own.userData.isLite);
     if(full!==u.real.visible){u.real.visible=full;u.simple[0].visible=u.simple[1].visible=!full;}}}
 function prepModel(obj,tx,custom){ // dress + bulk a Mixamo mannequin; returns its skeleton helpers and measurements
-  const s=.87/88.9;
+  let s=.87/88.9;
   const meshes=[];obj.traverse(n=>{if(n.isSkinnedMesh)meshes.push(n);});if(!meshes.length)throw new Error('no skinned mesh');
   const sk=meshes[0].skeleton,pre=(/^mixamorig\d*/.exec(sk.bones[0].name)||['mixamorig'])[0],B=n=>sk.bones.find(b=>b.name===pre+n)||obj.getObjectByName(pre+n);
   (obj.animations||[]).forEach(c=>c.tracks.forEach(t=>{t.name=t.name.replace(/^mixamorig\d*/,pre);})); // clips may come from another Mixamo character
@@ -3371,6 +3395,7 @@ function prepModel(obj,tx,custom){ // dress + bulk a Mixamo mannequin; returns i
   const W=n=>B(n).getWorldPosition(new V3()),la=W('LeftArm'),ul=W('LeftUpLeg'),kn=W('LeftLeg'),ft=W('LeftFoot'),fa=W('LeftForeArm'),hd=W('LeftHand');
   const D={armX:la.x,armY:la.y,armZ:la.z,hipsY:W('Hips').y,neckY:W('Neck').y,headY:W('Head').y,topY:B('HeadTop_End')?W('HeadTop_End').y:W('Head').y+24,chestZ:W('Spine1').z+1,
     legX:ul.x,legY:ul.y,footX:ft.x,thigh:ul.distanceTo(kn),shin:kn.distanceTo(ft),footY:ft.y,uarm:la.distanceTo(fa),farm:fa.distanceTo(hd)};
+  if(custom&&custom.topY){const r=custom.topY/D.topY;if(Math.abs(r-1)>.12)s*=clamp(r,.05,20);} /* a body built to another scale is brought to the house height; ordinary differences in build are left alone */
   const mat=custom?custom.mat:new T.MeshPhongMaterial({map:tx,skinning:true,shininess:18,specular:0x303038});
   meshes.forEach(m=>{const multi=Array.isArray(m.material),mn=!multi&&m.material&&m.material.name||'';let g=m.geometry.index&&!multi?m.geometry.toNonIndexed():m.geometry;
     if(multi){} /* one mesh wearing several materials keeps its geometry (and its material groups) exactly as it came */ else if(custom)g=custom.trim?custom.trim(g,D):g;else{dress(g,D);if(MX.bulk)bulk(g,D);}   // a textured character keeps its own UVs and look
@@ -3645,6 +3670,25 @@ function loadPlayers(kind){ // body file = character mesh; clips.json = motion-c
           skin:{mat:mats[keys[0]],mats,trim:g=>{let o=geos.get(g.uuid);if(!o){o=weld(g);o.userData.lite=liteGeo(o,LOD_CELL);geos.set(g.uuid,o);}return o;}}};
         if(S.state==='title'||S.state==='over'||S.state==='walkup')pitcherModel();}).catch(e=>console.warn('pitcher body '+v.body+' not loaded',e));};
     setTimeout(()=>{if(my===MX.token)pitcherModel();},3000);
+    // Hitters' bodies: fetched a couple of hitters ahead, then measured for the swing and dressed as runners in quiet moments (never during a pitch).
+    const batNames=['hit','idle','idle2','strike'].filter(k=>cj[k]).concat(Object.keys(cj).filter(k=>/^[wdcbq]_/.test(k)||k==='run'||/^p_(loser|twerk|chicken|runman|fist|clap|threat|dying)$/.test(k))),batP={},jobs=[];
+    MX.batVar=[];MX.brigs=null;MX.bcur=0;MX.bshown=undefined;
+    const batLoad=k=>{const v=cfg.bat&&canClone&&cfg.bat[k-1];if(!v)return null;if(batP[k])return batP[k];const keys=Object.keys(v.tex);
+      return batP[k]=Promise.all([loadBuf(v.body),...keys.map(q=>Promise.all(v.tex[q].map(loadImg)))]).then(r=>{if(my!==MX.token)return;
+        const vb=new T.FBXLoader().parse(r[0],''),tx=i=>{const t=new T.Texture(i);t.needsUpdate=true;t.anisotropy=ANISO;return t;},mats={},geos=new Map();
+        keys.forEach((q,i)=>{const o={map:tx(r[1+i][0]),color:0xffffff,emissive:0x1c1c22,specular:0x333340,shininess:26,skinning:true};if(r[1+i][1])o.normalMap=tx(r[1+i][1]);mats[q]=new T.MeshPhongMaterial(o);});
+        MX.batVar[k]={make:names=>{const o=T.SkeletonUtils.clone(vb);o.animations=fitClips(o,names.filter(n=>cj[n]));return o;},
+          skin:()=>{const m2={};keys.forEach(q=>m2[q]=mats[q].clone());return {mat:m2[keys[0]],mats:m2,hide:v.hide,topY:refRest.HeadTop_End?refRest.HeadTop_End.y:0,trim:g=>{let o=geos.get(g.uuid);if(!o){o=weld(g);o.userData.lite=liteGeo(o,LOD_CELL);geos.set(g.uuid,o);}return o;}};}}; /* every wearer gets his own copy of the materials: the hitter fades in and out, the runners must not */
+        jobs.push(['bat',k]);RUN.list.forEach((R,i)=>jobs.push(['run',k,i]));}).catch(e=>console.warn('hitter body '+v.body+' not loaded',e));};
+    const batRig=k=>{if(!MX.clip||!MX.obj||!MX.batVar[k])return;if(!MX.brigs)MX.brigs={[MX.bcur]:{obj:MX.obj,clip:MX.clip,D:MX.D,helmet:MX.helmet}};if(MX.brigs[k])return;
+      const cur={obj:MX.obj,clip:MX.clip,D:MX.D,helmet:MX.helmet},bv=bat.visible,v=MX.batVar[k];
+      try{setupModel(v.make(batNames),v.skin());MX.brigs[k]={obj:MX.obj,clip:MX.clip,D:MX.D,helmet:MX.helmet};scene.remove(MX.obj);}catch(e){console.warn('hitter rig failed',e);if(MX.obj&&MX.obj!==cur.obj)scene.remove(MX.obj);}
+      MX.obj=cur.obj;MX.clip=cur.clip;MX.D=cur.D;MX.helmet=cur.helmet;bat.visible=bv;};
+    MX.batPrep=()=>{if(my!==MX.token)return;for(let j=0;j<3;j++){const k=LINEUP[(Math.max(0,S.bi)+j)%LINEUP.length].body||0;if(k)batLoad(k);}};
+    const jobTick=()=>{if(my!==MX.token)return;setTimeout(jobTick,260);if(!jobs.length||!RUN.list.length||!MX.clip)return;const st=S.state;
+      if(!(st==='title'||st==='result'||st==='over'||st==='end'||st==='pchange'||(st==='ready'&&now-S.t<.35)||(st==='walkup'&&now-S.t<.3)))return;
+      const j=jobs.shift();try{if(j[0]==='bat')batRig(j[1]);else{const R=RUN.list[j[2]],v=MX.batVar[j[1]];if(R&&R.bods&&v)runBuild(R,j[1],v.make(RUN_CLIPS),v.skin());}}catch(e){console.warn('hitter body job failed',e);}};
+    setTimeout(jobTick,4200);setTimeout(MX.batPrep,3600);
     // fielders are built one at a time so the page doesn't freeze while seven more models are prepared
     fielders.filter(f=>!f.isP).forEach((f,i)=>setTimeout(()=>{if(my!==MX.token)return;
       try{setupFielder(f,makeD(['catch','run','strafe','throw','x_dive','p_dying','d_1','d_2','d_3'].filter(k=>cj[k])),defSkin);}catch(e){console.warn('fielder model failed, using built-in figure',e);fallback(f.fig);}},400+i*220));
@@ -4119,7 +4163,7 @@ $('shbtn').addEventListener('click',()=>{SHQ=!SHQ;if(SHQ&&!rim.castShadow)rim.ca
 shApply();
 resize();hud();
 const DBG={dive:'',hbp:false,pcut:false,fl:'',rob:false,pc:false,staunt:false,pod:false,trail:false,orbit:false,sat:false,drill:false,brawl:false,qte:false,mash:false,slide:false,pn:'',laser:false,lamp:false,mw:false,pdef:false,dbl:false,cam:false,admire:'',trip:false,fist:false,pop:false,loser:false}; // test hook: pin the camera to CAM_HOME/CAM_LOOK
-window.__ret=()=>reticle.position;window.__bp=k=>BULLPEN[k];window.__mm={pitcherModel,crowdFx,setE:v=>{crowdE=v;crowdShow=v;},GLOVE,renderer,scene,LODM,camera,zapStart,acState:()=>AC?(zoneLP?"lp="+Math.round(zoneLP.frequency.value)+" ":"")+AC.state+" t="+AC.currentTime.toFixed(1)+" real="+crowdReal+" roar="+(roarG?roarG.gain.value.toFixed(2)+(roarTop?"T":""):"off")+" bed="+crowdGain.gain.value.toFixed(2):"none",roar,roarOff,boo,cheer,crowdRise,crowdDrop,S,aim,MX,DBG,landRingOn:()=>landRing.visible,hud,tutAnim,draw:()=>draw(),endGame,TROT,SFX,RUN,ballPos:()=>ball.position,ballVisible:()=>ball.visible,fielders,toReady,CAM_HOME,CAM_LOOK,now:()=>now,simulate,judge,get pitch(){return pitch;},get flight(){return flight;},lastSwing:()=>{const t=swing&&swing.type;swing=null;return t;},lastSwingTurbo:()=>!!(swing&&swing.turbo),doSwing,newGame,V3,
+window.__ret=()=>reticle.position;window.__lu=LINEUP;window.__bp=k=>BULLPEN[k];window.__mm={pitcherModel,crowdFx,setE:v=>{crowdE=v;crowdShow=v;},GLOVE,renderer,scene,LODM,camera,zapStart,acState:()=>AC?(zoneLP?"lp="+Math.round(zoneLP.frequency.value)+" ":"")+AC.state+" t="+AC.currentTime.toFixed(1)+" real="+crowdReal+" roar="+(roarG?roarG.gain.value.toFixed(2)+(roarTop?"T":""):"off")+" bed="+crowdGain.gain.value.toFixed(2):"none",roar,roarOff,boo,cheer,crowdRise,crowdDrop,S,aim,MX,DBG,landRingOn:()=>landRing.visible,hud,tutAnim,draw:()=>draw(),endGame,TROT,SFX,RUN,ballPos:()=>ball.position,ballVisible:()=>ball.visible,fielders,toReady,CAM_HOME,CAM_LOOK,now:()=>now,simulate,judge,get pitch(){return pitch;},get flight(){return flight;},lastSwing:()=>{const t=swing&&swing.type;swing=null;return t;},lastSwingTurbo:()=>!!(swing&&swing.turbo),doSwing,newGame,V3,
   sim:(dt)=>{hitstop=0;now+=dt;step(dt);},
   step:(n,dt=1/60)=>{for(let i=0;i<n;i++){if(hitstop>0)hitstop=0;now+=dt;step(dt);}updateCamera(dt);draw();}};
 if(!window.__mmManual)requestAnimationFrame(frame);

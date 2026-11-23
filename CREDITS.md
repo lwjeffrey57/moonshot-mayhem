@@ -22,3 +22,5 @@ replaced with original or licensed sound before release (see BACKLOG.md).
 - Pitcher bodies 'crypto' and 'alien soldier': Mixamo characters supplied by the project owner (Mixamo's licence allows use in games; confirm before release).
 
 - Extra pitcher bodies (racer, zlorp, drake, maynar, jones, parker): from the Drive models folder; source and licence to confirm before going public.
+
+- Hitter bodies (exo red, dreyar, david, jolleen, abe) and home-run horn: from the Drive folder; source and licence to confirm before going public.
