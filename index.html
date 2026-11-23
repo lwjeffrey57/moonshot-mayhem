@@ -245,10 +245,11 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 #qtm{height:10px;width:min(360px,84vw);margin:0 auto;background:#000;border:2px solid #f2f5ff;border-radius:6px;overflow:hidden}
 #qtb{display:block;height:100%;background:#39ff6a;transform-origin:0 50%}#qtb.low{background:#ff4d2e}
 #qpad{position:absolute;left:50%;margin-left:-162px;bottom:max(40px,calc(env(safe-area-inset-bottom,0px) + 30px));width:324px;height:324px;display:none;z-index:48;pointer-events:auto;touch-action:none;border-radius:50%;background:radial-gradient(circle,rgba(10,12,34,.55) 0 62%,rgba(10,12,34,0) 72%)}
-#hud.mob.qon #qpad{display:block}#hud.mob.qon.qm #qpad{display:none}
+#hud.qon #qpad{display:block}#hud.qon.qm #qpad{display:none} /* shown on computers too, so the arrows can be clicked if the keys are not reaching the game */
+#hud:not(.mob) #qpad{transform:scale(.62);transform-origin:50% 100%}#hud:not(.mob) #qmash{transform:scale(.7)}
 /* the tap-furiously kind gets one big button instead of the d-pad */
 #qmash{position:absolute;left:50%;top:62%;margin-left:-88px;width:176px;height:176px;display:none;z-index:48;pointer-events:auto;padding:0;border-radius:50%;font-family:var(--display);font-style:italic;font-size:44px;color:#fff;text-shadow:0 3px 0 #000;background:radial-gradient(circle at 50% 35%,#ff8a5c,#ff3b3b 60%,#a0140c);border:5px solid #000;box-shadow:0 7px 0 #000,0 0 0 5px rgba(255,255,255,.6),0 0 34px 10px rgba(255,80,50,.7);touch-action:none}
-#hud.mob.qon.qm #qmash{display:block}#qmash:active{transform:translateY(5px) scale(.96);box-shadow:0 2px 0 #000,0 0 0 5px rgba(255,255,255,.9),0 0 40px 14px rgba(255,160,80,.9)}
+#hud.qon.qm #qmash{display:block}#qmash:active{transform:translateY(5px) scale(.96);box-shadow:0 2px 0 #000,0 0 0 5px rgba(255,255,255,.9),0 0 40px 14px rgba(255,160,80,.9)}
 #qpad button{position:absolute;width:108px;height:108px;padding:0;font-size:44px;transition:none;pointer-events:none;color:#fff;background:linear-gradient(#3a4190,#1b1f4a);border:3px solid #000;border-radius:12px;box-shadow:0 4px 0 #000,0 0 0 3px rgba(242,245,255,.5);touch-action:none}
 #qpad button:active{transform:translateY(3px);background:#39ff6a;color:#04140a}
 #qpad [data-d=U]{left:108px;top:0}#qpad [data-d=D]{left:108px;bottom:0}#qpad [data-d=L]{left:0;top:108px}#qpad [data-d=R]{right:0;top:108px}
@@ -1501,7 +1502,7 @@ const retP=new T.Mesh(new T.RingGeometry(.9,1,24),overlayMat(0xff4d2e,.95));retP
 {const fill=new T.Mesh(new T.CircleGeometry(.9,28),overlayMat(0xff4d2e,.4));fill.renderOrder=8;retP.add(fill);} // POWER sweet spot reads as a hot core inside the bat ring, not a second ring
 const retDot=new T.Mesh(new T.CircleGeometry(.014,8),overlayMat(0xffffff,.9));retDot.renderOrder=9;reticle.add(retDot);retDot.visible=false;
 // where a ball hit in the air is going to come down
-const landRing=new T.Mesh(new T.RingGeometry(.7,1,40),new T.MeshBasicMaterial({color:0xffe53b,transparent:true,opacity:.9,depthWrite:false,side:T.DoubleSide,fog:false,polygonOffset:true,polygonOffsetFactor:-6,polygonOffsetUnits:-12})); // a thicker band, pulled clear of the ground and the shadow layer so it can never be buried
+const landRing=new T.Mesh(new T.RingGeometry(.8,1,36),new T.MeshBasicMaterial({color:0xffe53b,transparent:true,opacity:.9,depthWrite:false,side:T.DoubleSide,fog:false,polygonOffset:true,polygonOffsetFactor:-6,polygonOffsetUnits:-12})); // the original thin ring, kept clear of the shadow layer so it cannot be buried
 landRing.rotation.x=-PI/2;landRing.renderOrder=3;landRing.visible=false;scene.add(landRing);
 const echoBall=new T.Mesh(new T.RingGeometry(.026,.04,20),overlayMat(0xffffff,1));echoBall.renderOrder=11;echoBall.visible=false;scene.add(echoBall); // marks where the pitch was after a miss
 const PT_R=.068;
@@ -2033,6 +2034,7 @@ function setupRunners(make,skins,cj){
   RUN.pose=pose({y:.88,lean:.22,hL:[-.3,0,.3],kL:.5,hR:[-.3,0,-.3],kR:.5,sL:[-.2,0,.25],eL:-.5,sR:[-.2,0,-.25],eR:-.5}); // a short lead: knees bent, hands loose
   for(let i=0;i<4;i++){const R={fig:mkFielder('RUN',i),s:0,target:0,active:false,jog:false,delay:0};R.fig.root.scale.setScalar(1.25);R.fig.root.visible=false;scene.add(R.fig.root);
     setupFielder(R,make(['run','jog','turn','c_fist','x_limp'].filter(k=>!cj||cj[k])),skins.home,true);
+    R.obj.traverse(o=>{if(o.isMesh&&o.material&&!Array.isArray(o.material)){o.material=o.material.clone();o.material.transparent=false;o.material.opacity=1;o.material.depthWrite=true;}}); // runners get their own copy of the uniform material: the hitter's fades in and out as batters change, and that was fading the men on base with him
     const still=name=>{const c=R.obj.animations.find(c=>c.name===name);if(!c)return null;c.tracks=c.tracks.filter(t=>/quaternion$/.test(t.name)||/Hips\.position$/.test(t.name));
       const ht=c.tracks.find(t=>/Hips\.position$/.test(t.name));if(ht){const v=ht.values;for(let k=3;k<v.length;k+=3){v[k]=v[0];v[k+2]=v[2];}}const a=R.mixer.clipAction(c);a.dur=c.duration;return a;};
     R.turnAct=still('turn');R.fistAct=still('c_fist');R.hurtAct=still('x_limp');
@@ -2098,11 +2100,14 @@ function updateRunners(dt){
     if(R.delay>0){R.delay-=dt;root.visible=false;continue;}
     const moving=R.s<R.target-1e-4;
     const hold=flight&&flight.admire&&!flight.done&&R.s<=3?3:9; // while the camera is still on the hitter admiring his shot, nobody comes home past him: runners wait at third until he is on his way
-    if(moving)R.s=Math.min(R.target,hold,R.s+(R.raceV?R.raceV*dt:(R.hurt?6.2:R.lead?17.5:R.jog?10.5:16)*dt/27.43));else{R.raceV=0;R.hurt=false;}
+    if(moving)R.s=Math.min(R.target,hold,R.s+(R.raceV?R.raceV*dt:(R.hurt?6.2:R.lead?17.5:R.jog?10.5:16)*dt/27.43));else{if(R.raceV&&R.target===1&&!R.thru)R.thru=now;R.raceV=0;R.hurt=false;}
+    if(R.thru&&(now-R.thru>3.2||!(S.state==='result'||S.state==='flight')))R.thru=0;
     if(R.s>=4){R.active=false;R.lead=false;root.visible=false;continue;}   // crossed the plate
     root.visible=true;basePos(R.s,_rv);root.position.copy(_rv);
-    const i=clamp(Math.floor(R.s),0,3);root.rotation.y=moving?Math.atan2(BASES[i+1][0]-BASES[i][0],BASES[i+1][1]-BASES[i][1]):Math.atan2(-_rv.x,-_rv.z);
-    const mode=moving?(R.hurt&&R.hurtAct?'hurt':R.jog&&R.jogAct?'jog':'run'):'pose';
+    // beating the throw: he runs through the bag the way a hitter does, a few strides down the line into foul ground, easing up
+    const thru=R.thru?now-R.thru:-1,thruRun=thru>=0&&thru<1.15;if(thru>=0){const d=5.5*(1-Math.pow(1-clamp(thru/1.3,0,1),2));root.position.x+=.7071*d;root.position.z-=.7071*d;}
+    const i=clamp(Math.floor(R.s),0,3);root.rotation.y=thru>=0?Math.atan2(.7071,-.7071):moving?Math.atan2(BASES[i+1][0]-BASES[i][0],BASES[i+1][1]-BASES[i][1]):Math.atan2(-_rv.x,-_rv.z);
+    const mode=thruRun?'run':moving?(R.hurt&&R.hurtAct?'hurt':R.jog&&R.jogAct?'jog':'run'):'pose';
     if(mode!==R.mode){R.mode=mode;R.mixer.stopAllAction();if(mode==='run')R.runAct.reset().play();else if(mode==='jog')R.jogAct.reset().play();else if(mode==='hurt')R.hurtAct.reset().play();}
     if(mode==='hurt'){R.runT=(R.runT+dt)%R.hurtAct.dur;R.hurtAct.time=R.runT;R.mixer.update(0);}
     else if(mode==='run'){R.runT=(R.runT+dt*1.5)%R.runDur;R.runAct.time=R.runT;R.mixer.update(0);}
@@ -2211,14 +2216,14 @@ function goOffer(k){S.goK=k;const b=$('gobtn');b.firstChild.nodeValue=GO_LABEL[k
 function goHide(){if(S.goK){S.goK=null;}$('gobtn').classList.remove('on');}
 function goTap(){if(!S.goK||S.state!=='result')return;const k=S.goK;goHide();S.next=()=>qteStart(k,true);S.t=now-readyDur+.2;buzz([20,30,60]);tone('triangle',660,990,.12,.3);}
 function qteStart(kind,noPA){QT.noPA=!!noPA;goHide();const M=QTE_MOVES[kind],Bp=M.base?[BASES[M.base][0],BASES[M.base][1]]:[0,0],u=M.u;
-  S.state='qte';S.t=now;S.qteN=(S.qteN||0)+1;Object.assign(QT,{ph:'heads',tp:now,kind,M,code:M.code,i:0,mash:DBG.mash||(qteSeen&&Math.random()<.35),fill:0,lt:0,lim:.38*M.code.length+1.0+(qteSeen?0:1.2), /* the clock: enough to punch the whole code in at a brisk pace with room for one slip, and no more */ok:false,bx:Bp[0],bz:Bp[1],ux:u[0],uz:u[1],ball:null,blow:0});
+  S.state='qte';S.t=now;S.qteN=(S.qteN||0)+1;Object.assign(QT,{ph:'heads',tp:now,kind,M,code:M.code,i:0,mash:DBG.mash||(qteSeen&&Math.random()<.35),fill:0,lt:0,lim:.38*M.code.length+1.0+(qteSeen?0:1.2), /* the clock: enough to punch the whole code in at a brisk pace with room for one slip, and no more */ok:false,bx:Bp[0],bz:Bp[1],ux:u[0],uz:u[1],ball:null,blow:0,fk:0});
   QT.fx=Bp[0]+u[0]*.35;QT.fz=Bp[1]+u[1]*.35;QT.fry=Math.atan2(u[0],u[1]);QT.rry=Math.atan2(-u[0],-u[1]);QT.rx=Bp[0]+u[0]*17;QT.rz=Bp[1]+u[1]*17;
   QT.mx=Bp[0]+u[0]*1.5;QT.mz=Bp[1]+u[1]*1.5;{let nx=u[1],nz=-u[0];if(nx*(0-Bp[0])+nz*(-19.4-Bp[1])<0){nx=-nx;nz=-nz;}QT.nx=nx;QT.nz=nz;} // the side-on camera stands on the infield side of the line
   QT.b={n:'run',t:now,loop:true};QT.f={n:'b_stance',t:now,loop:true};
   // the men who are really standing there step out of the picture for the close-up; they are put back afterwards
   QT.hid=[];RUN.list.forEach(R=>{if(R.fig.root.visible){QT.hid.push(R.fig.root);R.fig.root.visible=false;}});fielders.forEach(f=>{const r=f.fig.root;if(!f.isP&&r.visible&&Math.hypot(r.position.x-Bp[0],r.position.z-Bp[1])<9){QT.hid.push(r);r.visible=false;}});
   ball.visible=false;ballShadow.visible=false;pop(M.call,'','hot');buzz([30,30,60]);crowdRise(.8,3,true);hud();}
-function qteShow(){const M=QT.M,e=$('qte');$('qtt').textContent=M.name;
+function qteShow(){if(!MOB&&!QT.fk){QT.fk=1;grabKeys();}const M=QT.M,e=$('qte');$('qtt').textContent=M.name;
   if(QT.mash){if(!$('qmf')){$('qtr').innerHTML='<div id="qmw"><em id="qmf"></em><span>'+(MOB?'TAP! TAP! TAP!':'MASH SPACE!')+'</span></div>';}$('hud').classList.add('qm');$('qmf').style.transform='scaleX('+Math.min(1,QT.fill).toFixed(3)+')';e.hidden=false;$('hud').classList.add('qon');return;} // the other kind: no code, just hammer the arrows until the bar is full
  {const r=$('qtr');if(r.children.length!==QT.code.length||r.firstChild.tagName!=='I')r.innerHTML=QT.code.map(c=>`<i>${{U:'▲',D:'▼',L:'◀',R:'▶'}[c]}</i>`).join('');for(let i=0;i<QT.code.length;i++){const c=i<QT.i?'ok':i===QT.i?'cur':'';if(r.children[i].className!==c)r.children[i].className=c;}}e.hidden=false;$('hud').classList.add('qon');}
 const QPB={};
@@ -2296,13 +2301,13 @@ const PITCHES=[
   {n:'SLIDER',dur:.74,brk:[.78,-.2],arc:.16,k:3.4,w:2},          // looks like a fastball, then darts sideways late
   {n:'CHANGEUP',dur:.95,brk:[-.14,-.5],arc:.34,k:2.8,w:2},       // floats, then dies and fades at the end
   {n:'SCREWBALL',dur:.8,brk:[-.72,-.36],arc:.24,k:2.6,w:1},      // breaks the opposite way to the slider and sinks
-  {n:'METEOR',dur:.5,brk:[0,.06],arc:.04,k:2,w:0,sp:1,col:[1,.3,.1]},
-  {n:'ZIG-ZAG',dur:.92,brk:[0,-.1],arc:.25,k:2.5,w:0,sp:1,wob:.42,wobF:22,col:[.3,1,.5]},
-  {n:'CORKSCREW',dur:.9,brk:[0,-.1],arc:.25,k:2.5,w:0,sp:1,wob:.36,wobF:20,cork:1,col:[.8,.4,1]},
+  {n:'METEOR',dur:.5,brk:[0,.06],arc:.04,k:2,w:0,sp:1,col:[1,.25,.05],tp:'thick'},
+  {n:'ZIG-ZAG',dur:.92,brk:[0,-.1],arc:.25,k:2.5,w:0,sp:1,wob:.42,wobF:22,col:[.2,1,.35],tp:'zig'},
+  {n:'CORKSCREW',dur:.9,brk:[0,-.1],arc:.25,k:2.5,w:0,sp:1,wob:.36,wobF:20,cork:1,col:[1,.3,.75],tp:'helix'},
   // thrown only while the pitcher is in Overdrive
-  {n:'SUPERNOVA',dur:.44,brk:[0,.1],arc:.03,k:2,w:0,sp:1,od:1,col:[1,1,.75]},                          // the fastest thing he has
-  {n:'GHOST BALL',dur:.82,brk:[.1,-.3],arc:.22,k:2.4,w:0,sp:1,od:1,ghost:1,col:[.7,.92,1]},              // vanishes in mid-flight and reappears late
-  {n:'BLACK HOLE',dur:.98,brk:[0,-.2],arc:.3,k:2.6,w:0,sp:1,od:1,wob:.6,wobF:13,cork:1,col:[.6,.2,1]},   // a slow, huge spiral
+  {n:'SUPERNOVA',dur:.44,brk:[0,.1],arc:.03,k:2,w:0,sp:1,od:1,col:[1,.95,.55],tp:'burst'},                          // the fastest thing he has
+  {n:'GHOST BALL',dur:.82,brk:[.1,-.3],arc:.22,k:2.4,w:0,sp:1,od:1,ghost:1,col:[.45,.9,1],tp:'dash'},              // vanishes in mid-flight and reappears late
+  {n:'BLACK HOLE',dur:.98,brk:[0,-.2],arc:.3,k:2.6,w:0,sp:1,od:1,wob:.6,wobF:13,cork:1,col:[.5,.2,1],tp:'double'},   // a slow, huge spiral
 ];
 const pitchMph=dur=>Math.round(18.4/dur*2.237*1.52),inningSp=()=>[1,.93,.86][S.inning-1]||.86;
 function renderRep(last){ // the pitcher's repertoire: movement, name, typical speed this inning; the pitch just thrown is highlighted
@@ -2330,6 +2335,7 @@ function choosePitch(){
   const special=S.pOver||(S.bi>=3&&(due||(S.heat>=.333&&Math.random()<.38+.04*mad))); // new players don't see special pitches in their first inning // the Heat is only deducted once the pitch has been seen (payHeat), so the meter doesn't give it away
   const pool=PITCHES.filter(p=>S.pOver?p.sp:special?p.sp&&!p.od:!p.sp);let tw=0;pool.forEach(p=>tw+=p.w||1);let r=Math.random()*tw,P=pool[0];
   for(const p of pool){r-=p.w||1;if(r<=0){P=p;break;}}
+  if(DBG.pn){const q=PITCHES.find(x=>x.n===DBG.pn);if(q)P=q;}
   const inZone=S.bi===0||(S.strikes===0&&S.balls>=2&&Math.random()<(S.balls===3?.98:.85))||(S.pOver&&!(S.over&&S.overOn)&&S.balls>=2&&Math.random()<(S.balls===3?.97:.8))||Math.random()<.64; /* behind 2-0 or 3-0 he comes after the hitter: a four-pitch walk almost never happens */let tx,ty; // the first hitter of every game only sees strikes: nobody's first at-bat is a walk
   if(inZone){tx=rand(ZONE.x0+.03,ZONE.x1-.03);ty=rand(ZONE.y0+.04,ZONE.y1-.04);}
   else{const side=(Math.random()*4)|0,o=rand(.1,.26);tx=rand(ZONE.x0,ZONE.x1);ty=rand(ZONE.y0,ZONE.y1);
@@ -2823,6 +2829,10 @@ function cornerTap(x,y){
   {const r=document.createElement('i');r.className='rip';r.style.left=x+'px';r.style.top=y+'px';$('hud').appendChild(r);setTimeout(()=>r.remove(),420);}
   if(d(J)<=J.r&&d(P)>P.r){press('tj');juiceTap();return true;} // only a tap squarely on the button arms Juice or Overdrive; a near miss is treated as a swing tap
   {const pw=d(P)-P.r<=d(C)-C.r;press(pw?'tp':'tc');doSwing(pw?'power':'contact');}return true;}
+// The game's own handlers cancel the default action of a click, and that default is also what gives the page keyboard focus. When the
+// game is embedded in another page, a mouse-only player would never get focus, so no key reached it. Every click now takes focus explicitly.
+canvas.tabIndex=-1;canvas.style.outline='none';const grabKeys=()=>{try{window.focus();if(document.activeElement!==canvas)canvas.focus({preventScroll:true});}catch(e){}};
+document.addEventListener('pointerdown',grabKeys,{capture:true});
 document.addEventListener('pointerdown',e=>{if(e.pointerType!=='mouse'||MOB){if(cornerTap(e.clientX,e.clientY)){e.preventDefault();e.stopPropagation();}}},{capture:true});
 document.addEventListener('touchstart',e=>{let hit=false;for(const t of e.changedTouches)if(cornerTap(t.clientX,t.clientY))hit=true;if(hit){e.preventDefault();e.stopPropagation();}},{capture:true,passive:false});
 ['tc','tp','tj'].forEach(id=>$(id).addEventListener('click',e=>{if(e.detail===0){press(id);if(id==='tj')juiceTap();else doSwing(id==='tp'?'power':'contact');}})); // keyboard activation
@@ -3578,11 +3588,22 @@ function updateFielders(dt){
 // A thin flame ribbon behind the ball: small particles laid end to end along its path, a hot core that
 // dies quickly and a cooler tail that lingers, so the trail tapers instead of ballooning.
 const _tp=new V3();
-function trail(o,c,far,hot){
+// pat: a Juice pitch's own signature. The same flame, in that pitch's true colour, laid down in its own shape: a fat streak, a zig-zag,
+// a corkscrew, a spray of sparks, broken dashes, a double helix.
+function trail(o,c,far,hot,pat){
   const p=ball.position,lp=o.lp||(o.lp=p.clone()),d=lp.distanceTo(p);
   if(d>12){lp.copy(p);return;}
   const fx=far?fxT:fxS,step=far?.16:.05,n=Math.min(40,Math.max(1,Math.round(d/step))),j=far?.05:.012;
+  const ph0=o.tph||0;if(pat)o.tph=ph0+d;
   for(let i=1;i<=n;i++){_tp.lerpVectors(lp,p,i/n);_tp.x+=rand(-j,j);_tp.y+=rand(-j,j);_tp.z+=rand(-j,j);_v.set(rand(-.15,.15),rand(-.05,.3),rand(-.15,.15));
+    if(pat){const ph=ph0+d*i/n,R=far?1.6:1;
+      if(pat==='thick'){_tp.x+=rand(-.07,.07)*R;_tp.y+=rand(-.07,.07)*R;}
+      else if(pat==='zig'){_tp.x+=(Math.abs((ph*1.1)%2-1)*2-1)*.11*R;}
+      else if(pat==='helix'){_tp.x+=Math.cos(ph*5)*.09*R;_tp.y+=Math.sin(ph*5)*.09*R;}
+      else if(pat==='burst'){_v.set(rand(-1.6,1.6),rand(-1.6,1.6),rand(-.4,.4));}
+      else if(pat==='dash'){if(Math.floor(ph*1.6)%2)continue;}
+      else if(pat==='double'){const sg=i%2?1:-1;_tp.x+=Math.cos(ph*3.2)*.15*R*sg;_tp.y+=Math.sin(ph*3.2)*.15*R*sg;}
+      fx.emit(_tp,_v,rand(.45,.8),c[0]*.85,c[1]*.85,c[2]*.85);if(i%2===0)fx.emit(_tp,_v,rand(.1,.2),Math.min(1,c[0]+.4),Math.min(1,c[1]+.4),Math.min(1,c[2]+.4));continue;}
     if(hot){fx.emit(_tp,_v,rand(.45,.8),c[0],c[1]*.55,c[2]*.4);                               // cooler, longer tail
       if(i%2===0)fx.emit(_tp,_v,rand(.1,.2),Math.min(1,c[0]+.5),Math.min(1,c[1]+.5),Math.min(1,c[2]+.45));}  // bright core
     else fx.emit(_tp,_v,rand(.12,.22),c[0]*.6,c[1]*.6,c[2]*.6);}
@@ -3635,7 +3656,7 @@ function step(dt){
     if(show){pring.position.set(pitch.tx,pitch.ty,0);const uT=u+SW_T/pitch.dur, // the ring runs ahead by the swing time, so 'tap when it finishes closing' is exactly on time
       t=(uT-.22)/.78,r=t<=1?lerp(.42,PT_R,clamp(t,0,1)):Math.max(.02,PT_R-(t-1)*.5),hit=Math.abs(r-PT_R)<.012; // closes at a steady speed onto the target, then keeps shrinking: smaller than the ball = late
       pring.scale.setScalar(r);pring.material.color.setHex(hit?0x39ff6a:0xffe53b);ptarget.material.color.setHex(hit?0x39ff6a:0xffffff);ptarget.scale.setScalar(PT_R*(hit?1.3:1));} // flashes white at 'now': red is reserved for the power core
-    {const gone=pitch.P.ghost&&u>.36&&u<.7;if(pitch.P.ghost&&u<1)ball.visible=!gone;if(pitch.P.col&&u<1&&!gone)trail(pitch,pitch.P.col,u<.75,true);}
+    {const gone=pitch.P.ghost&&u>.36&&u<.7;if(pitch.P.ghost&&u<1)ball.visible=!gone;if(pitch.P.col&&u<1&&!gone)trail(pitch,pitch.P.col,u<.75,true,pitch.P.tp);}
     if(S.state==='pitch'&&u>=1&&!pitch.called){pitch.called=true;
       payHeat();$('mph').textContent=pitchMph(pitch.dur);$('plast').textContent=pitch.P.n+' · '+pitchMph(pitch.dur)+' MPH';
       {const d=$('zdot');d.hidden=false;d.style.left=clamp(50+pitch.tx/.28*33,4,96)+'%';d.style.top=clamp(50-(pitch.ty-.825)/.325*33,4,96)+'%';d.className=pitch.inZone?'':'out';}$('pitchinfo').classList.add('on'),$('plast').classList.add('on');renderRep(pitch.P);}
@@ -3656,9 +3677,9 @@ function step(dt){
       bez(flight.orb?.22+.78*Math.pow(clamp((now-flight.orb)/3.1,0,1),1.5):.22*ease(Math.min(1,tf/1.1)),ball.position);}
     if(flight.dShow){const ft=Math.round(flight.dFt*Math.min(1,Math.hypot(p.x,p.z)/(flight.dEnd||1)));if(ft!==flight.dLast){flight.dLast=ft;$('hds').textContent=ft+' FT';}}
     if(flight.play.type==='out'&&flight.play.air&&tf<flight.play.endT){const pl=flight.play,k=1-tf/pl.endT; // every ball that is going to be caught in the air gets the ring, under the spot where it will be caught: liners, pop-ups, foul outs, robberies
-      landRing.visible=true;landRing.position.set(pl.p.x,.11,pl.p.z);landRing.scale.setScalar(lerp(1.4,5,k));landRing.material.opacity=.75+.25*(1-k);}
+      landRing.visible=true;landRing.position.set(pl.p.x,.07,pl.p.z);landRing.scale.setScalar(lerp(1.4,5,k));landRing.material.opacity=.55+.4*(1-k);}
     else if(!tr.hr&&tr.land&&tr.land.t>.45&&tf<tr.land.t){ // fly balls and liners (not home runs): a ring on the grass that tightens as the ball comes down
-      const k=1-tf/tr.land.t;landRing.visible=true;landRing.position.set(tr.land.x,.11,tr.land.z);landRing.scale.setScalar(lerp(1.4,5,k));landRing.material.opacity=.75+.25*(1-k);}
+      const k=1-tf/tr.land.t;landRing.visible=true;landRing.position.set(tr.land.x,.07,tr.land.z);landRing.scale.setScalar(lerp(1.4,5,k));landRing.material.opacity=.55+.4*(1-k);}
     if(tr.poleT&&!flight.poleHit&&tf>=tr.poleT){flight.poleHit=true;burst(fxL,ball.position,16,7,.5,[1,.9,.3],5,1);tone('sine',1250,900,.5,.6);tone('triangle',2500,1800,.4,.3);pop('OFF THE POLE!','FAIR BALL · HOME RUN','hot');poleFlash=now;} // doink
     if(tr.offP&&flight.play.type==='hit'&&!flight.offPd&&tf>=tr.offP){flight.offPd=true; // drilled him: the pitcher goes down in a heap on the mound
       if(MX.pit&&MX.pit.taunts.p_dying)S.sTaunt={t:now,clip:'p_dying',dur:3.3};SND.mitt();tone('sine',110,45,.2,.7);buzz([30,30,60]);shake=Math.max(shake,.25*FX);crowdOut(.9);}
@@ -3738,7 +3759,7 @@ function updateCamera(rdt){
   else if(S.kOut&&MX.clip&&MX.clip.bi===S.kOut.bi&&now>S.kOut.t&&now<S.kOut.t+DEFEAT&&S.state==='result'){ // strikeout: close on the hitter from the pitcher's side
     const e=clamp((now-S.kOut.t)/DEFEAT,0,1);MX.clip.hips.getWorldPosition(_a);const sd=_a.x<0?1:-1;
     camLook.set(_a.x,1.2,_a.z);camPos.set(_a.x+sd*lerp(1.5,1.0,ease(e)),1.25,_a.z-lerp(3.2,2.5,ease(e)));}
-  else if(flight&&flight.thr&&flight.thr.safe&&now>flight.thr.t0+.45&&S.state==='result'){camPos.set(25.4,1.5,-16.2);camLook.set(17.6,1.05,-18.6);} // the race: from foul ground past the bag, the runner coming up the line and the first baseman stretching for the throw
+  else if(flight&&flight.thr&&flight.thr.safe&&now>flight.thr.t0+.45&&S.state==='result'){camPos.set(28.6,1.6,-20.4);camLook.set(20.6,1.05,-20.6);pcutT=now;pcutH.set(19.4,2.9,-19.4);} // the race: from foul ground past the bag, the runner coming up the line and the first baseman stretching for the throw
   else if(S.state==='hbprun'){const R=RUN.list.find(R=>R.active&&R.target===1); // in front of him, up the first-base line, as he comes
     if(R){R.fig.root.getWorldPosition(_a);camPos.set(_a.x+3.9,1.25,_a.z-3.1);camLook.set(_a.x,1.05,_a.z);pcutT=now;pcutH.set(_a.x,2.55,_a.z);}} /* the result call sits above his head, never across him */
   else if(S.state==='qte'){pcutT=now;if(QT.ph==='heads')pcutH.set(QT.rx,2.6,QT.rz);else pcutH.set(QT.mx,2.75,QT.mz); /* calls sit above the players' heads, never across them */
@@ -3837,7 +3858,7 @@ function shTick(){if(!(SHQ&&rim.castShadow))return;const st=S.state,wide=!(st===
 $('shbtn').addEventListener('click',()=>{SHQ=!SHQ;if(SHQ&&!rim.castShadow)rim.castShadow=true;try{localStorage.setItem('mm_shadows',SHQ?'1':'0');}catch(e){}shApply();});
 shApply();
 resize();hud();
-const DBG={dive:'',hbp:false,pcut:false,fl:'',rob:false,pc:false,staunt:false,pod:false,trail:false,orbit:false,sat:false,drill:false,brawl:false,qte:false,mash:false,slide:false,pdef:false,dbl:false,cam:false,admire:'',trip:false,fist:false,pop:false,loser:false}; // test hook: pin the camera to CAM_HOME/CAM_LOOK
+const DBG={dive:'',hbp:false,pcut:false,fl:'',rob:false,pc:false,staunt:false,pod:false,trail:false,orbit:false,sat:false,drill:false,brawl:false,qte:false,mash:false,slide:false,pn:'',pdef:false,dbl:false,cam:false,admire:'',trip:false,fist:false,pop:false,loser:false}; // test hook: pin the camera to CAM_HOME/CAM_LOOK
 window.__mm={crowdFx,setE:v=>{crowdE=v;crowdShow=v;},GLOVE,renderer,scene,LODM,camera,zapStart,acState:()=>AC?(zoneLP?"lp="+Math.round(zoneLP.frequency.value)+" ":"")+AC.state+" t="+AC.currentTime.toFixed(1)+" real="+crowdReal+" roar="+(roarG?roarG.gain.value.toFixed(2)+(roarTop?"T":""):"off")+" bed="+crowdGain.gain.value.toFixed(2):"none",roar,roarOff,boo,cheer,crowdRise,crowdDrop,S,aim,MX,DBG,landRingOn:()=>landRing.visible,hud,tutAnim,draw:()=>draw(),endGame,TROT,SFX,RUN,ballPos:()=>ball.position,ballVisible:()=>ball.visible,fielders,toReady,CAM_HOME,CAM_LOOK,now:()=>now,simulate,judge,get pitch(){return pitch;},get flight(){return flight;},lastSwing:()=>{const t=swing&&swing.type;swing=null;return t;},lastSwingTurbo:()=>!!(swing&&swing.turbo),doSwing,newGame,V3,
   sim:(dt)=>{hitstop=0;now+=dt;step(dt);},
   step:(n,dt=1/60)=>{for(let i=0;i<n;i++){if(hitstop>0)hitstop=0;now+=dt;step(dt);}updateCamera(dt);draw();}};
