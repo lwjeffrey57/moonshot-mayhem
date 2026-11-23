@@ -875,7 +875,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 494</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 495</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <button class="tag wkopt sens" id="sens1" type="button"></button>
@@ -3765,7 +3765,7 @@ function updateClip(dt){
   else if(o.position.y)o.position.y=0;
   if(S.state==='trot'&&TROT.cele&&C.intros[TROT.clip]){const ci=C.intros[TROT.clip],e=now-S.t-TROT.celT; // he has touched home: his celebration, on the plate
     ci.a.time=ci.loop?e%ci.dur:Math.min(ci.dur-.01,Math.max(0,e));ci.a.setEffectiveWeight(1);base=0;}
-  if(flight&&flight.admire&&!flight.done&&C.bi===S.bi){if(flight.cel===undefined){flight.cel=C.intros.c_fist&&(DBG.fist||Math.random()<.4)?'c_fist':flight.admire==='show'&&!flight.trot?celClip(WALK.by[curBatter().name]):''; // a single fist pump straight out of the swing, or his routine
+  if(flight&&flight.admire&&!flight.done&&C.bi===S.bi){if(flight.cel===undefined){flight.cel=C.intros.c_fist&&DBG.fist?'c_fist': /* the fist-pump is no longer used in the box after a no-doubter: he holds the finish and flips the bat */flight.admire==='show'&&!flight.trot?celClip(WALK.by[curBatter().name]):''; // a single fist pump straight out of the swing, or his routine
       if(flight.cel==='c_fist')flight.A=Math.max(flight.A,1.25+C.intros.c_fist.dur+.1);}
     const ci=C.intros[flight.cel],tf=now-flight.t0,k=ci?ease(clamp((tf-1.25)/.3,0,1))*ease(clamp((flight.A+.35-tf)/.3,0,1)):0;
     if(k>0){if(!flight.celP){flight.celP=true;crowdPump(.8);}const e=tf-1.25;ci.a.time=ci.loop&&flight.cel!=='c_fist'?e%ci.dur:Math.min(ci.dur-.01,e);ci.a.setEffectiveWeight(k);base=1-k;if(flight.cel==='c_fist'){o.position.x+=ci.off.x*k;o.position.z+=ci.off.z*k;}}}
