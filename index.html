@@ -146,7 +146,7 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 /* batter card, bottom-left, with the control pills stacked above it */
 #hud>#card{left:max(16px,env(safe-area-inset-left,0px));bottom:12px;margin:0;display:flex;gap:10px;align-items:center;justify-content:flex-start;font-style:normal;text-shadow:none}
 #hud>#card #cnum{font-family:var(--display);font-size:34px;line-height:1;color:var(--volt)}
-#hud>#card #cname{font-family:var(--display);font-size:17px;line-height:1.1;color:var(--chrome);white-space:nowrap}
+#hud>#card #cname{font-family:var(--display);font-size:17px;line-height:1.1;color:#ffe53b;text-shadow:0 2px 0 #000;white-space:nowrap}
 #hud>#card .stats{display:block}
 #hud>#card .stat{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:800;letter-spacing:.1em;color:var(--dim)}
 #hud>#card .stat b{width:64px;height:5px;border:0;background:rgba(242,245,255,.15)}
@@ -354,8 +354,8 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
 #hud.mob .tb.jc.odon{animation:none;box-shadow:0 4px 0 #000,0 0 20px 6px rgba(120,220,255,.95)}
 #opts{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 10px;max-width:min(820px,96vw);pointer-events:none}#opts .wkopt{font-size:clamp(10px,2.6vw,13px);padding:6px 10px}
 /* BADGES: a gold plate drops in under the meters when one is earned; the full case is on the title screen */
-#bdg{position:absolute;left:50%;top:112px;z-index:60;display:flex;align-items:center;gap:10px;padding:9px 22px 9px 12px;pointer-events:none;white-space:nowrap;border-radius:34px;background:linear-gradient(#2a2208,#0e0b02);border:2px solid #ffd23b;box-shadow:0 4px 0 #000,0 0 22px 4px rgba(255,210,59,.55);transform:translate(-50%,-140px);opacity:0;visibility:visible!important}
-#hud.mob #bdg{top:152px;padding:5px 12px 5px 7px;gap:8px}#bdg.go{animation:bdgIn 3.1s cubic-bezier(.2,1.3,.3,1) both}
+#bdg{position:absolute;left:50%;top:136px;z-index:60;display:flex;align-items:center;gap:10px;padding:9px 22px 9px 12px;pointer-events:none;white-space:nowrap;border-radius:34px;background:linear-gradient(#2a2208,#0e0b02);border:2px solid #ffd23b;box-shadow:0 4px 0 #000,0 0 22px 4px rgba(255,210,59,.55);transform:translate(-50%,-140px);opacity:0;visibility:visible!important}
+#hud.mob #bdg{top:172px;padding:5px 12px 5px 7px;gap:8px}#bdg.go{animation:bdgIn 3.1s cubic-bezier(.2,1.3,.3,1) both}
 @keyframes bdgIn{0%{transform:translate(-50%,-140px) scale(.7);opacity:0}9%{transform:translate(-50%,0) scale(calc(var(--bs,1)*1.08));opacity:1}14%{transform:translate(-50%,0) scale(var(--bs,1))}86%{transform:translate(-50%,0) scale(var(--bs,1));opacity:1}100%{transform:translate(-50%,-30px) scale(calc(var(--bs,1)*.96));opacity:0}}
 #bdg{transform-origin:50% 0;white-space:normal}#bdg{--bs:.86}#hud.mob #bdg{--bs:.82}#bdg.lead{--bs:1}#hud.mob #bdg.lead{--bs:.92} /* a touch smaller all round; the one that leads as the call is full size */
 /* EVERY BADGE PLATE IS THE SAME SIZE AND SHAPE, whatever it says, so the eye learns it: "that outline means a badge". A long name takes two lines inside it. */
@@ -839,7 +839,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 451</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 452</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <button class="tag wkopt sens" id="sens1" type="button"></button>
@@ -2829,7 +2829,7 @@ function simulate(p0,v0,spin,opt){spin=spin||{side:0,lift:0};opt=opt||{};const G
     else if(p.y<=0){
       if(!land){land={x:p.x,z:p.z,t};if(Math.abs(p.x)>.216-p.z+LINE_TOL)foul=true;} // fair or foul is settled by where it first lands, measured from the chalked lines
       p.y=0;if(v.y<-1.6){const big=opt.chop&&!nb;nb++;v.y*=big?-.45:-.42;v.x*=big?.84:.8;v.z*=big?.84:.8;
-        if(!big&&!tag&&!foul&&nb<=3&&Math.hypot(v.x,v.z)>8&&Math.random()<.006){const a=(Math.random()<.5?-1:1)*rand(.25,.55),cs=Math.cos(a),sn=Math.sin(a),x=v.x;v.x=x*cs-v.z*sn;v.z=x*sn+v.z*cs;v.y*=1.6;tag='BAD HOP';}} // now and then it takes a wicked hop
+        if(!big&&!tag&&!foul&&nb<=3&&Math.hypot(v.x,v.z)>8&&Math.random()<.011){const a=(Math.random()<.5?-1:1)*rand(.25,.55),cs=Math.cos(a),sn=Math.sin(a),x=v.x;v.x=x*cs-v.z*sn;v.z=x*sn+v.z*cs;v.y*=1.6;tag='BAD HOP';}} // now and then it takes a wicked hop
       else{v.y=0;const h=Math.hypot(v.x,v.z);if(h<.6){pts.push({x:p.x,y:0,z:p.z,t});break;}const k=Math.max(0,h-5.5*dt)/h;v.x*=k;v.z*=k;}
     }
     if(land&&!tag&&!foul&&p.y<.3){for(const B of [[19.4,-19.4],[0,-38.8],[-19.4,-19.4]])if(Math.hypot(p.x-B[0],p.z-B[1])<.36){ // kicks off the bag
@@ -4307,7 +4307,7 @@ function step(dt){
     ball.visible=true;ball.position.set(p.x,p.y,p.z);
     {const q=tr.pts[Math.min(tr.pts.length-1,i+2)],dx=q.x-p.x,dz=q.z-p.z,L=Math.hypot(dx,dz);if(L>1e-4&&flight.spI!==i){const n=i-(flight.spI??i);flight.spI=i;_spin.set(dz/L,.18,-dx/L).normalize();ball.rotateOnWorldAxis(_spin,(p.y<.4?1:-1)*Math.min(n,12)*.26);}} /* a hit ball spins: backspin in the air, tumbling forward along the ground */
     if(flight.orbit){const B=flight.orbP,bez=(u,o)=>{const v=1-u;return o.set(0,0,0).addScaledVector(B[0],v*v*v).addScaledVector(B[1],3*v*v*u).addScaledVector(B[2],3*v*u*u).addScaledVector(B[3],u*u*u);};
-      if(!flight.orb&&tf>=1.1&&!(flight.admire&&tf<flight.A)){flight.orb=now;flight.orbFrom=bez(.22,new V3());flight.play.endT=tf+(flight.rev?REV.cut+REV.dur:flight.sat?4.7:flight.lamp?3.6:3.1);if(flight.rev){}else if(flight.lamp)pop('HEADED FOR THE LIGHTS!','','cool');else if(flight.sat)pop('WAY UP THERE!','','cool');else{badge('earth');pop('LEFT ORBIT!','NEXT STOP: EARTH','cool',true);}SND.boom();SND.zap();buzz([40,40,40,40,120]);}
+      if(!flight.orb&&tf>=1.1&&!(flight.admire&&tf<flight.A)){flight.orb=now;flight.orbFrom=bez(.22,new V3());flight.play.endT=tf+(flight.rev?REV.cut+REV.dur:flight.sat?4.7:flight.lamp?3.6:3.1);if(flight.rev||flight.lamp){}else if(flight.sat)pop('WAY UP THERE!','','cool');else{badge('earth');pop('LEFT ORBIT!','NEXT STOP: EARTH','cool',true);}SND.boom();SND.zap();buzz([40,40,40,40,120]);}
       bez(flight.orb?.22+.78*Math.pow(clamp((now-flight.orb)/(flight.lamp?1.9:3.1),0,1),flight.lamp?1.15:1.5):.22*ease(Math.min(1,tf/1.1)),ball.position);
       if(flight.rev&&flight.orb&&now-flight.orb>=REV.cut)revTick(now-flight.orb-REV.cut);}
     if(flight.dShow){const ft=Math.round(flight.dFt*Math.min(1,Math.hypot(p.x,p.z)/(flight.dEnd||1)));if(ft!==flight.dLast){flight.dLast=ft;$('hds').textContent=ft+' FT';}}
