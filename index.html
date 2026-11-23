@@ -2230,7 +2230,7 @@ function qteKey(d){if(S.state!=='qte'||QT.ph!=='input')return;
   qteShow();}
 function qteDone(ok){QT.ph='out';QT.ok=ok;QT.t1=now;QT.hit=false;qteSeen=true;try{localStorage.setItem('mm_qte','1');}catch(e){}
   $('hud').classList.remove('qon','qm');setTimeout(()=>{$('qte').hidden=true;},ok?350:120);
-  if(ok){QT.b={n:'q_flykick',t:now};SND.zap();buzz([20,30,60]);}else{QT.b={n:'run',t:now,loop:true};QT.f={n:'b_jab',t:now+.12};tone('sawtooth',140,70,.25,.35);}}
+  if(ok){const sl=MX.clip.intros.q_slide&&(DBG.slide||Math.random()<.6);QT.b={n:sl?'q_slide':'q_flykick',t:now};SND.zap();buzz([20,30,60]);if(sl)noise(.5,'bandpass',900,300,.35,.7,.15);} /* more often than not he goes in feet first, cleats up; otherwise the flying kick. Either way the fielder is sent flying */ else{QT.b={n:'run',t:now,loop:true};QT.f={n:'b_jab',t:now+.12};tone('sawtooth',140,70,.25,.35);}}
 function qteTick(){const Q=QT,d0=9.5,d1=2.6,pe=now-Q.tp;
   if(Q.ph==='run'||Q.ph==='input'||(Q.ph==='out'&&!Q.hit)){const k=Q.ph==='run'?clamp(pe/Q.runT,0,1)*.84:Q.ph==='input'?.84:Math.min(1,.84+.16*(now-Q.t1)/.4),gx=Q.fx+Q.nx*.25,gz=Q.fz+Q.nz*.25; // the throw is on its way the whole time
     ball.visible=true;ball.scale.setScalar(1.5);ball.position.set(lerp(gx-Q.ux*11+Q.nx*1.5,gx,k),lerp(2.7,1.25,k)+Math.sin(k*PI)*.5,lerp(gz-Q.uz*11+Q.nz*1.5,gz,k));}
@@ -2990,7 +2990,7 @@ function setupClip(obj,clip,B,sk){
   // intros stay in the batter's box: work out how far each clip sits (or finishes) from where he stands in his stance
   const hipsAt=(c,ts)=>{const v=new V3(),sum=new V3();probe(c,at=>ts.forEach(t=>{at(t);C.hips.getWorldPosition(v);sum.add(v);}));return sum.multiplyScalar(1/ts.length);},home=hipsAt(ic||clip,[0]);
   C.intros={};obj.animations.filter(c=>/^[wdcbq]_/.test(c.name)||c.name==='run'||/^p_(loser|twerk|chicken|runman|fist|clap|threat|dying)$/.test(c.name)).forEach(c=>{keep(c);
-    if(c.name==='q_flykick'||c.name==='run'){const ht=c.tracks.find(t=>/Hips\.position$/.test(t.name));if(ht){const v=ht.values;for(let k=3;k<v.length;k+=3){v[k]=v[0];v[k+2]=v[2];}}} /* these two play on the spot: the game moves him, so the kick lands him on the bag instead of carrying him past it */
+    if(c.name==='q_flykick'||c.name==='q_slide'||c.name==='run'){const ht=c.tracks.find(t=>/Hips\.position$/.test(t.name));if(ht){const v=ht.values;for(let k=3;k<v.length;k+=3){v[k]=v[0];v[k+2]=v[2];}}} /* these two play on the spot: the game moves him, so the kick lands him on the bag instead of carrying him past it */
     const loop=c.duration<2.5,ref=hipsAt(c,loop?[0,1,2,3,4,5,6,7].map(k=>k/8*c.duration):[c.duration-.02]);
     const a=mixer.clipAction(c);a.play();a.setEffectiveWeight(0);C.intros[c.name]={a,dur:c.duration,loop,off:{x:home.x-ref.x,z:home.z-ref.z},loc:{x:-(ref.x-obj.position.x),z:-(ref.z-obj.position.z)}};}); // loc: where the routine sits relative to the model's own origin
 }
@@ -3838,7 +3838,7 @@ function shTick(){if(!(SHQ&&rim.castShadow))return;const st=S.state,wide=!(st===
 $('shbtn').addEventListener('click',()=>{SHQ=!SHQ;if(SHQ&&!rim.castShadow)rim.castShadow=true;try{localStorage.setItem('mm_shadows',SHQ?'1':'0');}catch(e){}shApply();});
 shApply();
 resize();hud();
-const DBG={dive:'',hbp:false,pcut:false,fl:'',rob:false,pc:false,staunt:false,pod:false,trail:false,orbit:false,sat:false,drill:false,brawl:false,qte:false,mash:false,pdef:false,dbl:false,cam:false,admire:'',trip:false,fist:false,pop:false,loser:false}; // test hook: pin the camera to CAM_HOME/CAM_LOOK
+const DBG={dive:'',hbp:false,pcut:false,fl:'',rob:false,pc:false,staunt:false,pod:false,trail:false,orbit:false,sat:false,drill:false,brawl:false,qte:false,mash:false,slide:false,pdef:false,dbl:false,cam:false,admire:'',trip:false,fist:false,pop:false,loser:false}; // test hook: pin the camera to CAM_HOME/CAM_LOOK
 window.__mm={crowdFx,setE:v=>{crowdE=v;crowdShow=v;},GLOVE,renderer,scene,LODM,camera,zapStart,acState:()=>AC?(zoneLP?"lp="+Math.round(zoneLP.frequency.value)+" ":"")+AC.state+" t="+AC.currentTime.toFixed(1)+" real="+crowdReal+" roar="+(roarG?roarG.gain.value.toFixed(2)+(roarTop?"T":""):"off")+" bed="+crowdGain.gain.value.toFixed(2):"none",roar,roarOff,boo,cheer,crowdRise,crowdDrop,S,aim,MX,DBG,landRingOn:()=>landRing.visible,hud,tutAnim,draw:()=>draw(),endGame,TROT,SFX,RUN,ballPos:()=>ball.position,ballVisible:()=>ball.visible,fielders,toReady,CAM_HOME,CAM_LOOK,now:()=>now,simulate,judge,get pitch(){return pitch;},get flight(){return flight;},lastSwing:()=>{const t=swing&&swing.type;swing=null;return t;},lastSwingTurbo:()=>!!(swing&&swing.turbo),doSwing,newGame,V3,
   sim:(dt)=>{hitstop=0;now+=dt;step(dt);},
   step:(n,dt=1/60)=>{for(let i=0;i<n;i++){if(hitstop>0)hitstop=0;now+=dt;step(dt);}updateCamera(dt);draw();}};
