@@ -2527,7 +2527,7 @@ function gameRating(){const G=S.goal,pts=S.runs*10+S.hits*4+S.hrs*8+(S.longest>=
   const T=[[0,'D','BENCH WARMER'],[20,'C','ROOKIE'],[45,'B','EVERYDAY STARTER'],[75,'A','ALL-STAR'],[110,'S','MOONSHOT LEGEND']];let i=0;T.forEach((t,j)=>{if(pts>=t[0])i=j;});
   return {pts,stars:i+1,grade:T[i][1],title:T[i][2],next:T[i+1]?T[i+1][0]-pts:0,nextTitle:T[i+1]?T[i+1][2]:''};}
 function newGame(){LINEUP.forEach(b=>{if(b.base)Object.assign(b,b.base);b.hb=0;}); /* stat changes from getting hit last only for the game */gamesPlayed++;try{localStorage.setItem('mm_games',gamesPlayed);}catch(e){}
-  Object.assign(S,{inning:1,outs:0,balls:0,strikes:0,runs:0,bases:[0,0,0],hits:0,hrs:0,longest:0,streak:0,bestStreak:0,juice:.5,heat:.2,over:false,stk:false,opp:0,bi:-1,pitches:0,seen:{},kOut:null});S.podN=0;S.podBi=-9;S.goal=null; /* per-game goals are switched off for now: pickGoal() is still here to bring them back */S.ks=0;S.d2=0;S.cardBi=-1;S.pChanges=0;S.pRuns0=0;S.pc3=false;S.pcPending=false;S.pStart=gamesPlayed%BULLPEN.length;S.pName=BULLPEN[S.pStart];setTimeout(pitcherModel,0); /* a different starter each game, so left-handers start some of them */$('pcap').textContent='PITCHER';S.sTaunt=null;S.stLast=false;jPend=false;S.orbN=0;S.odUses=0;S.brawled=false;S.qteN=0;S.goK=null;S.retalBi=-9;S.forceHbpBi=-9;S.walkoff=false;S.duel=false;$('hud').classList.remove('duel');S.pdLast=false;S.pOver=false;S.podPending=false;S.jSaid=false;S.overOn=false;S.spSeen=false;lastWalk='';
+  Object.assign(S,{inning:1,outs:0,balls:0,strikes:0,runs:0,bases:[0,0,0],hits:0,hrs:0,longest:0,streak:0,bestStreak:0,juice:odEver?.5:1 /* until a player has switched Overdrive on once, every game opens with it charged and waiting */,heat:.2,over:false,stk:false,opp:0,bi:-1,pitches:0,seen:{},kOut:null});S.podN=0;S.podBi=-9;S.goal=null; /* per-game goals are switched off for now: pickGoal() is still here to bring them back */S.ks=0;S.d2=0;S.cardBi=-1;S.pChanges=0;S.pRuns0=0;S.pc3=false;S.pcPending=false;S.pStart=gamesPlayed%BULLPEN.length;S.pName=BULLPEN[S.pStart];setTimeout(pitcherModel,0); /* a different starter each game, so left-handers start some of them */$('pcap').textContent='PITCHER';S.sTaunt=null;S.stLast=false;jPend=false;S.orbN=0;S.odUses=0;S.brawled=false;S.qteN=0;S.goK=null;S.retalBi=-9;S.forceHbpBi=-9;S.walkoff=false;S.duel=false;$('hud').classList.remove('duel');S.pdLast=false;S.pOver=false;S.podPending=false;S.jSaid=false;S.overOn=false;S.spSeen=false;lastWalk='';
   $('title').hidden=true;$('over').hidden=true;$('pausebtn').hidden=false;$('mutebtn').hidden=false;setBatter();renderRep();scoreboard('PLAY BALL','INNING 1');S.opp=0;toReady(2);pop('PLAY BALL!','','logo');hud();SND.playball();cheer(.14,1.5);}
 
 // ───────────────────────── pitching
@@ -3002,6 +3002,7 @@ function revTick(e){if(!REV.g)revBuild();const u=clamp(e/REV.dur,0,1),th=(PI*2+.
   const P=REV.trail.geometry.attributes.position,Cc=REV.trail.geometry.attributes.color,N=REV.N,span=Math.min(th,2.4);for(let i=0;i<N;i++){const k=i/(N-1);revAt(th-span*(1-k),_a);P.setXYZ(i,_a.x,_a.y,_a.z);const f=k*k;Cc.setXYZ(i,.25*f,.6*f,1*f);}P.needsUpdate=true;Cc.needsUpdate=true;{const H=REV.head.geometry.attributes.position;revAt(th,_a);H.setXYZ(0,_a.x,_a.y,_a.z);H.needsUpdate=true;}
   REV.halo.scale.setScalar(1+.25*Math.sin(now*9));}
 function revOff(){if(REV.g)REV.g.visible=false;$('hud').classList.remove('rv');}
+let odEver=false;try{odEver=localStorage.getItem('mm_od')==='1';}catch(e){}
 let orbSeen=false;try{orbSeen=localStorage.getItem('mm_orbit')==='1';}catch(e){} // the very first Overdrive homer a player ever hits always leaves orbit; after that it is about one in three
 const D2={clip:'',dur:2.9,base:2},PDEF=2.0,ORB_TO=new V3(94,462,-858);
 function endGame(){
@@ -3018,7 +3019,7 @@ function endGame(){
 // The JUICE button. With Overdrive charged it is the OVERDRIVE button: one tap switches Overdrive on for this at-bat.
 let jTapT=0;
 function juiceTap(){const t=performance.now();if(t-jTapT<250)return;jTapT=t; // one press, one toggle, even if the browser reports the touch twice
-  if(S.over){if(!S.overOn){S.overOn=true;SND.zap();buzz([20,30,60]);
+  if(S.over){if(!S.overOn){S.overOn=true;if(!odEver){odEver=true;try{localStorage.setItem('mm_od','1');}catch(e){}}SND.zap();buzz([20,30,60]);
     S.odUses=(S.odUses||0)+1;
     if(S.odUses===1&&!pOD()){S.pOver=false;S.podPending=false;}                         // the first Overdrive of a game is always yours alone: he can't answer it, and if he was in his own he backs off
     else if(!S.pOver&&S.heat>=.33&&podOK())S.pOver=true;   // after that, the pitcher answers
