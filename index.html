@@ -878,7 +878,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 508</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 510</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <button class="tag wkopt sens" id="sens1" type="button"></button>
@@ -1434,11 +1434,21 @@ gl_FragColor=vec4(col,1.0);
     EYE.mat=basic({map:sol});scene.add(new T.Mesh(ribbon(a,b,.03),EYE.mat));} // the batter's eye is a dark solar array: still a clean backdrop to pick the ball up against
   // beyond the park: the lunar surface, crater-rim ridges on the horizon, and a small moon base with a rocket on the pad
   {const fb=x=>Math.sin(x*1.7)*.5+Math.sin(x*4.3+1.3)*.27+Math.sin(x*9.1+.4)*.14+Math.sin(x*19.7+2.2)*.09;
-    const rock=tex(256,128,(g,w,h)=>{const gr=g.createLinearGradient(0,0,0,h);gr.addColorStop(0,'#d9d9de');gr.addColorStop(.35,'#9a9aa2');gr.addColorStop(1,'#3c3c44');g.fillStyle=gr;g.fillRect(0,0,w,h);
-      for(let i=0;i<500;i++){g.fillStyle=`rgba(${Math.random()<.5?'0,0,0':'255,255,255'},${rand(.03,.12)})`;g.fillRect(rand(0,w),rand(0,h),rand(2,14),rand(1,4));}},[1,1]);
-    [[640,120,235,1,0x7c7c86],[420,70,190,2.3,0xffffff]].forEach(([R0,h0,h1,ph,tint])=>{const A=[],B=[];
+    // PAINTED LIGHT ON THE RANGES (PS2 style: all in the texture, nothing computed per frame). Hard low sunlight from the left: every spur has a
+    // bright sunlit face and a black shadowed one (no air on the Moon, so shadows are ink), a thin white rim along the crest, scree and
+    // craters lower down, and at the foot a faint warm wash where the ballpark's floodlights reach.
+    const rock=tex(1024,256,(g,w,h)=>{const gr=g.createLinearGradient(0,0,0,h);gr.addColorStop(0,'#b9b9c2');gr.addColorStop(.45,'#84848e');gr.addColorStop(1,'#4a4a54');g.fillStyle=gr;g.fillRect(0,0,w,h);
+      let x=0,k=0;const spur=(x0,wd,lit)=>{for(const off of [-w,0,w]){const a=x0+off;g.beginPath();g.moveTo(a,0);g.lineTo(a+wd*.55,0);g.lineTo(a+wd+rand(8,30),h);g.lineTo(a-rand(10,36),h);g.closePath();
+          const sg=g.createLinearGradient(0,0,0,h);if(lit){sg.addColorStop(0,'rgba(255,250,236,.95)');sg.addColorStop(.5,'rgba(226,222,214,.6)');sg.addColorStop(1,'rgba(170,168,170,.15)');}else{sg.addColorStop(0,'rgba(6,7,16,.92)');sg.addColorStop(.6,'rgba(10,11,22,.72)');sg.addColorStop(1,'rgba(14,15,26,.3)');}g.fillStyle=sg;g.fill();}};
+      while(x<w){const wd=rand(26,74);spur(x,wd,k++%2===0);x+=wd*rand(.75,1.05);}
+      for(let i=0;i<70;i++){const sx=rand(0,w),sy=rand(h*.15,h*.8),sw=rand(10,40);g.fillStyle='rgba(4,5,14,.45)';g.beginPath();g.moveTo(sx,sy);g.lineTo(sx+sw,sy+rand(4,12));g.lineTo(sx+sw*.4,sy+rand(18,46));g.closePath();g.fill();g.strokeStyle='rgba(255,252,240,.5)';g.lineWidth=1.5;g.beginPath();g.moveTo(sx,sy);g.lineTo(sx-sw*.5,sy+rand(14,36));g.stroke();} // gullies: a shadowed cut with a lit edge
+      for(let i=0;i<900;i++){g.fillStyle=`rgba(${Math.random()<.5?'0,0,0':'255,255,255'},${rand(.03,.1)})`;g.fillRect(rand(0,w),rand(0,h),rand(2,10),rand(1,3));}
+      for(let i=0;i<16;i++){const cx=rand(0,w),cy=rand(h*.55,h*.95),r=rand(6,20);g.fillStyle='rgba(8,9,18,.5)';g.beginPath();g.ellipse(cx,cy,r,r*.45,0,0,PI*2);g.fill();g.strokeStyle='rgba(245,242,232,.55)';g.lineWidth=1.4;g.beginPath();g.ellipse(cx,cy+1,r,r*.45,0,.2,PI-.2);g.stroke();}
+      g.fillStyle='rgba(255,255,255,.9)';g.fillRect(0,0,w,3);const rm=g.createLinearGradient(0,0,0,26);rm.addColorStop(0,'rgba(255,255,255,.5)');rm.addColorStop(1,'rgba(255,255,255,0)');g.fillStyle=rm;g.fillRect(0,0,w,26); // the crest catches the sun
+      const ft=g.createLinearGradient(0,h*.62,0,h);ft.addColorStop(0,'rgba(255,196,120,0)');ft.addColorStop(1,'rgba(255,196,120,.3)');g.fillStyle=ft;g.fillRect(0,h*.62,w,h*.38);},[1,1]);rock.anisotropy=ANISO;
+    [[640,120,235,1,0x8a8a96],[420,70,190,2.3,0xffffff]].forEach(([R0,h0,h1,ph,tint])=>{const A=[],B=[];
       for(let i=0;i<=180;i++){const an=i/180*PI*2,n=fb(an*3+ph),r=R0+n*40;A.push(new V3(r*Math.sin(an),-3,-r*Math.cos(an)));B.push(new V3(r*Math.sin(an),h0+(h1-h0)*clamp(.5+n*.9+.25*Math.sin(an*23+ph),0,1),-r*Math.cos(an)));}
-      scene.add(new T.Mesh(ribbon(B,A,.004),new T.MeshBasicMaterial({map:rock,color:tint,side:T.DoubleSide,fog:false})));});
+      scene.add(new T.Mesh(ribbon(B,A,.0016),new T.MeshBasicMaterial({map:rock,color:tint,side:T.DoubleSide,fog:false})));});
     const reg=tex(512,512,(g,w,h)=>{g.fillStyle='#77777e';g.fillRect(0,0,w,h);for(let i=0;i<5000;i++){g.fillStyle=`rgba(${Math.random()<.5?'0,0,0':'255,255,255'},${rand(.02,.09)})`;g.fillRect(rand(0,w),rand(0,h),rand(1,5),rand(1,5));}
       for(let i=0;i<34;i++){const x=rand(20,w-20),y=rand(20,h-20),r=rand(5,26);g.fillStyle='rgba(20,20,26,.35)';g.beginPath();g.ellipse(x,y,r,r*.6,0,0,PI*2);g.fill();g.strokeStyle='rgba(235,235,240,.5)';g.lineWidth=1.6;g.beginPath();g.ellipse(x,y+1,r,r*.6,0,.1,PI-.1);g.stroke();}},[9,9]);
     const gnd=new T.Mesh(new T.CircleGeometry(1150,48),new T.MeshBasicMaterial({map:reg,fog:false}));gnd.rotation.x=-PI/2;gnd.position.y=-.9;scene.add(gnd);
@@ -3178,8 +3188,9 @@ function tryContact(){flight_pop=false;if(pitch.hbp){swing.done=true;swing.miss=
       // picture of it: the ball against the barrel, red dot = the sweet spot
       const bx=clamp((aim.x-pitch.tx)/R,-1.4,1.4)*13,by=clamp((aim.y-pitch.ty)/R,-1.4,1.4)*13,cy=23-by;$('hbat').setAttribute('y',cy-5);$('hdot').setAttribute('cy',cy);$('hdot').setAttribute('cx',86+bx);$('hbat').setAttribute('x',20+bx);}
     $('hitinfo').hidden=false;}
-  timing(Math.abs(n)<.22&&cr<.3&&chase<=.3?'PERFECT!':chase>.3?'CHASED!':lab+' · '+where, // PERFECT is reserved for on time AND squared up
-    chase>.3?'#ff4d2e':Math.abs(n)<.22&&cr<.3?'#ffe53b':flight.lvl===1?'#9aa3c7':'#f2f5ff',flight.lvl); // timing, then where the barrel met it
+  const tom=pitch.ty>=ZONE.y1-.2&&la<15&&la>-6&&v>=44&&play.type!=='foul'; /* a high pitch hammered down on a line with topspin: TOMAHAWKED! */
+  timing(tom?'TOMAHAWKED!':Math.abs(n)<.22&&cr<.3&&chase<=.3?'PERFECT!':chase>.3?'CHASED!':lab+' · '+where, // PERFECT is reserved for on time AND squared up
+    tom?'#ff8a2e':chase>.3?'#ff4d2e':Math.abs(n)<.22&&cr<.3?'#ffe53b':flight.lvl===1?'#9aa3c7':'#f2f5ff',flight.lvl); // timing, then where the barrel met it
   // No-doubters: sometimes stay on the hitter instead of the ball. 'admire' = he holds his finish, watches it and drops the bat;
   // 'show' = the same, then his own walk-up routine as a celebration. Decided here because we already know where the ball lands.
   {const la0=Math.atan2(v0.y,Math.hypot(v0.x,v0.z))/DEG;if(la0<14&&play.type!=='hr'&&play.type!=='foul'){$('tbar').classList.add('qk');$('tim').classList.add('qk');}}
@@ -3369,7 +3380,7 @@ let odBag=[],odLastK='';function odPick(){if(!odBag.length){odBag=['rev','lamp',
   let r=Math.random()*c.reduce((a,k)=>a+W[k],0),k=c[0];for(const q of c){r-=W[q];if(r<=0){k=q;break;}}odBag.splice(odBag.indexOf(k),1);odLastK=k;return k;}
 // BADGES. Earned once, kept on the device. Each has a name (ballplayer talk), what it takes, and an icon. badge(id) is called from wherever the feat happens.
 const BADGES=[['hit','KNOCK','Get your first hit','🧢'],['hr','WENT YARD','Hit your first home run','💥'],['hr450','TAPE MEASURE','Hit one 450 feet or more','📏'],['hr500','5 HUNNID','Hit one 500 feet or more','🚀'],
-  ['odhr','OVERDRIVEN','Homer in Overdrive','🔥'],['juicehr','GOT HEEEM!','Homer off a Juice pitch','😂'],['duel','BEAT THE HEAT','Homer while the pitcher is in Overdrive','🥵'],['charge','BRAWLER','Charge the mound','😤'],['showboat','SHOWBOAT','Admire one and flip the bat','🕺'],['aura','MAX AURA','Take a pitcher deep while he is in Overdrive','✨'],['ambush','AMBUSH','Homer on the first pitch','⚡'],
+  ['odhr','PRIME TIME','Homer in Overdrive','🔥'],['juicehr','GOT HEEEM!','Homer off a Juice pitch','😂'],['duel','BEAT THE HEAT','Homer while the pitcher is in Overdrive','🥵'],['charge','BRAWLER','Charge the mound','😤'],['showboat','SHOWBOAT','Admire one and flip the bat','🕺'],['aura','MAX AURA','Take a pitcher deep while he is in Overdrive','✨'],['ambush','AMBUSH','Homer on the first pitch','⚡'],
   ['slam','GRAND SALAMI','Hit a grand slam','🍖'],['b2b','BACK TO BACK','Homers in consecutive at-bats','👯'],['five','DERBY NIGHT','Five homers in one game','🎆'],['heater','ON A HEATER','Five hits in a row','♨️'],
   ['rev','IN ORBIT','Put one into orbit round the Moon','🌕'],['earth','NEXT STOP: EARTH','Hit one clean off the Moon','🌍'],['sat','SPACE JUNK','Take out the satellite','🛰️'],['lamp','LIGHTS OUT','Smash a light tower','💡'],['pole','DOINK!','Homer off the foul pole','🔔'],['board','OFF THE SCOREBOARD','Homer off the scoreboard','📺'],['eye','OFF THE BATTER\'S EYE','Homer off the batter\'s eye','👁️'],
   ['send','WHEELS','Win a showdown at the bag','👟'],['jump','PERFECT JUMP','Stop the needle on gold','🥇'],['brawl','LAST MAN STANDING','Win a brawl','🥊'],['wore','WORE IT','Get hit by a pitch','🩹'],
