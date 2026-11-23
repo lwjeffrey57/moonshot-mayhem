@@ -1480,7 +1480,7 @@ const ballTex=tex(256,128,(g,w,h)=>{g.fillStyle='#f6f3e8';g.fillRect(0,0,w,h);
   g.strokeStyle='#c8281e';g.lineWidth=5;g.beginPath();for(let x=0;x<=w;x+=2){x?g.lineTo(x,Y(x)):g.moveTo(x,Y(x));}g.stroke();
   g.lineWidth=2.2;for(let x=0;x<w;x+=7){const y=Y(x),dy=Y(x+1)-y,L=Math.hypot(1,dy),nx=-dy/L,ny=1/L;g.beginPath();g.moveTo(x-nx*7,y-ny*7);g.lineTo(x+nx*7,y+ny*7);g.stroke();}});
 ballTex.anisotropy=ANISO;
-const ball=new T.Mesh(new T.SphereGeometry(.05,16,12),new T.MeshBasicMaterial({color:0xffffff,map:ballTex,transparent:true}));ball.renderOrder=20;ball.visible=false;{const bg=new T.Group();bg.renderOrder=20;bg.add(ball);scene.add(bg);} // in its own late-drawn group, so it is painted on top of the zone backing and the ring fills instead of being tinted by them
+const ball=new T.Mesh(new T.SphereGeometry(.05,16,12),new T.MeshBasicMaterial({color:0xffffff,map:ballTex,transparent:true}));ball.renderOrder=20;ball.visible=false;const decoy=new T.Mesh(ball.geometry,ball.material.clone());decoy.renderOrder=20;decoy.visible=false;{const bg=new T.Group();bg.renderOrder=20;bg.add(ball);bg.add(decoy);scene.add(bg);} // in its own late-drawn group, so it is painted on top of the zone backing and the ring fills instead of being tinted by them
 const SPIN={FASTBALL:[1,0,0,34],CURVEBALL:[-1,0,0,30],SLIDER:[.3,.25,.92,38],CHANGEUP:[.85,.5,.1,17],SCREWBALL:[-.5,.6,.6,26]},_spin=new V3();
 const ballShadow=new T.Mesh(GEO.blob,blobMat.clone());ballShadow.rotation.x=-PI/2;ballShadow.visible=false;scene.add(ballShadow);
 const ballGlow=new T.Sprite(new T.SpriteMaterial({map:glowTex,color:0xffe53b,blending:T.AdditiveBlending,depthWrite:false,transparent:true,opacity:0}));scene.add(ballGlow);
@@ -2129,7 +2129,7 @@ function updateThrow(){
     if(Th.safe){const r=flight.raceR||0;pop('SAFE!',[r?`+${r} RUN${r>1?'S':''}`:'','BEAT THE THROW'].filter(Boolean).join(' · '),'',true);buzz([30,40,70]);roar(1,.15);sfxSlice('cheer_big',.8,rand(1,1.08),rand(0,.25),2.8);if(AC)cheerBusy=AC.currentTime+2.4;}}}
 }
 function toReady(d){if(S.walkoff&&S.state!=='end'&&S.state!=='over'){S.walkoff=false;roarOff(4);S.state='end';S.t=now;readyDur=1.6;hud();return;} // nobody else needs to bat: that was the ballgame
-  roarOff();showCard();$('hitinfo').hidden=true;S.state='ready';S.t=now;aim.x=0;aim.y=.825; /* ring back to the middle of the zone before every pitch */if(d)readyDur=d;swing=null;pitch=null;flight=null;ball.visible=false;ballShadow.visible=false;pring.visible=false;ballGlow.material.opacity=0;
+  roarOff();showCard();$('hitinfo').hidden=true;S.state='ready';S.t=now;aim.x=0;aim.y=.825; /* ring back to the middle of the zone before every pitch */if(d)readyDur=d;swing=null;pitch=null;flight=null;decoy.visible=false;ball.visible=false;ballShadow.visible=false;pring.visible=false;ballGlow.material.opacity=0;
   fielders.forEach(f=>{if(!f.isP){f.fig.root.position.copy(f.home);f.fig.root.rotation.y=Math.atan2(-f.home.x,-f.home.z);}f.run=null;});
   camMode='bat';hud();syncRunners();
   if(S.pcPending){S.pcPending=false;S.state='pchange';S.t=now; // the scene: the man who got knocked out trudges off, then a cut to the mound for the new arm, then the hitter comes up as usual
@@ -2225,7 +2225,7 @@ function qteStart(kind,noPA){QT.noPA=!!noPA;goHide();const M=QTE_MOVES[kind],Bp=
   ball.visible=false;ballShadow.visible=false;pop(M.call,'','hot');buzz([30,30,60]);crowdRise(.8,3,true);hud();}
 function qteShow(){if(!MOB&&!QT.fk){QT.fk=1;grabKeys();}const M=QT.M,e=$('qte');$('qtt').textContent=M.name;
   if(QT.mash){if(!$('qmf')){$('qtr').innerHTML='<div id="qmw"><em id="qmf"></em><span>'+(MOB?'TAP! TAP! TAP!':'MASH SPACE!')+'</span></div>';}$('hud').classList.add('qm');$('qmf').style.transform='scaleX('+Math.min(1,QT.fill).toFixed(3)+')';e.hidden=false;$('hud').classList.add('qon');return;} // the other kind: no code, just hammer the arrows until the bar is full
- {const r=$('qtr');if(r.children.length!==QT.code.length||r.firstChild.tagName!=='I')r.innerHTML=QT.code.map(c=>`<i>${{U:'▲',D:'▼',L:'◀',R:'▶'}[c]}</i>`).join('');for(let i=0;i<QT.code.length;i++){const c=i<QT.i?'ok':i===QT.i?'cur':'';if(r.children[i].className!==c)r.children[i].className=c;}}e.hidden=false;$('hud').classList.add('qon');}
+ {const r=$('qtr');if(r.children.length!==QT.code.length||r.firstChild.tagName!=='I')r.innerHTML=QT.code.map(c=>`<i data-d="${c}">${{U:'⬆️',D:'⬇️',L:'⬅️',R:'➡️'}[c]}</i>`).join('');for(let i=0;i<QT.code.length;i++){const c=i<QT.i?'ok':i===QT.i?'cur':'';if(r.children[i].className!==c)r.children[i].className=c;}}e.hidden=false;$('hud').classList.add('qon');}
 const QPB={};
 function qteKey(d){if(S.state!=='qte'||QT.ph!=='input')return;
   {const b=QPB[d]||(QPB[d]=document.querySelector('#qpad [data-d='+d+']')),good=QT.mash||d===QT.code[QT.i];if(b){b.className=good?'hit':'miss';clearTimeout(b._t);b._t=setTimeout(()=>{b.className='';},150);}}
@@ -2304,6 +2304,15 @@ const PITCHES=[
   {n:'METEOR',dur:.5,brk:[0,.06],arc:.04,k:2,w:0,sp:1,col:[1,.25,.05],tp:'thick'},
   {n:'ZIG-ZAG',dur:.92,brk:[0,-.1],arc:.25,k:2.5,w:0,sp:1,wob:.42,wobF:22,col:[.2,1,.35],tp:'zig'},
   {n:'CORKSCREW',dur:.9,brk:[0,-.1],arc:.25,k:2.5,w:0,sp:1,wob:.36,wobF:20,cork:1,col:[1,.3,.75],tp:'helix'},
+  // More Juice pitches. Each has its own path, its own colour and its own trail shape. Whatever the ball does on the way, it still
+  // arrives at the plate exactly when the timing ring says it will: only the look of the flight is bent, never the timing.
+  {n:'FREEZE FRAME',dur:.9,brk:[0,-.12],arc:.2,k:2.4,w:0,sp:1,warp:u=>u<.38?u*1.16:u<.6?.44:.44+(u-.6)*1.4,col:[.1,.95,.85],tp:'dash'},          // stops dead in mid-air, then goes again
+  {n:'DOUBLE TROUBLE',dur:.8,brk:[0,-.15],arc:.2,k:2.4,w:0,sp:1,split:.3,col:[1,.62,.08],tp:'thin'},                                              // two balls, one real: the fake peels off and fades late
+  {n:'RISER',dur:.62,brk:[0,.9],arc:.02,k:5,w:0,sp:1,col:[.2,.45,1],tp:'wave'},                                                                   // comes in flat, then jumps late
+  {n:'GEAR SHIFT',dur:.92,brk:[.1,-.2],arc:.22,k:2.4,w:0,sp:1,warp:u=>u<.55?u*.62:.341+(u-.55)*1.4644,col:[.72,1,.1],tp:'zig'},                   // floats, then finds another gear
+  {n:'BOOMERANG',dur:.95,brk:[0,-.15],arc:.22,k:2.4,w:0,sp:1,boom:.95,col:[1,.1,.3],tp:'helix'},                                                   // swings way out wide and comes back
+  {n:'KNUCKLER',dur:.98,brk:[0,-.3],arc:.3,k:2.2,w:0,sp:1,knuck:1,col:[1,1,1],tp:'burst'},                                                         // no spin, dances all the way in
+  {n:'SKY DROP',dur:1.08,brk:[0,-.2],arc:1.75,k:3,w:0,sp:1,col:[1,.95,.1],tp:'thick'},                                                             // a towering lob that falls out of the sky
   // thrown only while the pitcher is in Overdrive
   {n:'SUPERNOVA',dur:.44,brk:[0,.1],arc:.03,k:2,w:0,sp:1,od:1,col:[1,.95,.55],tp:'burst'},                          // the fastest thing he has
   {n:'GHOST BALL',dur:.82,brk:[.1,-.3],arc:.22,k:2.4,w:0,sp:1,od:1,ghost:1,col:[.45,.9,1],tp:'dash'},              // vanishes in mid-flight and reappears late
@@ -2349,11 +2358,16 @@ function choosePitch(){
     inZone:tx>=ZONE.x0&&tx<=ZONE.x1&&ty>=ZONE.y0&&ty<=ZONE.y1};
 }
 function pitchPos(pt,u,out){
+  const P=pt.P;if(P.warp&&u<1)u=clamp(P.warp(u),0,1); // a stop, or a change of speed, in the look of the flight only
   const k=pt.P.k||2.5,e=Math.pow(Math.min(u,1),k)+Math.max(0,u-1)*k;
   out.x=lerp(pt.rel.x,pt.tx-pt.brk.x,u)+pt.brk.x*e;
   out.y=lerp(pt.rel.y,pt.ty-pt.brk.y,u)+pt.brk.y*e+pt.arc*4*u*(1-u);
   out.z=u<=1?lerp(pt.rel.z,0,u):-pt.rel.z*(u-1)*.28; // past the plate the ball is drawn barely moving on (about a foot, not four): a swing that is late but still inside the timing window meets it at the plate, never visibly behind it. Timing itself is untouched.
   if(pt.P.wob&&u<1){const k=(1-u)*Math.min(1,u*4);out.x+=Math.sin(u*pt.P.wobF)*pt.P.wob*k;if(pt.P.cork)out.y+=Math.cos(u*pt.P.wobF)*pt.P.wob*k;}
+  if(u<1&&(P.boom||P.split||P.knuck)){if(pt.sd===undefined){pt.sd=Math.random()<.5?-1:1;pt.ph=[rand(0,6.3),rand(0,6.3),rand(0,6.3)];}
+    if(P.boom)out.x+=Math.sin(PI*u)*P.boom*pt.sd;
+    if(P.split)out.x+=Math.sin(PI*Math.min(1,u*1.15))*P.split*pt.sd*(pt.decoy?-1:1);
+    if(P.knuck){const kk=(1-u)*Math.min(1,u*5);out.x+=(Math.sin(u*33+pt.ph[0])*.05+Math.sin(u*19+pt.ph[1])*.08)*kk;out.y+=Math.sin(u*27+pt.ph[2])*.06*kk;}}
   return out;
 }
 
@@ -2546,7 +2560,7 @@ function tryContact(){flight_pop=false;if(pitch.hbp){swing.done=true;swing.miss=
     const hd=Math.hypot(v0.x,v0.z)||1,dx=v0.x/hd,dz=v0.z/hd;flight.orbP=[p0.clone(),new V3(p0.x+dx*46,p0.y+15,p0.z+dz*46),new V3(p0.x+dx*135,96,p0.z+dz*135),ORB_TO.clone()];
     // ...or it never gets as far as Earth: there is a satellite in the way
     if(sat){flight.sat=true;const T0=new V3(p0.x+dx*430,500,p0.z+dz*430);flight.orbP[2].set(p0.x+dx*190,250,p0.z+dz*190);flight.orbP[3]=T0;satPlace(T0,Math.atan2(dx,dz));}}
-  pitch.hit=true;pring.visible=false;S.state='flight';payHeat();$('mph').textContent=pitchMph(pitch.dur);$('plast').textContent=pitch.P.n+' · '+pitchMph(pitch.dur)+' MPH';$('pitchinfo').classList.add('on'),$('plast').classList.add('on');renderRep(pitch.P);
+  pitch.hit=true;pring.visible=false;decoy.visible=false;S.state='flight';payHeat();$('mph').textContent=pitchMph(pitch.dur);$('plast').textContent=pitch.P.n+' · '+pitchMph(pitch.dur)+' MPH';$('pitchinfo').classList.add('on'),$('plast').classList.add('on');renderRep(pitch.P);
   if(tb)juiceArmed=false;
   // ── the payoff
   hitstop=(.045+.14*q*(pw?1:.6)+(tb?.06:0))*(REDUCE?.5:1);
@@ -3602,6 +3616,8 @@ function trail(o,c,far,hot,pat){
       else if(pat==='helix'){_tp.x+=Math.cos(ph*5)*.09*R;_tp.y+=Math.sin(ph*5)*.09*R;}
       else if(pat==='burst'){_v.set(rand(-1.6,1.6),rand(-1.6,1.6),rand(-.4,.4));}
       else if(pat==='dash'){if(Math.floor(ph*1.6)%2)continue;}
+      else if(pat==='wave'){_tp.y+=Math.sin(ph*4)*.1*R;}
+      else if(pat==='thin'){}
       else if(pat==='double'){const sg=i%2?1:-1;_tp.x+=Math.cos(ph*3.2)*.15*R*sg;_tp.y+=Math.sin(ph*3.2)*.15*R*sg;}
       fx.emit(_tp,_v,rand(.45,.8),c[0]*.85,c[1]*.85,c[2]*.85);if(i%2===0)fx.emit(_tp,_v,rand(.1,.2),Math.min(1,c[0]+.4),Math.min(1,c[1]+.4),Math.min(1,c[2]+.4));continue;}
     if(hot){fx.emit(_tp,_v,rand(.45,.8),c[0],c[1]*.55,c[2]*.4);                               // cooler, longer tail
@@ -3656,6 +3672,7 @@ function step(dt){
     if(show){pring.position.set(pitch.tx,pitch.ty,0);const uT=u+SW_T/pitch.dur, // the ring runs ahead by the swing time, so 'tap when it finishes closing' is exactly on time
       t=(uT-.22)/.78,r=t<=1?lerp(.42,PT_R,clamp(t,0,1)):Math.max(.02,PT_R-(t-1)*.5),hit=Math.abs(r-PT_R)<.012; // closes at a steady speed onto the target, then keeps shrinking: smaller than the ball = late
       pring.scale.setScalar(r);pring.material.color.setHex(hit?0x39ff6a:0xffe53b);ptarget.material.color.setHex(hit?0x39ff6a:0xffffff);ptarget.scale.setScalar(PT_R*(hit?1.3:1));} // flashes white at 'now': red is reserved for the power core
+    if(pitch.P.split){const on=u<.8;decoy.visible=on;if(on){pitch.decoy=true;pitchPos(pitch,u,decoy.position);pitch.decoy=false;decoy.quaternion.copy(ball.quaternion);decoy.material.opacity=u<.62?1:Math.max(0,1-(u-.62)/.18);}}else if(decoy.visible)decoy.visible=false;
     {const gone=pitch.P.ghost&&u>.36&&u<.7;if(pitch.P.ghost&&u<1)ball.visible=!gone;if(pitch.P.col&&u<1&&!gone)trail(pitch,pitch.P.col,u<.75,true,pitch.P.tp);}
     if(S.state==='pitch'&&u>=1&&!pitch.called){pitch.called=true;
       payHeat();$('mph').textContent=pitchMph(pitch.dur);$('plast').textContent=pitch.P.n+' · '+pitchMph(pitch.dur)+' MPH';

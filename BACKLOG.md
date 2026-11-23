@@ -36,7 +36,8 @@ Recordings to find or make (the game currently fakes most of these by reshaping 
 - Challenges.
 
 ## Gameplay
-- **More Juice pitch types.** Today: Meteor, Zig-Zag, Corkscrew, and the Overdrive-only Supernova, Ghost Ball and Black Hole. Each new one
+- **More Juice pitch types.** BUILT: Freeze Frame, Double Trouble, Riser, Gear Shift, Boomerang, Knuckler, Sky Drop (thirteen in all).
+  Still open: a sound for each, tuning how hard each is, checking every trail on a phone. Before: Meteor, Zig-Zag, Corkscrew, and the Overdrive-only Supernova, Ghost Ball and Black Hole. Each new one
   needs its own movement, colour, trail shape and (eventually) sound. Ideas to start from: a pitch that stops dead and restarts, one that
   splits into two balls with only one real, a riser that jumps late, one that changes speed mid-flight, a boomerang that swings wide
   and comes back, a knuckler that jitters, one that drops out of a high lob.
