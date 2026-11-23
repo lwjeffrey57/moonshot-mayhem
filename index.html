@@ -354,7 +354,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
 #hud.mob>#card,#hud.mob.lh>#card{max-width:52vw;padding:7px 9px 8px;overflow:visible}#hud.mob>#card #cname{font-size:clamp(17px,5.2vw,22px)!important}#hud.mob>#card .stat{font-size:10px!important;gap:2px}#hud.mob>#card .stat em{font-size:22px!important}#hud.mob>#card .stats{gap:4px!important}
 /* WHERE IT SITS: just over the head of the infielder on the open side of the plate (second baseman for a right-handed hitter, shortstop for
    a left-handed one), on phones and computers alike: where the eyes already are, and never across the hitter or the strike zone. */
-#hud:not(.mob)>#card,#hud.kr:not(.mob)>#card{left:auto;right:12%;top:auto;bottom:58%;max-width:30vw}#hud.lh:not(.mob)>#card,#hud.kr.lh:not(.mob)>#card{left:12%;right:auto}
+#hud:not(.mob)>#card,#hud.kr:not(.mob)>#card{left:auto;right:5%;top:auto;bottom:54.5%;max-width:24vw} /* right-hander: lower and further right, beside the second baseman, never on him */#hud.lh:not(.mob)>#card,#hud.kr.lh:not(.mob)>#card{left:12%;right:auto;bottom:58%;max-width:30vw}
 #hud.mob>#card,#hud.mob.lh>#card{top:auto!important;bottom:57.5%!important;max-width:calc(50vw - 40px)!important} /* wholly above the pitcher's head, and never wide enough to reach across to him: he stays in the clear */
 #hud.mob>#card #cname{max-width:100%;overflow:hidden!important;text-overflow:ellipsis}#hud.mob>#card{right:max(16px,env(safe-area-inset-right,0px))!important}#hud.mob.lh>#card{left:max(16px,env(safe-area-inset-left,0px))!important;right:auto!important}
 #hud.mob:not(.lh)>#card #cname{font-size:clamp(16px,4.7vw,20px)!important}#hud.mob:not(.lh)>#card .stat em{font-size:21px!important}#hud.mob:not(.lh)>#card .stat{font-size:10px!important}#hud.mob:not(.lh)>#card{padding:5px 8px 6px!important} /* a touch smaller for right-handed hitters */
@@ -875,7 +875,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 496</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 497</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <button class="tag wkopt sens" id="sens1" type="button"></button>
@@ -1650,29 +1650,41 @@ const towerGlows=[],TOWERS=[];
 const sbCanvas=document.createElement('canvas');sbCanvas.width=1024;sbCanvas.height=384;
 const SBX=22;const sbTex=new T.CanvasTexture(sbCanvas),sbMat=new T.MeshBasicMaterial({map:sbTex,fog:false});
 let sbMsgT=0,sbSig='';
-function sbFrame(g){g.setTransform(1,0,0,1,0,0);g.fillStyle='#070916';g.fillRect(0,0,1024,384);
-  g.fillStyle='rgba(58,214,255,.05)';for(let y=0;y<384;y+=6)g.fillRect(0,y,1024,2);
-  g.strokeStyle='#ffe53b';g.lineWidth=8;g.strokeRect(6,6,1012,372);g.textBaseline='middle';}
-function scoreboard(big,small){const g=sbCanvas.getContext('2d');sbFrame(g);sbMsgT=-1;sbSig='';
-  g.textAlign='center';g.fillStyle='#ffb21e';g.font='italic 400 150px "Russo One",Arial Black,Arial';g.fillText(big,512,158,940);
-  g.fillStyle='#3ad6ff';g.font='400 70px "Russo One",Arial Black,Arial';g.fillText(small,512,296,940);sbTex.needsUpdate=true;}
+function sbRR(g,x,y,w,h,r){g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+h,r);g.arcTo(x+w,y+h,x,y+h,r);g.arcTo(x,y+h,x,y,r);g.arcTo(x,y,x+w,y,r);g.closePath();}
+// THE BIG BOARD. A deep-space face with a faint star-burst and scan lines; team slabs in club colours; lit lamps for the count and the outs;
+// the man at the plate with his grades. Messages (HOME RUN and the rest) get their own splash: rays, a metal-gold headline, a glowing strap line.
+function sbFrame(g,hot){g.setTransform(1,0,0,1,0,0);g.shadowBlur=0;g.textBaseline='middle';
+  const bg=g.createRadialGradient(512,200,20,512,200,640);bg.addColorStop(0,hot?'#3a1606':'#141a4a');bg.addColorStop(.6,hot?'#1a0803':'#080b24');bg.addColorStop(1,'#03040d');g.fillStyle=bg;g.fillRect(0,0,1024,384);
+  g.save();g.translate(512,hot?170:192);g.fillStyle=hot?'rgba(255,190,60,.11)':'rgba(90,130,255,.07)';for(let k=0;k<18;k++){g.rotate(Math.PI/9);g.beginPath();g.moveTo(0,0);g.lineTo(-46,-900);g.lineTo(46,-900);g.closePath();g.fill();}g.restore();
+  g.fillStyle='rgba(0,0,0,.2)';for(let y=0;y<384;y+=4)g.fillRect(0,y,1024,1.5);
+  g.strokeStyle=hot?'#ffb21e':'#3ad6ff';g.lineWidth=6;sbRR(g,7,7,1010,370,22);g.stroke();g.strokeStyle='rgba(255,255,255,.25)';g.lineWidth=2;sbRR(g,15,15,994,354,16);g.stroke();}
+function sbText(g,t,x,y,font,fill,maxW,glow){g.font=font;g.lineJoin='round';g.lineWidth=12;g.strokeStyle='#03040d';g.strokeText(t,x,y,maxW);if(glow){g.shadowColor=glow;g.shadowBlur=26;}g.fillStyle=fill;g.fillText(t,x,y,maxW);g.shadowBlur=0;}
+function scoreboard(big,small){const g=sbCanvas.getContext('2d');sbFrame(g,true);sbMsgT=-1;sbSig='';g.textAlign='center';
+  const gold=g.createLinearGradient(0,80,0,235);gold.addColorStop(0,'#fff6c0');gold.addColorStop(.45,'#ffd23b');gold.addColorStop(.55,'#ff9a1e');gold.addColorStop(1,'#ffe07a');
+  sbText(g,big,512,150,'italic 400 156px "Russo One",Arial Black,Arial',gold,930,'#ff8a1e');
+  g.fillStyle='rgba(3,4,13,.75)';sbRR(g,150,250,724,84,16);g.fill();g.strokeStyle='#3ad6ff';g.lineWidth=3;sbRR(g,150,250,724,84,16);g.stroke();
+  sbText(g,small,512,293,'400 62px "Russo One",Arial Black,Arial','#eaffff',690,'#3ad6ff');sbTex.needsUpdate=true;}
 function sbDraw(force){
   if(sbMsgT&&!force)return;
   if(S.state==='title'||S.state==='over'||S.bi<0)return;
   const b=curBatter(),sig=[S.runs,S.opp,S.inning,S.outs,S.balls,S.strikes,b.name].join('|');
   if(sig===sbSig&&!force)return;
-  sbSig=sig;const g=sbCanvas.getContext('2d');sbFrame(g);
-  g.textAlign='left';g.font='italic 400 96px "Russo One",Arial Black,Arial';g.fillStyle='#8fa0c8';g.fillText('KRAKENS',44,92,430);
-  g.fillStyle='#ffb21e';g.fillText('COMETS',44,200,430);
-  g.textAlign='right';g.font='400 110px "Russo One",Arial Black,Arial';g.fillStyle='#8fa0c8';g.fillText(String(S.opp||0),620,92);g.fillStyle='#fff';g.fillText(String(S.runs),620,200);
-  g.fillStyle='#22284a';g.fillRect(660,34,4,220);
-  g.textAlign='center';g.fillStyle='#3ad6ff';g.font='400 44px "Russo One",Arial Black,Arial';g.fillText('INNING',840,62);
-  g.fillStyle='#fff';g.font='400 104px "Russo One",Arial Black,Arial';g.fillText(String(S.inning),840,140);
-  g.fillStyle='#3ad6ff';g.font='400 36px "Russo One",Arial Black,Arial';g.fillText('OUT',760,226);
-  for(let i=0;i<3;i++){g.beginPath();g.arc(830+i*48,226,17,0,7);g.fillStyle=i<S.outs?'#ff4d2e':'#22284a';g.fill();}
-  g.fillStyle='#22284a';g.fillRect(34,262,956,4);
-  g.textAlign='left';g.fillStyle='#ffe53b';g.font='italic 400 62px "Russo One",Arial Black,Arial';g.fillText('#'+b.num+' '+b.name,44,322,600);
-  g.textAlign='right';g.fillStyle='#fff';g.font='400 62px "Russo One",Arial Black,Arial';g.fillText(S.balls+' - '+S.strikes,980,322);
+  sbSig=sig;const g=sbCanvas.getContext('2d');sbFrame(g,false);
+  const row=(y,name,sc,c0,c1,bat)=>{const gr=g.createLinearGradient(30,0,640,0);gr.addColorStop(0,c0);gr.addColorStop(1,c1);g.fillStyle=gr;sbRR(g,30,y,610,96,14);g.fill();
+    g.fillStyle='rgba(255,255,255,.16)';sbRR(g,30,y,610,40,14);g.fill();if(bat){g.strokeStyle='#fff';g.lineWidth=4;sbRR(g,30,y,610,96,14);g.stroke();g.fillStyle='#fff';g.beginPath();g.moveTo(44,y+28);g.lineTo(72,y+48);g.lineTo(44,y+68);g.closePath();g.fill();}
+    g.textAlign='left';sbText(g,name,bat?86:52,y+50,'italic 400 74px "Russo One",Arial Black,Arial','#fff',340);
+    g.fillStyle='#03040d';sbRR(g,470,y+10,154,76,10);g.fill();g.textAlign='center';sbText(g,String(sc),547,y+50,'400 78px "Russo One",Arial Black,Arial',bat?'#ffe53b':'#eaffff',130,bat?'#ffb21e':null);};
+  row(28,'KRAKENS',S.opp||0,'#0f5f86','#0a2f52',false);row(134,'COMETS',S.runs,'#ff7a1e','#b3340a',true);
+  // inning, in a lit ring; the outs as lamps
+  g.textAlign='center';g.strokeStyle='#3ad6ff';g.lineWidth=7;g.shadowColor='#3ad6ff';g.shadowBlur=18;g.beginPath();g.arc(760,104,66,0,7);g.stroke();g.shadowBlur=0;
+  sbText(g,String(S.inning),760,110,'400 96px "Russo One",Arial Black,Arial','#fff',110);g.fillStyle='#3ad6ff';g.font='400 26px "Russo One",Arial Black,Arial';g.fillText('INNING',760,196);
+  const lamps=(x,y,n,on,col,lab)=>{g.textAlign='left';g.fillStyle='#9fb0e0';g.font='400 30px "Russo One",Arial Black,Arial';g.fillText(lab,x,y);for(let k=0;k<n;k++){const cx=x+62+k*40;g.beginPath();g.arc(cx,y,15,0,7);if(k<on){g.shadowColor=col;g.shadowBlur=16;g.fillStyle=col;}else{g.shadowBlur=0;g.fillStyle='#1a2046';}g.fill();g.shadowBlur=0;}};
+  lamps(852,60,3,S.balls,'#39ff6a','B');lamps(852,108,2,S.strikes,'#ffe53b','S');lamps(852,156,2,S.outs,'#ff4d2e','O');
+  // the man at the plate
+  g.fillStyle='rgba(3,4,13,.7)';sbRR(g,30,246,964,112,14);g.fill();g.strokeStyle='rgba(255,255,255,.3)';g.lineWidth=2;sbRR(g,30,246,964,112,14);g.stroke();
+  g.fillStyle='#ff8a3a';sbRR(g,30,246,128,112,14);g.fill();g.textAlign='center';sbText(g,String(b.num),94,304,'italic 400 76px "Russo One",Arial Black,Arial','#fff',110);
+  g.textAlign='left';g.fillStyle='#9fb0e0';g.font='400 24px "Russo One",Arial Black,Arial';g.fillText('NOW BATTING',178,272);sbText(g,b.name,178,318,'italic 400 62px "Russo One",Arial Black,Arial','#ffe53b',430,'#ffb21e');
+  [['PWR',b.pwr],['CON',b.con],['SPD',b.spd]].forEach((q,k)=>{const x=650+k*112,gr=statGrade(q[1]),col={S:'#ffe53b',A:'#39ff6a',B:'#7fe6ff',C:'#fff',D:'#ffb070',F:'#ff5a36'}[gr];g.textAlign='center';g.fillStyle='#9fb0e0';g.font='400 24px "Russo One",Arial Black,Arial';g.fillText(q[0],x+40,272);sbText(g,gr,x+40,320,'400 60px "Russo One",Arial Black,Arial',col,80,col);});
   sbTex.needsUpdate=true;}
 function sbTick(){if(sbMsgT<0)sbMsgT=now+4.5;else if(sbMsgT&&now>sbMsgT&&S.state!=='title'&&S.state!=='over'){sbMsgT=0;sbDraw(true);}}
 {
@@ -2509,6 +2521,9 @@ function setBatter(){if(MX.batPrep)setTimeout(MX.batPrep,700);if(MX.pitVar&&S.pN
 const WALK={on:true,dur:3.4,by:{VASQUEZ:'w_milling',OKAFOR:'w_flair',DELACROIX:'w_drive',BRICKHOUSE:'w_boxing',TANAKA:'w_arrow',MONTOYA:'w_macarena',ABERNATHY:'w_bdance','JACKSON-BELL':'w_sad',KOWALSKI:'w_salsa'}};
 try{WALK.on=localStorage.getItem('mm_walk')!=='0';}catch(e){}
 function walkLabel(){$('wk').textContent='Walk-ups: '+(WALK.on?'on':'off (faster pace)')+' — tap to change';}
+// Every hitter walks up his first time through the order. After that he still gets one a good part of the time (decided once per at-bat),
+// so the walk-ups keep coming all game without every single at-bat waiting for one.
+function walkWant(){if(S.wwBi!==S.bi){S.wwBi=S.bi;S.ww=!S.seen[S.bi%LINEUP.length]||Math.random()<.45;}return S.ww;}
 function startWalkup(){
   const b=curBatter(),i=S.bi%LINEUP.length,r=v=>clamp(Math.round((v-.85)/.3*9+1),1,10);
   S.seen[i]=1;S.state='walkup';S.t=now;
@@ -2623,7 +2638,7 @@ function updateRunners(dt){
     if(R.s>=4){R.active=false;R.lead=false;root.visible=false;continue;}   // crossed the plate
     // THE LEAD: with a pitch coming, a man on base stands a few steps off it toward the next one (so the runner on second is no longer hidden
     // dead behind the pitcher: you see him, in his own body, off the bag). When he goes he starts from there; if he stays he steps back.
-    {const bs=Math.floor(R.s+1e-6),live=S.state==='ready'||S.state==='windup'||S.state==='pitch',tgt=live&&!moving&&bs>=1&&bs<=3&&!R.thru?[0,.085,.115,.07][bs]:moving?(R.ld||0):0;R.ld=(R.ld||0)+(tgt-(R.ld||0))*Math.min(1,dt*5);
+    {const bs=Math.floor(R.s+1e-6),live=S.state==='ready'||S.state==='windup'||S.state==='pitch',tgt=live&&!moving&&bs>=1&&bs<=3&&!R.thru?[0,.085,.15,.07][bs]:moving?(R.ld||0):0;R.ld=(R.ld||0)+(tgt-(R.ld||0))*Math.min(1,dt*5);
       root.visible=true;basePos(R.s-bs<R.ld?Math.min(3.999,bs+R.ld):R.s,_rv);root.position.copy(_rv);}
     // beating the throw: he runs through the bag the way a hitter does, a few strides down the line into foul ground, easing up
     const thru=R.thru?now-R.thru:-1,thruRun=thru>=0&&thru<1.15;if(thru>=0){const d=5.5*(1-Math.pow(1-clamp(thru/1.3,0,1),2));root.position.x+=.7071*d;root.position.z-=.7071*d;}
@@ -2657,7 +2672,7 @@ function toReady(d){if(S.walkoff&&S.state!=='end'&&S.state!=='over'){S.walkoff=f
     S.pcI=false;S.pcW=WALK.on&&MX.pit&&MX.pit.taunts.p_sadwalk?PCW:0;
     if(S.pcW){const old=BULLPEN[(S.pChanges+BULLPEN.length-1)%BULLPEN.length];flash(.3);pop('HIT THE SHOWERS, SCRUB!',old[0]+' IS DONE','cool',true);cheer(.3,2.4);}else pcIntro();
     return;}
-  if(WALK.on&&S.fresh&&S.bi>=0&&!S.seen[S.bi%LINEUP.length]&&MX.clip&&MX.clip.intros[WALK.by[curBatter().name]])startWalkup();}
+  if(WALK.on&&S.fresh&&S.bi>=0&&walkWant()&&MX.clip&&MX.clip.intros[WALK.by[curBatter().name]])startWalkup();}
 const BULLPEN=[['STORM',99,'',0],['VOLKOV',47,'L',1],['DIAZ',13,'',2],['NITRO',7,'',3],['ZLORP',50,'L',4],['DRAKE',25,'',5],['MAYNAR',30,'',6],['JONES',4,'L',7],['PARKER',21,'',8],['RIPTIDE',54,'L',9],['ROMERO',66,'',10],['ASTRA',48,'L',11],['BRADY',40,'',12],['DEMON',6,'',13]] /* name, number, 'L' = left-hander (the same delivery mirrored), which body he wears */,PCH=2.7,PCW=2.8;
 // HIT BY PITCH. He wears it: down in a heap, a beat on the ground, back to his feet, then he limps to first with an extra bar of Juice for his trouble.
 const HB1=3.0,HBD=5.0;
@@ -3725,7 +3740,7 @@ function updateClip(dt){
     if(C.bi===undefined){C.bi=S.bi;MX.lefty=!!curBatter().lh;}
     else if(C.swap==null&&S.state!=='trot'&&!(S.kOut&&now<S.kOut.t+DEFEAT)&&((C.mode==='idle'&&C.h<=.001)||(S.state==='ready'&&now-S.t>.6)||S.state==='walkup'))C.swap=0;}
   // if the next hitter has a walk-up coming, the box stays empty after the last man fades out; he first appears in his intro
-  const waitWalk=S.bi>=0&&C.bi!==S.bi&&S.state!=='walkup'&&WALK.on&&S.fresh&&!S.seen[S.bi%LINEUP.length]&&!!C.intros[WALK.by[curBatter().name]];
+  const waitWalk=S.bi>=0&&C.bi!==S.bi&&S.state!=='walkup'&&WALK.on&&S.fresh&&walkWant()&&!!C.intros[WALK.by[curBatter().name]];
   if(C.swap!=null){C.swap+=dt;if(waitWalk)C.swap=Math.min(C.swap,.2);
     if(C.swap>=.2&&C.bi!==S.bi&&!waitWalk){C.bi=S.bi;MX.lefty=!!curBatter().lh;C.mode='idle';C.h=0;C.sk=0;C.t=0;}
     batterOpacity(C.swap<.2?1-C.swap/.2:Math.min(1,(C.swap-.2)/.25));
@@ -4682,7 +4697,7 @@ $('shbtn').addEventListener('click',()=>{SHQ=!SHQ;if(SHQ&&!rim.castShadow)rim.ca
 shApply();
 resize();hud();
 const DBG={dive:'',hbp:false,pcut:false,fl:'',rob:false,pc:false,staunt:false,pod:false,trail:false,orbit:false,sat:false,drill:false,brawl:false,qte:false,mash:false,slide:false,pn:'',laser:false,lamp:false,mw:false,rev:false,stop:false,aerial:false,pdef:false,dbl:false,cam:false,admire:'',trip:false,fist:false,pop:false,loser:false}; // test hook: pin the camera to CAM_HOME/CAM_LOOK
-window.__ret=()=>reticle.position;window.__jt=juiceTap;window.__sync=syncRunners;window.__lr=()=>landRing.visible+' at '+landRing.position.x.toFixed(0)+','+landRing.position.z.toFixed(0)+' scale '+landRing.scale.x.toFixed(1)+' geo '+landRing.geometry.type+' rot '+landRing.rotation.x.toFixed(2)+' op '+landRing.material.opacity.toFixed(2)+' par '+(landRing.parent&&landRing.parent.type)+' scr '+(()=>{const v=landRing.position.clone().project(camera);return v.x.toFixed(2)+','+v.y.toFixed(2)+','+v.z.toFixed(3);})()+' y '+landRing.position.y;window.__pop=pop;window.__bdg=id=>{delete bdgGot[id];if(S.bdgGame)delete S.bdgGame[id];badge(id);pop('GONE!','512 FT · +1 RUN','hot',true);};window.__lu=LINEUP;window.__bp=k=>BULLPEN[k];window.__mm={pitcherModel,crowdFx,setE:v=>{crowdE=v;crowdShow=v;},GLOVE,renderer,scene,LODM,camera,zapStart,acState:()=>AC?(zoneLP?"lp="+Math.round(zoneLP.frequency.value)+" ":"")+AC.state+" t="+AC.currentTime.toFixed(1)+" real="+crowdReal+" roar="+(roarG?roarG.gain.value.toFixed(2)+(roarTop?"T":""):"off")+" bed="+crowdGain.gain.value.toFixed(2):"none",roar,roarOff,boo,cheer,crowdRise,crowdDrop,S,aim,MX,DBG,landRingOn:()=>landRing.visible,hud,tutAnim,draw:()=>draw(),endGame,TROT,SFX,RUN,ballPos:()=>ball.position,ballVisible:()=>ball.visible,fielders,toReady,CAM_HOME,CAM_LOOK,now:()=>now,simulate,judge,get pitch(){return pitch;},get flight(){return flight;},lastSwing:()=>{const t=swing&&swing.type;swing=null;return t;},lastSwingTurbo:()=>!!(swing&&swing.turbo),doSwing,newGame,V3,
+window.__ret=()=>reticle.position;window.__jt=juiceTap;window.__sb=scoreboard;window.__sbd=()=>sbDraw(true);window.__sync=syncRunners;window.__lr=()=>landRing.visible+' at '+landRing.position.x.toFixed(0)+','+landRing.position.z.toFixed(0)+' scale '+landRing.scale.x.toFixed(1)+' geo '+landRing.geometry.type+' rot '+landRing.rotation.x.toFixed(2)+' op '+landRing.material.opacity.toFixed(2)+' par '+(landRing.parent&&landRing.parent.type)+' scr '+(()=>{const v=landRing.position.clone().project(camera);return v.x.toFixed(2)+','+v.y.toFixed(2)+','+v.z.toFixed(3);})()+' y '+landRing.position.y;window.__pop=pop;window.__bdg=id=>{delete bdgGot[id];if(S.bdgGame)delete S.bdgGame[id];badge(id);pop('GONE!','512 FT · +1 RUN','hot',true);};window.__lu=LINEUP;window.__bp=k=>BULLPEN[k];window.__mm={pitcherModel,crowdFx,setE:v=>{crowdE=v;crowdShow=v;},GLOVE,renderer,scene,LODM,camera,zapStart,acState:()=>AC?(zoneLP?"lp="+Math.round(zoneLP.frequency.value)+" ":"")+AC.state+" t="+AC.currentTime.toFixed(1)+" real="+crowdReal+" roar="+(roarG?roarG.gain.value.toFixed(2)+(roarTop?"T":""):"off")+" bed="+crowdGain.gain.value.toFixed(2):"none",roar,roarOff,boo,cheer,crowdRise,crowdDrop,S,aim,MX,DBG,landRingOn:()=>landRing.visible,hud,tutAnim,draw:()=>draw(),endGame,TROT,SFX,RUN,ballPos:()=>ball.position,ballVisible:()=>ball.visible,fielders,toReady,CAM_HOME,CAM_LOOK,now:()=>now,simulate,judge,get pitch(){return pitch;},get flight(){return flight;},lastSwing:()=>{const t=swing&&swing.type;swing=null;return t;},lastSwingTurbo:()=>!!(swing&&swing.turbo),doSwing,newGame,V3,
   sim:(dt)=>{hitstop=0;now+=dt;step(dt);},
   step:(n,dt=1/60)=>{for(let i=0;i<n;i++){if(hitstop>0)hitstop=0;now+=dt;step(dt);}updateCamera(dt);draw();}};
 if(!window.__mmManual)requestAnimationFrame(frame);
