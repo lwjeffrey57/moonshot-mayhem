@@ -24,3 +24,5 @@ replaced with original or licensed sound before release (see BACKLOG.md).
 - Extra pitcher bodies (racer, zlorp, drake, maynar, jones, parker): from the Drive models folder; source and licence to confirm before going public.
 
 - Hitter bodies (exo red, dreyar, david, jolleen, abe) and home-run horn: from the Drive folder; source and licence to confirm before going public.
+
+- Sky: Milky Way panorama, ESO / S. Brunier (GigaGalaxy Zoom), CC BY 4.0. Credit must be shown when the game goes public.
