@@ -353,12 +353,13 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
 #hud.mob>#card,#hud.mob.lh>#card{max-width:52vw;padding:7px 9px 8px;overflow:visible}#hud.mob>#card #cname{font-size:clamp(17px,5.2vw,22px)!important}#hud.mob>#card .stat{font-size:10px!important;gap:2px}#hud.mob>#card .stat em{font-size:22px!important}#hud.mob>#card .stats{gap:4px!important}
 /* WHERE IT SITS: just over the head of the infielder on the open side of the plate (second baseman for a right-handed hitter, shortstop for
    a left-handed one), on phones and computers alike: where the eyes already are, and never across the hitter or the strike zone. */
-#hud:not(.mob)>#card,#hud.kr:not(.mob)>#card{left:auto;right:12%;top:auto;bottom:58%}#hud.lh:not(.mob)>#card,#hud.kr.lh:not(.mob)>#card{left:12%;right:auto}
-#hud.mob>#card,#hud.mob.lh>#card{top:auto!important;bottom:54.5%!important;max-width:70vw!important}#hud.mob>#card{right:max(16px,env(safe-area-inset-right,0px))!important}#hud.mob.lh>#card{left:max(16px,env(safe-area-inset-left,0px))!important;right:auto!important}
+#hud:not(.mob)>#card,#hud.kr:not(.mob)>#card{left:auto;right:12%;top:auto;bottom:58%;max-width:30vw}#hud.lh:not(.mob)>#card,#hud.kr.lh:not(.mob)>#card{left:12%;right:auto}
+#hud.mob>#card,#hud.mob.lh>#card{top:auto!important;bottom:57.5%!important;max-width:calc(50vw - 40px)!important} /* wholly above the pitcher's head, and never wide enough to reach across to him: he stays in the clear */
+#hud.mob>#card #cname{max-width:100%;overflow:hidden!important;text-overflow:ellipsis}#hud.mob>#card{right:max(16px,env(safe-area-inset-right,0px))!important}#hud.mob.lh>#card{left:max(16px,env(safe-area-inset-left,0px))!important;right:auto!important}
 #hud.mob:not(.lh)>#card #cname{font-size:clamp(16px,4.7vw,20px)!important}#hud.mob:not(.lh)>#card .stat em{font-size:21px!important}#hud.mob:not(.lh)>#card .stat{font-size:10px!important}#hud.mob:not(.lh)>#card{padding:5px 8px 6px!important} /* a touch smaller for right-handed hitters */
 /* during a walk-up any callout still on screen (the inning line, PLAY BALL) is held small along the top, well above the man walking in */
 #hud.wk #pop{top:9%!important}#hud.mob.wk #pop{top:15%!important}#hud.wk #pop .t{font-size:clamp(22px,5.2vw,50px)!important}#hud.wk #pop .s{font-size:clamp(11px,2.4vw,20px)!important;margin-top:5px}
-#hud.mob>#card #cname{font-size:clamp(19px,5.6vw,24px)!important;overflow:visible!important}#hud.mob>#card .stat{font-size:11px!important}#hud.mob>#card .stat em{font-size:25px!important}
+#hud.mob>#card #cname{font-size:clamp(16px,4.7vw,20px)!important}#hud.mob>#card .stat{font-size:11px!important}#hud.mob>#card .stat em{font-size:21px!important}
 #dft{position:absolute;left:0;top:0;z-index:5;display:none;pointer-events:none;white-space:nowrap;will-change:transform;font-family:var(--display);font-style:italic;line-height:1;color:#fff;-webkit-text-stroke:5px #000;paint-order:stroke fill;text-shadow:0 4px 0 #000}
 #dft b{font-weight:400;font-size:clamp(34px,9vw,76px);font-variant-numeric:tabular-nums}#dft i{font-style:italic;font-size:clamp(15px,3.6vw,30px);margin-left:6px;color:var(--volt)}
 #dft.big b{color:var(--volt)}#dft.huge b{color:#ff7a1e;text-shadow:0 4px 0 #000,0 0 26px rgba(255,120,30,.9)}
@@ -861,7 +862,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 481</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 482</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <button class="tag wkopt sens" id="sens1" type="button"></button>
@@ -992,7 +993,7 @@ function podCls(){const st=S.state,on=pOD()&&!(st==='title'||st==='over'||st==='
   {const np=(S.balls|0)+(S.strikes|0),ks=on&&!(S.over&&S.overOn)?((S.strikes|0)>=2||np>=3?2:np>=1?1:0):0; /* it closes in with every pitch he throws, ball or strike: no waiting him out */if(ks!==podKs){podKs=ks;$('hud').classList.toggle('ks1',ks===1);$('hud').classList.toggle('ks2',ks===2);}}
   {const lv=on&&(st==='ready'||st==='windup'||st==='pitch')&&$('tut').hidden;if(lv!==podLv){podLv=lv;$('hud').classList.toggle('podlive',lv);}}
   const ip=st==='flight'||st==='result'||st==='trot'||st==='celebrate'||st==='celly2';if(ip!==inplayOn){inplayOn=ip;$('hud').classList.toggle('inplay',ip);}
-  const ce=st==='celly2'||st==='trot'||st==='qte'||st==='brawl'||st==='hbprun'||!!(flight&&flight.orb&&!flight.done);if(ce!==celOn){celOn=ce;$('hud').classList.toggle('cel',ce);}if((st==='brawl')!==brwOn){brwOn=st==='brawl';$('hud').classList.toggle('brw',brwOn);}{const tt=st==='title'||st==='over';if(tt!==ttlOn){ttlOn=tt;$('hud').classList.toggle('ttl',tt);}}
+  const ce=st==='celly2'||st==='trot'||st==='qte'||st==='brawl'||st==='hbprun'||!!(flight&&flight.orb&&!flight.done);if(ce!==celOn){celOn=ce;$('hud').classList.toggle('cel',ce);}if((st==='brawl')!==brwOn){brwOn=st==='brawl';$('hud').classList.toggle('brw',brwOn);}{const tt=st==='title'||st==='over'||st==='result'||st==='end';if(tt!==ttlOn){ttlOn=tt;$('hud').classList.toggle('ttl',tt);}} /* (also while a play's result is being called: the plate and the callout never share the screen) */
   if((st==='qte')!==qsOn){qsOn=st==='qte';$('hud').classList.toggle('qs',qsOn);}
   if((st==='hbp')!==hbOn){hbOn=st==='hbp';$('hud').classList.toggle('hbps',hbOn);}}
  // while the camera is close on the pitcher, call-outs drop to a smaller line along the bottom so the words never sit on him
