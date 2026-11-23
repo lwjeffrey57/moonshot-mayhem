@@ -811,7 +811,7 @@ function cardTick(){
   _s0.project(camera);const cw=c.offsetWidth||150,ch=c.offsetHeight||44;
   const x=clamp((_s0.x*.5+.5)*W-cw*.5,4,W-cw-4),y=Math.max(150,(-_s0.y*.5+.5)*H-ch-2);
   c.style.transform='translate('+x.toFixed(0)+'px,'+y.toFixed(0)+'px)';}
-const pcutH=new V3(0,2.3,-18.4);let retTb=false,retT=-9,pcutT=-9,pcutOn=false,celOn=false,qsOn=false,hbOn=false,podOn=false,podLv=false,podKs=0,inplayOn=false;
+const pcutH=new V3(0,2.3,-18.4);let retTb=false,retT=-9,retOd=false,pcutT=-9,pcutOn=false,celOn=false,qsOn=false,hbOn=false,podOn=false,podLv=false,podKs=0,inplayOn=false;
 // the pitcher's fire border waits until the hitter is in the box; the batter card goes away once the ball is in play
 function podCls(){const st=S.state,on=pOD()&&!(st==='title'||st==='over'||st==='end'||st==='walkup'||st==='pchange');if(on!==podOn){podOn=on;$('hud').classList.toggle('pod',on);}
   {const np=(S.balls|0)+(S.strikes|0),ks=on&&!(S.over&&S.overOn)?((S.strikes|0)>=2||np>=3?2:np>=1?1:0):0; /* it closes in with every pitch he throws, ball or strike: no waiting him out */if(ks!==podKs){podKs=ks;$('hud').classList.toggle('ks1',ks===1);$('hud').classList.toggle('ks2',ks===2);}}
@@ -3690,9 +3690,9 @@ function step(dt){
   stickHint();sbTick();zapTick();crowdTick(dt);shoutTick();poleTick();satTick();organTick();roarTick();heartTick();zoneTick();
   if(flight&&flight.play.type==='hr'&&!flight.sbHit&&!flight.orbit&&ball.visible&&Math.abs(ball.position.x-SBX)<24&&ball.position.y>30&&ball.position.y<48&&ball.position.z<-(fenceR(0)+15)&&ball.position.z>-(fenceR(0)+24)){flight.sbHit=true;zapStart(ball.position,true);burst(fxL,ball.position,26,9,.7,[.6,.85,1],7,1);}
   reticle.position.set(aim.x,aim.y,0);
-  {const ez=easyAB()?1.3:1;if(!!tb!==retTb){retTb=!!tb;retT=now;}
+  {const ez=easyAB()?1.3:1;if(!!tb!==retTb){retTb=!!tb;retT=now+(tb&&S.over&&S.overOn?.42:0);retOd=!!(tb&&S.over&&S.overOn);} /* Overdrive lights the whole screen for a moment as it comes on: the rings wait for that to clear, then swell where you can see it */
    // Juice and Overdrive make both rings bigger, and they visibly swell into it (overshoot, then settle) so nobody misses that it happened
-   const k=clamp((now-retT)/.5,0,1),eo=1+2.9*Math.pow(k-1,3)+1.9*Math.pow(k-1,2),f=retTb?eo:1-eo,kc=lerp(1,1.2,f),kp=lerp(.63,.96,f);
+   const k=clamp((now-retT)/(retOd?.75:.5),0,1),ov=retOd&&retTb?4.2:2.9,eo=1+ov*Math.pow(k-1,3)+(ov-1)*Math.pow(k-1,2),f=retTb?eo:1-eo,kc=lerp(1,1.2,f),kp=lerp(.63,.96,f);
    retC.scale.setScalar(.17*b.con*1.25*kc*ez);retP.scale.setScalar(.17*b.con*kp*ez);}
   let showRet=(S.state==='ready'||S.state==='windup'||S.state==='pitch')&&!(swing&&swing.done);
   retC.visible=retP.visible=true;echoBall.visible=false;
