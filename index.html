@@ -2302,7 +2302,7 @@ const G=9.8,DRAG=.0042;
 // measured across to x, and a little grace because the ball is drawn larger than life at distance.
 const LINE_TOL=.3;
 function simulate(p0,v0,spin,opt){spin=spin||{side:0,lift:0};opt=opt||{};const GG=G*(opt.g||1);let tag='',hrY=0,poleT=0,nb=0; // opt.chop: first bounce is a big one; opt.g: a low-gravity pocket; tag: anything unusual that happened to it
-  const p=p0.clone(),v=v0.clone(),pts=[];let t=0,land=null,hr=false,hrT=0,wall=false,wallT=0,foul=false,dist=0,grd=false,eyeT=0,seatT=0;const dt=1/120;
+  const p=p0.clone(),v=v0.clone(),pts=[];let t=0,land=null,hr=false,hrT=0,wall=false,wallT=0,foul=false,dist=0,grd=false,eyeT=0,seatT=0,foulT,bagPast=false;const dt=1/120;
   while(t<9){
     const sp=v.length();v.multiplyScalar(1-DRAG*sp*dt);
     if(p.y>0||v.y>0)v.y-=GG*dt;
@@ -2337,10 +2337,13 @@ function simulate(p0,v0,spin,opt){spin=spin||{side:0,lift:0};opt=opt||{};const G
     }
     if(land&&!tag&&!foul&&p.y<.3){for(const B of [[19.4,-19.4],[0,-38.8],[-19.4,-19.4]])if(Math.hypot(p.x-B[0],p.z-B[1])<.36){ // kicks off the bag
       const a=(Math.random()<.5?-1:1)*rand(.3,.8),cs=Math.cos(a),sn=Math.sin(a),x=v.x;v.x=x*cs-v.z*sn;v.z=x*sn+v.z*cs;v.y=rand(3.5,5.5);tag='OFF THE BAG';break;}}
+    // The rule on a ball that comes down fair in front of the bag: it is judged where it is when it passes first or third (or where it is
+    // touched). Roll foul before the bag and it is a foul ball; get past the bag fair and it is fair for good, wherever it goes after that.
+    if(land&&!foul&&!hr&&!bagPast&&foulT===undefined){const along=(Math.abs(p.x)-p.z)*.7071,out=Math.abs(p.x)>.216-p.z+LINE_TOL;if(along>=27.4){if(out&&p.y<1.2)foulT=t;else bagPast=true;}else if(out&&p.y<1.2)foulT=t;}
     pts.push({x:p.x,y:p.y,z:p.z,t});
   }
   if(hr&&!eyeT){const q=p.clone(),w=v.clone();let n=0;while(q.y>0&&n++<2000){const sp=w.length();w.multiplyScalar(1-DRAG*sp*dt);w.y-=G*dt;q.addScaledVector(w,dt);}dist=Math.hypot(q.x,q.z);}
-  return {pts,land,hr,hrT,hrY,poleT,tag,wall,wallT,foul,dist,grd,eyeT,seatT,endT:t};
+  return {pts,land,hr,hrT,hrY,poleT,tag,wall,wallT,foul,foulT,dist,grd,eyeT,seatT,endT:t};
 }
 const hangK=t=>1+.55*clamp((t-3.2)/1.4,0,1); // how much more ground an outfielder covers on a ball that hangs: nothing extra on liners (under 3.2 s in the air), up to 55% more on a towering fly
 const HANG_CATCH=4.2; // seconds in the air before an outfielder is allowed to make a play at the wall
@@ -2374,7 +2377,10 @@ function judge0(tr,bt){const spd=bt&&bt.spd||1; // batter's speed: 0.85 (plodder
     if(!f)return {type:'hit',bases:2,endT,grd:true};
     const go=Math.min(bd*.85,f.speed*.9*Math.max(0,endT-f.react)),k=bd>0?go/bd:0;
     return {type:'hit',bases:2,endT,grd:true,f,p:{x:lerp(f.home.x,L.x,k),y:0,z:lerp(f.home.z,L.z,k),t:endT},chase:true};}
-  if(tr.foul){const endT=tr.land?Math.min(tr.land.t+.55,tr.endT):tr.endT,L=tr.land||tr.pts[tr.pts.length-1];
+  if(!tr.foul&&tr.foulT!==undefined&&!tr.hr){let got=false; // it rolled foul short of the bag: fair only if somebody got to it first
+    for(const q of tr.pts){if(q.t>=tr.foulT)break;if(q.y>2.2)continue;for(const c of fielders){if(c.of)continue;if(Math.hypot(c.home.x-q.x,c.home.z-q.z)<=c.reach+c.speed*Math.max(0,q.t-c.react)){got=true;break;}}if(got)break;}
+    if(!got){tr.foul=true;tr.rolledFoul=true;}}
+  if(tr.foul){const endT=tr.rolledFoul?Math.min(tr.foulT+.6,tr.endT):tr.land?Math.min(tr.land.t+.55,tr.endT):tr.endT,L=tr.rolledFoul?tr.pts[Math.min(tr.pts.length-1,Math.round(tr.foulT*120))]:tr.land||tr.pts[tr.pts.length-1];
     // a foul fly that stays in the park can be caught: inside the side walls and in front of the backstop
     const perp=(Math.abs(L.x)-(.216-L.z))/Math.SQRT2,playable=tr.land&&L.z<11&&perp<13;
     if(playable)for(const q of tr.pts){if(q.t>=tr.land.t)break;if(q.t<1.2)continue;
