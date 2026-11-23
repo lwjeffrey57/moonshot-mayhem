@@ -358,6 +358,8 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
 #hud.mob>#card #cname{max-width:100%;overflow:hidden!important;text-overflow:ellipsis}#hud.mob>#card{right:max(16px,env(safe-area-inset-right,0px))!important}#hud.mob.lh>#card{left:max(16px,env(safe-area-inset-left,0px))!important;right:auto!important}
 #hud.mob:not(.lh)>#card #cname{font-size:clamp(16px,4.7vw,20px)!important}#hud.mob:not(.lh)>#card .stat em{font-size:21px!important}#hud.mob:not(.lh)>#card .stat{font-size:10px!important}#hud.mob:not(.lh)>#card{padding:5px 8px 6px!important} /* a touch smaller for right-handed hitters */
 /* during a walk-up any callout still on screen (the inning line, PLAY BALL) is held small along the top, well above the man walking in */
+#hud.wk #pop.logo{top:10%!important}#hud.mob.wk #pop.logo{top:17%!important}#hud.wk #pop.logo .t{font-size:clamp(40px,10.5vw,92px)!important}#hud.mob.wk #pop.logo .t{font-size:clamp(44px,14vw,64px)!important} /* PLAY BALL: big, right over the head of the first man walking up, with clear air between them */
+#hud.mob.podlive>#card{bottom:66%!important} /* the batter plate steps up out of the way of the pitcher's Overdrive tag */
 #hud.wk #pop{top:9%!important}#hud.mob.wk #pop{top:15%!important}#hud.wk #pop .t{font-size:clamp(22px,5.2vw,50px)!important}#hud.wk #pop .s{font-size:clamp(11px,2.4vw,20px)!important;margin-top:5px}
 #hud.mob>#card #cname{font-size:clamp(16px,4.7vw,20px)!important}#hud.mob>#card .stat{font-size:11px!important}#hud.mob>#card .stat em{font-size:21px!important}
 #dft{position:absolute;left:0;top:0;z-index:5;display:none;pointer-events:none;white-space:nowrap;will-change:transform;font-family:var(--display);font-style:italic;line-height:1;color:#fff;-webkit-text-stroke:5px #000;paint-order:stroke fill;text-shadow:0 4px 0 #000}
@@ -862,7 +864,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 486</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 489</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <button class="tag wkopt sens" id="sens1" type="button"></button>
@@ -1016,9 +1018,16 @@ let dftEl=null,dftOn=false,dftV=-1;function dftDom(){const on=!!(flight&&!flight
   const v=flight.dLast|0;if(v!==dftV){dftV=v;dftEl.firstChild.textContent=v;dftEl.classList.toggle('big',v>=450);dftEl.classList.toggle('huge',v>=500);}
   const W=canvas.clientWidth||innerWidth,H=canvas.clientHeight||innerHeight;_s0.copy(ball.position).project(camera);const x=clamp((_s0.x*.5+.5)*W,70,W-70),y=clamp((-_s0.y*.5+.5)*H-H*.11,H*.14,H*.8);
   dftEl.style.transform='translate('+x.toFixed(1)+'px,'+y.toFixed(1)+'px) translate(-50%,-100%)';}
-function draw(){{const ad=!!(flight&&flight.admire&&!flight.done&&now-flight.t0<(flight.A||0)+.4);if(ad!==admCls){admCls=ad;$('hud').classList.toggle('adm',ad);}}trackRing.visible=landRing.visible;if(landRing.visible){trackRing.position.set(landRing.position.x,.09,landRing.position.z);trackRing.scale.setScalar(landRing.scale.x*1.15);trackRing.rotation.z=now*1.2;}{const du=!!(S.over&&S.overOn&&pOD());if(du!==duelTag){duelTag=du;const e=$('podtag');e.innerHTML=du?'OVERCHARGED<br>DUEL!':'PITCHER OVERDRIVE<br>ACTIVE';e.classList.toggle('du',du);}}if(HALO.paint){const F=flight&&!flight.done?flight:null,st=S.state,pn=performance.now(),cnt=st==='ready'||st==='windup'||st==='pitch';
+// The pitcher's Overdrive tag rides above him: its bottom edge is kept over the highest point he reaches (arms up, mid-taunt, mid-flip), found
+// from his actual joints each frame, and it shrinks if there is not room under the top bar. It never sits on him.
+const _pt=new V3();function podTagPos(){const e=$('podtag');if(!$('hud').classList.contains('podlive')||!MX.pit){if(e._on){e._on=0;e.style.top='';e.style.zoom='';}return;}
+  let hi=2.2;const sk=MX.pit._bones||(MX.pit._bones=(()=>{const a=[];MX.pit.obj.traverse(b=>{if(b.isBone&&/Head|Hand$|HandMiddle1|Foot$/.test(b.name))a.push(b);});return a;})());for(const b of sk){b.getWorldPosition(_pt);if(_pt.y>hi)hi=_pt.y;}
+  e._hi=Math.max(hi,(e._hi||hi)-.02); /* comes down slowly, so it does not bob with every gesture */
+  _s0.set(0,e._hi+.35,-18.4).project(camera);const H=canvas.clientHeight||innerHeight,head=(-_s0.y*.5+.5)*H,top0=MOB?112:84;e.style.zoom='';const h0=e.offsetHeight||50,k=clamp((head-top0)/h0,.5,1);
+  e.style.zoom=k<1?k.toFixed(3):'';e.style.top=(Math.max(top0,head-h0*k)/k).toFixed(0)+'px';e._on=1;}
+function draw(){podTagPos();{const ad=!!(flight&&flight.admire&&!flight.done&&now-flight.t0<(flight.A||0)+.4);if(ad!==admCls){admCls=ad;$('hud').classList.toggle('adm',ad);}}trackRing.visible=landRing.visible;if(landRing.visible){trackRing.position.set(landRing.position.x,.09,landRing.position.z);trackRing.scale.setScalar(landRing.scale.x*1.15);trackRing.rotation.z=now*1.2;}{const du=!!(S.over&&S.overOn&&pOD());if(du!==duelTag){duelTag=du;const e=$('podtag');e.innerHTML=du?'OVERCHARGED<br>DUEL!':'PITCHER OVERDRIVE<br>ACTIVE';e.classList.toggle('du',du);}}if(HALO.paint){const F=flight&&!flight.done?flight:null,st=S.state,pn=performance.now(),cnt=st==='ready'||st==='windup'||st==='pitch';
     const hm=S.walkoff||st==='end'&&S.runs>S.opp?'walkoff':F&&F.rev&&F.revOn||F&&F.orbit&&F.orb?'orbit':F&&F.play.type==='hr'&&F.clr&&S.bases.filter(Boolean).length===3?'slam':F&&F.play.type==='hr'&&F.admire?'nodoubt':F&&F.play.type==='hr'&&F.clr||st==='trot'?'hr':st==='brawl'?'fight':st==='pchange'?'change':S.kOut&&now<S.kOut.t+3&&st==='result'?'k'
-      :S.over&&S.overOn&&pOD()?'duel':S.over&&S.overOn?'od':pOD()?'pod':F&&F.play.type==='hit'&&F.landed?'hit':cnt&&S.balls===3&&S.strikes===2?'full':cnt&&S.strikes===2?'two':cnt&&(S.bases[1]||S.bases[2])?'rally':'idle'+(((pn/9000)|0)%4);
+      :S.over&&S.overOn&&pOD()?'duel':S.over&&S.overOn?'od':pOD()?'pod':F&&F.play.type==='hit'&&F.landed?'hit':cnt&&S.balls===3&&S.strikes===2?'full':cnt&&S.strikes===2?'two':cnt&&(S.bases[1]||S.bases[2])?'rally':'idle'+(((pn/9000)|0)%6);
     /* a message earned by a play stays up for a good few seconds after the moment has passed, so the board is felt, not flickered */
     {const sticky={hit:6,k:5,hr:7,nodoubt:7,slam:8,change:5,walkoff:12}[HALO.m]||0;if(hm!==HALO.m&&sticky&&pn-HALO.since<sticky*1000&&!(HALO.hype[hm]&&!HALO.hype[HALO.m])){/* hold */}else if(hm!==HALO.m){HALO.m=hm;HALO.since=pn;HALO.paint(hm);}}const hy=HALO.hype[HALO.m];HALO.t.offset.x=(pn*(hy?.00011:/^idle/.test(HALO.m)?.00003:.00006))%1;
     if(HALO.mat)HALO.mat.color.setScalar(hy?1.02+.22*Math.sin(pn*.012):1); /* a smooth pulse about twice a second, never a hard strobe */}
@@ -1356,6 +1365,11 @@ gl_FragColor=vec4(col,1.0);
     const Y='#ffe53b',O='#ff8a3a',W='#ffffff',I='#7fe6ff',R='#ff5a36',G='#5dffb0',P='#ff5ad8',four=(a,b,c,d)=>[a,b,c||a,d||b],
       MSG={idle0:LEAGUE.map(t=>[t[0]+' '+t[1],t[2]]),idle1:four(['TRANQUILITY COMETS',O],['VS',W],['KEPLER KRAKENS',I],['LUNAR LEAGUE BASEBALL',Y]),
         idle2:four(['MOONSHOT PARK',Y],['SEA OF TRANQUILITY',I],['ONE-SIXTH GRAVITY',G],['SIX TIMES THE DISTANCE',O]),idle3:four(['MAKE SOME NOISE',Y],['LET\'S GO COMETS',O],['EVERYBODY CLAP',W],['LET\'S GO COMETS',O]),
+        // the 50/50 raffle, Moon style: the numbers are different every time it comes round
+        idle4:()=>{const pot=(rand(1.2,98.6)).toFixed(1),tk=String((Math.random()*1e6)|0).padStart(6,'0'),gag=['WINNER TAKES HALF THE MOON','LOSER RAKES THE CRATERS','PAID IN MOON ROCKS','OXYGEN NOT INCLUDED','MUST BE PRESENT ON THE MOON TO WIN','SECOND PRIZE: A RIDE HOME'][(Math.random()*6)|0];
+          return four(['50/50 RAFFLE',Y],['POT: '+pot+' MILLION MOON BUCKS',G],['WINNING TICKET '+tk,W],[gag,O]);},
+        idle5:()=>{const n=(18000+((Math.random()*24000)|0)).toLocaleString('en-US'),gag=['HOT DOGS FLOAT. HOLD ON TO YOURS.','LOST HELMET? SEE GUEST SERVICES','NEXT SHUTTLE TO EARTH: NEVER','FOUL BALLS MAY LEAVE ORBIT','PLEASE DO NOT FEED THE KRAKENS'][(Math.random()*5)|0];
+          return four(['TONIGHT\'S CROWD: '+n,W],[gag,Y],['GRAVITY: STILL ONE-SIXTH',G],['KISS CAM IS BROKEN AGAIN',P]);},
         hr:four(['HOME RUN!',Y],['GONE!',O],['HOME RUN!',Y],['SEE YA!',W]),nodoubt:four(['NO DOUBTER',Y],['NO DOUBTER',W]),slam:four(['GRAND SLAM',Y],['GRAND SLAM',O]),orbit:four(['INTO ORBIT',I],['MOONSHOT',W]),
         od:four(['OVERDRIVE',W],['OVERDRIVE',I]),pod:four(['DANGER',R],['PITCHER OVERDRIVE','#ffd0c0']),duel:four(['OVERCHARGED DUEL',W],['OVERDRIVE',I],['OVERCHARGED DUEL',W],['DANGER',R]),
         rally:four(['RALLY TIME',Y],['BRING HIM IN',O],['RALLY TIME',Y],['LET\'S GO COMETS',W]),two:four(['TWO STRIKES',I],['HANG IN THERE',W]),full:four(['FULL COUNT',Y],['HERE IT COMES',W]),
@@ -1364,7 +1378,7 @@ gl_FragColor=vec4(col,1.0);
       BG=new Proxy({},{get:(_,m)=>(THEME[String(m).replace(/\d+$/,'')]||THEME.idle)[0]}),EDGE=new Proxy({},{get:(_,m)=>(THEME[String(m).replace(/\d+$/,'')]||THEME.idle)[1]});
     HALO.hype={hr:1,nodoubt:1,slam:1,orbit:1,od:1,duel:1,fight:1,walkoff:1,pod:1};HALO.mat=null;
     HALO.paint=m=>{const g=hc.getContext('2d'),w=hc.width,h=hc.height;g.shadowBlur=0;g.fillStyle=BG[m];g.fillRect(0,0,w,h);
-      g.textAlign='center';g.textBaseline='middle';g.font='italic 400 78px "Russo One",Arial Black,Arial';{const L=MSG[m],n=L.length;g.font='italic 400 '+(n>4?44:78)+'px "Russo One",Arial Black,Arial';L.forEach((q,i)=>{g.shadowColor=q[1];g.shadowBlur=18;g.fillStyle=q[1];g.fillText(q[0],w*(i+.5)/n,h*.54,w/n*.86);});g.shadowBlur=0;
+      g.textAlign='center';g.textBaseline='middle';g.font='italic 400 78px "Russo One",Arial Black,Arial';{const L=typeof MSG[m]==='function'?MSG[m]():MSG[m],n=L.length;g.font='italic 400 '+(n>4?44:78)+'px "Russo One",Arial Black,Arial';L.forEach((q,i)=>{g.shadowColor=q[1];g.shadowBlur=18;g.fillStyle=q[1];g.fillText(q[0],w*(i+.5)/n,h*.54,w/n*.86);});g.shadowBlur=0;
       g.fillStyle=EDGE[m];for(let i=0;i<n;i++){g.beginPath();g.arc(w*i/n,h*.52,n>4?8:13,0,7);g.fill();}}
       g.fillStyle='rgba(0,0,0,.2)';for(let y=0;y<h;y+=4)g.fillRect(0,y,w,1.5);const vg=g.createLinearGradient(0,0,0,h);vg.addColorStop(0,'rgba(255,255,255,.14)');vg.addColorStop(.4,'rgba(255,255,255,0)');vg.addColorStop(1,'rgba(0,0,0,.3)');g.fillStyle=vg;g.fillRect(0,0,w,h);
       g.fillStyle=EDGE[m];g.fillRect(0,0,w,8);g.fillRect(0,h-8,w,8);ht.needsUpdate=true;};
@@ -2445,9 +2459,9 @@ let hudOver=false,hudBars=0,ringEcho=null,lastWalk='';
 // Flavour first: the first home run and the first strikeout of every game always get the full, ridiculous treatment
 // (the first two of each for a player's first three games), so nobody plays a whole game without seeing what this game is.
 const WALK_ONLY=['w_milling','w_drive','w_golf','w_sad']; // routines that are walk-ups only, never celebrations
-const CEL_FAV=['w_bboy','w_backflip','p_twerk','w_macarena','w_flair'];let celLast='';const celClip=own=>{if(!WALK_ONLY.includes(own))return own;const C=MX.clip,w=C?WILD_CEL.filter(k=>C.intros[k]):[];return w.length?w[(Math.random()*w.length)|0]:own;}; // the milling routine is a walk-up only
+const CEL_FAV=['w_bboy','w_backflip','p_twerk','w_macarena','w_flair','w_salute'];let celLast='';const celClip=own=>{if(!WALK_ONLY.includes(own))return own;const C=MX.clip,w=C?WILD_CEL.filter(k=>C.intros[k]):[];return w.length?w[(Math.random()*w.length)|0]:own;}; // the milling routine is a walk-up only
 const earlyShow=n=>n<(gamesPlayed<=3?2:1);let wildTrot=false;
-const WILD_CEL=['w_backflip','w_bboy','w_macarena','w_salsa','w_bdance','w_flair','w_lift','w_pushup','p_loser','p_twerk','p_chicken','p_runman','p_fist','p_clap','p_threat','w_boxing','w_arrow','w_wave','w_hurricane'],WILD_TAUNT=['p_twerk','p_chicken','p_backflip','p_bboy','p_macarena','p_runman'];
+const WILD_CEL=['w_salute','w_backflip','w_bboy','w_macarena','w_salsa','w_bdance','w_flair','w_lift','w_pushup','p_loser','p_twerk','p_chicken','p_runman','p_fist','p_clap','p_threat','w_boxing','w_arrow','w_wave','w_hurricane'],WILD_TAUNT=['p_twerk','p_chicken','p_backflip','p_bboy','p_macarena','p_runman'];
 const juiceOn=()=>juiceArmed||keys.ShiftLeft||keys.ShiftRight;
 // ratings shown as grades: S is elite, F is a liability. The same scale for power, contact and speed.
 const GRADE_COL={S:'#ffd23b',A:'#3ddc6a',B:'#3ad6ff',C:'#f2f5ff',D:'#ff9a3b',F:'#ff4d2e'};
