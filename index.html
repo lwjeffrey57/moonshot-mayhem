@@ -898,7 +898,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 543</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 544</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -3088,7 +3088,7 @@ function qteStart(kind,noPA){QT.noPA=!!noPA;goHide();{const e=$('bdg');if(e.clas
   QT.hid=[];RUN.list.forEach(R=>{if(R.fig.root.visible){QT.hid.push(R.fig.root);R.fig.root.visible=false;}});fielders.forEach(f=>{const r=f.fig.root;if(!f.isP&&r.visible&&Math.hypot(r.position.x-Bp[0],r.position.z-Bp[1])<9){QT.hid.push(r);r.visible=false;}});
   ball.visible=false;ballShadow.visible=false;pop(M.call,'','');buzz([30,30,60]);crowdRise(.8,3,true);hud();}
 function qteShow(){if(!MOB&&!QT.fk){QT.fk=1;grabKeys();}const M=QT.M,e=$('qte');$('qtt').textContent=M.name;
-  if(QT.stop){if(!$('qsn')){const P=v=>(v*100).toFixed(2)+'%';$('qtr').innerHTML='<div id="qsw"><div id="qmw" class="st"><s id="qsg" style="left:'+P(QT.sg[0])+';width:'+P(QT.sg[1])+'"></s><s id="qso" style="left:'+P(QT.so[0])+';width:'+P(QT.so[1])+'"></s><u id="qsn"></u></div><em id="qsl">'+(MOB?'TAP':'SPACE')+' ON GREEN · GOLD = +2 JUICE</em></div>';}
+  if(QT.stop){if(!$('qsn')){const P=v=>(v*100).toFixed(2)+'%';$('qtr').innerHTML='<div id="qsw"><div id="qmw" class="st"><s id="qsg" style="left:'+P(QT.sg[0])+';width:'+P(QT.sg[1])+'"></s><s id="qso" style="left:'+P(QT.so[0])+';width:'+P(QT.so[1])+'"></s><u id="qsn"></u></div><em id="qsl"></em></div>';}QT.gp=clamp(.74-(QT.D-1)*.42,.4,.92);{const l=$('qsl');if(l)l.textContent='GOLD = SAFE +2 JUICE · GREEN = '+Math.round(QT.gp*100)+'%';}
     $('hud').classList.add('qm');e.hidden=false;$('hud').classList.add('qon');return;}
   if(QT.mash){if(!$('qmf')){$('qtr').innerHTML='<div id="qmw"><em id="qmf"></em><span>'+(MOB?'TAP! TAP! TAP!':'MASH SPACE!')+'</span></div>';}$('hud').classList.add('qm');$('qmf').style.transform='scaleX('+Math.min(1,QT.fill).toFixed(3)+')';e.hidden=false;$('hud').classList.add('qon');return;} // the other kind: no code, just hammer the arrows until the bar is full
  {const r=$('qtr');if(r.children.length!==QT.code.length||r.firstChild.tagName!=='I')r.innerHTML=QT.code.map(c=>`<i data-d="${c}">${{U:'⬆️',D:'⬇️',L:'⬅️',R:'➡️'}[c]}</i>`).join('');for(let i=0;i<QT.code.length;i++){const c=i<QT.i?'ok':i===QT.i?'cur':'';if(r.children[i].className!==c)r.children[i].className=c;}}e.hidden=false;$('hud').classList.add('qon');}
@@ -3098,7 +3098,7 @@ function qteKey(d){if(S.state!=='qte'||QT.ph!=='input')return;
   if(QT.stop){ // JUDGED WHERE YOU SAW IT: by the time a tap arrives the needle has moved on (the screen is a frame or two behind, and a finger takes time to land). The press is scored against where the needle was that long ago, and the needle is put back there so the picture agrees.
     const H=QT.hist||[],tp=performance.now()-(qteTouch?72:34);let x=QT.sx;if(H.length){let a=H[0];for(const h of H){if(h[0]<=tp)a=h;else break;}const b=H[H.indexOf(a)+1];x=b&&b[0]>a[0]?a[1]+(b[1]-a[1])*clamp((tp-a[0])/(b[0]-a[0]),0,1):a[1];}
     QT.sx=x;{const n0=$('qsn');if(n0&&QT.sw)n0.style.transform='translateX('+(x*QT.sw).toFixed(1)+'px)';}
-    const ins=z=>x>=z[0]-.012&&x<=z[0]+z[1]+.012; /* and a hair of grace at the edges */QT.gold=ins(QT.so);const ok=QT.gold||ins(QT.sg);buzz(ok?[20,30,60]:[40,30,40]);tone(ok?'triangle':'sawtooth',QT.gold?990:ok?660:150,QT.gold?1480:ok?880:80,.12,.3);const n=$('qsn');if(n)n.className=QT.gold?'au':ok?'ok':'no';qteDone(ok);return;}
+    const ins=z=>x>=z[0]-.012&&x<=z[0]+z[1]+.012; /* and a hair of grace at the edges */QT.gold=ins(QT.so);const grn=ins(QT.sg),ok=QT.gold||(grn&&Math.random()<QT.gp); /* THE SMALL MARK IS THE SURE THING: land on gold and he is safe, every time. The wide green band only gets him a chance (better on an easy send, worse on a long shot): close, but the throw can still beat him. */if(grn&&!QT.gold&&!ok)timing('BANG-BANG PLAY · THROW BEAT HIM','#ff8a2e',3);buzz(ok?[20,30,60]:[40,30,40]);tone(ok?'triangle':'sawtooth',QT.gold?990:ok?660:150,QT.gold?1480:ok?880:80,.12,.3);const n=$('qsn');if(n)n.className=QT.gold?'au':ok?'ok':'no';qteDone(ok);return;}
   if(QT.mash){QT.fill+=1/(15*Math.pow(QT.D||1,.7));buzz(10);tone('triangle',380+520*Math.min(1,QT.fill),420+560*Math.min(1,QT.fill),.06,.5);qteShow();if(QT.fill>=1)qteDone(true);return;}
   if(d===QT.code[QT.i]){QT.i++;buzz(15);tone('triangle',520+110*QT.i,700+110*QT.i,.09,.6);tone('sine',1040+220*QT.i,1400+220*QT.i,.12,.35); /* a clear ding, a step higher with every arrow you get right */if(QT.i>=QT.code.length){qteShow();qteDone(true);return;}}
   else{QT.t1-=.3;buzz([30,30,30]);tone('sawtooth',160,90,.12,.3);const r=$('qtr');r.classList.remove('bad');requestAnimationFrame(()=>r.classList.add('bad'));} // a wrong arrow costs a third of a second off the clock; your progress stays
