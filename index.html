@@ -208,7 +208,7 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 #walk .wrow b{color:var(--volt);font-weight:400}
 #walk .wrow.sub{background:#000;font-size:13px;color:var(--dim);justify-content:space-between}
 @media (max-width:560px){#walk{min-width:0;width:94vw}#walk .wn{min-width:56px;font-size:30px}#walk .wname{font-size:24px;padding:7px 12px 5px}#walk .wrow{gap:7px;padding:6px 10px;font-size:12px}#walk .wrow.sub{font-size:11px}}
-@media (min-width:900px) and (min-height:560px){#walk{min-width:640px;bottom:9vh}#walk .wn{min-width:112px;font-size:62px}#walk .wname{font-size:46px;padding:10px 22px 7px}#walk .wrow{gap:26px;padding:9px 22px;font-size:23px}#walk .wrow.sub{font-size:16px}}
+@media (min-width:900px) and (min-height:560px){#walk{min-width:640px;bottom:2.2vh}#walk .wn{min-width:112px;font-size:62px}#walk .wname{font-size:46px;padding:10px 22px 7px}#walk .wrow{gap:26px;padding:9px 22px;font-size:23px}#walk .wrow.sub{font-size:16px}}
 #hud.wk #rep,#hud.wk #keys,#hud.wk #pitchinfo,#hud.wk #touch,#hud.mob.wk #mutebtn{visibility:hidden}
 .wkopt{pointer-events:auto;background:none;border:1px solid var(--dim);padding:6px 12px;cursor:pointer;font-family:var(--hud)}
 /* centre calls */
@@ -357,6 +357,8 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
 #walk .wname{background:none;color:#fff;text-shadow:0 2px 0 #000;padding-bottom:2px}
 #walk .wname small{display:block;font-family:var(--hud);font-style:normal;font-weight:800;font-size:.45em;letter-spacing:.1em;color:#ffb070;line-height:1.1;margin-bottom:2px;white-space:nowrap;text-shadow:none}
 #walk .wrow{font-family:var(--hud);font-weight:800;letter-spacing:.1em;color:var(--dim);align-items:center}#walk .wrow b.gr{font-family:var(--display)}
+#walk .wrow.tv{white-space:normal;font-family:var(--hud);font-weight:700;letter-spacing:.02em;text-transform:none;color:#fff;line-height:1.25;max-width:min(560px,82vw)}#walk .wrow.tv i{font-style:normal;font-weight:800;letter-spacing:.1em;color:#ffb070;margin-right:.3em}
+#walk #wrat.tv{color:#fff}
 #walk .wrow.sub{background:rgba(5,8,40,.55);border-top:1px solid rgba(255,255,255,.25);color:#c9d2ff}
 #hud>#card #cname{color:#fff!important}#hud>#card #cnum{color:#ffb070!important} /* a solid dark plate with a yellow edge: it stands out from the park behind it */
 #hud:not(.mob)>#card #cnum{font-size:58px}#hud:not(.mob)>#card #cname{font-size:30px}#hud:not(.mob)>#card .stat{font-size:16px;color:#fff}#hud:not(.mob)>#card .stat em{font-size:30px}
@@ -770,10 +772,10 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <div id="pitchinfo"><b id="mph">--</b><span>MPH</span></div>
     <div id="meters">
       <div id="juice" class="meter"><div id="jbar" class="mbar"><div id="jfill" class="mfill"></div><span id="jtxt" class="mtxt">JUICE</span></div>
-        <div class="mcap">BATTER</div></div>
+        <div class="mcap">P1</div></div>
       <div id="zmini" title="Last pitch location"><i id="zdot" hidden></i></div>
       <div id="heat" class="meter"><div class="mbar"><div id="hfill" class="mfill"></div><span class="mtxt">JUICE</span></div>
-        <div class="mcap" id="pcap">PITCHER</div></div>
+        <div class="mcap" id="pcap">CPU</div></div>
     </div>
     <div id="walk" hidden><div class="wn" id="wnum"></div><div class="wb"><div class="wname" id="wname"></div><div class="wrow" id="wrat"></div><div class="wrow sub"><span id="wspot"></span><span id="wskip"></span></div></div></div>
     <svg id="diamond" viewBox="0 0 104 86" aria-hidden="true">
@@ -840,7 +842,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <div id="qte" hidden><b id="qtt"></b><div id="qtr"></div><div id="qtm"><i id="qtb"></i></div></div>
     <div id="qpad" aria-hidden="true"><button type="button" data-d="U">▲</button><button type="button" data-d="L">◀</button><button type="button" data-d="R">▶</button><button type="button" data-d="D">▼</button></div>
     <div id="podtag" aria-hidden="true">PITCHER<br>OVERDRIVE ACTIVE</div>
-    <div id="duel" aria-hidden="true"><i class="dl">BATTER</i><i class="dr">PITCHER</i><b><span>SHOWDOWN</span></b></div>
+    <div id="duel" aria-hidden="true"><i class="dl">P1</i><i class="dr">CPU</i><b><span>SHOWDOWN</span></b></div>
     <div id="goal" hidden></div>
   </div>
   <div class="overlay" id="title">
@@ -885,7 +887,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 514</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 515</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <button class="tag wkopt sens" id="sens1" type="button"></button>
@@ -1046,7 +1048,7 @@ const _pt=new V3();function podTagPos(){const e=$('podtag');if(!$('hud').classLi
   e._hi=Math.max(hi,(e._hi||hi)-.02); /* comes down slowly, so it does not bob with every gesture */
   _s0.set(0,e._hi+(MOB?.75:.35),-18.4).project(camera);const H=canvas.clientHeight||innerHeight,head=(-_s0.y*.5+.5)*H,top0=MOB?112:84;e.style.zoom='';const h0=e.offsetHeight||50,k=clamp((head-top0)/h0,.5,1);
   e.style.zoom=k<1?k.toFixed(3):'';e.style.top=(Math.max(top0,head-h0*k)/k).toFixed(0)+'px';e._on=1;}
-function draw(){podTagPos();{const ad=!!(flight&&flight.admire&&!flight.done&&now-flight.t0<(flight.A||0)+.4);if(ad!==admCls){admCls=ad;$('hud').classList.toggle('adm',ad);}}trackRing.visible=landRing.visible;if(landRing.visible){trackRing.position.set(landRing.position.x,.09,landRing.position.z);trackRing.scale.setScalar(landRing.scale.x*1.15);trackRing.rotation.z=now*1.2;}{const du=!!(S.over&&S.overOn&&pOD());if(du!==duelTag){duelTag=du;const e=$('podtag');e.innerHTML=du?'SHOWDOWN!':'PITCHER<br>OVERDRIVE ACTIVE';e.classList.toggle('du',du);}}if(HALO.paint){const F=flight&&!flight.done?flight:null,st=S.state,pn=performance.now(),cnt=st==='ready'||st==='windup'||st==='pitch';
+function draw(){podTagPos();if(EYE.gl){const show=LAS.on||S.state==='trot'||!!(flight&&!flight.done&&flight.play&&flight.play.type==='hr'&&flight.clr); /* THE BATTER'S EYE JOINS THE SHOW: on a homer its neon surround runs through the colours, quicker and pulsing while the lasers are on, then settles back to cyan */if(show){EYE.gl.color.setHSL((now*(LAS.on?.9:.45))%1,1,LAS.on?.55+.12*Math.sin(now*14):.6);EYE.glOn=true;}else if(EYE.glOn){EYE.glOn=false;EYE.gl.color.setHex(0x3ad6ff);}}{const ad=!!(flight&&flight.admire&&!flight.done&&now-flight.t0<(flight.A||0)+.4);if(ad!==admCls){admCls=ad;$('hud').classList.toggle('adm',ad);}}trackRing.visible=landRing.visible;if(landRing.visible){trackRing.position.set(landRing.position.x,.09,landRing.position.z);trackRing.scale.setScalar(landRing.scale.x*1.15);trackRing.rotation.z=now*1.2;}{const du=!!(S.over&&S.overOn&&pOD());if(du!==duelTag){duelTag=du;const e=$('podtag');e.innerHTML=du?'SHOWDOWN!':'PITCHER<br>OVERDRIVE ACTIVE';e.classList.toggle('du',du);}}if(HALO.paint){const F=flight&&!flight.done?flight:null,st=S.state,pn=performance.now(),cnt=st==='ready'||st==='windup'||st==='pitch';
     const hm=S.walkoff||st==='end'&&S.runs>S.opp?'walkoff':F&&F.rev&&F.revOn||F&&F.orbit&&F.orb?'orbit':F&&F.play.type==='hr'&&F.clr&&S.bases.filter(Boolean).length===3?'slam':F&&F.play.type==='hr'&&F.admire?'nodoubt':F&&F.play.type==='hr'&&F.clr||st==='trot'?'hr':st==='brawl'?'fight':st==='pchange'?'change':S.kOut&&now<S.kOut.t+3&&st==='result'?'k'
       :S.over&&S.overOn&&pOD()?'duel':S.over&&S.overOn?'od':pOD()?'pod':F&&F.play.type==='hit'&&F.landed?'hit':cnt&&S.balls===3&&S.strikes===2?'full':cnt&&S.strikes===2?'two':cnt&&(S.bases[1]||S.bases[2])?'rally':'idle'+(((pn/9000)|0)%6);
     /* a message earned by a play stays up for a good few seconds after the moment has passed, so the board is felt, not flickered */
@@ -1239,7 +1241,7 @@ const basic=(o)=>new T.MeshBasicMaterial(Object.assign({side:T.DoubleSide},o));
     for(let i=0;i<15000;i++){const x=rand(0,512),y=rand(0,512),r=rand(.5,1.7);g.fillStyle=Math.random()<.5?`rgba(245,245,252,${rand(.1,.28)})`:`rgba(16,16,26,${rand(.12,.32)})`;wrap(x,y,(px,py)=>{g.beginPath();g.arc(px,py,r,0,7);g.fill();});}});
   // EXPERIMENT: the playing surface inside the walls drawn like the batter's eye (dark glass solar panels, blue grid, a sheen on every panel).
   // Set EYE_FIELD to false to go straight back to the regolith field.
-  const EYE_FIELD=true;
+  const EYE_FIELD=false;
   const groundMat=new T.ShaderMaterial({fog:true,side:T.DoubleSide,uniforms:T.UniformsUtils.merge([T.UniformsLib.fog,{macro:{value:null},maskT:{value:null},gD:{value:null},dD:{value:null},mD:{value:null},mN:{value:null},mK:{value:0},digi:{value:DIGI?1:0}}]),extensions:{derivatives:true},
     vertexShader:`varying vec2 vW;varying float vL;
 #include <fog_pars_vertex>
@@ -1453,7 +1455,7 @@ gl_FragColor=vec4(col,1.0);
     sol.anisotropy=8;EYE.mat=basic({map:sol});scene.add(new T.Mesh(ribbon(a,b,.03),EYE.mat));
     // A PROPER SURROUND: a dark metal frame with a glowing cyan inner edge all the way round, corner beacons, and a soft pool of its glow on the
     // wall-top below. Lit like a piece of the stadium, and the panel itself stays dark so the ball still shows against it.
-    {const up=new V3().subVectors(b[0],a[0]).normalize(),off=(q,k)=>q.clone().addScaledVector(up,k),fr=new T.MeshBasicMaterial({color:0x1a2148,side:T.DoubleSide,fog:false}),gl=new T.MeshBasicMaterial({color:0x3ad6ff,side:T.DoubleSide,fog:false}),
+    {const up=new V3().subVectors(b[0],a[0]).normalize(),off=(q,k)=>q.clone().addScaledVector(up,k),fr=new T.MeshBasicMaterial({color:0x1a2148,side:T.DoubleSide,fog:false}),gl=EYE.gl=new T.MeshBasicMaterial({color:0x3ad6ff,side:T.DoubleSide,fog:false}),
       bar=(P,Q,m)=>scene.add(new T.Mesh(ribbon(P,Q),m)),lift=(arr,d)=>arr.map(q=>{const n=q.clone().setY(0).normalize();return q.clone().addScaledVector(n,-d);});
       const a1=lift(a,.16),b1=lift(b,.16),a2=lift(a,.42),b2=lift(b,.42); /* the glowing edge sits clear in front of the dark frame (they used to share one plane and flickered against each other as the camera moved), and the frame clear of the panel */
       bar(b1.map(q=>off(q,1.5)),b1,fr);bar(a1,a1.map(q=>off(q,-1.1)),fr);bar(b2.map(q=>off(q,.56)),b2.map(q=>off(q,.04)),gl);bar(a2.map(q=>off(q,-.04)),a2.map(q=>off(q,-.54)),gl);
@@ -1638,6 +1640,16 @@ gl_FragColor=vec4(col,1.0);
     // ...and it carries on down both lines, across the face of the grandstand's upper deck: one continuous ribbon of light round the park
     [-1,1].forEach(sd=>{const ln=[[BK_R/Math.SQRT2,BK_Z+BK_R/Math.SQRT2],[30,-4],[70,-70]].map(q=>new V3(q[0]*sd,0,q[1])),nn=new V3(.866*sd,0,.5),a=ln.map(q=>q.clone().addScaledVector(nn,29.85).setY(23)),b=ln.map(q=>q.clone().addScaledVector(nn,29.85).setY(30));
       scene.add(new T.Mesh(ribbon(sd>0?a.slice().reverse():a,sd>0?b.slice().reverse():b,1),ledM));});
+    // THE CORNERS ARE CLOSED: where the grandstand down each line used to stop short of the outfield bowl (open Moon showing through at the
+    // foul pole) a curved section of seats now wraps round the pole and joins the two, with the board carried round its face and a solid
+    // back. Seen from the blimp, on a fly ball down the line or a pop-up, the seats run unbroken from the plate round to centre field.
+    [-1,1].forEach(sd=>{const K=10,c=new V3(70*sd,0,-70),A0=(sd>0?30:150)*DEG,A1=(sd>0?-45:225)*DEG,in_=[],out=[],f0=[],f1=[],bk=[],gr=[];
+      for(let i=0;i<=K;i++){const u=i/K,an=lerp(A0,A1,u),d=new V3(Math.cos(an),0,Math.sin(an)),P=(o,y)=>c.clone().addScaledVector(d,o).setY(y);
+        in_.push(P(lerp(1,1.5,u),lerp(1.9,WALL_H+.3,u)));out.push(P(34,lerp(23,25,u)));f0.push(P(30,lerp(23,25,u)));f1.push(P(30,lerp(30,32,u)));bk.push(P(lerp(58,34,Math.min(1,u*2.2)),lerp(52,32,Math.min(1,u*2.2))));gr.push(P(lerp(58,34,Math.min(1,u*2.2)),0));}
+      const g=ribbon(out,in_,1),uv=g.attributes.uv;for(let i=0;i<uv.count;i++)uv.setY(i,1-uv.getY(i));scene.add(new T.Mesh(g,fm));if(STAND_LIT)STAND_LIT(in_,out);
+      scene.add(new T.Mesh(ribbon(sd>0?f0.slice().reverse():f0,sd>0?f1.slice().reverse():f1,1),ledM));
+      const hullC=new T.MeshBasicMaterial({color:0x14183a,side:T.DoubleSide});
+      scene.add(new T.Mesh(ribbon(f1,bk),hullC));scene.add(new T.Mesh(ribbon(bk,gr),hullC));scene.add(new T.Mesh(ribbon(in_,in_.map(q=>q.clone().setY(0))),hullC));});
     // airlock tunnels into the lower deck, one per section
     const lock=tex(128,128,(g,w,h)=>{g.fillStyle='#9aa0b0';g.fillRect(0,0,w,h);
       for(let x=-h;x<w;x+=24){g.fillStyle='#f2c81e';g.beginPath();g.moveTo(x,0);g.lineTo(x+12,0);g.lineTo(x+12+h,h);g.lineTo(x+h,h);g.closePath();g.fill();}
@@ -2564,10 +2576,21 @@ function setBatter(){if(MX.batPrep)setTimeout(MX.batPrep,700);if(MX.pitVar&&S.pN
 // Walk-ups: the first time each hitter comes up, a short intro animation with his card. Any swing button skips it.
 const WALK={on:true,dur:3.4,by:{VASQUEZ:'w_milling',OKAFOR:'w_flair',DELACROIX:'w_drive',BRICKHOUSE:'w_boxing',TANAKA:'w_arrow',MONTOYA:'w_macarena',ABERNATHY:'w_bdance','JACKSON-BELL':'w_sad',KOWALSKI:'w_salsa'}};
 try{WALK.on=localStorage.getItem('mm_walk')!=='0';}catch(e){}
+// LORE ON THE WALK-UP CARD: things the Lunar League would rather you did not know about the Comets.
+const trivLast={},TRIVIA={
+  VASQUEZ:['Has never been to Earth. Says it “looks fake.”','Hit a ball into orbit in Little League. It is still up there.','Required by league rule to shout “HEADS UP” before batting practice.','Names every bat. Has apologised to four of them.'],
+  OKAFOR:['Breakdances in zero-G for 40 minutes before every game. Nobody asked.','Once stole second, third and the team bus.','Has been ejected from two games for spinning on the umpire’s head.','Lists “the floor” as a career rival.'],
+  DELACROIX:['Owns 14 moon buggies. Licensed to drive none of them.','Claims the swing was designed by rocket scientists. They deny it.','Voted “Most Likely To Argue With A Robot Umpire” four years running.','Drove a golf ball into the Sea of Serenity. Still looking for it.'],
+  BRICKHOUSE:['Eats 9,000 calories of freeze-dried ice cream a day.','Broke the weight room. Not a machine. The room.','Was once intentionally walked in a home run derby.','The Krakens’ scouting report is one word: “Hide.”'],
+  TANAKA:['Has read the rulebook 61 times looking for loopholes. Found three.','Sleeps upside down “for the bat speed.”','Speaks to the dugout only in nods. Nobody knows the signs.','Sharpens the bat. It is a bat. It does not need sharpening.'],
+  MONTOYA:['Taught the grounds crew the Macarena. Attendance is mandatory.','Sells signed moon rocks. They are rocks. Signed.','Banned from three craters for excessive celebration.','Has a handshake with every fan in section 114. All different.'],
+  ABERNATHY:['Lost a staring contest to the Earth. Demands a rematch.','The walk-up dance has its own agent.','League record: 31 dugout snacks in one inning.','Calls every home run before the game. Also every strikeout. Covers the bases.'],
+  'JACKSON-BELL':['Has been sad since the trade deadline. Nobody was traded.','Leads the league in sighs per at-bat.','Horoscope has read “not today” for six straight seasons.','Brought a houseplant to the Moon. It is thriving. This makes it worse.'],
+  KOWALSKI:['Teaches salsa in the offseason. Students call it “mostly yelling.”','Bats ninth by choice. “Less paperwork.”','Fouled off 34 pitches to finish a chat with the catcher.','Has worn the same lucky socks since the franchise moved to the Moon.']};
 function walkLabel(){$('wk').textContent='Walk-ups: '+(WALK.on?'on':'off (faster pace)')+' — tap to change';}
 // Every hitter walks up his first time through the order. After that he still gets one a good part of the time (decided once per at-bat),
 // so the walk-ups keep coming all game without every single at-bat waiting for one.
-function walkWant(){if(S.wwBi!==S.bi){S.wwBi=S.bi;S.ww=!S.seen[S.bi%LINEUP.length]||Math.random()<.45;}return S.ww;}
+function walkWant(){if(S.wwBi!==S.bi){S.wwBi=S.bi;S.ww=true;}return S.ww;} /* every hitter, every time up: his walk-up and his card */
 function startWalkup(){
   const b=curBatter(),i=S.bi%LINEUP.length,r=v=>clamp(Math.round((v-.85)/.3*9+1),1,10);
   S.seen[i]=1;S.state='walkup';S.t=now;
@@ -2579,6 +2602,7 @@ function startWalkup(){
   {const I=MX.clip.intros,forcedWalk=DBG.trip===true?'w_trip':DBG.trip;if(S.walkClip===lastWalk&&!(forcedWalk&&I[forcedWalk])){const alt=Object.keys(I).filter(k=>/^w_/.test(k)&&k!==lastWalk&&k!=='w_walkin');if(alt.length)S.walkClip=alt[(Math.random()*alt.length)|0];}lastWalk=S.walkClip;} // never the same walk-up twice in a row
   $('wnum').textContent=b.num;$('wname').innerHTML='<small>#'+b.num+' · '+(POS_BY[b.name]||'DH')+' · BATS '+(b.lh?'L':'R')+'</small>'+bdn(b);
   {const gb=v=>{const g=statGrade(v);return `<b class="gr g${g}"><u>${g}</u></b>`;};$('wrat').innerHTML=`<span>POWER ${gb(b.pwr)}</span><span>CONTACT ${gb(b.con)}</span><span>SPEED ${gb(b.spd)}</span>`;}
+  {const tv=TRIVIA[b.name];$('wrat').classList.remove('tv');if(tv&&Object.keys(S.seen).length>1&&(DBG.trivia||Math.random()<.4)){let k=(Math.random()*tv.length)|0;if(k===trivLast[b.name])k=(k+1)%tv.length;trivLast[b.name]=k;$('wrat').classList.add('tv');$('wrat').innerHTML='<span><i>DID YOU KNOW?</i> '+tv[k]+'</span>';}} /* now and then the card skips the ratings and tells you something about him instead */
   $('wspot').textContent='BATTING '+['1ST','2ND','3RD','4TH','5TH','6TH','7TH','8TH','9TH'][i];$('wskip').textContent=MOB?'TAP TO SKIP':'SWING TO SKIP';
   $('walk').hidden=false;$('hud').classList.add('wk');cheer(.16,2);
 }
@@ -2776,7 +2800,7 @@ function hbpEnd(fk,title){const b=curBatter(),r0=Math.random(),k=fk!==undefined?
   showCard();
   // He heads for first with the camera in front of him, and the walk-up banner comes back to show what getting hit (or the fight) did to his ratings.
   {const gb=v=>{const g=statGrade(v);return `<b class="gr g${g}"><u>${g}</u></b>`;},ch=(lab,o,n)=>`<span>${lab} ${gb(o)}${k?` <i class="${k>0?'hbu':'hbd'}">➜</i> ${gb(n)}`:''}</span>`;
-    $('wnum').textContent=b.num;$('wname').textContent=bdn(b);$('wrat').innerHTML=ch(MOB?'PWR':'POWER',was.pwr,b.pwr)+ch(MOB?'CON':'CONTACT',was.con,b.con)+ch(MOB?'SPD':'SPEED',was.spd,b.spd);$('shout').classList.remove('go');
+    $('wnum').textContent=b.num;$('wname').textContent=bdn(b);$('wrat').classList.remove('tv');$('wrat').innerHTML=ch(MOB?'PWR':'POWER',was.pwr,b.pwr)+ch(MOB?'CON':'CONTACT',was.con,b.con)+ch(MOB?'SPD':'SPEED',was.spd,b.spd);$('shout').classList.remove('go');
     $('wspot').textContent=k>0?'RATINGS UP · +2 JUICE':k<0?'RATINGS DOWN FOR THE GAME':'NO HARM DONE';$('wskip').textContent='';$('walk').hidden=false;$('hud').classList.add('wk');}
   {const e=$('statfx');e.className='';e.innerHTML='';if(k){let h='';for(let i=0;i<12;i++){const left=i%2,x=left?rand(2,17):rand(83,96);h+=`<i style="left:${x.toFixed(1)}%;top:45%;font-size:${rand(26,50).toFixed(0)}px;animation-delay:${(-rand(0,1.5)).toFixed(2)}s;animation-duration:${rand(1.1,1.8).toFixed(2)}s">${k>0?'▲':'▼'}</i>`;}e.innerHTML=h;e.className=k>0?'up':'dn';}}
   S.state='hbprun';S.t=now;hud();}
@@ -3224,9 +3248,9 @@ function tryContact(){flight_pop=false;if(pitch.hbp){swing.done=true;swing.miss=
   // No-doubters: sometimes stay on the hitter instead of the ball. 'admire' = he holds his finish, watches it and drops the bat;
   // 'show' = the same, then his own walk-up routine as a celebration. Decided here because we already know where the ball lands.
   {const la0=Math.atan2(v0.y,Math.hypot(v0.x,v0.z))/DEG;if(la0<14&&play.type!=='hr'&&play.type!=='foul'){$('tbar').classList.add('qk');$('tim').classList.add('qk');}}
-  if(play.type==='hr'&&MX.clip){const ft=play.dist*3.281,big=tb||ft>=500,r=Math.random(),early=earlyShow(S.hrs),kind=DBG.trail?'':DBG.admire||(early?'show':big?(r<.34?'show':r<.5?'admire':''):ft>=440?(r<.3?'admire':''):'');wildTrot=early;
-    if(!kind&&!flight.orbit&&ft>=385&&(DBG.trail||Math.random()<.82))flight.trailCam=true; /* most homers that stay on the ball are now watched from behind it, with the distance running up above it */
-    if(!kind&&!flight.orbit&&(DBG.aerial||(hrCamLast!=='aerial'&&Math.random()<.22))){flight.aerial=true;flight.trailCam=false;}hrCamLast=flight.aerial?'aerial':''; /* THE BLIMP SHOT: now and then, once it is over the wall, the homer is seen from high above the whole park */
+  if(play.type==='hr'&&MX.clip){const ft=play.dist*3.281,big=tb||ft>=500,r=Math.random(),early=earlyShow(S.hrs),kind=DBG.trail||(ft>=600&&!flight.orbit)?'':DBG.admire||(early?'show':big?(r<.34?'show':r<.5?'admire':''):ft>=440?(r<.3?'admire':''):'');wildTrot=early;
+    if(!kind&&!flight.orbit&&ft>=385&&(ft>=600||DBG.trail||Math.random()<.82))flight.trailCam=true; /* 600 ft and up is always followed the whole way, out of the park and down onto the Moon */ /* most homers that stay on the ball are now watched from behind it, with the distance running up above it */
+    if(!kind&&!flight.orbit&&(DBG.aerial||(ft<600&&hrCamLast!=='aerial'&&Math.random()<.22))){flight.aerial=true;flight.trailCam=false;}hrCamLast=flight.aerial?'aerial':''; /* THE BLIMP SHOT: now and then, once it is over the wall, the homer is seen from high above the whole park */
     flight.noSb=hrShowLast==='board'&&Math.random()<.92;flight.noEye=hrShowLast==='eye'&&Math.random()<.92; /* the scoreboard light-show almost never comes up on two homers running: the second one just sails by */ // some no-doubters are watched from right behind the ball
    
     lasWant=!!(kind&&(DBG.laser||Math.random()<.45)); // a no-doubter: now and then the lasers come on, but never before the ball has actually cleared the wall
@@ -4629,7 +4653,9 @@ function updateCamera(rdt){
   else if(flight&&flight.trailCam&&!flight.done&&now-flight.t0>.25&&!(flight.tr.eyeT&&now-flight.t0>flight.tr.eyeT-.25)){const tr=flight.tr, // (the chase camera lets go just before a ball hits the batter's eye, so the carom and the short circuit are watched from the field)
    i=Math.min(tr.pts.length-1,Math.floor((now-flight.t0)*120)),q=tr.pts[Math.min(tr.pts.length-1,i+6)],p0=tr.pts[i];
     _a.set(q.x-p0.x,q.y-p0.y,q.z-p0.z);if(_a.lengthSq()<1e-6)_a.set(0,0,-1);_a.normalize(); // riding just behind and above the ball, looking where it is going
-    camPos.set(p0.x,p0.y,p0.z).addScaledVector(_a,-7).add(_b.set(0,1.7,0));camLook.set(p0.x,p0.y,p0.z).addScaledVector(_a,14);}
+    camPos.set(p0.x,p0.y,p0.z).addScaledVector(_a,-7).add(_b.set(0,1.7,0));camLook.set(p0.x,p0.y,p0.z).addScaledVector(_a,14);
+    {const cr=Math.hypot(camPos.x,camPos.z),cph=Math.atan2(camPos.x,-camPos.z),cd=cr-fenceR(clamp(cph,-PI/4,PI/4)),sm=(a,b,x)=>{const u=clamp((x-a)/(b-a),0,1);return u*u*(3-2*u);},top=Math.abs(cph)<.3?58:38; /* THE CAMERA NEVER GOES THROUGH THE BUILDING: while it is over the seats, the board or the back wall it is held above them (higher still over the scoreboard in centre), so a ball leaving the park is watched over the rim, not through it */
+      camPos.y=Math.max(camPos.y,top*sm(-16,-5,cd)*(1-sm(40,56,cd)));}}
   else if(flight&&flight.orb&&!flight.done){ // from just outside the park, watching it climb away toward Earth
     if(flight.lamp){const T1=TOWERS[flight.lamp-1].p,h1=Math.hypot(T1.x,T1.z)||1,sd=T1.x>0?1:-1;camPos.set(T1.x*.46+(-T1.z/h1)*sd*48,26,T1.z*.46+(T1.x/h1)*sd*48);camLook.copy(flight.lampHit?T1:_b.copy(ball.position).lerp(T1,.6)); /* from off to the side, toward the foul line (clear of the scoreboard): the rope is seen side-on, climbing all the way into the lights */pcutT=now;pcutH.set(T1.x,T1.y+11,T1.z);} // from the outfield grass, looking up at the tower as it comes in
     else if(flight.sat){camPos.set(flight.orbFrom.x*.45+16,104,flight.orbFrom.z*.45+34).addScaledVector(_b.copy(ball.position).sub(flight.orbFrom),.04);camLook.copy(flight.satHit?SAT.g.position:ball.position);} // from high over the park, clear of every deck and roof, looking up and out at it
