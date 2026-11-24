@@ -384,7 +384,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
 #hud.mob>#card #cname{max-width:100%;overflow:hidden!important;text-overflow:ellipsis}#hud.mob>#card{right:max(16px,env(safe-area-inset-right,0px))!important}#hud.mob.lh>#card{left:max(16px,env(safe-area-inset-left,0px))!important;right:auto!important}
 #hud.mob:not(.lh)>#card #cname{font-size:clamp(16px,4.7vw,20px)!important}#hud.mob:not(.lh)>#card .stat em{font-size:21px!important}#hud.mob:not(.lh)>#card .stat{font-size:10px!important}#hud.mob:not(.lh)>#card{padding:5px 8px 6px!important;bottom:57.5%!important}#hud.mob.lh>#card{bottom:57.5%!important} /* (raised when the number-and-position line made the plate taller: its foot stays above the pitcher's head) */ /* a touch smaller for right-handed hitters */
 /* during a walk-up any callout still on screen (the inning line, PLAY BALL) is held small along the top, well above the man walking in */
-#hud.wk #pop.logo{top:10%!important}#hud.mob.wk #pop.logo{top:17%!important}#hud.wk #pop.logo .t{font-size:clamp(40px,10.5vw,92px)!important}#hud.mob.wk #pop.logo .t{font-size:clamp(44px,14vw,64px)!important} /* PLAY BALL: big, right over the head of the first man walking up, with clear air between them */
+#hud.wk #pop.logo{top:11.5%!important}#hud.mob.wk #pop.logo{top:21.5%!important}#hud.wk #pop.logo .t{font-size:clamp(40px,8.4vw,74px)!important}#hud.mob.wk #pop.logo .t{font-size:clamp(44px,14vw,64px)!important} /* PLAY BALL: big, right over the head of the first man walking up, with clear air between them */
 #hud.mob.podlive>#card{bottom:66%!important} /* the batter plate steps up out of the way of the pitcher's Overdrive tag */
 #hud.wk #pop{top:9%!important}#hud.mob.wk #pop{top:15%!important}#hud.wk #pop .t{font-size:clamp(22px,5.2vw,50px)!important}#hud.wk #pop .s{font-size:clamp(11px,2.4vw,20px)!important;margin-top:5px}
 #hud.mob>#card #cname{font-size:clamp(16px,4.7vw,20px)!important}#hud.mob>#card .stat{font-size:11px!important}#hud.mob>#card .stat em{font-size:21px!important}
@@ -906,7 +906,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 570</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 571</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -3560,8 +3560,11 @@ function tryContact(){flight_pop=false;if(pitch.hbp){swing.done=true;swing.miss=
     $('hitinfo').hidden=false;}
   const tom=pitch.ty>=ZONE.y1-.2&&la<15&&la>-6&&v>=44&&play.type!=='foul'; /* a high pitch hammered down on a line with topspin: TOMAHAWKED! */
   const lhB=!!curBatter().lh,turn=!tom&&q>.68&&v>=40&&la>6&&play.type!=='foul'&&pitch.tx*(lhB?1:-1)>.1&&phi*(lhB?1:-1)>14; /* an inside pitch pulled hard: he TURNED ON it */
-  timing(tom?'TOMAHAWKED!':turn?'TURNED ON!':Math.abs(n)<.22&&cr<.3&&chase<=.3?'PERFECT!':chase>.3?'CHASED!':lab+' · '+where, // PERFECT is reserved for on time AND squared up
-    tom||turn?'#ff8a2e':chase>.3?'#ff4d2e':Math.abs(n)<.22&&cr<.3?'#ffe53b':flight.lvl===1?'#9aa3c7':'#f2f5ff',flight.lvl); // timing, then where the barrel met it
+  // THE BEST THING ABOUT THE SWING IS THE CALLOUT. When he tomahawked it, turned on it, or was perfect on a ball he crushed or hit out, that
+  // word goes up as the big call (in place of a random CRUSHED!/SMOKED!), and the read-out at the foot of the screen keeps the plain detail.
+  const perfC=Math.abs(n)<.22&&cr<.3&&chase<=.3,featC=tom?'TOMAHAWKED!':turn?'TURNED ON!':perfC?'PERFECT!':'',promo=featC&&play.type!=='foul'&&(featC!=='PERFECT!'||play.type==='hr'||(q>.82&&pw))?featC:'';
+  timing(promo?lab+' · '+where:tom?'TOMAHAWKED!':turn?'TURNED ON!':Math.abs(n)<.22&&cr<.3&&chase<=.3?'PERFECT!':chase>.3?'CHASED!':lab+' · '+where, // PERFECT is reserved for on time AND squared up
+    promo?(perfC?'#ffe53b':'#f2f5ff'):tom||turn?'#ff8a2e':chase>.3?'#ff4d2e':Math.abs(n)<.22&&cr<.3?'#ffe53b':flight.lvl===1?'#9aa3c7':'#f2f5ff',flight.lvl); // timing, then where the barrel met it
   // No-doubters: sometimes stay on the hitter instead of the ball. 'admire' = he holds his finish, watches it and drops the bat;
   // 'show' = the same, then his own walk-up routine as a celebration. Decided here because we already know where the ball lands.
   {const la0=Math.atan2(v0.y,Math.hypot(v0.x,v0.z))/DEG;if(la0<14&&play.type!=='hr'&&play.type!=='foul'){$('tbar').classList.add('qk');$('tim').classList.add('qk');}}
@@ -3572,8 +3575,9 @@ function tryContact(){flight_pop=false;if(pitch.hbp){swing.done=true;swing.miss=
     flight.noSb=hrShowLast==='board'&&Math.random()<.92;flight.noEye=hrShowLast==='eye'&&Math.random()<.92; /* the scoreboard light-show almost never comes up on two homers running: the second one just sails by */ // some no-doubters are watched from right behind the ball
    
     lasWant=!!(kind&&(DBG.laser||Math.random()<.45)); // a no-doubter: now and then the lasers come on, but never before the ball has actually cleared the wall
-    if(kind){flight.admire=kind;{const F=flight;setTimeout(()=>{if(flight===F)badge('showboat');},1100);} /* after the flip has been seen */flight.trot=WALK.on&&RUN.list.length>0;flight.A=Math.max(1.2,Math.min(kind==='show'&&!flight.trot?3.9:2.5,play.endT-1.3));{const c=['NO DOUBTER!','SEE YA!','CRANKED!','ABSOLUTE TANK!','MOONSHOT!','ABSOLUTE NUKE!','ABSOLUTE BOMB!','LIFT OFF!','PIMPED IT!','PIMPED IT!'][(Math.random()*10)|0];flight.pimp=c==='PIMPED IT!';if(flight.pimp){const F=flight,hot=tb?'hot':'';setTimeout(()=>{if(flight===F&&!F.done)pop(c,'',hot);},1000);}else pop(c,'',tb?'hot':'');} /* PIMPED IT waits a second: you see the bat flip first, then the word */ /* pimp: said here, so the home-plate shout will not say it again */}}
-  if(!flight.admire&&q>.82&&pw&&play.type!=='foul'){const C=['CRUSHED!','SMOKED!','TATTOOED!','OBLITERATED!','MASHED!','GOT ALL OF IT!'];let k=(Math.random()*C.length)|0;if(k===crushLast)k=(k+1)%C.length;crushLast=k;pop(C[k],'',tb?'hot':'');} /* never the same call twice running */
+    if(kind){flight.admire=kind;{const F=flight;setTimeout(()=>{if(flight===F)badge('showboat');},1100);} /* after the flip has been seen */flight.trot=WALK.on&&RUN.list.length>0;flight.A=Math.max(1.2,Math.min(kind==='show'&&!flight.trot?3.9:2.5,play.endT-1.3));{const c=promo&&Math.random()<.75?promo:['NO DOUBTER!','SEE YA!','CRANKED!','ABSOLUTE TANK!','MOONSHOT!','ABSOLUTE NUKE!','ABSOLUTE BOMB!','LIFT OFF!','PIMPED IT!','PIMPED IT!'][(Math.random()*10)|0];flight.pimp=c==='PIMPED IT!';if(flight.pimp){const F=flight,hot=tb?'hot':'';setTimeout(()=>{if(flight===F&&!F.done)pop(c,'',hot);},1000);}else pop(c,'',tb?'hot':'');} /* PIMPED IT waits a second: you see the bat flip first, then the word */ /* pimp: said here, so the home-plate shout will not say it again */}}
+  if(!flight.admire&&promo)pop(promo,'',tb?'hot':'');
+  else if(!flight.admire&&q>.82&&pw&&play.type!=='foul'){const C=['CRUSHED!','SMOKED!','TATTOOED!','OBLITERATED!','MASHED!','GOT ALL OF IT!'];let k=(Math.random()*C.length)|0;if(k===crushLast)k=(k+1)%C.length;crushLast=k;pop(C[k],'',tb?'hot':'');} /* never the same call twice running */
   if(play.type!=='foul'&&(tb||(S.over&&S.overOn)||(play.type==='hr'&&play.dist*3.281>=420)))sfx('crush',1);
   if(play.type==='hr'&&S.over&&S.overOn){const k=$('tmk');k.classList.add('pf','od');$('tim').dataset.rk=1;}else $('tmk').classList.remove('od'); // an Overdrive homer always gets the rocket, burning blue
   {const od=tb||(S.over&&S.overOn),ft=play.dist*3.281,on=S.bases.filter(Boolean).length,top=play.type==='hr'&&(flight.orbit||on===3||ft>=500||(S.over&&S.overOn&&ft>=450)||(S.inning===3&&S.runs<=S.opp&&S.runs+on+1>S.opp));
