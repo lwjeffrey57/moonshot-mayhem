@@ -307,6 +307,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
 #pop .s:empty{display:none}#hud.pcut #pop .s{font-size:clamp(13px,2.6vw,22px);margin-top:6px}
 #shout{color:#ffe53b;text-shadow:0 clamp(4px,.6vw,6px) 0 #05060f,0 0 24px rgba(255,229,59,.5)}#shout.b{color:#7fe6ff;text-shadow:0 clamp(4px,.6vw,6px) 0 #05060f,0 0 24px rgba(58,214,255,.6)}
 /* BRAWL: comic-book hits. The word sits on a spiky burst (yours gold, his blue) with a black edge, in the same spot the shouts already use, clear of both men. */
+#hud.hbr.hbr #pop{top:22%!important}#hud.mob.hbr.hbr #pop{top:26%!important}#hud.hbr #bdg{top:9%}#hud.mob.hbr #bdg{top:14%} /* taking his base after being hit: the call (FIRED UP / SHAKEN UP / SHOOK IT OFF) sits in the middle just over his head, the achievement plate goes up top out of its way */
 #hud.hbps #bdg,#hud.mob.hbps #bdg{top:70%} /* hit by a pitch: the plate goes under his feet, in the middle, never across him */
 #hud.brw #bdg,#hud.mob.brw #bdg,#hud.mob.adm #bdg{top:76%}#hud.adm #bdg{top:calc(100% - 96px)} /* admiring a homer: the plate goes under his feet (right at the foot of a wide screen, where he stands lower in the picture) */ /* during a fight a plate goes below the fighters' feet */#hud.brw #meters,#hud.brw #keys{visibility:hidden} /* nothing else on the glass during the fight: the bursts get the top of the screen to themselves */
 #hud.brw #shout{isolation:isolate;color:#fff;font-size:clamp(22px,5.6vw,36px);-webkit-text-stroke:clamp(5px,.9vw,7px) #05060f;text-shadow:0 4px 0 #05060f;
@@ -326,7 +327,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
 #hud.pcut #pop.sup,#hud.pcut #pop.sdn{left:2%;right:2%}
 #pop.sup .t{color:#39ff6a;text-shadow:0 5px 0 #000,0 0 34px rgba(57,255,106,.75)}#pop.sdn .t{color:#ff4d2e;text-shadow:0 5px 0 #000,0 0 34px rgba(255,77,46,.75)}
 #pop.sup .s,#pop.sdn .s,#hud.pcut #pop.sup .s,#hud.pcut #pop.sdn .s{display:inline-block;margin-top:8px;padding:5px 14px 4px;font-size:clamp(15px,3.7vw,30px);font-style:italic;letter-spacing:.04em;border-radius:8px;background:rgba(6,7,20,.86);border:2px solid currentColor;box-shadow:0 3px 0 #000;text-shadow:0 2px 0 #000;white-space:nowrap}
-#pop.sup .s{color:#39ff6a}#pop.sdn .s{color:#ff4d2e}#pop.sup .s:empty,#pop.sdn .s:empty{display:none}
+#pop.sup .s{color:#39ff6a}#pop.sdn .s{color:#ff4d2e}#pop.sup.sn .t{color:#ffe53b;text-shadow:0 5px 0 #000,0 0 34px rgba(255,229,59,.75)}#pop.sup.sn .s{color:#ffe53b}#pop.sup .s:empty,#pop.sdn .s:empty{display:none}
 #pop.logo .t{white-space:nowrap;color:var(--volt);font-size:clamp(30px,7.4vw,74px);-webkit-text-stroke:2px #000;text-shadow:0 6px 0 #000,0 0 18px #000,0 0 60px rgba(255,229,59,.55);transform:rotate(-4deg)}
 #pop.logo .s{color:var(--heat);font-size:clamp(15px,3.8vw,28px);-webkit-text-stroke:1.5px #000;text-shadow:0 4px 0 #000,0 0 14px #000;transform:rotate(-4deg);margin-top:10px}
 #pop.go{animation:slam 1.5s cubic-bezier(.2,1.4,.3,1) both}
@@ -772,10 +773,10 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <div id="pitchinfo"><b id="mph">--</b><span>MPH</span></div>
     <div id="meters">
       <div id="juice" class="meter"><div id="jbar" class="mbar"><div id="jfill" class="mfill"></div><span id="jtxt" class="mtxt">JUICE</span></div>
-        <div class="mcap">P1</div></div>
+        <div class="mcap">BATTER</div></div>
       <div id="zmini" title="Last pitch location"><i id="zdot" hidden></i></div>
       <div id="heat" class="meter"><div class="mbar"><div id="hfill" class="mfill"></div><span class="mtxt">JUICE</span></div>
-        <div class="mcap" id="pcap">CPU</div></div>
+        <div class="mcap" id="pcap">PITCHER</div></div>
     </div>
     <div id="walk" hidden><div class="wn" id="wnum"></div><div class="wb"><div class="wname" id="wname"></div><div class="wrow" id="wrat"></div><div class="wrow sub"><span id="wspot"></span><span id="wskip"></span></div></div></div>
     <svg id="diamond" viewBox="0 0 104 86" aria-hidden="true">
@@ -842,7 +843,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <div id="qte" hidden><b id="qtt"></b><div id="qtr"></div><div id="qtm"><i id="qtb"></i></div></div>
     <div id="qpad" aria-hidden="true"><button type="button" data-d="U">▲</button><button type="button" data-d="L">◀</button><button type="button" data-d="R">▶</button><button type="button" data-d="D">▼</button></div>
     <div id="podtag" aria-hidden="true">PITCHER<br>OVERDRIVE ACTIVE</div>
-    <div id="duel" aria-hidden="true"><i class="dl">P1</i><i class="dr">CPU</i><b><span>SHOWDOWN</span></b></div>
+    <div id="duel" aria-hidden="true"><i class="dl">BATTER</i><i class="dr">PITCHER</i><b><span>SHOWDOWN</span></b></div>
     <div id="goal" hidden></div>
   </div>
   <div class="overlay" id="title">
@@ -887,9 +888,10 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 515</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 516</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
+    <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
     <button class="tag wkopt sens" id="sens1" type="button"></button>
     <button class="tag wkopt" id="mark1" type="button"></button>
     <button class="tag wkopt" id="ring1" type="button"></button>
@@ -1020,7 +1022,7 @@ function podCls(){const st=S.state,on=pOD()&&!(st==='title'||st==='over'||st==='
   const ip=st==='flight'||st==='result'||st==='trot'||st==='celebrate'||st==='celly2';if(ip!==inplayOn){inplayOn=ip;$('hud').classList.toggle('inplay',ip);}
   const ce=st==='celly2'||st==='trot'||st==='qte'||st==='brawl'||st==='hbprun'||!!(flight&&flight.orb&&!flight.done);if(ce!==celOn){celOn=ce;$('hud').classList.toggle('cel',ce);}if((st==='brawl')!==brwOn){brwOn=st==='brawl';$('hud').classList.toggle('brw',brwOn);}{const tt=st==='title'||st==='over'||st==='result'||st==='end'||st==='hbp'||st==='brawl'; /* hit by a pitch: no ratings on screen while he is down or fighting. They come back with the outcome (the ratings banner as he takes his base). */if(tt!==ttlOn){ttlOn=tt;$('hud').classList.toggle('ttl',tt);}} /* (also while a play's result is being called: the plate and the callout never share the screen) */
   if((st==='qte')!==qsOn){qsOn=st==='qte';$('hud').classList.toggle('qs',qsOn);}
-  if((st==='hbp')!==hbOn){hbOn=st==='hbp';$('hud').classList.toggle('hbps',hbOn);}}
+  if((st==='hbp')!==hbOn){hbOn=st==='hbp';$('hud').classList.toggle('hbps',hbOn);}$('hud').classList.toggle('hbr',st==='hbprun');}
  // while the camera is close on the pitcher, call-outs drop to a smaller line along the bottom so the words never sit on him
 // Hit by a pitch: the call sits just under the man on the ground (never across him), as high as that allows, and always wholly on screen.
 let hbTop=false;function hbpPop(){const e=$('pop');if(S.state==='hbp'&&MX.clip&&MX.clip.hips){MX.clip.hips.getWorldPosition(_s0);_s0.y=-.12;_s0.project(camera);const H=canvas.clientHeight||innerHeight,y=(-_s0.y*.5+.5)*H,eh=e.offsetHeight||80;
@@ -1050,7 +1052,7 @@ const _pt=new V3();function podTagPos(){const e=$('podtag');if(!$('hud').classLi
   e.style.zoom=k<1?k.toFixed(3):'';e.style.top=(Math.max(top0,head-h0*k)/k).toFixed(0)+'px';e._on=1;}
 function draw(){podTagPos();if(EYE.gl){const show=LAS.on||S.state==='trot'||!!(flight&&!flight.done&&flight.play&&flight.play.type==='hr'&&flight.clr); /* THE BATTER'S EYE JOINS THE SHOW: on a homer its neon surround runs through the colours, quicker and pulsing while the lasers are on, then settles back to cyan */if(show){EYE.gl.color.setHSL((now*(LAS.on?.9:.45))%1,1,LAS.on?.55+.12*Math.sin(now*14):.6);EYE.glOn=true;}else if(EYE.glOn){EYE.glOn=false;EYE.gl.color.setHex(0x3ad6ff);}}{const ad=!!(flight&&flight.admire&&!flight.done&&now-flight.t0<(flight.A||0)+.4);if(ad!==admCls){admCls=ad;$('hud').classList.toggle('adm',ad);}}trackRing.visible=landRing.visible;if(landRing.visible){trackRing.position.set(landRing.position.x,.09,landRing.position.z);trackRing.scale.setScalar(landRing.scale.x*1.15);trackRing.rotation.z=now*1.2;}{const du=!!(S.over&&S.overOn&&pOD());if(du!==duelTag){duelTag=du;const e=$('podtag');e.innerHTML=du?'SHOWDOWN!':'PITCHER<br>OVERDRIVE ACTIVE';e.classList.toggle('du',du);}}if(HALO.paint){const F=flight&&!flight.done?flight:null,st=S.state,pn=performance.now(),cnt=st==='ready'||st==='windup'||st==='pitch';
     const hm=S.walkoff||st==='end'&&S.runs>S.opp?'walkoff':F&&F.rev&&F.revOn||F&&F.orbit&&F.orb?'orbit':F&&F.play.type==='hr'&&F.clr&&S.bases.filter(Boolean).length===3?'slam':F&&F.play.type==='hr'&&F.admire?'nodoubt':F&&F.play.type==='hr'&&F.clr||st==='trot'?'hr':st==='brawl'?'fight':st==='pchange'?'change':S.kOut&&now<S.kOut.t+3&&st==='result'?'k'
-      :S.over&&S.overOn&&pOD()?'duel':S.over&&S.overOn?'od':pOD()?'pod':F&&F.play.type==='hit'&&F.landed?'hit':cnt&&S.balls===3&&S.strikes===2?'full':cnt&&S.strikes===2?'two':cnt&&(S.bases[1]||S.bases[2])?'rally':'idle'+(((pn/9000)|0)%6);
+      :S.over&&S.overOn&&pOD()?'duel':S.over&&S.overOn?'od':pOD()?'pod':F&&F.play.type==='hit'&&F.landed?'hit':cnt&&S.balls===3&&S.strikes===2?'full':cnt&&S.strikes===2?'two':cnt&&(S.bases[1]||S.bases[2])?'rally':'idle'+(((pn/9000)|0)%8);
     /* a message earned by a play stays up for a good few seconds after the moment has passed, so the board is felt, not flickered */
     {const sticky={hit:6,k:5,hr:7,nodoubt:7,slam:8,change:5,walkoff:12}[HALO.m]||0;if(hm!==HALO.m&&sticky&&pn-HALO.since<sticky*1000&&!(HALO.hype[hm]&&!HALO.hype[HALO.m])){/* hold */}else if(hm!==HALO.m){HALO.m=hm;HALO.since=pn;HALO.paint(hm);}}const hy=HALO.hype[HALO.m];HALO.t.offset.x=(pn*(hy?.00011:/^idle/.test(HALO.m)?.00003:.00006))%1;
     if(HALO.mat2)HALO.mat2.color.setScalar(hy?1.02+.22*Math.sin(pn*.012):1);
@@ -1400,7 +1402,12 @@ gl_FragColor=vec4(col,1.0);
     // it over for anything worth shouting about, each with its own colours, and the hype ones strobe.
     const Y='#ffe53b',O='#ff8a3a',W='#ffffff',I='#7fe6ff',R='#ff5a36',G='#5dffb0',P='#ff5ad8',four=(a,b,c,d)=>[a,b,c||a,d||b],
       MSG={idle0:LEAGUE.map(t=>[t[0]+' '+t[1],t[2]]),idle1:four(['TRANQUILITY COMETS',O],['VS',W],['KEPLER KRAKENS',I],['LUNAR LEAGUE BASEBALL',Y]),
-        idle2:four(['MOONSHOT PARK',Y],['SEA OF TRANQUILITY',I],['ONE-SIXTH GRAVITY',G],['SIX TIMES THE DISTANCE',O]),idle3:four(['MAKE SOME NOISE',Y],['LET\'S GO COMETS',O],['EVERYBODY CLAP',W],['LET\'S GO COMETS',O]),
+        idle2:four(['MOONSHOT PARK',Y],['SEA OF TRANQUILITY',I],['ONE-SIXTH GRAVITY',G],['SIX TIMES THE DISTANCE',O]),// THE BOARD WORKS THE CROWD: a different chant every time it comes round
+        idle3:()=>{const s=[[['GET LOUD!',Y],['LOUDER!',O],['GET LOUD!',Y],['LET\'S GO COMETS',W]],[['MAKE SOME NOISE',Y],['LET\'S GO COMETS',O],['EVERYBODY CLAP',W],['LET\'S GO COMETS',O]],[['ON YOUR FEET!',Y],['STOMP THE MOON',I],['ON YOUR FEET!',Y],['LET\'S GO COMETS',O]]];return four(...s[(Math.random()*s.length)|0]);},
+        idle6:()=>{const s=[[['I CAN\'T HEAR YOU!',Y],['NOISE METER: WEAK',R],['I CAN\'T HEAR YOU!',Y],['SHAKE THE DOME',I]],[['EVERYBODY UP!',Y],['CLAP · CLAP · CLAP-CLAP-CLAP',W],['LET\'S GO COMETS',O],['WAKE UP THE CRATER',I]],[['GET LOUD!',Y],['RATTLE THE AIRLOCKS',O],['GET LOUD!',Y],['THEY CAN HEAR US ON EARTH',G]]];return four(...s[(Math.random()*s.length)|0]);},
+        // ...and so does the League office. Every ballpark on the Moon is company property, and so, technically, are the fans.
+        idle7:()=>{const a=['CHEERING IS MANDATORY','APPLAUSE QUOTA: '+(41+((Math.random()*50)|0))+'% MET','YOUR ENTHUSIASM IS BEING MONITORED','FUN IS A CONTRACTUAL OBLIGATION'],b=['LOUD FANS BREATHE PREMIUM AIR','SECTION 114: CLAP OR BE RESEATED','QUIET FANS WILL BE BILLED','THE LEAGUE THANKS YOU FOR YOUR COMPULSORY SUPPORT'],c=['THIS INNING BROUGHT TO YOU BY OXYGEN™','CONCESSIONS ACCEPT CREDITS, SCRIP AND LABOR','EXIT DOORS UNLOCK AFTER THE FINAL OUT','REPORT UNSPONSORED JOY TO AN USHER'],r=x=>x[(Math.random()*x.length)|0];
+          return four([r(a),R],[r(b),W],['GET LOUD!',Y],[r(c),G]);},
         // the 50/50 raffle, Moon style: the numbers are different every time it comes round
         idle4:()=>{const pot=(rand(1.2,98.6)).toFixed(1),tk=String((Math.random()*1e6)|0).padStart(6,'0'),gag=['WINNER TAKES HALF THE MOON','LOSER RAKES THE CRATERS','PAID IN MOON ROCKS','OXYGEN NOT INCLUDED','MUST BE PRESENT ON THE MOON TO WIN','SECOND PRIZE: A RIDE HOME'][(Math.random()*6)|0];
           return four(['50/50 RAFFLE',Y],['POT: '+pot+' MILLION MOON BUCKS',G],['WINNING TICKET '+tk,W],[gag,O]);},
@@ -2575,18 +2582,19 @@ function setBatter(){if(MX.batPrep)setTimeout(MX.batPrep,700);if(MX.pitVar&&S.pN
 }
 // Walk-ups: the first time each hitter comes up, a short intro animation with his card. Any swing button skips it.
 const WALK={on:true,dur:3.4,by:{VASQUEZ:'w_milling',OKAFOR:'w_flair',DELACROIX:'w_drive',BRICKHOUSE:'w_boxing',TANAKA:'w_arrow',MONTOYA:'w_macarena',ABERNATHY:'w_bdance','JACKSON-BELL':'w_sad',KOWALSKI:'w_salsa'}};
-try{WALK.on=localStorage.getItem('mm_walk')!=='0';}catch(e){}
-// LORE ON THE WALK-UP CARD: things the Lunar League would rather you did not know about the Comets.
+try{WALK.on=localStorage.getItem('mm_walk2')!=='0';}catch(e){}
+// LORE ON THE WALK-UP CARD. The Lunar League is company property: the parks, the air, the players and (technically) the fans. The card says so
+// with a straight face, the way a broadcast sponsored by the people it is about would.
 const trivLast={},TRIVIA={
-  VASQUEZ:['Has never been to Earth. Says it “looks fake.”','Hit a ball into orbit in Little League. It is still up there.','Required by league rule to shout “HEADS UP” before batting practice.','Names every bat. Has apologised to four of them.'],
-  OKAFOR:['Breakdances in zero-G for 40 minutes before every game. Nobody asked.','Once stole second, third and the team bus.','Has been ejected from two games for spinning on the umpire’s head.','Lists “the floor” as a career rival.'],
-  DELACROIX:['Owns 14 moon buggies. Licensed to drive none of them.','Claims the swing was designed by rocket scientists. They deny it.','Voted “Most Likely To Argue With A Robot Umpire” four years running.','Drove a golf ball into the Sea of Serenity. Still looking for it.'],
-  BRICKHOUSE:['Eats 9,000 calories of freeze-dried ice cream a day.','Broke the weight room. Not a machine. The room.','Was once intentionally walked in a home run derby.','The Krakens’ scouting report is one word: “Hide.”'],
-  TANAKA:['Has read the rulebook 61 times looking for loopholes. Found three.','Sleeps upside down “for the bat speed.”','Speaks to the dugout only in nods. Nobody knows the signs.','Sharpens the bat. It is a bat. It does not need sharpening.'],
-  MONTOYA:['Taught the grounds crew the Macarena. Attendance is mandatory.','Sells signed moon rocks. They are rocks. Signed.','Banned from three craters for excessive celebration.','Has a handshake with every fan in section 114. All different.'],
-  ABERNATHY:['Lost a staring contest to the Earth. Demands a rematch.','The walk-up dance has its own agent.','League record: 31 dugout snacks in one inning.','Calls every home run before the game. Also every strikeout. Covers the bases.'],
-  'JACKSON-BELL':['Has been sad since the trade deadline. Nobody was traded.','Leads the league in sighs per at-bat.','Horoscope has read “not today” for six straight seasons.','Brought a houseplant to the Moon. It is thriving. This makes it worse.'],
-  KOWALSKI:['Teaches salsa in the offseason. Students call it “mostly yelling.”','Bats ninth by choice. “Less paperwork.”','Fouled off 34 pitches to finish a chat with the catcher.','Has worn the same lucky socks since the franchise moved to the Moon.']};
+  VASQUEZ:['Born on the Moon. Earth citizenship pending since birth. Processing fee: unpaid.','Contract is owned 40% by the Comets, 35% by a soft drink and 25% by a hedge fund on Mars.','Hit a ball into orbit as a rookie. Was billed for the satellite.','Voted Fan Favorite nine seasons running. Voting is compulsory.'],
+  OKAFOR:['Breakdances before every game. The League owns the choreography and 60% of the spins.','Stole 71 bases last season. All 71 were repossessed.','Signed out of the mining colonies at 16. Signing bonus: a window.','Oxygen plan: Premium. Earned one stolen base at a time.'],
+  DELACROIX:['Swing is sponsored by a missile contractor. The follow-through is classified.','Owns 14 moon buggies. All 14 are advertisements.','Has argued with the robot umpire 212 times. The umpire has filed 212 lawsuits.','Legally a subsidiary of the team since the merger.'],
+  BRICKHOUSE:['Eats 9,000 calories of NutriPaste™ a day. Flavor: “Beige.”','Broke the weight room. The repair comes out of next season’s pay.','Each arm is insured separately. The left bicep has a board of directors.','Was offered freedom or a bigger bat. It is a very big bat.'],
+  TANAKA:['Read all 4,000 pages of the player contract. Found the clause forbidding it.','Speaks only in nods. Words are billed per syllable under the standard deal.','Sleeps in the batting cage. The rent is lower.','Three-time Compliance Award winner. Attendance at the ceremony was mandatory.'],
+  MONTOYA:['Taught the crowd the Macarena. Participation is now enforced by section.','Celebrations are pre-approved by Legal. This one is Form 27-B.','Sells signed moon rocks. The Moon’s owners are suing.','Banned from three craters. Two of them were sponsored.'],
+  ABERNATHY:['The walk-up dance has its own agent, who takes 15% of the dance.','Smile is trademarked. Frown remains in the public domain.','Leads the League in dugout snacks. Snacks are deducted from pay.','Thanked the fans once without reading the sponsor list. Fined 30 days of gravity.'],
+  'JACKSON-BELL':['Was traded for a vending machine at the deadline. The machine is batting .310.','Leads the League in sighs per at-bat. The sighs are sponsored.','Requested a transfer to Earth. Currently 9,402nd in the queue.','Morale officer’s report: “Within acceptable limits. Barely.”'],
+  KOWALSKI:['Bats ninth by choice. The ninth spot has the fewest cameras.','Teaches salsa in the offseason. The offseason was discontinued for productivity.','Has worn the same lucky socks since the club moved to the Moon for tax reasons.','Oldest player in the League. Retirement is not covered under the current plan.']};
 function walkLabel(){$('wk').textContent='Walk-ups: '+(WALK.on?'on':'off (faster pace)')+' — tap to change';}
 // Every hitter walks up his first time through the order. After that he still gets one a good part of the time (decided once per at-bat),
 // so the walk-ups keep coming all game without every single at-bat waiting for one.
@@ -2754,7 +2762,7 @@ const HB1=3.0,HBD=5.0;
 const BRW={ch:1.7,st:.3,rd:1.2,n:3,hold:2.3,dur:0,b:null,p:null,cur:null,r:-1,win:false,seq:[],bx:0,bz:0,x0:0,z0:0,ko:false};BRW.f0=BRW.ch+BRW.st;BRW.f1=BRW.f0+BRW.rd*BRW.n;BRW.dur=BRW.f1+BRW.hold;
 const BR_ATT={b_jab:.36,b_jabstep:.62,b_quad:.42,b_kickl:.95,b_kickr:.62,b_butt:.8},BR_Z=-17.2;
 let brawlSeen=false;try{brawlSeen=localStorage.getItem('mm_brawl')==='1';}catch(e){}
-function brawlNeed(){const C=MX.clip,P=MX.pit;if(!WALK.on||!C||!P||!MX.on||!C.intros.b_stance||!C.intros.run||!C.intros.p_dying||!P.taunts.b_stance||!P.taunts.p_dying)return false;return DBG.brawl||(S.hbpN||0)<=1||Math.random()<.3;} // the first hit-by-pitch of every game is a brawl; after that it is a roll of the dice
+function brawlNeed(){const C=MX.clip,P=MX.pit;if(!C||!P||!MX.on||!C.intros.b_stance||!C.intros.run||!C.intros.p_dying||!P.taunts.b_stance||!P.taunts.p_dying)return false;return DBG.brawl||(S.hbpN||0)<=1||Math.random()<.3;} // the first hit-by-pitch of every game is a brawl; after that it is a roll of the dice
 function brawlStart(){S.state='brawl';S.t=now;S.brawled=true;brawlSeen=true;try{localStorage.setItem('mm_brawl','1');}catch(e){}
   MX.clip.hips.getWorldPosition(_p);BRW.x0=_p.x;BRW.z0=_p.z;BRW.bx=_p.x;BRW.bz=_p.z;BRW.win=DBG.brawl==='lose'?false:DBG.brawl==='win'?true:Math.random()<.5;BRW.r=-1;BRW.cur=null;BRW.ko=false;BRW.brth=false;BRW.hits=0;BRW.zd=4.1;
   const W=BRW.win?'b':'p',L=BRW.win?'p':'b',att=Math.random()<.5?[L,W,W]:[W,L,W],pool=Object.keys(BR_ATT).sort(()=>Math.random()-.5);{const q=pool.findIndex(k=>k==='b_jab'||k==='b_quad');if(q>0){const t=pool[0];pool[0]=pool[q];pool[q]=t;}} // the first blow is a quick one: fists are flying the moment he gets there
@@ -2795,7 +2803,7 @@ function hbpEnd(fk,title){const b=curBatter(),r0=Math.random(),k=fk!==undefined?
   if(k>0&&title&&/BRAWL/.test(title))badge('brawl');
   if(k>0){pop(title||'FIRED UP!',run+'▲ RATINGS UP · +2 JUICE','sup',true);cheer(.5,3);roar(.9,.3);buzz([30,40,80]);}
   else if(k<0){pop(title||'SHAKEN UP',run+'▼ RATINGS DOWN','sdn',true);crowdDrop();}
-  else{pop(title||'SHOOK IT OFF',run+'TAKE YOUR BASE','plain');cheer(.3,2);}
+  else{pop(title||'SHOOK IT OFF!',run+'NO CHANGE · +1 JUICE','sup sn',true);cheer(.3,2);} /* the same big outlined call as FIRED UP and SHAKEN UP, in yellow: same place, same size, same time on screen */
   if(k<=0)roarOff(3); // no fight, or a lost one: it settles in a long tail
   showCard();
   // He heads for first with the camera in front of him, and the walk-up banner comes back to show what getting hit (or the fight) did to his ratings.
@@ -2823,7 +2831,7 @@ const QTE_MOVES={
   tag2:{name:'TAGGING UP',code:['L','U','R','D','R','U'],base:2,u:[.7071,.7071],call:"HE'S TAGGING UP!",ok:()=>{S.bases[0]=0;S.bases[1]=1;},okT:['SAFE!',''],no:()=>{S.bases[0]=0;recordOut();},noT:['OUT!',''],pa:true},
   tag3:{name:'TAGGING UP',code:['D','R','U','R','D','L','U'],base:3,u:[.7071,-.7071],call:"HE'S TAGGING UP!",ok:()=>{S.bases[1]=0;S.bases[2]=1;},okT:['SAFE!',''],no:()=>{S.bases[1]=0;recordOut();},noT:['OUT!',''],pa:true}};
 let qteSeen=false;try{qteSeen=localStorage.getItem('mm_qte')==='1';}catch(e){}
-function qteParts(){const C=MX.clip,P=MX.pit;return !!(WALK.on&&C&&P&&MX.on&&C.intros.q_flykick&&C.intros.run&&C.intros.p_dying&&C.intros.b_gut&&C.intros.b_stance&&P.taunts.b_stance&&P.taunts.b_jab&&P.taunts.p_dying);}
+function qteParts(){const C=MX.clip,P=MX.pit;return !!(C&&P&&MX.on&&C.intros.q_flykick&&C.intros.run&&C.intros.p_dying&&C.intros.b_gut&&C.intros.b_stance&&P.taunts.b_stance&&P.taunts.b_jab&&P.taunts.p_dying);}
 function qteOK(){return qteParts()&&(DBG.qte||(S.qteN||0)<3&&(!qteSeen||Math.random()<.5));} // the double play decides for itself; the rest are the player's call (the GO button)
 // GO: after a hit (or a deep fly) that leaves a runner with a base to take, a button comes up for a couple of seconds. Press it and he goes,
 // which means a quick time event at the bag; leave it and he stays put. On a computer: G or Enter.
@@ -2835,9 +2843,11 @@ function qteRisk(k,pl){const from={plate:3,adv3:2,stretch3:2,stretch2:1,tag3:2,t
   const px=pl&&pl.p?pl.p.x:0,pz=pl&&pl.p?pl.p.z:-80,dn=clamp((Math.hypot(px,pz)-45)/60,0,1);let D=1.38-.62*dn+({stretch3:.16,stretch2:.1,plate:.05,tag2:.22,tag3:.05}[k]||0);
   if(k==='adv3'||k==='stretch3'||k==='tag3')D+=clamp(-px/60,-1,1)*.14; /* left field is the short throw to third */
   return clamp(D/Math.pow(sp,1.3),.55,1.6);}
-function goOffer(k,pl){S.goK=k;S.goD=qteRisk(k,pl);const b=$('gobtn');b.firstChild.nodeValue=GO_LABEL[k];b.dataset.r=S.goD<.85?'g':S.goD<1.15?'y':'r';b.querySelector('small').textContent=(S.goD<.85?'GOOD ODDS':S.goD<1.15?'TOSS-UP':'LONG SHOT')+' · ';b.classList.remove('on');void b.offsetWidth;b.classList.add('on');readyDur=Math.max(readyDur,qteSeen?2.8:3.4);S.t=now;buzz(25);} /* up for a little over two seconds; a player who has never taken one gets the full three */
+function goDiag(){const C=MX.clip,P=MX.pit,miss=[];if(!C)miss.push('batter');if(!P)miss.push('pitcher');if(!MX.on)miss.push('models');if(C)['q_flykick','run','p_dying','b_gut','b_stance'].forEach(n=>{if(!C.intros[n])miss.push('b:'+n);});if(P)['b_stance','b_jab','p_dying'].forEach(n=>{if(!P.taunts[n])miss.push('p:'+n);});GD.why=miss.join(', ');const e=$('godiag');if(e)e.textContent='ADVANCE BUTTON: offered '+GD.off+' of '+GD.hit+' chances · pressed '+GD.tap+(GD.why?' · BLOCKED BY: '+GD.why:'');}
+const GD={hit:0,off:0,tap:0,why:''};
+function goOffer(k,pl){GD.off++;S.goK=k;S.goD=qteRisk(k,pl);const b=$('gobtn');b.firstChild.nodeValue=GO_LABEL[k];b.dataset.r=S.goD<.85?'g':S.goD<1.15?'y':'r';b.querySelector('small').textContent=(S.goD<.85?'GOOD ODDS':S.goD<1.15?'TOSS-UP':'LONG SHOT')+' · ';b.classList.remove('on');void b.offsetWidth;b.classList.add('on');readyDur=Math.max(readyDur,qteSeen?2.8:3.4);S.t=now;buzz(25);} /* up for a little over two seconds; a player who has never taken one gets the full three */
 function goHide(){if(S.goK){S.goK=null;}$('gobtn').classList.remove('on');}
-function goTap(){if(!S.goK||S.state!=='result')return;const k=S.goK;goHide();S.next=()=>qteStart(k,true);S.t=now-readyDur+.2;buzz([20,30,60]);tone('triangle',660,990,.12,.3);}
+function goTap(){if(!S.goK||S.state!=='result')return;GD.tap++;goDiag();const k=S.goK;goHide();S.next=()=>qteStart(k,true);S.t=now-readyDur+.2;buzz([20,30,60]);tone('triangle',660,990,.12,.3);}
 function qteStart(kind,noPA){QT.noPA=!!noPA;goHide();const D=QT.D=kind==='dp'?1:clamp(S.goD||1,.55,1.6);S.goD=0;const M=QTE_MOVES[kind],Bp=M.base?[BASES[M.base][0],BASES[M.base][1]]:[0,0],u=M.u;
   S.state='qte';S.t=now;S.qteN=(S.qteN||0)+1;Object.assign(QT,{ph:'heads',tp:now,kind,M,code:D<.85?M.code.slice(0,-2):M.code /* a good bet is a shorter code */,i:0,mash:DBG.mash||(qteSeen&&Math.random()<.35),fill:0,lt:0,lim:(.38*(D<.85?M.code.length-2:M.code.length)+1.0)/Math.pow(D,.8)+(qteSeen?0:1.2), /* the clock: enough to punch the whole code in at a brisk pace with room for one slip, and no more */ok:false,bx:Bp[0],bz:Bp[1],ux:u[0],uz:u[1],ball:null,blow:0,fk:0});
   QT.fx=Bp[0]+u[0]*.35;QT.fz=Bp[1]+u[1]*.35;QT.fry=Math.atan2(u[0],u[1]);QT.rry=Math.atan2(-u[0],-u[1]);QT.rx=Bp[0]+u[0]*17;QT.rz=Bp[1]+u[1]*17;
@@ -3385,7 +3395,7 @@ function finishPlay(){revOff();
   const cel=S.state==='celebrate'||S.state==='trot';setBatter();if(cel)readyDur=3.1;else readyDur=f.thr?2.2+(f.thr.wait||0):1.5;S.next=null;hud();
   // Plays that turn into a quick time event: a single with a man on second or a double with a man on first (the runner now on third can be sent home), a double he tries to stretch into a triple, a single he tries to stretch into a double.
   if(pl.type==='hit'&&!pl.infield&&!pl.grd&&pl.bases<3&&S.state==='result'){ // offered on every base hit that leaves somebody a base to take: the lead runner first, otherwise the hitter
-    const k=S.bases[2]?'plate':pl.bases===2?'stretch3':S.bases[1]?'adv3':'stretch2';
+    const k=S.bases[2]?'plate':pl.bases===2?'stretch3':S.bases[1]?'adv3':'stretch2';GD.hit++;setTimeout(goDiag,0);
     if(k&&qteParts()){if(DBG.qte===true||DBG.qte===k){readyDur=1.3;S.goD=qteRisk(k,pl);S.next=()=>qteStart(k,true);}else goOffer(k,pl);}}
   // Some doubles get a show of their own: once the play is over, cut to him standing on second doing one of the home-run celebrations.
   // Triples always get one, on third (they are rare, and a triple is the most exciting play there is short of a homer).
@@ -3608,7 +3618,7 @@ optLabels();['diff1','diff2'].forEach(id=>$(id).addEventListener('click',e=>{e.s
 markSet();['mark1','mark2'].forEach(id=>$(id).addEventListener('click',e=>{e.stopPropagation();markI=(markI+1)%4;try{localStorage.setItem('mm_mark',markI);}catch(x){}markSet();}));
 bdgLabel();$('bdgbtn').addEventListener('click',e=>{e.stopPropagation();bdgOpen();});
 muteLabel();$('mutebtn').addEventListener('click',e=>{e.stopPropagation();toggleMute();});$('mute1').addEventListener('click',toggleMute);
-walkLabel();$('wk').addEventListener('click',()=>{WALK.on=!WALK.on;try{localStorage.setItem('mm_walk',WALK.on?'1':'0');}catch(e){}walkLabel();});
+walkLabel();$('wk').addEventListener('click',()=>{WALK.on=!WALK.on;try{localStorage.setItem('mm_walk2',WALK.on?'1':'0');}catch(e){}walkLabel();});
 $('mdl').addEventListener('click',()=>loadPlayers(ORDER[(ORDER.indexOf(MX.kind)+1)%ORDER.length]));
 $('again').addEventListener('click',()=>{audioInit();startGame();});
 // pause / restart / main menu
