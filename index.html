@@ -196,7 +196,7 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 #hud.mob #hitinfo #hdr:not([hidden]){display:flex;align-items:center;border-top:0;padding:0 11px;font-size:15px}#hud.mob #hdr span{display:none}
 #hud.mob #plast{top:130px;bottom:auto;left:max(14px,env(safe-area-inset-left,0px));transform:none;font-size:14px}
 #hud.mob #hitinfo:not([hidden])~#plast{visibility:hidden}
-#hud.mob #tim{top:41%;font-size:18px}#hud.mob #tim[data-l="4"]{font-size:25px}#hud.mob #tim[data-l="1"]{font-size:14px}#hud.mob #tim.go{animation-duration:1.15s}
+#hud.mob #tim{top:41%;font-size:18px}#hud.mob #tim[data-l="4"]{font-size:25px}#hud.mob #tim[data-l="1"]{font-size:14px}#hud.mob #tim.go{animation-duration:1.6s}
 @media (max-height:520px){#hitinfo{top:auto;bottom:12px;left:50%;transform:translateX(-50%)}}
 /* walk-up card */
 #walk{left:50%;bottom:clamp(56px,15vh,150px);transform:translateX(-50%);display:flex;align-items:stretch;min-width:min(460px,92vw);background:linear-gradient(#1b1f4a,#0b0c22);border:2px solid var(--pilllo);border-radius:8px;box-shadow:0 4px 0 #000;font-family:var(--display);font-style:italic;overflow:hidden;animation:walkin .35s cubic-bezier(.2,1.3,.4,1) both}
@@ -472,7 +472,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
 @keyframes mkFlick{from{width:16px}to{width:12px;margin-left:-6px}}
 @keyframes mkRocket{0%{transform:translate(-50%,-30%) rotate(-45deg) scale(.2)}18%{transform:translate(-50%,-55%) rotate(-45deg) scale(1.45)}32%{transform:translate(-50%,-55%) rotate(-45deg) scale(1)}100%{transform:translate(-50%,-110%) rotate(-45deg) scale(1.05)}}
 #tbar.go{animation:tim 1.7s ease-out both}#tbar.go.qk,#tim.go.qk{animation-duration:.6s} /* a ball hit on the ground or on a line at the infield: the read-out is gone in half a second, before it can sit across a fielder */#hud.mob #tbar{top:calc(41% + 32px);margin-left:-130px;width:260px}#hud.wk #tbar{visibility:hidden}
-@keyframes tim{0%{opacity:0;transform:translateY(8px)}15%,70%{opacity:1;transform:none}100%{opacity:0}}
+@keyframes tim{0%{opacity:0;transform:translateY(4px)}5%,72%{opacity:1;transform:none}100%{opacity:0}} /* up at once, with the callout: it does not drift in afterwards */
 #flash{inset:0;background:radial-gradient(circle at 50% 55%,#fff,rgba(255,240,180,.7) 40%,transparent 75%);opacity:0}
 /* touch */
 #touch,#apad{transition:opacity .18s}#hud.noctl #touch,#hud.noctl #apad{opacity:0;pointer-events:none}#hud.noctl #jtoast{visibility:hidden}
@@ -903,7 +903,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 559</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 560</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -1072,13 +1072,13 @@ const _pt=new V3();function podTagPos(){const e=$('podtag');if(!$('hud').classLi
 function flyY(z){return z<-200?116+205*Math.pow((-z-200)/480,.8):z>150?116+(z-150)*.62:116+8*Math.sin((z+200)/350*PI);}
 // THE CONTACT READ-OUT SITS DIRECTLY UNDER THE CALLOUT: whenever a callout is up, the timing line and the ball-on-barrel bar are placed just
 // below its bottom edge (measured, so a two-line or oversized call pushes them down by exactly as much): never across it, never a gap.
-let timPlT=0;function timPlace(){const pn=performance.now();if(pn-timPlT<70)return;timPlT=pn;const t=$('tim'),b=$('tbar'),on=t.classList.contains('go')||b.classList.contains('go');
+let timPlT=0;function timPlace(force){const pn=performance.now(),t=$('tim'),b=$('tbar'),on=t.classList.contains('go')||b.classList.contains('go');if(!force&&!on&&pn-timPlT<120)return;timPlT=pn; /* while the read-out is up it is re-placed every frame, and the instant a callout or the read-out itself is triggered: it is never seen in the wrong place first */
   if(!on){if(t.style.top){t.style.removeProperty('top');b.style.removeProperty('top');}return;}
   // every kind of callout counts: the play call, the hitter's shout (PIMPED IT!, ABSOLUTE TANK!, LIFT OFF!...), the orbit call, the pitcher's tag.
   // The read-out goes under the LOWEST of whatever is showing in the upper part of the screen.
-  {const h=$('hud').getBoundingClientRect();let low=0;for(const id of ['pop','shout','orbc','podtag']){const E=$(id);if(!E)continue;const r=E.getBoundingClientRect();if(r.height<4||r.width<4)continue;const cs=getComputedStyle(E);if(cs.display==='none'||cs.visibility==='hidden'||+cs.opacity<.05)continue;
+  {const h=$('hud').getBoundingClientRect();let low=0;for(const id of ['pop','shout','orbc','podtag']){const E=$(id);if(!E)continue;const r=E.getBoundingClientRect();if(r.height<4||r.width<4)continue;{const g=E.classList.contains('go');if(g&&!E._wasGo)E._goT=pn;E._wasGo=g;}const cs=getComputedStyle(E),fresh=E.classList.contains('go')&&pn-(E._goT||0)<450;if(cs.display==='none'||cs.visibility==='hidden'||(+cs.opacity<.05&&!fresh))continue; /* (a callout that has only just been triggered counts even while it is still fading in) */
       const tm=t.getBoundingClientRect();if(r.right<tm.left+tm.width*.2||r.left>tm.right-tm.width*.2)continue; /* (off to one side of it: no conflict) */
-      const bt=r.bottom-h.top;if(r.top-h.top<h.height*.62&&bt>low)low=bt;}
+      const bt=id==='pop'?E.offsetTop+E.offsetHeight+(MOB?4:13):id==='shout'?E.offsetTop+E.offsetHeight*.12+(MOB?4:6):r.bottom-h.top; /* (plus the tilt and outline of the lettering, which hang below its box) */ /* measured from where the callout will SETTLE, not from its pop-in animation, so the read-out does not chase it */if(r.top-h.top<h.height*.62&&bt>low)low=bt;}
     if(low>0){const y=Math.round(low+(MOB?6:10));t.style.setProperty('top',y+'px','important');b.style.setProperty('top',(y+(t.offsetHeight||22)+(MOB?4:8))+'px','important');return;}}
   if(t.style.top){t.style.removeProperty('top');b.style.removeProperty('top');}}
 function eruptTick(L,cols,emb,onFire){const e=now-L.t;if(e>=0&&e<1.9&&S.state!=='title'&&S.state!=='over'){
@@ -2609,7 +2609,7 @@ function pop(t,s='',cls='',long=false){
   if(_bq){const pn=performance.now();if(bdgCur&&pn<bdgCurEnd){$('bdg').classList.remove('go');if(!bdgCur.re&&pn<bdgCurEnd-1900){bdgCur.old=1;bdgCur.re=1;_bq.unshift(bdgCur);}bdgCur=null;} /* it comes back ONCE, and only if it had been up for under a second: never again and again through a run of callouts */popUntil=pn+(long?3300:1700);bdgBusy=Math.max(bdgBusy,popUntil);}
   if(_bq&&cls!=='logo'&&_bq.some(b=>!b.old&&performance.now()-b.tq<80)){const fresh=_bq.filter(b=>!b.old&&performance.now()-b.tq<80);const R=['slam','b2b','five','hr500','rev','earth','sat','lamp','pole','board','eye','aura','duel','showboat','charge','juicehr','ambush','odhr','hr450','hr','walkoff','jump','brawl','send','heater','ten','win','wore','hit'];
     fresh.sort((a,b)=>R.indexOf(a[0])-R.indexOf(b[0]));const B=fresh[0];bdgQ.splice(bdgQ.indexOf(B),1);$('pop').className='';bdgShow(B,true);return;} /* the badge plate IS the call: the ordinary callout is not shown at all, so the two can never collide */
-  const e=$('pop');e.className='';e.querySelector('.t').textContent=t;e.querySelector('.s').textContent=s;void e.offsetWidth;e.className='go '+cls+(long?' long':'');}
+  const e=$('pop');e.className='';e.querySelector('.t').textContent=t;e.querySelector('.s').textContent=s;void e.offsetWidth;e.className='go '+cls+(long?' long':'');e._goT=performance.now();try{timPlace(true);}catch(x){}}
 let MOB=false;function setMob(){MOB=matchMedia('(pointer:coarse)').matches||innerWidth<=560;$('hud').classList.toggle('mob',MOB);document.body.classList.toggle('mob',MOB);}setMob();addEventListener('resize',setMob); // narrow a desktop window to preview the phone layout
 const buzz=p=>{try{if(navigator.vibrate)navigator.vibrate(p);}catch(e){}};
 const TIPS=[['AIM','Drag your left thumb anywhere on the screen to move the bat ring onto the pitch.'],['SWING','Tap CONTACT or POWER the moment the shrinking yellow ring meets the white circle and turns green. Bigger is too early, smaller is late.'],
@@ -2732,7 +2732,7 @@ function timeBar(x,pw,jt,perfect,sk=1,rocket=false){const e=$('tbar');e.classNam
   let mx=clamp(x/SPAN,-1,1)*50;const miss=Math.abs(mx)>used;
   {const tw=$('tmk').parentNode.clientWidth||150,gap=1700/tw;if(perfect)mx=0;else if(Math.abs(mx)<gap)mx=(x<0?-1:1)*gap;} // at least 17 px of daylight between the two marks /* the picture never contradicts the verdict: a PERFECT sits exactly on the target, and anything else is drawn visibly clear of it */
  $('tmk').style.left=(50+mx)+'%';{const mc=miss?'#ff4d2e':'#39ff6a'; /* the target is white; your swing is green (red if it missed the window) */$('tmk').style.background=mc;$('tmk').style.setProperty('--mc',mc);}$('tmk').classList.toggle('pf',!!rocket);void e.offsetWidth;e.className='go'+(S.over&&S.overOn&&!miss?' odz':'');} /* odz: Overdrive contact, the window you hit it in burns blue */
-function timing(t,c,l){const e=$('tim');e.className='';e.textContent=t;e.style.color=c;e.dataset.l=l||2;e.dataset.rk=$('tmk').classList.contains('pf')?1:0;void e.offsetWidth;e.className='go';}
+function timing(t,c,l){const e=$('tim');e.className='';e.textContent=t;e.style.color=c;e.dataset.l=l||2;e.dataset.rk=$('tmk').classList.contains('pf')?1:0;void e.offsetWidth;e.className='go';try{timPlace(true);}catch(x){}}
 function flash(a){const e=$('flash');e.style.transition='none';e.style.opacity=a*FX;void e.offsetWidth;e.style.transition='opacity .35s';e.style.opacity=0;}
 // OVERDRIVE: fill the Juice meter all the way and it is charged. The meter burns and reads OVERDRIVE READY and the JUICE button becomes the
 // OVERDRIVE button, but nothing is spent until the player taps it. Tapped, every swing of that at-bat is a free Juice swing; when the at-bat
