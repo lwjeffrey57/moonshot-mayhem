@@ -363,6 +363,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
 #walk .wrow{font-family:var(--hud);font-weight:800;letter-spacing:.1em;color:var(--dim);align-items:center}#walk .wrow b.gr{font-family:var(--display)}
 #walk .wrow.tv{white-space:normal;font-family:var(--hud);font-weight:700;letter-spacing:.02em;text-transform:none;color:#fff;line-height:1.25;max-width:min(560px,82vw)}#walk .wrow.tv i{font-style:normal;font-weight:800;letter-spacing:.1em;color:#ffb070;margin-right:.3em}
 #walk .wrow b.hand.tdy{font-size:1.5em;color:#fff;vertical-align:-.06em;white-space:nowrap}
+#walk.lockd{border-color:#58d6ff;border-left-color:#58d6ff;box-shadow:0 3px 0 #000,0 0 0 2px #58d6ff,0 0 22px 4px rgba(88,214,255,.85)}#walk.lockd .wrow.sub{color:#8fe8ff}#hud.lockd>#card{border-color:#58d6ff;border-left-color:#58d6ff;box-shadow:0 3px 0 #000,0 0 14px 2px rgba(88,214,255,.8)}#hud.lockd>#card #cname::before{content:'🔥 '} /* LOCKED IN: his plates burn Overdrive blue */
 #walk #wrat.tv{color:#fff;font-size:18.5px;line-height:1.2;padding-top:4px;padding-bottom:8px;max-width:min(680px,84vw)}#walk #wrat.tv i{display:block;font-size:.68em;margin-bottom:1px}@media (min-width:900px) and (min-height:560px){#walk #wrat.tv{font-size:31px}}
 #walk .wrow.sub{background:rgba(5,8,40,.55);border-top:1px solid rgba(255,255,255,.25);color:#c9d2ff}
 #hud>#card #cname{color:#fff!important}#hud>#card #cnum{color:#ffb070!important} /* a solid dark plate with a yellow edge: it stands out from the park behind it */
@@ -893,7 +894,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 527</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 528</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -2696,10 +2697,13 @@ function cardStats(b){const od=!!(S.over&&S.overOn);$('card').classList.toggle('
   [['pw',b.pwr],['co',b.con],['sp',b.spd]].forEach(([k,v])=>{const g0=statGrade(v),g=od?GRADES[Math.min(6,GRADES.indexOf(g0)+1)]:g0,base=g==='S+'?'S':g;
     $('s'+k).style.width=clamp((v-.85)/.32*100+(od?22:0),6,100)+'%';$('s'+k).style.background=od?'#58d6ff':GRADE_COL[base];const e=$('g'+k);e.textContent=g;e.className='g'+base+(od?' up':'');});}
 function setBatter(){if(MX.batPrep)setTimeout(MX.batPrep,700);if(MX.pitVar&&S.pName&&MX.pitVar[S.pName[3]||0]&&MX.pitCur!==(S.pName[3]||0))setTimeout(pitcherModel,0);
+  if(S.lockG){S.over=S.lockG.over;S.overOn=false;S.juice=S.lockG.j;S.lockG=null;} /* LOCKED IN: the Overdrive a hot hitter was lent is his alone. When his turn ends the team's own bar is put back exactly as it was. */
   if(S.over&&S.overOn&&S.walked){} // a walk doesn't use it up: it stays on for the next hitter
   else if(S.over&&S.overOn){S.over=false;S.overOn=false;S.juice=0;}
   juiceArmed=false; // Juice armed for one hitter never carries over to the next
   S.walked=false;S.odSeen=false;S.bi++;const b=curBatter();S.balls=0;S.strikes=0;
+  if(b.lock){S.lockG={over:S.over,j:S.juice};S.over=true;S.overOn=false;S.juice=1;} /* a locked-in hitter comes up with Overdrive ready, every time, until he makes an out (it is still the player's call to switch it on) */
+  $('hud').classList.toggle('lockd',!!b.lock);
   if(S.bi===1&&!S.over&&!S.overOn){S.juice=1;} /* every game, the second hitter comes up with Overdrive charged, whatever the leadoff man did: nobody plays a game without meeting it */
   // The pitcher has Overdrive too: when his Heat meter is full, every pitch of the next at-bat is a Juice pitch. Then his meter starts over.
   duelEnd();
@@ -2769,7 +2773,7 @@ function startWalkup(){
   {const gb=v=>{const g=statGrade(v);return `<b class="gr g${g}"><u>${g}</u></b>`;};$('wrat').innerHTML=`<span>${MOB?'PWR':'POWER'} ${gb(b.pwr)}</span><span>${MOB?'CON':'CONTACT'} ${gb(b.con)}</span><span>${MOB?'SPD':'SPEED'} ${gb(b.spd)}</span><span>TODAY <b class="hand tdy">${b.gs&&b.gs.ab?b.gs.h+'-'+b.gs.ab+(b.gs.hr?' · '+(b.gs.hr>1?b.gs.hr+' ':'')+'HR':''):'0-0'}</b></span>`;if(!b.gs)b.gs={ab:0,h:0,hr:0};b.gs.ab++;} /* his ratings and his day so far (hits for at-bats, homers) */
   {const tv=TRIVIA[b.name];$('wrat').classList.remove('tv');if(tv&&(DBG.trivia||Math.random()<.2)){ /* four times in five the card shows his ratings and his day; one in five, something about him */let k=(Math.random()*tv.length)|0;if(k===trivLast[b.name])k=(k+1)%tv.length;trivLast[b.name]=k;$('wrat').classList.add('tv');$('wrat').innerHTML='<span><i>DID YOU KNOW?</i> '+tv[k]+'</span>';}} /* now and then the card skips the ratings and tells you something about him instead */
   faceShow(b);
-  $('wspot').textContent='BATTING '+['1ST','2ND','3RD','4TH','5TH','6TH','7TH','8TH','9TH'][i]+(SPONSOR[b.name]?' · '+SPONSOR[b.name]:''); /* every Comet is somebody's property, or would like to be */$('wskip').textContent=MOB?'TAP TO SKIP':'SWING TO SKIP';
+  $('wspot').textContent='BATTING '+['1ST','2ND','3RD','4TH','5TH','6TH','7TH','8TH','9TH'][i]+(b.lock?(MOB?' · 🔥 LOCKED IN':' · 🔥 LOCKED IN: OVERDRIVE UNTIL AN OUT'):SPONSOR[b.name]?' · '+SPONSOR[b.name]:'');$('walk').classList.toggle('lockd',!!b.lock);if(b.lock)setTimeout(()=>{if(S.state==='walkup')pop('LOCKED IN!','OVERDRIVE READY · EVERY AT-BAT UNTIL AN OUT','');},350); /* every Comet is somebody's property, or would like to be */$('wskip').textContent=MOB?'TAP TO SKIP':'SWING TO SKIP';
   {const F=MUGS[b.name];S.cardPend=!(F&&F.url!==undefined);$('walk').hidden=S.cardPend;} /* CARD AND PORTRAIT ARRIVE TOGETHER: the first time a hitter comes up the card waits a beat for his head shot (it never waits more than a second) */
   $('hud').classList.add('wk');cheer(.16,2);
 }
@@ -3099,7 +3103,7 @@ function gameRating(){const G=S.goal,pts=S.runs*10+S.hits*4+S.hrs*8+(S.longest>=
   const T=[[0,'D','BENCH WARMER'],[20,'C','ROOKIE'],[45,'B','EVERYDAY STARTER'],[75,'A','ALL-STAR'],[110,'S','MOONSHOT LEGEND']];let i=0;T.forEach((t,j)=>{if(pts>=t[0])i=j;});
   return {pts,stars:i+1,grade:T[i][1],title:T[i][2],next:T[i+1]?T[i+1][0]-pts:0,nextTitle:T[i+1]?T[i+1][2]:''};}
 function newGame(){LINEUP.forEach(b=>{if(b.base)Object.assign(b,b.base);b.hb=0;}); /* stat changes from getting hit last only for the game */gamesPlayed++;try{localStorage.setItem('mm_games',gamesPlayed);}catch(e){}
-  S.wuBi=-9;LINEUP.forEach(q=>{q.gs={ab:0,h:0,hr:0};});Object.assign(S,{inning:1,outs:0,balls:0,strikes:0,runs:0,bases:[0,0,0],hits:0,hrs:0,longest:0,streak:0,bestStreak:0,juice:.75 /* three bars: a hit in the very first at-bat fills the fourth and unlocks Overdrive */,heat:.2,over:false,stk:false,opp:0,bi:-1,pitches:0,seen:{},kOut:null});S.podN=0;S.podBi=-9;S.goal=null; /* per-game goals are switched off for now: pickGoal() is still here to bring them back */S.ks=0;S.d2=0;S.cardBi=-1;S.pChanges=0;S.pRuns0=0;S.pc3=false;S.pcPending=false;S.lastHRbi=-9;S.bdgGame={};S.pStart=gamesPlayed%BULLPEN.length;S.pName=BULLPEN[S.pStart];setTimeout(pitcherModel,0); /* a different starter each game, so left-handers start some of them */$('pcap').textContent='PITCHER';S.sTaunt=null;S.stLast=false;jPend=false;S.orbN=0;S.odUses=0;S.brawled=false;S.qteN=0;S.goK=null;S.retalBi=-9;S.forceHbpBi=-9;S.walkoff=false;S.duel=false;$('hud').classList.remove('duel');S.pdLast=false;S.pOver=false;S.podPending=false;S.jSaid=false;S.overOn=false;S.spSeen=false;lastWalk='';
+  S.wuBi=-9;LINEUP.forEach(q=>{q.gs={ab:0,h:0,hr:0};q.hs=0;q.lock=false;});S.lockG=null;Object.assign(S,{inning:1,outs:0,balls:0,strikes:0,runs:0,bases:[0,0,0],hits:0,hrs:0,longest:0,streak:0,bestStreak:0,juice:.75 /* three bars: a hit in the very first at-bat fills the fourth and unlocks Overdrive */,heat:.2,over:false,stk:false,opp:0,bi:-1,pitches:0,seen:{},kOut:null});S.podN=0;S.podBi=-9;S.goal=null; /* per-game goals are switched off for now: pickGoal() is still here to bring them back */S.ks=0;S.d2=0;S.cardBi=-1;S.pChanges=0;S.pRuns0=0;S.pc3=false;S.pcPending=false;S.lastHRbi=-9;S.bdgGame={};S.pStart=gamesPlayed%BULLPEN.length;S.pName=BULLPEN[S.pStart];setTimeout(pitcherModel,0); /* a different starter each game, so left-handers start some of them */$('pcap').textContent='PITCHER';S.sTaunt=null;S.stLast=false;jPend=false;S.orbN=0;S.odUses=0;S.brawled=false;S.qteN=0;S.goK=null;S.retalBi=-9;S.forceHbpBi=-9;S.walkoff=false;S.duel=false;$('hud').classList.remove('duel');S.pdLast=false;S.pOver=false;S.podPending=false;S.jSaid=false;S.overOn=false;S.spSeen=false;lastWalk='';
   $('title').hidden=true;$('over').hidden=true;$('pausebtn').hidden=false;$('mutebtn').hidden=false;setBatter();renderRep();scoreboard('PLAY BALL','INNING 1');S.opp=0;toReady(2);pop('PLAY BALL!','','logo');hud();SND.playball();cheer(.14,1.5);}
 
 // ───────────────────────── pitching
@@ -3493,7 +3497,7 @@ function afterPA(delay){ // plate appearance over
 function samePA(delay){S.state='result';S.t=now;S.next=null;readyDur=delay;hud();}
 const DEFEAT=3.5,DEF_CUT=1.6; // strikeout reaction: the camera holds on the hitter until DEF_CUT, then cuts to the pitcher's taunt
 function strike(kind){heatUp(.11);S.strikes++;{const n=S.strikes;setTimeout(()=>SND.call(false,n),kind==='look'?240:60);} // the mitt pops first, then the umpire
-  if(S.strikes>=3){recordOut();pop('STRUCK OUT',kind==='look'?'CAUGHT LOOKING':'SWINGING','cool');if(kind==='look')boo(.5);else crowdDrop();
+  if(S.strikes>=3){{const q=curBatter();q.hs=0;q.lock=false;}recordOut();pop('STRUCK OUT',kind==='look'?'CAUGHT LOOKING':'SWINGING','cool');if(kind==='look')boo(.5);else crowdDrop();
     // the strikeout sulk: one of the defeat routines, with the camera on him (skipped when walk-ups are off, for pace)
     const ds=MX.clip&&WALK.on?Object.keys(MX.clip.intros).filter(k=>/^d_/.test(k)):[];
     if(ds.length){let ts=MX.pit?Object.keys(MX.pit.taunts).filter(k=>!/sadwalk|dying/.test(k)):[];{const w=ts.filter(k=>WILD_TAUNT.includes(k));if(earlyShow(S.ks||0)&&w.length)ts=w;}S.ks=(S.ks||0)+1;S.kOut={t:now+(kind==='look'?.15:.45),bi:S.bi,clip:ds[(Math.random()*ds.length)|0],taunt:ts[(Math.random()*ts.length)|0]};afterPA(DEFEAT+.75);}else afterPA(1.5);}
@@ -3505,7 +3509,7 @@ function strike(kind){heatUp(.11);S.strikes++;{const n=S.strikes;setTimeout(()=>
 function finishPlay(){revOff();
   const f=flight,pl=f.play;f.done=true;
   if(pl.type==='foul'){const was=S.strikes;if(S.strikes<2)S.strikes++;pop('FOUL',(S.strikes>was?'STRIKE '+['ONE','TWO'][S.strikes-1]+' · ':'')+S.balls+'-'+S.strikes,'plain');if(Math.random()<.75)setTimeout(()=>sfx('foul',.9),250);samePA(1);return;}
-  if(pl.type==='out'){const dp=!!pl.dp&&S.bases[0]&&S.outs<2,qdp=dp&&pl.label==='GROUND OUT'&&qteOK();recordOut();
+  if(pl.type==='out'){const dp=!!pl.dp&&S.bases[0]&&S.outs<2,qdp=dp&&pl.label==='GROUND OUT'&&qteOK();{const q=curBatter();q.hs=0;q.lock=false;}recordOut();
     if(dp&&!qdp){recordOut();S.bases[0]=0;} // the man on first is forced at second, then the relay gets the hitter
     const B=(i)=>new V3(BASES[i][0],1.2,BASES[i][1]);
     if(pl.label==='GROUND OUT'&&pl.f&&pl.f.thrAct&&(dp||pl.f!==fielders[0]))f.thr={t0:now+.05,to:dp?B(2):B(1),next:dp&&!qdp?B(1):null,full:true}; // the first baseman takes his own grounders to the bag: no throw to nobody
@@ -3523,7 +3527,7 @@ function finishPlay(){revOff();
       if(ds.length){S.kOut={t:now+1.25,bi:S.bi,clip:ds[(Math.random()*ds.length)|0],taunt:null,rob:true};afterPA(1.25+DEFEAT+.35);return; /* (the next hitter is not brought in until the reaction is completely over) */}}
     afterPA(dp?2.7:f.thr?2.1:1.5);return;}
   badge('hit');if(S.streak>=4)badge('heater');if(false)setTimeout(()=>{const e=$('shout');if(S.state==='result'||S.state==='flight'){e.textContent='ON A HEATER!';e.style.left='50%';e.style.top=(MOB?'30%':'24%');e.classList.remove('b','go');void e.offsetWidth;e.classList.add('go');}},700);
-  {const q=curBatter();if(q.gs){q.gs.h++;if(pl.type==='hr')q.gs.hr++;}}S.hits++;S.streak++;S.bestStreak=Math.max(S.bestStreak,S.streak);if(!f.tb)S.juice=Math.min(1,S.juice+(pl.type==='hr'?.5:.25));else if(pl.type==='hr'&&!S.over)S.juice=Math.min(1,S.juice+.25); /* a homer on a Juice swing gives one bar back */ // every hit is worth one quarter; // a Juice hit doesn't refill the bar it just spent
+  {const q=curBatter();if(q.gs){q.gs.h++;if(pl.type==='hr')q.gs.hr++;}q.hs=(q.hs||0)+1;if(q.hs>=2&&!q.lock){q.lock=true;badge('lock');setTimeout(()=>timing('🔥 '+q.name+' IS LOCKED IN!','#58d6ff',4),900);}} /* LOCKED IN: two hits in a row by the same man */S.hits++;S.streak++;S.bestStreak=Math.max(S.bestStreak,S.streak);if(!f.tb)S.juice=Math.min(1,S.juice+(pl.type==='hr'?.5:.25));else if(pl.type==='hr'&&!S.over)S.juice=Math.min(1,S.juice+.25); /* a homer on a Juice swing gives one bar back */ // every hit is worth one quarter; // a Juice hit doesn't refill the bar it just spent
   if(pl.type==='hr'){
     {const ft0=Math.round(pl.dist*3.281);hrFeetAdd(ft0);badge('hr');if(ft0>=450)badge('hr450');if(ft0>=500)badge('hr500');if(f.od)badge('odhr');if(f.jp)badge('juicehr');if(f.pod){badge('aura');badge('duel');}if(f.fp)badge('ambush');if(S.bases.filter(Boolean).length===3)badge('slam');
       S.b2b=S.lastHRbi===S.bi-1;if(S.b2b)badge('b2b');S.lastHRbi=S.bi;if(S.hrs>=4)badge('five');if(f.sat)badge('sat');else if(f.lamp)badge('lamp');else if(f.rev)badge('rev');else if(f.orbit)badge('earth');else if(f.sbHit)badge('board');else if(f.tr.eyeT)badge('eye');}
@@ -3613,7 +3617,7 @@ let aerLast=-1,odBag=[],odLastK='';function odPick(){if(!odBag.length){odBag=['r
 const BADGES=[['hit','KNOCK','Get your first hit','🧢'],['hr','WENT YARD','Hit your first home run','💥'],['hr450','TAPE MEASURE','Hit one 450 feet or more','📏'],['hr500','5 HUNNID','Hit one 500 feet or more','🚀'],
   ['odhr','PRIME TIME','Homer in Overdrive','🔥'],['juicehr','GOT HEEEM!','Homer off a Juice pitch','😂'],['duel','BEAT THE HEAT','Homer while the pitcher is in Overdrive','🥵'],['charge','BRAWLER','Charge the mound','😤'],['showboat','SHOWBOAT','Admire one and flip the bat','🕺'],['aura','MAX AURA','Take a pitcher deep while he is in Overdrive','✨'],['ambush','AMBUSH','Homer on the first pitch','⚡'],
   ['slam','GRAND SALAMI','Hit a grand slam','🍖'],['b2b','BACK TO BACK','Homers in consecutive at-bats','👯'],['five','DERBY NIGHT','Five homers in one game','🎆'],['heater','ON A HEATER','Five hits in a row','♨️'],
-  ['rev','IN ORBIT','Put one into orbit round the Moon','🌕'],['earth','NEXT STOP: EARTH','Hit one clean off the Moon','🌍'],['sat','SPACE JUNK','Take out the satellite','🛰️'],['lamp','LIGHTS OUT','Smash a light tower','💡'],['pole','DOINK!','Homer off the foul pole','🔔'],['board','OFF THE SCOREBOARD','Homer off the scoreboard','📺'],['cove','MELTDOWN','Homer into the lava in the Cove','🌋'],['eye','OFF THE BATTER\'S EYE','Homer off the batter\'s eye','👁️'],
+  ['rev','IN ORBIT','Put one into orbit round the Moon','🌕'],['earth','NEXT STOP: EARTH','Hit one clean off the Moon','🌍'],['sat','SPACE JUNK','Take out the satellite','🛰️'],['lamp','LIGHTS OUT','Smash a light tower','💡'],['pole','DOINK!','Homer off the foul pole','🔔'],['board','OFF THE SCOREBOARD','Homer off the scoreboard','📺'],['lock','LOCKED IN','Two hits in a row with one hitter','🔥'],['cove','MELTDOWN','Homer into the lava in the Cove','🌋'],['eye','OFF THE BATTER\'S EYE','Homer off the batter\'s eye','👁️'],
   ['send','WHEELS','Win a showdown at the bag','👟'],['jump','PERFECT JUMP','Stop the needle on gold','🥇'],['brawl','LAST MAN STANDING','Win a brawl','🥊'],['wore','WORE IT','Get hit by a pitch','🩹'],
   // THE DISTANCE TREE: every home run's feet are added to a career total, kept on the device. Seven rungs, from a thousand feet to a million.
   ['ft1','FIRST THOUSAND','1,000 career feet of home runs','📐'],['ft2','MILE HIGH','5,280 career feet: one mile of homers','🏔️'],['ft3','CRATER HOPPER','26,400 career feet: five miles','🦘'],['ft4','MARATHON','138,336 career feet: a marathon of homers','🏅'],
