@@ -194,3 +194,6 @@ One excellent reusable ballpark before any others. If a stadium model is made el
 - Scale and origin: metres; home plate at the origin, centre field toward -Z, ground at Y=0. Fence about 99 m down the lines, 122 m to centre, to match the game's physics (or tell me the numbers and I change the physics).
 - Budget for phones: roughly 30-60k triangles for the whole park, one or two 2048 px texture atlases, lighting BAKED into the textures (the game uses no real-time lights on the park).
 - Separate named pieces help: field, walls, stands, scoreboard, foul poles, so the game can still animate the board, the crowd wave and wall collisions.
+
+- Defensive QTEs while pitching: when a CPU runner gets aggressive and stretches a hit (extra base, tag-up, going first to third), the player becomes the defender and gets a QTE to throw him out (mirror of the batting-side advance QTE).
+- Pitching audio: perfect-release and good-release need proper sound feedback (the 8-bit beeps were removed; perfect currently has only the turbo "crush" sound and a crowd pop, good release is silent). Sound not chosen yet.
