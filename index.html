@@ -1010,7 +1010,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 669</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 670</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -5598,7 +5598,12 @@ function perfCtx(){const st=S.state;if(st==='title'||st==='over')return null;
   return 'bat:'+st;}
 function perfDev(){if(PERF.dev)return PERF.dev;let gpu='';try{const gl=renderer.getContext(),e=gl.getExtension('WEBGL_debug_renderer_info');gpu=String(e?gl.getParameter(e.UNMASKED_RENDERER_WEBGL):'').slice(0,80);}catch(x){}
   return PERF.dev={ua:String(navigator.userAgent||'').slice(0,160),scr:screen.width+'x'+screen.height,dpr:+(window.devicePixelRatio||1).toFixed(2),cores:navigator.hardwareConcurrency||0,mem:navigator.deviceMemory||0,gpu,touch:!!MOB};}
-function perfTick(ms,work){if(window.__mmManual&&!DBG.perf)return;if(ms>1000||ms<=0)return; /* (a frame that long is the tab coming back, not the game) */const c=perfCtx();
+// WHO HAD THE MAIN THREAD? At the end of each frame a message is posted to ourselves. If nothing else is running it comes straight back; if
+// the browser is busy with something of the page's (styles, layout, painting the HUD, a timer) it comes back late. A slow frame with a late
+// echo was held up on the main thread; a slow frame with a prompt echo was lost in the graphics chip or the display. That tells the two apart.
+const PLAG={ch:null,t:0,lag:0,slowN:0,slowLag:0,slowBusy:0,allN:0,allLag:0,busy:0};
+try{PLAG.ch=new MessageChannel();PLAG.ch.port1.onmessage=()=>{PLAG.lag=performance.now()-PLAG.t;PLAG.allN++;PLAG.allLag+=PLAG.lag;if(PLAG.lag>8)PLAG.busy++;};}catch(e){}
+function perfTick(ms,work){if(PLAG.ch){if(ms>34&&PLAG.allN>0){PLAG.slowN++;PLAG.slowLag+=PLAG.lag;if(PLAG.lag>8)PLAG.slowBusy++;}PLAG.t=performance.now();try{PLAG.ch.port2.postMessage(0);}catch(e){}}if(window.__mmManual&&!DBG.perf)return;if(ms>1000||ms<=0)return; /* (a frame that long is the tab coming back, not the game) */const c=perfCtx();
   if(S.state==='over'&&PERF.st!=='over')perfFlush();PERF.st=S.state;if(!c)return;if(!PERF.t0)PERF.t0=performance.now();if(performance.now()-PERF.t0<3000)return; /* the first seconds are loading, not play */
   PERF.n++;PERF.ms+=ms;PERF.hist[ms<12?0:ms<18?1:ms<25?2:ms<34?3:ms<50?4:ms<80?5:ms<150?6:7]++;
   const o=PERF.ctx[c]||(PERF.ctx[c]={n:0,ms:0,wk:0,s25:0,s50:0,mx:0,calls:0,tris:0,sm:0,k:0});o.n++;o.ms+=ms;o.wk+=work;if(ms>25)o.s25++;if(ms>50)o.s50++;if(ms>o.mx)o.mx=ms;
@@ -5608,7 +5613,7 @@ function perfTick(ms,work){if(window.__mmManual&&!DBG.perf)return;if(ms>1000||ms
 function perfReport(){const tot=PERF.ms||1,ctx=Object.keys(PERF.ctx).map(k=>{const o=PERF.ctx[k],sm=o.sm||1;return {c:k,sec:Math.round(o.ms/1000),share:+(o.ms/tot).toFixed(3),fps:+(1000*o.n/o.ms).toFixed(1),workMs:+(o.wk/o.n).toFixed(1),slow25:+(o.s25/o.n).toFixed(3),slow50:+(o.s50/o.n).toFixed(3),worstMs:Math.round(o.mx),calls:Math.round(o.calls/sm),tris:Math.round(o.tris/sm),res:+(o.k/sm).toFixed(2)};}).sort((a,b)=>b.sec-a.sec).slice(0,28);
   const h=PERF.hist,n=PERF.n||1;let bld='';try{bld=$('bld').textContent;}catch(x){}
   return {v:1,build:bld,ts:Date.now(),playSec:Math.round(tot/1000),frames:PERF.n,fps:+(1000*n/tot).toFixed(1),cap30:(h[3]+h[2])/n>.8&&h[0]+h[1]<n*.05, /* nearly every frame at about 33 ms and none faster: the phone is holding the page to 30 a second (Low Power Mode does this) */
-    hist:{lt12:h[0],lt18:h[1],lt25:h[2],lt34:h[3],lt50:h[4],lt80:h[5],lt150:h[6],over150:h[7]},quality:qLvl,res:+DRS.k.toFixed(2),canvas:renderer.domElement.width+'x'+renderer.domElement.height,dev:perfDev(),models:(()=>{try{return {bcur:MX.bcur,pit:MX.pitCur,rigs:Object.keys(MX.brigs||{}).join(','),bodies:Object.keys(MX.batVar||{}).join(','),pits:Object.keys(MX.pitVar||{}).join(','),at:MX.dlT||{},batErr:MX.batErr||{},pitErr:MX.pitErr||{},wait:PD.waitMax||0,standin:PD.standin||0};}catch(e){return {};}})(),ctx,worst:PERF.hit.slice(0,16)};}
+    hist:{lt12:h[0],lt18:h[1],lt25:h[2],lt34:h[3],lt50:h[4],lt80:h[5],lt150:h[6],over150:h[7]},quality:qLvl,res:+DRS.k.toFixed(2),canvas:renderer.domElement.width+'x'+renderer.domElement.height,lag:{avgMs:+(PLAG.allLag/Math.max(1,PLAG.allN)).toFixed(2),busyShare:+(PLAG.busy/Math.max(1,PLAG.allN)).toFixed(3),slowFrames:PLAG.slowN,slowAvgMs:+(PLAG.slowLag/Math.max(1,PLAG.slowN)).toFixed(1),slowBusyShare:+(PLAG.slowBusy/Math.max(1,PLAG.slowN)).toFixed(3)},dev:perfDev(),models:(()=>{try{return {bcur:MX.bcur,pit:MX.pitCur,rigs:Object.keys(MX.brigs||{}).join(','),bodies:Object.keys(MX.batVar||{}).join(','),pits:Object.keys(MX.pitVar||{}).join(','),at:MX.dlT||{},batErr:MX.batErr||{},pitErr:MX.pitErr||{},wait:PD.waitMax||0,standin:PD.standin||0};}catch(e){return {};}})(),ctx,worst:PERF.hit.slice(0,16)};}
 function perfFlush(){if(PERF.busy||PERF.n<300||(window.__mmManual&&!DBG.perf))return;const go=db=>{if(!db)return;PERF.busy=true;let r;try{r=perfReport();}catch(x){PERF.busy=false;return;}
     Promise.resolve().then(()=>db.collection('perf').doc(PERF.id).set(r)).then(()=>{PERF.sent++;},()=>{}).then(()=>{PERF.busy=false;});};
   if(PERF.db){go(PERF.db);return;}if(PERF.dbTried)return;PERF.dbTried=true;try{if(window.claude&&window.claude.use)window.claude.use('db').then(db=>{PERF.db=db||null;if(!db)PERF.dbTried=true;else go(db);},()=>{});}catch(x){}}
