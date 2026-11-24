@@ -200,6 +200,7 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 @media (max-height:520px){#hitinfo{top:auto;bottom:12px;left:50%;transform:translateX(-50%)}}
 /* walk-up card */
 #walk{left:50%;bottom:clamp(56px,15vh,150px);transform:translateX(-50%);display:flex;align-items:stretch;min-width:min(460px,92vw);background:linear-gradient(#1b1f4a,#0b0c22);border:2px solid var(--pilllo);border-radius:8px;box-shadow:0 4px 0 #000;font-family:var(--display);font-style:italic;overflow:hidden;animation:walkin .35s cubic-bezier(.2,1.3,.4,1) both}
+@keyframes walkinL{from{transform:translate(0,70%)}to{transform:translate(0,0)}} /* on a wide screen the walk-up card sits in the bottom left corner, clear of the hitter in the middle */
 @keyframes walkin{from{transform:translate(-50%,70%)}to{transform:translate(-50%,0)}}
 #walk .wn{display:flex;align-items:center;justify-content:center;min-width:74px;font-size:40px;color:#fff;background:linear-gradient(135deg,#e23a22,#7a1208);text-shadow:0 3px 0 #000}
 #walk .wb{flex:1;min-width:0}
@@ -208,7 +209,7 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 #walk .wrow b{color:var(--volt);font-weight:400}
 #walk .wrow.sub{background:#000;font-size:13px;color:var(--dim);justify-content:space-between}
 @media (max-width:560px){#walk{min-width:0;width:94vw}#walk .wn{min-width:56px;font-size:30px}#walk .wname{font-size:24px;padding:7px 12px 5px}#walk .wrow{gap:7px;padding:6px 10px;font-size:12px}#walk .wrow.sub{font-size:11px}}
-@media (min-width:900px) and (min-height:560px){#walk{min-width:640px;bottom:2.2vh}#walk .wn{min-width:112px;font-size:62px}#walk .wname{font-size:46px;padding:10px 22px 7px}#walk .wrow{gap:26px;padding:9px 22px;font-size:23px}#walk .wrow.sub{font-size:16px}}
+@media (min-width:900px) and (min-height:560px){#walk{min-width:560px;bottom:2.2vh;left:max(16px,1.6vw);transform:none;animation-name:walkinL}#walk .wn{min-width:112px;font-size:62px}#walk .wname{font-size:46px;padding:10px 22px 7px}#walk .wrow{gap:26px;padding:9px 22px;font-size:23px}#walk .wrow.sub{font-size:16px}}
 #hud.wk #rep,#hud.wk #keys,#hud.wk #pitchinfo,#hud.wk #touch,#hud.mob.wk #mutebtn{visibility:hidden}
 .wkopt{pointer-events:auto;background:none;border:1px solid var(--dim);padding:6px 12px;cursor:pointer;font-family:var(--hud)}
 /* centre calls */
@@ -888,7 +889,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 516</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 517</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -1097,7 +1098,7 @@ function initPost(){ // stadium-light bloom + edge smoothing; skipped cleanly if
   }catch(e){composer=null;fxaa=null;}
 }
 
-const POLE_NETS=[],POLE_CAPS=[];let poleFlash=-9,poleNetT=null;
+const POLE_NETS=[],POLE_CAPS=[];let poleFlash=-9,poleNetT=null,POLE_T=null;
 function poleTick(){const k=Math.max(0,1-(now-poleFlash)/1.2);POLE_NETS.forEach(n=>{n.material.opacity=.5+.08*Math.sin(now*2.2)+.5*k;});POLE_CAPS.forEach(c=>c.material.color.setHex((now%1.6)<.8||k>0?0xff3b3b:0x551010));}
 // ONE TYPEFACE EVERYWHERE: everything painted into the park (scoreboard, wall distances, signs) is lettered in the same face as the screen
 // text. A painted texture that has lettering on it is painted again once that face has finished loading, so none is left in a stand-in font.
@@ -1479,9 +1480,20 @@ gl_FragColor=vec4(col,1.0);
       for(let i=0;i<600;i++){g.fillStyle=`rgba(${Math.random()<.5?'0,0,0':'255,255,255'},${rand(.03,.1)})`;g.fillRect(rand(0,w),rand(0,h),rand(2,14),rand(1,4));}
       const rm=g.createLinearGradient(0,0,0,16);rm.addColorStop(0,'rgba(255,255,255,.55)');rm.addColorStop(1,'rgba(255,255,255,0)');g.fillStyle=rm;g.fillRect(0,0,w,16);
       const ft=g.createLinearGradient(0,h*.7,0,h);ft.addColorStop(0,'rgba(255,200,130,0)');ft.addColorStop(1,'rgba(255,200,130,.16)');g.fillStyle=ft;g.fillRect(0,h*.7,w,h*.3);},[1,1]);rock.anisotropy=ANISO;
-    [[640,120,235,1,0x7c7c86],[420,70,190,2.3,0xffffff]].forEach(([R0,h0,h1,ph,tint])=>{const A=[],B=[];
+    [[640,120,235,1,0x8c8c96],[420,70,190,2.3,0xdcdce4]].forEach(([R0,h0,h1,ph,tint])=>{const A=[],B=[];
       for(let i=0;i<=180;i++){const an=i/180*PI*2,n=fb(an*3+ph),r=R0+n*40;A.push(new V3(r*Math.sin(an),-3,-r*Math.cos(an)));B.push(new V3(r*Math.sin(an),h0+(h1-h0)*clamp(.5+n*.9+.25*Math.sin(an*23+ph),0,1),-r*Math.cos(an)));}
-      scene.add(new T.Mesh(ribbon(B,A,.004),new T.MeshBasicMaterial({map:rock,color:tint,side:T.DoubleSide,fog:false})));});
+      // MTN_MOON: the ranges wear the same lunar surface as the field (the same photographed maps, lit from the same side), brighter at the
+      // crest and falling to shadow at the foot. Set it to false for the plain painted hills.
+      const MTN_MOON=true,c=new T.Color(tint),mm=MTN_MOON?new T.ShaderMaterial({side:T.DoubleSide,uniforms:{mD:groundMat.uniforms.mD,mN:groundMat.uniforms.mN,mK:groundMat.uniforms.mK,rk:{value:rock},tint:{value:new V3(c.r,c.g,c.b)},sc:{value:new T.Vector2(R0>500?2.4:3.2,R0>500?1.5:1.1)}},
+        vertexShader:'varying vec2 vU;void main(){vU=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}',
+        fragmentShader:`uniform sampler2D mD,mN,rk;uniform float mK;uniform vec3 tint;uniform vec2 sc;varying vec2 vU;
+void main(){vec2 q=vU*sc,mf=fract(q*0.5)*2.0,mir=step(1.0,mf),mu=mix(mf,2.0-mf,mir);
+vec3 ta=texture2D(mD,mu).rgb/0.49;vec3 tn=texture2D(mN,mu).rgb*2.0-1.0;tn.xy*=(1.0-2.0*mir);
+vec3 N=normalize(vec3(tn.x*1.9,tn.y*1.9,tn.z));float d1=max(dot(N,normalize(vec3(-0.5,0.55,0.67))),0.0);
+vec3 l3=(vec3(0.30,0.32,0.38)+vec3(1.0,0.95,0.86)*d1*1.25)/1.1;
+vec3 moon=min(vec3(0.5,0.5,0.53)*mix(vec3(1.0),ta,0.85)*l3*mix(1.3,0.5,smoothstep(0.0,1.0,vU.y)),vec3(0.93));
+vec3 old=texture2D(rk,vU).rgb;gl_FragColor=vec4(mix(old,moon,mK)*tint,1.0);}`}):new T.MeshBasicMaterial({map:rock,color:tint,side:T.DoubleSide,fog:false});
+      scene.add(new T.Mesh(ribbon(B,A,.004),mm));});
     const reg=tex(512,512,(g,w,h)=>{g.fillStyle='#77777e';g.fillRect(0,0,w,h);for(let i=0;i<5000;i++){g.fillStyle=`rgba(${Math.random()<.5?'0,0,0':'255,255,255'},${rand(.02,.09)})`;g.fillRect(rand(0,w),rand(0,h),rand(1,5),rand(1,5));}
       for(let i=0;i<34;i++){const x=rand(20,w-20),y=rand(20,h-20),r=rand(5,26);g.fillStyle='rgba(20,20,26,.35)';g.beginPath();g.ellipse(x,y,r,r*.6,0,0,PI*2);g.fill();g.strokeStyle='rgba(235,235,240,.5)';g.lineWidth=1.6;g.beginPath();g.ellipse(x,y+1,r,r*.6,0,.1,PI-.1);g.stroke();}},[9,9]);
     const gnd=new T.Mesh(new T.CircleGeometry(1150,48),new T.MeshBasicMaterial({map:reg,fog:false}));gnd.rotation.x=-PI/2;gnd.position.y=-.9;scene.add(gnd);
@@ -1546,7 +1558,12 @@ gl_FragColor=vec4(col,1.0);
   // the backstop is an arc behind the plate (BK_A metres back at its deepest) that runs smoothly into the two foul-side walls
   const BK_A=17,BK_R=(26-BK_A)/(Math.SQRT2-1),BK_Z=BK_A-BK_R;
   // foul-side walls and stands
-  poleNetT=tex(64,64,(g,w,h)=>{g.clearRect(0,0,w,h);g.fillStyle='#000';g.fillRect(0,0,w,h);g.strokeStyle='#ffe53b';g.lineWidth=3;g.beginPath();g.moveTo(0,0);g.lineTo(w,h);g.moveTo(w,0);g.lineTo(0,h);g.stroke();g.strokeStyle='#3ad6ff';g.lineWidth=2;g.strokeRect(0,0,w,h);},[1,1]);poleNetT.wrapS=poleNetT.wrapT=T.RepeatWrapping;poleNetT.repeat.set(3,30);
+  // THE FOUL POLES ARE LIT LIKE THE REST OF THE PARK (painted, no real lights): the lattice is glowing neon tube with a bright core, a hot
+  // node at every crossing and a soft bloom round it; the mast is a rounded, shaded tube (highlight down one side, dark at the edges) with a
+  // collar every few metres catching the lamps.
+  poleNetT=tex(128,128,(g,w,h)=>{g.fillStyle='#000';g.fillRect(0,0,w,h);const ln=(c,lw,bl)=>{g.strokeStyle=c;g.lineWidth=lw;g.shadowColor=c;g.shadowBlur=bl;g.beginPath();g.moveTo(0,0);g.lineTo(w,h);g.moveTo(w,0);g.lineTo(0,h);g.stroke();};
+    ln('#a8780a',13,0);ln('#ffd21e',7,14);ln('#fff6c0',2.4,0);g.shadowColor='#3ad6ff';g.shadowBlur=10;g.strokeStyle='#3ad6ff';g.lineWidth=5;g.strokeRect(0,0,w,h);g.shadowBlur=0;g.strokeStyle='#d8f8ff';g.lineWidth=1.6;g.strokeRect(0,0,w,h);
+    for(const q of [[w/2,h/2],[0,0],[w,0],[0,h],[w,h]]){const rg=g.createRadialGradient(q[0],q[1],0,q[0],q[1],17);rg.addColorStop(0,'rgba(255,255,255,1)');rg.addColorStop(.35,'rgba(255,236,140,.8)');rg.addColorStop(1,'rgba(255,220,60,0)');g.fillStyle=rg;g.fillRect(q[0]-17,q[1]-17,34,34);}},[1,1]);poleNetT.wrapS=poleNetT.wrapT=T.RepeatWrapping;poleNetT.anisotropy=ANISO;poleNetT.repeat.set(3,30);
   // The walls down the lines are padded and lit the same way as the outfield wall (painted-in light: a bulge on every pad, bright at the
   // top, shadow at the foot, a pool of floodlight every 24 m). Navy here, so the eye still reads green as "the home-run wall".
   const sidePad=tex(1024,64,(g,w,h)=>{const bg=g.createLinearGradient(0,0,0,h);bg.addColorStop(0,'#3a4c9a');bg.addColorStop(.5,'#27357a');bg.addColorStop(1,'#141c48');g.fillStyle=bg;g.fillRect(0,0,w,h);
@@ -1555,6 +1572,16 @@ gl_FragColor=vec4(col,1.0);
     {const vg=g.createLinearGradient(0,0,0,h);vg.addColorStop(0,'rgba(255,255,255,.22)');vg.addColorStop(.3,'rgba(255,255,255,.05)');vg.addColorStop(.6,'rgba(0,0,0,.1)');vg.addColorStop(1,'rgba(0,0,0,.5)');g.fillStyle=vg;g.fillRect(0,0,w,h);}
     g.save();g.globalCompositeOperation='overlay';for(const cx of [0,w]){const R0=h*1.6;g.save();g.translate(cx,0);g.scale((w*.42)/R0,1);const rg=g.createRadialGradient(0,0,0,0,0,R0);rg.addColorStop(0,'rgba(255,246,220,.95)');rg.addColorStop(.5,'rgba(255,240,205,.45)');rg.addColorStop(1,'rgba(255,240,205,0)');g.fillStyle=rg;g.fillRect(-R0,0,R0*2,h);g.restore();}g.restore();
     g.fillStyle='rgba(255,255,255,.1)';g.fillRect(0,h*.2,w,2);},[1,1]);sidePad.repeat.set(1/24,1);sidePad.anisotropy=ANISO;
+  // THE GRANDSTAND ROOF: a cantilevered canopy over the back rows of the upper deck, all the way round from pole to pole. Ribbed underneath
+  // and catching the floodlights along its front edge, with a white fascia and a line of lamps under the lip. It gives the big stand a
+  // top, so it reads as a building and not a tilted sheet of seats.
+  const roofT=tex(128,64,(g,w,h)=>{const bg=g.createLinearGradient(0,0,0,h);bg.addColorStop(0,'#0c0f26');bg.addColorStop(.7,'#1a2150');bg.addColorStop(1,'#3a4a9a');g.fillStyle=bg;g.fillRect(0,0,w,h);
+    for(let x=0;x<w;x+=32){g.fillStyle='rgba(0,0,0,.45)';g.fillRect(x,0,3,h);g.fillStyle='rgba(150,180,255,.22)';g.fillRect(x+3,0,2,h);}
+    g.fillStyle='rgba(0,0,0,.3)';g.fillRect(0,h*.33,w,2);g.fillRect(0,h*.66,w,2);const lg=g.createLinearGradient(0,h*.6,0,h);lg.addColorStop(0,'rgba(255,240,200,0)');lg.addColorStop(1,'rgba(255,240,200,.35)');g.fillStyle=lg;g.fillRect(0,h*.6,w,h*.4);},[1,1]);roofT.repeat.set(1/12,1);roofT.anisotropy=ANISO;
+  const ROOF={under:basic({map:roofT}),top:basic({color:0x232a5c}),fascia:basic({color:0xeef1ff}),lamp:new T.MeshBasicMaterial({color:0xffe9b0,side:T.DoubleSide,fog:false}),wall:basic({color:0x14183a})},
+    roofAdd=(P)=>{ /* P(offset,height) -> array of points along the stand */
+      scene.add(new T.Mesh(ribbon(P(58,52),P(58,61)),ROOF.wall));scene.add(new T.Mesh(ribbon(P(58.2,61),P(44,58.2),1),ROOF.under));scene.add(new T.Mesh(ribbon(P(58.2,61.25),P(44,58.45)),ROOF.top));
+      scene.add(new T.Mesh(ribbon(P(43.95,58.6),P(43.95,57.3)),ROOF.fascia));scene.add(new T.Mesh(ribbon(P(44.3,57.75),P(44.3,57.45)),ROOF.lamp));};
   [-1,1].forEach(s=>{
     const line=[[70,-70],[30,-4],[BK_R/Math.SQRT2,BK_Z+BK_R/Math.SQRT2]].map(p=>new V3(p[0]*s,0,p[1]));
     const n=new V3(.866*s,0,.5);
@@ -1567,6 +1594,7 @@ gl_FragColor=vec4(col,1.0);
     // each end, so from any angle (a foul ball, a liner down the line, the camera swinging round) it has thickness like the outfield bowl.
     {const hull=new T.MeshBasicMaterial({color:0x14183a,side:T.DoubleSide}),hull2=new T.MeshBasicMaterial({color:0x1d2250,side:T.DoubleSide}),P=(q,o,y)=>q.clone().addScaledVector(n,o).setY(y);
       scene.add(new T.Mesh(ribbon(line.map(q=>P(q,58,52)),line.map(q=>P(q,58,0))),hull));                                   // back wall
+      roofAdd((o,y)=>line.map(q=>P(q,o,y)));
       scene.add(new T.Mesh(ribbon(line.map(q=>P(q,34,23)),line.map(q=>P(q,30,23))),hull2));                                 // the walkway between the decks
       [line[0],line[line.length-1]].forEach(q=>{                                                                           // end walls: the stepped side profile, filled in
         scene.add(new T.Mesh(ribbon([P(q,1,1.9),P(q,34,23)],[P(q,1,0),P(q,34,0)]),hull2));
@@ -1576,11 +1604,14 @@ gl_FragColor=vec4(col,1.0);
       const mk=(w,h,d,col,y,off)=>{const m=new T.Mesh(new T.BoxGeometry(w,h,d),new T.MeshBasicMaterial({color:col}));m.position.copy(c).addScaledVector(n,off);m.position.y=y;m.rotation.y=ry;scene.add(m);};
       mk(24,2.4,3.4,0x08080f,1.2,.9);mk(25,.35,4.4,0x2a3f7a,2.55,.6);mk(22,.3,.6,0x8a6a3a,.55,1.6);}
     // foul pole
-    const pole=new T.Mesh(new T.CylinderGeometry(.25,.25,26,6),new T.MeshBasicMaterial({color:0xffe53b}));pole.position.copy(pol(99.3,s*PI/4,13));scene.add(pole);
+    const pole=new T.Mesh(new T.CylinderGeometry(.3,.3,26,12),new T.MeshBasicMaterial({map:POLE_T||(POLE_T=tex(64,512,(g,w,h)=>{const sg=g.createLinearGradient(0,0,w,0);[[0,'#8a6a06'],[.12,'#c99a0c'],[.3,'#fff3a0'],[.42,'#ffe53b'],[.7,'#d8a80e'],[.88,'#7a5c05'],[1,'#8a6a06']].forEach(q=>sg.addColorStop(q[0],q[1]));g.fillStyle=sg;g.fillRect(0,0,w,h);
+      for(let y=0;y<h;y+=64){g.fillStyle='rgba(40,28,0,.55)';g.fillRect(0,y+6,w,8);g.fillStyle='rgba(255,255,230,.7)';g.fillRect(0,y+2,w,4);g.fillStyle='rgba(58,214,255,.9)';g.fillRect(0,y+14,w,3);}
+      const vg=g.createLinearGradient(0,0,0,h);vg.addColorStop(0,'rgba(255,255,255,.35)');vg.addColorStop(.2,'rgba(255,255,255,0)');vg.addColorStop(.75,'rgba(0,0,0,0)');vg.addColorStop(1,'rgba(0,0,0,.4)');g.fillStyle=vg;g.fillRect(0,0,w,h);})),fog:false}));
+    {const gl=new T.Sprite(new T.SpriteMaterial({map:glowTex,color:0xffd84a,blending:T.AdditiveBlending,depthWrite:false,transparent:true,opacity:.3,fog:false}));gl.position.copy(pol(99.3,s*PI/4,15));gl.scale.set(7,30,1);gl.renderOrder=-1;scene.add(gl);}pole.position.copy(pol(99.3,s*PI/4,13));scene.add(pole);
     // Moon dressing: the pole is a beacon mast. Emitter rings up its length, a warning light on top, and where a park on Earth hangs a
     // wire screen on the fair side, this one projects a lattice of light. A ball that hits it is a home run.
     {const P=pol(99.3,s*PI/4,0),dx=-s*.7071,dz=-.7071,W=2.3,H=26-WALL_H;
-      const net=new T.Mesh(new T.PlaneGeometry(W,H),new T.MeshBasicMaterial({map:poleNetT,transparent:true,opacity:.6,depthWrite:false,side:T.DoubleSide,blending:T.AdditiveBlending,fog:false}));
+      const net=new T.Mesh(new T.PlaneGeometry(W,H),new T.MeshBasicMaterial({map:poleNetT,transparent:true,opacity:.9,depthWrite:false,side:T.DoubleSide,blending:T.AdditiveBlending,fog:false}));
       net.position.set(P.x+dx*(W/2+.2),WALL_H+H/2,P.z+dz*(W/2+.2));net.rotation.y=-s*PI/4;scene.add(net);POLE_NETS.push(net);
       for(let y=6;y<=24;y+=6){const ring=new T.Mesh(new T.TorusGeometry(.5,.07,5,12),new T.MeshBasicMaterial({color:0x3ad6ff,fog:false}));ring.rotation.x=PI/2;ring.position.set(P.x,y,P.z);scene.add(ring);}
       const cap=new T.Mesh(new T.SphereGeometry(.55,10,8),new T.MeshBasicMaterial({color:0xff3b3b,fog:false}));cap.position.set(P.x,26.4,P.z);scene.add(cap);POLE_CAPS.push(cap);}
@@ -1629,7 +1660,7 @@ gl_FragColor=vec4(col,1.0);
     for(let k=0;k<=NS;k++){const t=lerp(1,-1,k/NS),dt=.62/len(arc(17,12));
       scene.add(new T.Mesh(ribbon([Bp(t+dt*2.6,1,1.96),Bp(t-dt*2.6,1,1.96)],[Bp(t+dt*1.5,34,23.06),Bp(t-dt*1.5,34,23.06)]),sm));
       scene.add(new T.Mesh(ribbon([Bp(t+dt*1.5,30,30.06),Bp(t-dt*1.5,30,30.06)],[Bp(t+dt*1.1,58,52.06),Bp(t-dt*1.1,58,52.06)]),sm));}
-    scene.add(new T.Mesh(ribbon(arc(58,52),arc(58,55.5)),basic({color:0x1a1838})));
+    scene.add(new T.Mesh(ribbon(arc(58,52),arc(58,55.5)),basic({color:0x1a1838})));roofAdd((o,y)=>arc(o,y));
     // ribbon board on the face of the upper deck
     const FL=len(arc(30,23));
     const led=tex(2048,256,(g,w,h)=>{g.fillStyle='#070b1e';g.fillRect(0,0,w,h);
@@ -1748,9 +1779,20 @@ function sbDraw(force){
 function sbTick(){if(sbMsgT<0)sbMsgT=now+4.5;else if(sbMsgT&&now>sbMsgT&&S.state!=='title'&&S.state!=='over'){sbMsgT=0;sbDraw(true);}}
 {
   const sb=new T.Mesh(new T.BoxGeometry(48,18,2.5),[0,1,2,3,4,5].map(i=>i===4?sbMat:new T.MeshBasicMaterial({color:0x15132a})));
+  // THE BOARD SPANS WIDER: a wing on each side in club colours (Krakens left, Comets right), framed like the main face, so it reads as one
+  // long video board across right-centre.
+  {const wing=(nm,sub,c0,c1,ed,sd)=>{const t=tex(256,512,(g,w,h)=>{const bg=g.createLinearGradient(0,0,0,h);bg.addColorStop(0,c0);bg.addColorStop(1,c1);g.fillStyle=bg;g.fillRect(0,0,w,h);
+        g.fillStyle='rgba(0,0,0,.2)';for(let y=0;y<h;y+=5)g.fillRect(0,y,w,2);const sh=g.createLinearGradient(0,0,w,h);sh.addColorStop(0,'rgba(255,255,255,.22)');sh.addColorStop(.5,'rgba(255,255,255,0)');sh.addColorStop(1,'rgba(0,0,0,.3)');g.fillStyle=sh;g.fillRect(0,0,w,h);
+        g.textAlign='center';g.textBaseline='middle';g.fillStyle='rgba(255,255,255,.14)';g.font='italic 400 330px "Russo One",Arial Black,Arial';g.fillText(nm[0],w/2,h*.4);
+        g.save();g.translate(w/2,h*.47);g.rotate(-PI/2);g.font='italic 400 92px "Russo One",Arial Black,Arial';g.lineWidth=12;g.strokeStyle='#05060f';g.strokeText(nm,0,0,h*.8);g.fillStyle='#fff';g.fillText(nm,0,0,h*.8);g.restore();
+        g.font='400 26px "Russo One",Arial Black,Arial';g.fillStyle='#05060f';g.fillRect(0,h-64,w,64);g.fillStyle=ed;g.fillText(sub,w/2,h-31,w-24);
+        g.strokeStyle=ed;g.lineWidth=10;g.strokeRect(8,8,w-16,h-16);g.strokeStyle='rgba(255,255,255,.3)';g.lineWidth=3;g.strokeRect(20,20,w-40,h-40);});t.anisotropy=ANISO;
+      const back=new T.Mesh(new T.BoxGeometry(9.6,18,2.5),new T.MeshBasicMaterial({color:0x15132a}));back.position.set(sd*28.9,0,0);sb.add(back);
+      const m=new T.Mesh(new T.PlaneGeometry(9.2,17.6),new T.MeshBasicMaterial({map:t,fog:false}));m.position.set(sd*28.9,0,1.27);sb.add(m);};
+    wing('KRAKENS','KEPLER','#1d6f8a','#062a3a','#7fe6ff',-1);wing('COMETS','TRANQUILITY','#d2581a','#5a1c04','#ffb070',1);}
   sb.position.set(SBX,39,-(fenceR(0)+17));sb.lookAt(SBX*.4,16,0);scene.add(sb); /* set off to the right of centre, so it is not sitting behind the batter card on a phone */
   const leg=new T.MeshBasicMaterial({color:0x15132a});
-  [-19,19].forEach(x=>{const m=new T.Mesh(new T.BoxGeometry(1.6,22,1.6),leg);m.position.set(SBX+x,20,-(fenceR(0)+18));scene.add(m);});
+  [-26,-9,9,26].forEach(x=>{const m=new T.Mesh(new T.BoxGeometry(1.6,22,1.6),leg);m.position.set(SBX+x,20,-(fenceR(0)+18));scene.add(m);});
   // LIT LIKE A PS2 JUMBOTRON: a bright bezel with a row of bulbs, a soft halo of its own light behind it, and a glassy sheen with scan
   // lines across the face. All painted textures on flat panels, so it is free to draw.
   {const face=tex(512,192,(g,w,h)=>{g.clearRect(0,0,w,h);g.fillStyle='rgba(0,0,0,.16)';for(let y=0;y<h;y+=4)g.fillRect(0,y,w,1.4);
@@ -2586,15 +2628,15 @@ try{WALK.on=localStorage.getItem('mm_walk2')!=='0';}catch(e){}
 // LORE ON THE WALK-UP CARD. The Lunar League is company property: the parks, the air, the players and (technically) the fans. The card says so
 // with a straight face, the way a broadcast sponsored by the people it is about would.
 const trivLast={},TRIVIA={
-  VASQUEZ:['Born on the Moon. Earth citizenship pending since birth. Processing fee: unpaid.','Contract is owned 40% by the Comets, 35% by a soft drink and 25% by a hedge fund on Mars.','Hit a ball into orbit as a rookie. Was billed for the satellite.','Voted Fan Favorite nine seasons running. Voting is compulsory.'],
-  OKAFOR:['Breakdances before every game. The League owns the choreography and 60% of the spins.','Stole 71 bases last season. All 71 were repossessed.','Signed out of the mining colonies at 16. Signing bonus: a window.','Oxygen plan: Premium. Earned one stolen base at a time.'],
-  DELACROIX:['Swing is sponsored by a missile contractor. The follow-through is classified.','Owns 14 moon buggies. All 14 are advertisements.','Has argued with the robot umpire 212 times. The umpire has filed 212 lawsuits.','Legally a subsidiary of the team since the merger.'],
-  BRICKHOUSE:['Eats 9,000 calories of NutriPaste™ a day. Flavor: “Beige.”','Broke the weight room. The repair comes out of next season’s pay.','Each arm is insured separately. The left bicep has a board of directors.','Was offered freedom or a bigger bat. It is a very big bat.'],
-  TANAKA:['Read all 4,000 pages of the player contract. Found the clause forbidding it.','Speaks only in nods. Words are billed per syllable under the standard deal.','Sleeps in the batting cage. The rent is lower.','Three-time Compliance Award winner. Attendance at the ceremony was mandatory.'],
-  MONTOYA:['Taught the crowd the Macarena. Participation is now enforced by section.','Celebrations are pre-approved by Legal. This one is Form 27-B.','Sells signed moon rocks. The Moon’s owners are suing.','Banned from three craters. Two of them were sponsored.'],
-  ABERNATHY:['The walk-up dance has its own agent, who takes 15% of the dance.','Smile is trademarked. Frown remains in the public domain.','Leads the League in dugout snacks. Snacks are deducted from pay.','Thanked the fans once without reading the sponsor list. Fined 30 days of gravity.'],
-  'JACKSON-BELL':['Was traded for a vending machine at the deadline. The machine is batting .310.','Leads the League in sighs per at-bat. The sighs are sponsored.','Requested a transfer to Earth. Currently 9,402nd in the queue.','Morale officer’s report: “Within acceptable limits. Barely.”'],
-  KOWALSKI:['Bats ninth by choice. The ninth spot has the fewest cameras.','Teaches salsa in the offseason. The offseason was discontinued for productivity.','Has worn the same lucky socks since the club moved to the Moon for tax reasons.','Oldest player in the League. Retirement is not covered under the current plan.']};
+  VASQUEZ:['Born on the Moon. Earth citizenship pending since birth. Processing fee: unpaid.','Contract is owned 40% by the Comets, 35% by a soft drink and 25% by a hedge fund on Mars.','Hit a ball into orbit as a rookie. Was billed for the satellite.','Voted Fan Favorite nine seasons running. Voting is compulsory.','Career home runs: 412. Baseballs recovered: 3.','Exit velocity is measured in fines per second.'],
+  OKAFOR:['Breakdances before every game. The League owns the choreography and 60% of the spins.','Stole 71 bases last season. All 71 were repossessed.','Signed out of the mining colonies at 16. Signing bonus: a window.','Oxygen plan: Premium. Earned one stolen base at a time.','Sprint speed: 31 feet per second. 38 with a repo drone behind.','Has slid 4.1 miles on the seat of those pants. The pants are leased.'],
+  DELACROIX:['Swing is sponsored by a missile contractor. The follow-through is classified.','Owns 14 moon buggies. All 14 are advertisements.','Has argued with the robot umpire 212 times. The umpire has filed 212 lawsuits.','Legally a subsidiary of the team since the merger.','Batting .340 against humans, .900 against robots, .000 against Legal.','Has been ejected 19 times. Each ejection sold as a collectible.'],
+  BRICKHOUSE:['Eats 9,000 calories of NutriPaste™ a day. Flavor: “Beige.”','Broke the weight room. The repair comes out of next season’s pay.','Each arm is insured separately. The left bicep has a board of directors.','Was offered freedom or a bigger bat. It is a very big bat.','Longest home run: 1,104 feet. It landed in a different tax bracket.','Has broken 212 bats this season. Each one is itemised.'],
+  TANAKA:['Read all 4,000 pages of the player contract. Found the clause forbidding it.','Speaks only in nods. Words are billed per syllable under the standard deal.','Sleeps in the batting cage. The rent is lower.','Three-time Compliance Award winner. Attendance at the ceremony was mandatory.','Has seen 2,847 pitches this season. Holds a grudge against 40 of them.','Strike zone judgment: 99th percentile. Opinions about it: 0 permitted.'],
+  MONTOYA:['Taught the crowd the Macarena. Participation is now enforced by section.','Celebrations are pre-approved by Legal. This one is Form 27-B.','Sells signed moon rocks. The Moon’s owners are suing.','Banned from three craters. Two of them were sponsored.','Celebrations per hit: 3.2. League average: 0.4.','Jersey sales: first in the League. Royalties: also the League’s.'],
+  ABERNATHY:['The walk-up dance has its own agent, who takes 15% of the dance.','Smile is trademarked. Frown remains in the public domain.','Leads the League in dugout snacks. Snacks are deducted from pay.','Thanked the fans once without reading the sponsor list. Fined 30 days of gravity.','On-base percentage: .412. On-camera percentage: 97.','Has signed 60,000 autographs. Each is a binding sponsorship agreement.'],
+  'JACKSON-BELL':['Was traded for a vending machine at the deadline. The machine is batting .310.','Leads the League in sighs per at-bat. The sighs are sponsored.','Requested a transfer to Earth. Currently 9,402nd in the queue.','Morale officer’s report: “Within acceptable limits. Barely.”','Batting average with runners in scoring position: sad.','Has seen 14 walk-off wins. From the dugout. Facing the wall.'],
+  KOWALSKI:['Bats ninth by choice. The ninth spot has the fewest cameras.','Teaches salsa in the offseason. The offseason was discontinued for productivity.','Has worn the same lucky socks since the club moved to the Moon for tax reasons.','Oldest player in the League. Retirement is not covered under the current plan.','Games played: 3,112. Days off: 0. Days off requested: 3,112.','Pension: vested. Location of pension: unknown.']};
 function walkLabel(){$('wk').textContent='Walk-ups: '+(WALK.on?'on':'off (faster pace)')+' — tap to change';}
 // Every hitter walks up his first time through the order. After that he still gets one a good part of the time (decided once per at-bat),
 // so the walk-ups keep coming all game without every single at-bat waiting for one.
@@ -2610,7 +2652,7 @@ function startWalkup(){
   {const I=MX.clip.intros,forcedWalk=DBG.trip===true?'w_trip':DBG.trip;if(S.walkClip===lastWalk&&!(forcedWalk&&I[forcedWalk])){const alt=Object.keys(I).filter(k=>/^w_/.test(k)&&k!==lastWalk&&k!=='w_walkin');if(alt.length)S.walkClip=alt[(Math.random()*alt.length)|0];}lastWalk=S.walkClip;} // never the same walk-up twice in a row
   $('wnum').textContent=b.num;$('wname').innerHTML='<small>#'+b.num+' · '+(POS_BY[b.name]||'DH')+' · BATS '+(b.lh?'L':'R')+'</small>'+bdn(b);
   {const gb=v=>{const g=statGrade(v);return `<b class="gr g${g}"><u>${g}</u></b>`;};$('wrat').innerHTML=`<span>POWER ${gb(b.pwr)}</span><span>CONTACT ${gb(b.con)}</span><span>SPEED ${gb(b.spd)}</span>`;}
-  {const tv=TRIVIA[b.name];$('wrat').classList.remove('tv');if(tv&&Object.keys(S.seen).length>1&&(DBG.trivia||Math.random()<.4)){let k=(Math.random()*tv.length)|0;if(k===trivLast[b.name])k=(k+1)%tv.length;trivLast[b.name]=k;$('wrat').classList.add('tv');$('wrat').innerHTML='<span><i>DID YOU KNOW?</i> '+tv[k]+'</span>';}} /* now and then the card skips the ratings and tells you something about him instead */
+  {const tv=TRIVIA[b.name];$('wrat').classList.remove('tv');if(tv&&(DBG.trivia||Math.random()<.72)){let k=(Math.random()*tv.length)|0;if(k===trivLast[b.name])k=(k+1)%tv.length;trivLast[b.name]=k;$('wrat').classList.add('tv');$('wrat').innerHTML='<span><i>DID YOU KNOW?</i> '+tv[k]+'</span>';}} /* now and then the card skips the ratings and tells you something about him instead */
   $('wspot').textContent='BATTING '+['1ST','2ND','3RD','4TH','5TH','6TH','7TH','8TH','9TH'][i];$('wskip').textContent=MOB?'TAP TO SKIP':'SWING TO SKIP';
   $('walk').hidden=false;$('hud').classList.add('wk');cheer(.16,2);
 }
@@ -3067,7 +3109,7 @@ function simulate(p0,v0,spin,opt){spin=spin||{side:0,lift:0};opt=opt||{};const G
           v.x-=1.62*vn*n3x;v.y-=1.62*vn*n3y;v.z-=1.62*vn*n3z;v.multiplyScalar(.8);p.y=hy+.03;}}} // comes off the panel up and back toward the field
     if(hr||grd){const d=r-fr,deck=false; // it comes down among the fans: stopped at head height on the lower deck, or by the upper deck and its facade where there is one
       const sy=d>34?0:d>1.5?WALL_H+.3+(d-1.5)*.667+.9:WALL_H+.2*Math.max(0,d)/1.5+.25; // beyond the back row there is nothing: it has left the ballpark and comes down on the Moon // the first metre and a half behind the wall is the ledge in front of row one: it stops there too
-      if(p.y<=sy||d>190||(deck&&d>=30&&p.y>25&&p.y<=32+(d-30)*.667+.9)){pts.push({x:p.x,y:p.y,z:p.z,t});seatT=t;break;}}
+      if(p.y<=sy||d>300||(deck&&d>=30&&p.y>25&&p.y<=32+(d-30)*.667+.9)){pts.push({x:p.x,y:p.y,z:p.z,t});seatT=t;break;}}
     else if(p.y<=0){
       if(!land){land={x:p.x,z:p.z,t};if(Math.abs(p.x)>.216-p.z+LINE_TOL)foul=true;} // fair or foul is settled by where it first lands, measured from the chalked lines
       p.y=0;if(v.y<-1.6){const big=opt.chop&&!nb;nb++;v.y*=big?-.45:-.42;v.x*=big?.84:.8;v.z*=big?.84:.8;
@@ -3213,6 +3255,9 @@ function tryContact(){flight_pop=false;if(pitch.hbp){swing.done=true;swing.miss=
   const lift=tsp?rand(-7.5,-5.2):kind==='BLOOP'||kind==='CHOPPER'||flight_pop?rand(-1,1):clamp(cu,-1.2,1.2)*1.9+rand(-1.9,1.7)+(la>18?.3:0);
   if(tsp)kind='TOPSPIN SINKER';
   if(!kind&&!flight_pop){if(lift>2.7&&la>14)kind='BACKSPIN CARRY';else if(lift<-2.7&&la>5&&la<32)kind='TOPSPIN SINKER';}
+  // THE TAPE-MEASURE SHOT: a barreled power swing now and then catches it so flush that it carries clean out of the stadium and comes down
+  // on the Moon beyond (more often with Juice behind it). The chase camera rides it the whole way.
+  if(!kind&&!flight_pop&&pw&&q>.88&&la>21&&la<37&&(DBG.tape||Math.random()<(tb?.3:.1))){v*=1.14;fopt.g=.8;kind='TAPE-MEASURE SHOT';}
   const spin={side:phi/40*3.2+gs()*4,lift};
   const p0=new V3(pitch.tx,pitch.ty,clamp(-dt*6,-.7,.3));
   const v0=new V3(Math.sin(phi*DEG)*Math.cos(la*DEG),Math.sin(la*DEG),-Math.cos(phi*DEG)*Math.cos(la*DEG)).multiplyScalar(v);
@@ -4561,7 +4606,7 @@ function step(dt){
       _p.copy(ball.position);burst(fxS,_p,8,2,.3,[.8,.7,.5],3);
       if(swing){strike('swing');}
       else if(pitch.inZone){strike('look');}
-      else{S.balls++;{const n=S.balls;setTimeout(()=>SND.call(true,n),240);}
+      else{S.balls++;{const add=!S.over&&S.juice<1;if(add)S.juice=Math.min(1,S.juice+.25);timing(add?'GOOD EYE! · +JUICE':'GOOD EYE!','#58d6ff',2);} /* laying off a ball is rewarded: a quarter bar of Juice for every one taken */{const n=S.balls;setTimeout(()=>SND.call(true,n),240);}
         if(S.balls>=4){S.walked=true;S.juice=Math.min(1,S.juice+.25);walkRunners();const r=advance(1,true);pop('WALK',r?'+1 RUN':'TAKE YOUR BASE','plain');boo(.5);afterPA(1.3);}
         else{pop('BALL '+['ONE','TWO','THREE'][S.balls-1],S.balls+'-'+S.strikes,'plain');samePA(.95);}}
     }
@@ -4619,7 +4664,7 @@ function step(dt){
   const b=S.bi>=0?curBatter():LINEUP[0],tb=(S.over&&S.overOn)||(!S.over&&juiceOn()&&S.juice>=.25);
   if(QT.pb!=null&&S.state!=='qte'){QT.pb=null;pitcherModel();}
   stickHint();sbTick();zapTick();crowdTick(dt);shoutTick();poleTick();satTick();lampTick(dt);laserTick(dt);organTick();vendorTick();clapTick();roarTick();heartTick();zoneTick();
-  if(flight&&flight.play.type==='hr'&&!flight.sbHit&&!flight.noSb&&!flight.orbit&&ball.visible&&Math.abs(ball.position.x-SBX)<24&&ball.position.y>30&&ball.position.y<48&&ball.position.z<-(fenceR(0)+15)&&ball.position.z>-(fenceR(0)+24)){flight.sbHit=true;badge('board');pop('OFF THE SCOREBOARD!','','hot');zapStart(ball.position,true);burst(fxL,ball.position,26,9,.7,[.6,.85,1],7,1);}
+  if(flight&&flight.play.type==='hr'&&!flight.sbHit&&!flight.noSb&&!flight.orbit&&ball.visible&&Math.abs(ball.position.x-SBX)<33&&ball.position.y>30&&ball.position.y<48&&ball.position.z<-(fenceR(0)+15)&&ball.position.z>-(fenceR(0)+24)){flight.sbHit=true;badge('board');pop('OFF THE SCOREBOARD!','','hot');zapStart(ball.position,true);burst(fxL,ball.position,26,9,.7,[.6,.85,1],7,1);}
   if(!!MX.lefty!==lhCls){lhCls=!!MX.lefty;$('hud').classList.toggle('lh',lhCls);}
   if(rawMouse&&rawMouse.d){rawMouse.d=0;pointerAim(rawMouse);}
   touchSettle();reticle.position.set(aim.x,aim.y,0);
@@ -4665,7 +4710,7 @@ function updateCamera(rdt){
     _a.set(q.x-p0.x,q.y-p0.y,q.z-p0.z);if(_a.lengthSq()<1e-6)_a.set(0,0,-1);_a.normalize(); // riding just behind and above the ball, looking where it is going
     camPos.set(p0.x,p0.y,p0.z).addScaledVector(_a,-7).add(_b.set(0,1.7,0));camLook.set(p0.x,p0.y,p0.z).addScaledVector(_a,14);
     {const cr=Math.hypot(camPos.x,camPos.z),cph=Math.atan2(camPos.x,-camPos.z),cd=cr-fenceR(clamp(cph,-PI/4,PI/4)),sm=(a,b,x)=>{const u=clamp((x-a)/(b-a),0,1);return u*u*(3-2*u);},top=Math.abs(cph)<.3?58:38; /* THE CAMERA NEVER GOES THROUGH THE BUILDING: while it is over the seats, the board or the back wall it is held above them (higher still over the scoreboard in centre), so a ball leaving the park is watched over the rim, not through it */
-      camPos.y=Math.max(camPos.y,top*sm(-16,-5,cd)*(1-sm(40,56,cd)));}}
+      const y0=camPos.y;camPos.y=Math.max(camPos.y,top*sm(-16,-5,cd)*(1-sm(40,56,cd)));camLook.y+=(camPos.y-y0)*.75;}} /* (and it keeps looking out along the flight, not down at its feet) */
   else if(flight&&flight.orb&&!flight.done){ // from just outside the park, watching it climb away toward Earth
     if(flight.lamp){const T1=TOWERS[flight.lamp-1].p,h1=Math.hypot(T1.x,T1.z)||1,sd=T1.x>0?1:-1;camPos.set(T1.x*.46+(-T1.z/h1)*sd*48,26,T1.z*.46+(T1.x/h1)*sd*48);camLook.copy(flight.lampHit?T1:_b.copy(ball.position).lerp(T1,.6)); /* from off to the side, toward the foul line (clear of the scoreboard): the rope is seen side-on, climbing all the way into the lights */pcutT=now;pcutH.set(T1.x,T1.y+11,T1.z);} // from the outfield grass, looking up at the tower as it comes in
     else if(flight.sat){camPos.set(flight.orbFrom.x*.45+16,104,flight.orbFrom.z*.45+34).addScaledVector(_b.copy(ball.position).sub(flight.orbFrom),.04);camLook.copy(flight.satHit?SAT.g.position:ball.position);} // from high over the park, clear of every deck and roof, looking up and out at it
