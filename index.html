@@ -996,7 +996,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 614</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 615</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -1418,7 +1418,7 @@ function eruptTick(L,cols,emb,onFire){const e=now-L.t;if(e>=0&&e<1.9&&S.state!==
     L.c.position.set(L.x,.4,L.z);L.c.scale.set(3+e*16,1.6+e*2,1);L.c.material.opacity=.7*k*k;
     if(e<1.3)burst(fxL,_p.set(L.x+rand(-.5,.5),rand(.3,2.2),L.z+rand(-.5,.5)),5,4,.8,emb,-4,5);}
   else if(L.a&&L.a.visible){L.a.visible=L.b.visible=L.c.visible=false;}}
-function draw(){podTagPos();timPlace();{const o=!!(flight&&flight.od&&flight.play&&flight.play.type==='hr'&&(!flight.done||S.state==='trot'||S.state==='celebrate'));if(o!==odhrCls){odhrCls=o;$('hud').classList.toggle('odhr',o);}} /* an Overdrive homer: every callout for it burns Overdrive blue */
+function draw(){if(APO.flag){const e=now-APO.wob;APO.flag.rotation.y=e<3?Math.sin(e*15)*.6*(1-e/3):Math.sin(now*1.3)*.06;}podTagPos();timPlace();{const o=!!(flight&&flight.od&&flight.play&&flight.play.type==='hr'&&(!flight.done||S.state==='trot'||S.state==='celebrate'));if(o!==odhrCls){odhrCls=o;$('hud').classList.toggle('odhr',o);}} /* an Overdrive homer: every callout for it burns Overdrive blue */
   // LOCKED IN: he erupts in blue flame. A pillar of fire shoots up round him, a ring blows out along the ground, embers pour off it, the
   // screen flashes and the call goes up. About a second and a half, then he is simply a man on base again (with Overdrive waiting).
   // LOCKED IN erupts exactly when the picture cuts to him celebrating: at the plate once his home-run celebration starts, or on his base
@@ -1556,6 +1556,29 @@ const BIG_H=11.6, /* 38 feet */BIG_PHI=-.48,BIG_I=7, /* (it ends at 27.5 degrees
 // sitting right on top of it. It steps back out to the normal fence through an angled jog in left-centre.
 const PORCH=0,PORCH2=0, /* (the jutting porch was tried and taken out: left field is the plain tall Porch on the normal fence line. Set these to 7 and 15 to bring it back.) */fenceR=phi=>Math.abs(phi)<=PI/4?99+23*Math.cos(2*phi)-lerp(PORCH,PORCH2,clamp((phi+PI/4)/(BIG_PHI+PI/4),0,1))*clamp((BIG_PHI-phi)/.0436,0,1):99; /* the porch face runs nearly straight across left field (7 m in at the pole, 15 m in by left-centre) and then jogs sharply back out */
 const pol=(r,phi,y=0)=>new V3(r*Math.sin(phi),y,-r*Math.cos(phi));
+// TRANQUILITY BASE: the old Apollo landing site, way out beyond left-centre. A lander, a flag and a pool of work-light, all painted (no real
+// lights: it costs nothing). An Overdrive moonshot can come down right on it.
+const APO={r:334,phi:-.13,ok:false,wob:-9,flag:null};
+{try{const G=new T.Group(),shade=tex(64,8,g=>{const l=g.createLinearGradient(0,0,64,0);l.addColorStop(0,'#777');l.addColorStop(.3,'#fff');l.addColorStop(.6,'#cfcfcf');l.addColorStop(1,'#4a4a4a');g.fillStyle=l;g.fillRect(0,0,64,8);}),
+    M=c=>new T.MeshBasicMaterial({color:c,map:shade,fog:false}),B=c=>new T.MeshBasicMaterial({color:c,fog:false}),UP=new V3(0,1,0),
+    rod=(a,b,r,m)=>{const d=b.clone().sub(a),L=d.length(),c=new T.Mesh(new T.CylinderGeometry(r,r,L,6),m);c.position.copy(a).addScaledVector(d,.5);c.quaternion.setFromUnitVectors(UP,d.normalize());G.add(c);return c;},
+    put=(geo,m,x,y,z)=>{const o=new T.Mesh(geo,m);o.position.set(x,y,z);G.add(o);return o;};
+  put(new T.CylinderGeometry(2.2,2.2,1.5,8),M(0xf0b838),0,2.1,0);put(new T.CylinderGeometry(2.28,2.28,.2,8),B(0x2c2c34),0,2.95,0);put(new T.CylinderGeometry(.7,1.1,.9,10),B(0x3a3a44),0,1.1,0); /* descent stage in gold foil, its deck, the engine bell */
+  for(let i=0;i<4;i++){const a=i*PI/2+PI/4,c=Math.cos(a),n=Math.sin(a),gold=M(0xe8c060);rod(new V3(c*2,2.6,n*2),new V3(c*4.3,.2,n*4.3),.1,gold);rod(new V3(c*2,1.5,n*2),new V3(c*3.5,1.05,n*3.5),.07,gold);put(new T.CylinderGeometry(.55,.55,.12,10),M(0xd8d8dc),c*4.3,.1,n*4.3);}
+  put(new T.CylinderGeometry(1.45,1.8,1.9,8),M(0xd4d8e0),0,4,0);put(new T.BoxGeometry(1.7,1.2,1),M(0xb4bac4),0,4.05,1.45);put(new T.BoxGeometry(.5,.42,.06),B(0x0c1420),-.45,4.3,1.97);put(new T.BoxGeometry(.5,.42,.06),B(0x0c1420),.45,4.3,1.97);put(new T.BoxGeometry(.7,.8,.06),B(0x23262e),0,3.4,1.97); /* ascent stage, cabin face, windows, hatch */
+  put(new T.CylinderGeometry(.5,.5,.45,10),M(0xc8ccd4),0,5.15,0);{const d=put(new T.CylinderGeometry(.7,.08,.3,12),M(0xf2f2f4),1.5,5.6,-.3);d.rotation.z=-.7;rod(new V3(1,4.9,-.2),new V3(1.5,5.5,-.3),.04,B(0xcccccc));}
+  for(const sx of [-1,1]){put(new T.BoxGeometry(.3,.3,.3),B(0x8a8e98),sx*1.9,4.3,0);rod(new V3(sx*.22,2.9,2.1),new V3(sx*.22,.4,3.6),.035,B(0xd8d8dc));}
+  rod(new V3(5.4,0,2.2),new V3(5.4,3.6,2.2),.05,B(0xf2f2f2));rod(new V3(5.4,3.55,2.2),new V3(7.3,3.55,2.2),.03,B(0xf2f2f2));
+  {const ft=tex(128,80,g=>{for(let i=0;i<13;i++){g.fillStyle=i%2?'#f4f4f4':'#c8102e';g.fillRect(0,i*80/13,128,80/13+1);}g.fillStyle='#1b2a6b';g.fillRect(0,0,54,43);g.fillStyle='#fff';for(let y=0;y<5;y++)for(let x=0;x<6;x++){g.beginPath();g.arc(6+x*8.4,5+y*8.2,1.5,0,7);g.fill();}}),
+      f=new T.Mesh(new T.PlaneGeometry(1.9,1.2),new T.MeshBasicMaterial({map:ft,side:T.DoubleSide,fog:false}));f.geometry.translate(.95,0,0);f.position.set(5.4,2.95,2.2);G.add(f);APO.flag=f;}
+  const add=(c,op)=>new T.MeshBasicMaterial({map:glowTex,color:c,transparent:true,opacity:op,blending:T.AdditiveBlending,depthWrite:false,fog:false,side:T.DoubleSide});
+  {const pool=new T.Mesh(new T.PlaneGeometry(44,44),add(0xfff0c8,.26));pool.rotation.x=-PI/2;pool.position.y=.07;G.add(pool);} /* the work-lights' pool on the regolith */
+  for(const sx of [-1,1]){rod(new V3(sx*9,0,5),new V3(sx*9,6.5,5),.09,B(0x8a8e98));const sp=new T.Sprite(new T.SpriteMaterial({map:glowTex,color:0xfff2d0,blending:T.AdditiveBlending,depthWrite:false,transparent:true,opacity:.95,fog:false}));sp.scale.setScalar(6);sp.position.set(sx*9,6.7,5);G.add(sp);}
+  {const halo=new T.Sprite(new T.SpriteMaterial({map:glowTex,color:0xffe9b8,blending:T.AdditiveBlending,depthWrite:false,transparent:true,opacity:.14,fog:false}));halo.scale.set(46,30,1);halo.position.y=6;G.add(halo);
+    for(const ry of [0,PI/2]){const bm=new T.Mesh(new T.PlaneGeometry(2.2,150),new T.MeshBasicMaterial({color:0xcfe8ff,transparent:true,opacity:.16,blending:T.AdditiveBlending,depthWrite:false,fog:false,side:T.DoubleSide}));bm.position.y=80;bm.rotation.y=ry;G.add(bm);}} /* a thin beacon so the site can be picked out from the ballpark */
+  G.scale.setScalar(1.7);const c=pol(APO.r+9,APO.phi);G.position.set(c.x+Math.cos(APO.phi)*17,0,c.z+Math.sin(APO.phi)*17); /* just beyond where the ball comes down, and off to the right of its path: it lands in the pool of light and bounces on past the lander */G.rotation.y=-APO.phi;scene.add(G);APO.G=G;APO.ok=true;}catch(e){try{console.warn('apollo site',e);}catch(x){}}}
+function apoLand(){const f=flight,tr=f.tr,lp=tr.pts.find(q=>q.t>=tr.outT)||tr.pts[tr.pts.length-1];APO.wob=now;badge('eagle');pop('THE EAGLE HAS LANDED',Math.round(f.play.dist*3.281)+' FT · TRANQUILITY BASE','hot',true);flash(.5);shake=Math.max(shake,.45*FX);buzz([40,40,40,40,160]);try{cheer(.9,4);SND.boom();}catch(e){}try{burst(fxS,_p.set(lp.x,.3,lp.z),46,8,1.6,[.82,.82,.86],0,3);}catch(e){}}
+
 function ribbon(a,b,uScale=1){
   const pos=[],uv=[],idx=[];let u=0;
   for(let i=0;i<a.length;i++){if(i)u+=a[i].distanceTo(a[i-1])*uScale;
@@ -3850,20 +3873,26 @@ function tryContact(){flight_pop=false;if(pitch.hbp){swing.done=true;swing.miss=
   if(!kind&&!flight_pop){if(lift>2.7&&la>14)kind='BACKSPIN CARRY';else if(lift<-2.7&&la>5&&la<32)kind='TOPSPIN SINKER';}
   // THE TAPE-MEASURE SHOT: a barreled power swing now and then catches it so flush that it carries clean out of the stadium and comes down
   // on the Moon beyond (more often with Juice behind it). The chase camera rides it the whole way.
-  if(!kind&&!flight_pop&&pw&&q>.88&&la>21&&la<37&&(DBG.tape||Math.random()<(tb?.3:.1))){v*=1.14;fopt.g=.8;kind='TAPE-MEASURE SHOT';
+  if(!kind&&!flight_pop&&pw&&q>.88&&la>21&&la<37&&(DBG.tape||DBG.apollo||Math.random()<(tb?.3:.1))){v*=1.14;fopt.g=.8;kind='TAPE-MEASURE SHOT';
     // ...and once in a while, with Juice or Overdrive behind it, it is not a home run so much as a launch: the ball leaves at a speed nothing on
     // Earth has been hit at, catches a pocket of even thinner gravity, and comes down the best part of a quarter of a mile away (up to 1,134 ft).
-    if(DBG.tape==='far'||(tb&&Math.random()<.3)){const k=DBG.tape==='far'?rand(.3,1):Math.random();v*=1.06+.225*k;fopt.g=.72-.225*k;la=clamp(la,24,34);kind='MOONSHOT';}}
+    if(DBG.tape==='far'||DBG.apollo||(tb&&Math.random()<.3)){const k=DBG.tape==='far'?rand(.3,1):Math.random();v*=1.06+.225*k;fopt.g=.72-.225*k;la=clamp(la,24,34);kind='MOONSHOT';}}
   const spin={side:phi/40*3.2+gs()*4,lift};
   const p0=new V3(pitch.tx,pitch.ty,clamp(-dt*6,-.7,.3));
   const v0=new V3(Math.sin(phi*DEG)*Math.cos(la*DEG),Math.sin(la*DEG),-Math.cos(phi*DEG)*Math.cos(la*DEG)).multiplyScalar(v);
   let tr=simulate(p0,v0,spin,fopt);
+  // THE EAGLE HAS LANDED: an Overdrive moonshot is sometimes dead on line for the old Apollo site. Its speed and direction are trimmed until it comes down right there.
+  let apo=false;if(kind==='MOONSHOT'&&APO.ok&&(DBG.apollo||(S.over&&S.overOn&&Math.random()<.55))){const sv=v0.clone(),ss=spin.side;spin.side=0;let ph=APO.phi,sp=v0.length(),la1=la*DEG,hit=false;
+    for(let it=0;it<18;it++){v0.set(Math.sin(ph)*Math.cos(la1),Math.sin(la1),-Math.cos(ph)*Math.cos(la1)).multiplyScalar(sp);tr=simulate(p0,v0,spin,fopt);if(!tr.outD){sp*=1.06;continue;}
+      const lp=tr.pts.find(q=>q.t>=tr.outT)||tr.pts[tr.pts.length-1],ang=Math.atan2(lp.x,-lp.z),er=tr.outD-APO.r;if(Math.abs(er)<1.5&&Math.abs(ang-APO.phi)<.004){hit=true;break;}ph+=APO.phi-ang;sp*=Math.sqrt(APO.r/tr.outD);}
+    if(hit)apo=true;else{v0.copy(sv);spin.side=ss;tr=simulate(p0,v0,spin,fopt);}}
   // a liner that would die at the foot of the wall carries a touch further and bangs off it instead: more balls off the wall, fewer dropping at its base
   for(let i=0;i<7&&!tr.hr&&!tr.foul&&tr.land&&!(tr.wall&&tr.wallT<tr.land.t)&&Math.atan2(v0.y,Math.hypot(v0.x,v0.z))<26*DEG;i++){const L=tr.land,gap=fenceR(Math.atan2(L.x,-L.z))-Math.hypot(L.x,L.z),hard=v0.length()>=37;if(gap<0||gap>(hard?24:9))break;v0.multiplyScalar(hard?1.055:1.04);if(hard&&v0.y>2)v0.y*=.97;tr=simulate(p0,v0,spin,fopt);} /* a hard liner headed for the deep outfield keeps going on a rope, a laser off the wall */
   const play=judge(tr,S.over&&S.overOn?Object.assign({},b,{spd:b.spd*1.08}):b);play.tag=play.tag||tr.tag||(kind==='TOPSPIN SINKER'?'':kind);/* a bad hop is only called when it beat the fielder: if he still made the play, nobody mentions it */if(play.tag==='MOON HOP!'&&play.type!=='hit')play.tag='';if(tr.offP&&play.type==='hit'&&!play.infield)play.tag='ERROR · OFF THE PITCHER';if(tr.offF&&play.type==='hit')play.tag='ERROR · ATE HIM UP'; /* a ball a fielder should have handled and didn't is scored as his error */
   flight={tr,play,t0:now,q,pw,tb,jp:!!(pitch&&pitch.P&&pitch.P.sp),pod:!!pOD(),fp:(S.balls|0)+(S.strikes|0)===0,od:!!(S.over&&S.overOn),v,done:false,called:false,trailC:S.over&&S.overOn?[.2,.55,1]:tb?[1,.45,.1]:pw&&q>.75?[1,.85,.25]:[.5,.5,.55]}; // Overdrive hits burn blue, Juice hits orange
   // Some Overdrive home runs don't come down: the ball leaves the Moon's orbit, headed for Earth. Always the first one a player ever hits; after that, about a third of them.
-  if(flight.od&&play.type==='hr'&&(DBG.orbit||DBG.sat||DBG.lamp||DBG.rev||!orbSeen||Math.random()<.65)){const kd=DBG.lamp?'lamp':DBG.sat?'sat':DBG.rev?'rev':(DBG.orbit||!orbSeen)?'earth':odPick(),lampH=kd==='lamp'&&TOWERS.length>0,sat=kd==='sat',rev=kd==='rev';S.orbN=(S.orbN||0)+1;orbSeen=true;try{localStorage.setItem('mm_orbit','1');}catch(e){}flight.orbit=true;flight.rev=rev;play.endT+=9;
+  if(apo&&play.type==='hr')flight.apollo=true;
+  if(flight.od&&!flight.apollo&&play.type==='hr'&&(DBG.orbit||DBG.sat||DBG.lamp||DBG.rev||!orbSeen||Math.random()<.65)){const kd=DBG.lamp?'lamp':DBG.sat?'sat':DBG.rev?'rev':(DBG.orbit||!orbSeen)?'earth':odPick(),lampH=kd==='lamp'&&TOWERS.length>0,sat=kd==='sat',rev=kd==='rev';S.orbN=(S.orbN||0)+1;orbSeen=true;try{localStorage.setItem('mm_orbit','1');}catch(e){}flight.orbit=true;flight.rev=rev;play.endT+=9;
     // its own flight from the moment it leaves the bat: one smooth climb out over the wall and away, never the normal arc
     const hd=Math.hypot(v0.x,v0.z)||1,dx=v0.x/hd,dz=v0.z/hd;flight.orbP=[p0.clone(),new V3(p0.x+dx*46,p0.y+15,p0.z+dz*46),new V3(p0.x+dx*135,96,p0.z+dz*135),ORB_TO.clone()];
     // ...or it never gets as far as Earth: there is a satellite in the way
@@ -3906,7 +3935,7 @@ function tryContact(){flight_pop=false;if(pitch.hbp){swing.done=true;swing.miss=
   if(play.type==='hr'&&MX.clip){const ft=play.dist*3.281,big=tb||ft>=500,r=Math.random(),early=earlyShow(S.hrs),kind=DBG.trail||tr.cove||(ft>=600&&!flight.orbit)?'':DBG.admire||(early?'show':big?(r<.34?'show':r<.5?'admire':''):ft>=440?(r<.3?'admire':''):'');wildTrot=early;
     if(!flight.orbit&&tr.cove){flight.trailCam=true;flight.admire=false;flight.coveCam=true;} /* a ball bound for the lava is always followed in */
     if(!kind&&!flight.orbit&&ft>=385&&(ft>=600||DBG.trail||Math.random()<.82))flight.trailCam=true; /* 600 ft and up is always followed the whole way, out of the park and down onto the Moon */ /* most homers that stay on the ball are now watched from behind it, with the distance running up above it */
-        if(!kind&&!flight.orbit&&!flight.coveCam&&(DBG.aerial||(ft<600&&hrCamLast!=='aerial'&&Math.random()<.45))){flight.aerial=true;flight.trailCam=false;}hrCamLast=flight.aerial?'aerial':'';if(tr.outT&&!flight.orbit&&!flight.trailCam){tr.seatT=tr.outT;play.endT=Math.min(play.endT,tr.outT);}else if(tr.outT&&!flight.orbit)play.endT=Math.min(play.endT,tr.outT+.75); /* the chase camera sees it hit the ground and kick up once, and that is the end of the shot: no waiting for it to roll to a stop */ /* THE BLIMP SHOT: now and then, once it is over the wall, the homer is seen from high above the whole park */
+        if(!kind&&!flight.orbit&&!flight.coveCam&&(DBG.aerial||(ft<600&&hrCamLast!=='aerial'&&Math.random()<.45))){flight.aerial=true;flight.trailCam=false;}hrCamLast=flight.aerial?'aerial':'';if(tr.outT&&!flight.orbit&&!flight.trailCam){tr.seatT=tr.outT;play.endT=Math.min(play.endT,tr.outT);}else if(tr.outT&&!flight.orbit)play.endT=Math.min(play.endT,tr.outT+(flight.apollo?2.6:.75)); /* the chase camera sees it hit the ground and kick up once, and that is the end of the shot: no waiting for it to roll to a stop */ /* THE BLIMP SHOT: now and then, once it is over the wall, the homer is seen from high above the whole park */
     flight.noSb=hrShowLast==='board'&&Math.random()<.92;flight.noEye=hrShowLast==='eye'&&Math.random()<.92; /* the scoreboard light-show almost never comes up on two homers running: the second one just sails by */ // some no-doubters are watched from right behind the ball
    
     lasWant=!!(kind&&(DBG.laser||Math.random()<.45)); // a no-doubter: now and then the lasers come on, but never before the ball has actually cleared the wall
@@ -4097,7 +4126,7 @@ function revOff(){if(REV.g)REV.g.visible=false;$('hud').classList.remove('rv');}
 let sharpLast=-1,crushLast=-1,aerLast=-1,odBag=[],odLastK='';function odPick(){if(!odBag.length){odBag=['rev','lamp','sat','earth'];}const W={rev:3,lamp:2,sat:2,earth:3};let c=odBag.filter(k=>k!==odLastK);if(!c.length)c=odBag;
   let r=Math.random()*c.reduce((a,k)=>a+W[k],0),k=c[0];for(const q of c){r-=W[q];if(r<=0){k=q;break;}}odBag.splice(odBag.indexOf(k),1);odLastK=k;return k;}
 // BADGES. Earned once, kept on the device. Each has a name (ballplayer talk), what it takes, and an icon. badge(id) is called from wherever the feat happens.
-const BADGES=[['hit','KNOCK','Get your first hit','🧢'],['hr','WENT YARD','Hit your first home run','💥'],['hr450','TAPE MEASURE','Hit one 450 feet or more','📏'],['hr500','5 HUNNID','Hit one 500 feet or more','🚀'],
+const BADGES=[['eagle','THE EAGLE HAS LANDED','Land an Overdrive moonshot on the Apollo site','🦅'],['hit','KNOCK','Get your first hit','🧢'],['hr','WENT YARD','Hit your first home run','💥'],['hr450','TAPE MEASURE','Hit one 450 feet or more','📏'],['hr500','5 HUNNID','Hit one 500 feet or more','🚀'],
   ['odhr','PRIME TIME','Homer in Overdrive','🔥'],['juicehr','GOT HEEEM!','Homer off a Juice pitch','😂'],['duel','BEAT THE HEAT','Homer while the pitcher is in Overdrive','🥵'],['charge','BRAWLER','Charge the mound','😤'],['showboat','SHOWBOAT','Admire one and flip the bat','🕺'],['aura','MAX AURA','Take a pitcher deep while he is in Overdrive','✨'],['ambush','AMBUSH','Homer on the first pitch','⚡'],
   ['slam','GRAND SALAMI','Hit a grand slam','🍖'],['b2b','BACK TO BACK','Homers in consecutive at-bats','👯'],['five','DERBY NIGHT','Five homers in one game','🎆'],['heater','ON A HEATER','Five hits in a row','♨️'],
   ['rev','IN ORBIT','Put one into orbit round the Moon','🌕'],['earth','NEXT STOP: EARTH','Hit one clean off the Moon','🌍'],['sat','SPACE JUNK','Take out the satellite','🛰️'],['lamp','LIGHTS OUT','Smash a light tower','💡'],['pole','DOINK!','Homer off the foul pole','🔔'],['board','SCOREBOARD!','Homer off the scoreboard','📺'],['web','WEB GEM','Your defence turns a great play behind you','🕸️'],['side','SAT THEM DOWN','Retire all three batters you pitch to','🧊'],['plunk','MESSAGE SENT','Drill a batter on purpose','🎯'],['pk','PUNCHOUT','Strike a batter out','🥊'],['paint','PAINTED IT','Strikeout looking on the edge of the zone','🎨'],['kside','STRUCK OUT THE SIDE','Strike out all three batters in a half','🔥'],['dialed','DIALED IN','Three perfect releases in a row','🎯'],['gas','PURE GAS','Strikeout on a Juice pitch','⛽'],['lock','LOCKED IN','Two hits in a row with one hitter','🔥'],['cove','MELTDOWN','Homer into the lava in the Cove','🌋'],['eye','OFF THE BATTER\'S EYE','Homer off the batter\'s eye','👁️'],
@@ -5249,6 +5278,7 @@ function step(dt){
     if(tr.offP&&flight.play.type==='hit'&&!flight.offPd&&tf>=tr.offP){flight.offPd=true; // drilled him: the pitcher goes down in a heap on the mound
       if(MX.pit&&MX.pit.taunts.p_dying)S.sTaunt={t:now-1.15,clip:'p_dying',dur:4.4};SND.mitt();SND.boom();tone('sine',110,45,.2,.7);buzz([30,30,60]);shake=Math.max(shake,.5*FX);flash(.4);burst(fxS,_p.set(0,1.3,-18.2),24,5,.5,[1,.9,.5],2,1);crowdOut(.9);}
     if(tr.offF&&flight.play.type==='hit'&&!flight.offFd&&tf>=tr.offF.t){flight.offFd=true;SND.mitt();SND.boom();tone('sine',110,45,.2,.7);buzz([30,30,60]);shake=Math.max(shake,.5*FX);flash(.4);{const rp=tr.offF.f.fig.root.position;burst(fxS,_p.set(rp.x,1.3,rp.z),24,5,.5,[1,.9,.5],2,1);}crowdOut(.9);}
+    if(flight.apollo&&!flight.apoDone&&tr.outT&&tf>=tr.outT){flight.apoDone=true;try{apoLand();}catch(e){}}
     if(tr.hr&&!flight.fenceRoar&&tf>=tr.hrT){flight.fenceRoar=true;roar(flight.roarL||1,.35);} // over the fence: the roar that has been building steps up
     if(tr.seatT&&!flight.orbit&&tf>=tr.seatT){ball.visible=false;if(!flight.seated){flight.seated=true;if(tr.cove){let n=1;try{n=(+localStorage.getItem('mm_cove')||0)+1;localStorage.setItem('mm_cove',n);}catch(e){}burst(fxL,ball.position,70,11,1.1,[1,.18,.05],7,6);burst(fxL,ball.position,30,5,.8,[1,.9,.4],5,3);SND.zap();buzz([30,30,90]);badge('cove');timing('INTO THE LAVA! · COVE SHOT #'+n,'#ff4a2a',4);if(COVE.paint)COVE.paint(n);COVE.hit=now;} /* into the reservoir: a geyser of coolant, and the count goes up */else burst(fxL,ball.position,12,4,.5,[.95,.95,1],4,1);}} /* swallowed by the crowd: somebody up there has a souvenir */
     if(tr.eyeT&&!flight.orbit&&!flight.eyeHit&&tf>=tr.eyeT){flight.eyeHit=true;if(flight.play.type==='hr'&&!flight.noEye){badge('eye');pop("OFF THE BATTER'S EYE!",'','hot');}if(!flight.noEye)zapStart(ball.position,false);burst(fxL,ball.position,26,9,.7,[.6,.85,1],7,1);SND.mitt();tone('sine',120,50,.25,.5);} // thud off the batter's eye
