@@ -184,3 +184,6 @@ The Krakens' half of the 2nd and 3rd is now played: the player pitches to three 
 - Outcome model lives in `pdDecide` (swing/chase, contact, result) and reads location, release grade, pitch type, repeat/speed-change and the hitter's ratings in `KBAT`.
 - Not in v1: Comets fielders making the plays (balls in play are a quick flight and a call), Juice/Overdrive for the pitcher, pitcher stamina, hit-by-pitch, steals, a tutorial, sound design, runner figures on the bases.
 - The old dice roll (`cpuInning`) is still used when models are missing and in the automated tests.
+- BUILD 574 added to pitching: a PITCH / SKIP choice before each half, hot and cold zones per hitter (on the pad) and a K zone at the plate with the catcher and umpire behind it, pitch ratings (velocity, control, break), pitcher stamina (carries between innings), Juice pitches (a quarter bar each; a strikeout earns a bar), and five pitching achievements.
+- OPEN (owner): the current batting game is to become its own batter-only arcade mode; pitching stays in it only until modes are separated.
+- OPEN (owner, unfinished note): "The higher the stamina and the ..." — sentence was cut off; ask what stamina should scale.
