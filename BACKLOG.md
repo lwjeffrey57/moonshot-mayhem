@@ -198,3 +198,4 @@ One excellent reusable ballpark before any others. If a stadium model is made el
 - Defensive QTEs while pitching: when a CPU runner gets aggressive and stretches a hit (extra base, tag-up, going first to third), the player becomes the defender and gets a QTE to throw him out (mirror of the batting-side advance QTE).
 - Pitching audio: perfect-release and good-release need proper sound feedback (the 8-bit beeps were removed; perfect currently has only the turbo "crush" sound and a crowd pop, good release is silent). Sound not chosen yet.
 - Before release: set `PTUT_EVERY_GAME` to false (pitching guide currently runs every game for QC), same as `TUT_EVERY_LAUNCH`.
+- Playtesting rule (standing): the most recently built animation/show is the first one a game triggers (`PLAY_NEWEST_FIRST`; currently the Apollo-site shot is the first well-hit Overdrive ball each game). Set false before release.
