@@ -332,7 +332,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
 #pop.sup .s{color:#39ff6a}#pop.sdn .s{color:#ff4d2e}#pop.sup.sn .t{color:#ffe53b;text-shadow:0 5px 0 #000,0 0 34px rgba(255,229,59,.75)}#pop.sup.sn .s{color:#ffe53b}#pop.sup .s:empty,#pop.sdn .s:empty{display:none}
 #pop.logo .t{white-space:nowrap;color:var(--volt);font-size:clamp(30px,7.4vw,74px);-webkit-text-stroke:2px #000;text-shadow:0 6px 0 #000,0 0 18px #000,0 0 60px rgba(255,229,59,.55);transform:rotate(-4deg)}
 #pop.logo .s{color:var(--heat);font-size:clamp(15px,3.8vw,28px);-webkit-text-stroke:1.5px #000;text-shadow:0 4px 0 #000,0 0 14px #000;transform:rotate(-4deg);margin-top:10px}
-#pop.go{animation:slam 1.5s cubic-bezier(.2,1.4,.3,1) both}
+#pop.go{animation:slam 1.5s cubic-bezier(.2,1.4,.3,1) both}#pop.go.sharp{animation-duration:.8s}#hud #pop.sharp{top:8.5%}#hud.mob #pop.sharp{top:17.5%}#pop.sharp .t{font-size:clamp(30px,6.4vw,72px)}
 #pop.go.long{animation-duration:3.2s}
 @keyframes slam{0%{opacity:0;transform:scale(2.6) rotate(-4deg)}9%{opacity:1;transform:scale(.94) rotate(-2deg)}14%{transform:scale(1.04) rotate(-2deg)}20%,80%{opacity:1;transform:scale(1) rotate(-2deg)}100%{opacity:0;transform:scale(1.08) rotate(-2deg)}}
 #tim[data-rk="1"]{margin-top:-34px} /* the rocket is lifting off the bar underneath: move the line up out of its way */
@@ -950,7 +950,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 586</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 587</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -3769,7 +3769,7 @@ function tryContact(){flight_pop=false;if(pitch.hbp){swing.done=true;swing.miss=
     lasWant=!!(kind&&(DBG.laser||Math.random()<.45)); // a no-doubter: now and then the lasers come on, but never before the ball has actually cleared the wall
     if(kind){flight.admire=kind;{const F=flight;setTimeout(()=>{if(flight===F)badge('showboat');},1100);} /* after the flip has been seen */flight.trot=WALK.on&&RUN.list.length>0;flight.A=Math.max(1.2,Math.min(kind==='show'&&!flight.trot?3.9:2.5,play.endT-1.3));{const c=promo&&Math.random()<.75?promo:['NO DOUBTER!','SEE YA!','CRANKED!','ABSOLUTE TANK!','MOONSHOT!','ABSOLUTE NUKE!','ABSOLUTE BOMB!','LIFT OFF!','PIMPED IT!','PIMPED IT!'][(Math.random()*10)|0];flight.pimp=c==='PIMPED IT!';if(flight.pimp){const F=flight,hot=tb?'hot':'';setTimeout(()=>{if(flight===F&&!F.done)pop(c,'',hot);},1000);}else pop(c,'',tb?'hot':'');} /* PIMPED IT waits a second: you see the bat flip first, then the word */ /* pimp: said here, so the home-plate shout will not say it again */}}
   if(!flight.admire&&promo)pop(promo,'',tb?'hot':'');
-  else if(!flight.admire&&play.type!=='foul'&&!(q>.82&&pw)&&(tb||(pw&&q>.75))){const C=la<16?['ROPED!','SCORCHED!','LASER!','FROZEN ROPE!','STUNG IT!']:['DRIVEN!','WELL STRUCK!','JUMPED ON IT!','STUNG IT!'];let k=(Math.random()*C.length)|0;if(k===sharpLast)k=(k+1)%C.length;sharpLast=k;pop(C[k],'',tb?'hot':'');} /* a ball that leaves a fire trail always gets a call: the trail says it was hit hard */
+  else if(!flight.admire&&play.type!=='foul'&&!(q>.82&&pw)&&(tb||(pw&&q>.75))){const C=la<16?['ROPED!','SCORCHED!','LASER!','FROZEN ROPE!','STUNG IT!']:['DRIVEN!','WELL STRUCK!','JUMPED ON IT!','STUNG IT!'];let k=(Math.random()*C.length)|0;if(k===sharpLast)k=(k+1)%C.length;sharpLast=k;pop(C[k],'',(tb?'hot':'')+' sharp');} /* a quick call, high on the screen: it is up for under a second and gone before the picture reaches the man chasing the ball */ /* a ball that leaves a fire trail always gets a call: the trail says it was hit hard */
   else if(!flight.admire&&q>.82&&pw&&play.type!=='foul'){const C=['CRUSHED!','SMOKED!','TATTOOED!','OBLITERATED!','MASHED!','GOT ALL OF IT!'];let k=(Math.random()*C.length)|0;if(k===crushLast)k=(k+1)%C.length;crushLast=k;pop(C[k],'',tb?'hot':'');} /* never the same call twice running */
   if(play.type!=='foul'&&(tb||(S.over&&S.overOn)||(play.type==='hr'&&play.dist*3.281>=420)))sfx('crush',1);
   if(play.type==='hr'&&S.over&&S.overOn){const k=$('tmk');k.classList.add('pf','od');$('tim').dataset.rk=1;}else $('tmk').classList.remove('od'); // an Overdrive homer always gets the rocket, burning blue
