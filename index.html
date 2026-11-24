@@ -1002,7 +1002,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 650</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 653</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -1288,7 +1288,7 @@ function pdUI(){const h=KBAT[PD.k],on=['','MAN ON 1ST','MAN ON 2ND','1ST & 2ND',
   $('pdwho').textContent=(MOB?'':'NOW BATTING · ')+h.name;$('pdcnt').textContent=PD.balls+'-'+PD.strikes+' · '+PD.outs+' OUT'+(on?' · '+on:'')+' · BATTER '+(PD.n+1)+' OF 3'+(PD.rattle?' · RATTLED':'')+' · STAMINA';
   try{pdBtns();const q=pdQ();$('pdin').textContent=q.n;$('pdir').innerHTML='<i>VELO<b>'+q.v+'</b></i><i>CTRL<b>'+q.c+'</b></i><i>BRK<b>'+q.b+'</b></i>';}catch(e){}try{hud();}catch(e){}$('pdstyle').textContent='STYLE: '+(PD.style?'METER':'TWO-TAP');$('pdmeter').hidden=!PD.style||PD.ph>1;$('pdmline').style.height=Math.max(5,Math.round(pdWin()/.8*2*100*2.3))/1+'px'; /* the thicker the yellow band, the easier the perfect release (better control, or a Juice pitch) */
   $('pdhint').textContent=PD.ph===0?(MOB?'HOLD YOUR AIM · TAP · TAP':'POINT AT THE ZONE TO AIM · 1-4 PICK A PITCH · SPACE OR CLICK THROW TO THROW'):PD.ph===1?(PD.style?(PD.mph?'TAP ON THE YELLOW LINE':'TAP AT THE TOP FOR POWER'):(MOB?'TAP AGAIN AS THE RING MEETS THE CIRCLE':'TAP ANYWHERE WHEN THE RING MEETS THE CIRCLE')):'';
-  const g=$('pdgo');if(MOB){if(PD.drillArm&&PD.ph===0)g.textContent='DRILL!';else if(PD.ph===1)g.textContent='PITCH!';else if(!PD.sel)g.innerHTML='PICK A<br>PITCH';else{let q=null;try{q=pdQ();}catch(e){}g.innerHTML=q?q.n.replace(' ','<br>')+'<small>'+pdMph(q)+' MPH</small><i>TAP TO PITCH</i>':'';}g.classList.toggle('rdy',PD.ph===0&&!!PD.sel&&!PD.drillArm);$('pdbtns').classList.toggle('need',PD.ph===0&&!PD.sel&&!PD.drillArm);}else g.textContent=PD.ph===1?'NOW!':'THROW';g.classList.toggle('now',PD.ph===1);g.disabled=PD.ph>1;$('pdring').style.display=PD.ph===1&&!PD.style?'block':'none';pdCur();}
+  const g=$('pdgo');if(MOB){if(PD.drillArm&&PD.ph===0)g.textContent='DRILL!';else if(PD.ph===1)g.textContent='TAP!';else if(!PD.sel)g.innerHTML='PICK A<br>PITCH';else{let q=null;try{q=pdQ();}catch(e){}g.innerHTML=q?q.n.replace(' ','<br>')+'<small>'+pdMph(q)+' MPH</small><i>TAP TO PITCH</i>':'';}g.classList.toggle('rdy',PD.ph===0&&!!PD.sel&&!PD.drillArm);$('pdbtns').classList.toggle('need',PD.ph===0&&!PD.sel&&!PD.drillArm);}else g.textContent=PD.ph===1?'NOW!':'THROW';g.classList.toggle('now',PD.ph===1);g.disabled=PD.ph>1;$('pdring').style.display=PD.ph===1&&!PD.style?'block':'none';pdCur();}
 document.addEventListener('DOMContentLoaded',()=>{});setTimeout(()=>{const b=$('podxok');if(b)b.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();podxClose();});},0);
 const PTUT=[['pdpad','LEFT THUMB: HOLD TO AIM','Push the stick and <i>hold it</i>: the <i>yellow target</i> sits where your thumb holds it. Let go early and it snaps back to the middle. (With a mouse, just point at the zone.)'],
   ['ZONE','THE STRIKE ZONE','The target is where the pitch will go. <i>Red</i> squares are where this batter is hot, <i>blue</i> where he is cold. The dotted line shows how the pitch will move. Aim off the plate to make him chase.'],
@@ -1296,7 +1296,7 @@ const PTUT=[['pdpad','LEFT THUMB: HOLD TO AIM','Push the stick and <i>hold it</i
   ['pdjuice','JUICE, OVERDRIVE, DRILL','<i>JUICE</i> swaps in four trick pitches for a quarter of your bar each. Fill the bar and the same button becomes <i>OVERDRIVE</i>: every Juice pitch, free, for one batter. <i>DRILL HIM</i> plunks the batter once a half. In the zone, <i>red</i> is where he is hot and <i>blue</i> where he is cold. The green bar up top is your <i>stamina</i>.']];
 /* ON A PHONE THE GUIDE IS HANDS-ON, like the batting one: one control is lit, the card says what to do with it, and it moves on only when the player has done it. */
 const PTUT_EVERY_GAME=true; /* QC: the pitching guide runs the first time you pitch in EVERY game. Set false before release. */
-const GT=[null,['PICK YOUR PITCH','Right thumb: tap one on the wheel','Each one moves differently. The red line shows how.'],['AIM WITH THE LEFT STICK','Hold it and the ball goes where you hold it',''],['TAP, THEN TAP ON THE RING','The green dial starts the ring','Tap PITCH! as it meets the white circle.']];
+const GT=[null,['PICK YOUR PITCH','Right thumb: tap one on the wheel','Each one moves differently. The red line shows how.'],['AIM WITH THE LEFT STICK','Hold it and the ball goes where you hold it',''],['TAP, THEN TAP ON THE RING','The green dial starts the ring','Tap again as it meets the white circle.']];
 /* THE PITCHING GUIDE RUNS LIKE THE BATTING ONE: the game is held, everything is blacked out except the strike zone and the controls, and each
    control is SHOWN AT WORK (the wheel turning through its pitches, the stick steering the ball, the dial and the ring). Nothing has to be
    done: a tap anywhere is NEXT. */
@@ -1321,7 +1321,7 @@ function gtTick(){const g=PD.gt|0;if(!g)return;if(S.state!=='pduel'||!PD.on){PD.
   else if(g===3){ /* one loop: the green dial is pressed, it becomes PITCH! and the ring closes on the target, PITCH! is pressed as the ring turns green */
     const c=t%2.3,P=$('pd'),go=$('pdgo'),r=$('pdring');
     if(c<.8){if(P.classList.contains('arm')){P.classList.remove('arm');try{pdUI();}catch(e){}}r.style.display='none';const pr=c>.45&&c<.68;go.style.transform=pr?'scale(.88)':'';go.style.filter=pr?'brightness(1.4)':'';}
-    else{const u=(c-.8)/1.05,h=$('hud').getBoundingClientRect(),W=h.width,H=h.height;P.classList.add('arm');go.textContent='PITCH!';go.classList.remove('rdy');
+    else{const u=(c-.8)/1.05,h=$('hud').getBoundingClientRect(),W=h.width,H=h.height;P.classList.add('arm');go.textContent='TAP!';go.classList.remove('rdy');
       _s0.set(PD.tx,PD.ty,.02).project(camera);const cx=(_s0.x*.5+.5)*W,cy=(-_s0.y*.5+.5)*H;_s0.set(PD.tx+.0875,PD.ty,.02).project(camera);const mp=Math.max(5,Math.abs((_s0.x*.5+.5)*W-cx)),R=mp*(1+Math.max(0,1-u/.84)*6.5)+2,hit=u>=.8;
       r.style.display='block';r.style.width=r.style.height=(R*2)+'px';r.style.transform='translate('+(cx-R)+'px,'+(cy-R)+'px)';r.style.borderColor=hit?'#39ff6a':'#fff';go.style.transform=hit&&u<1?'scale(.9)':'';go.style.filter=hit&&u<1?'brightness(1.35)':'';}}
   if(g!==3){const go=$('pdgo');go.style.transform='';go.style.filter='';}
@@ -1363,7 +1363,7 @@ function pdHitter(){const h=KBAT[PD.k];PD._wu=0;PD.holding=false;PD.hideBat=fals
   try{const I=MX.clip.intros,ws=Object.keys(I).filter(k=>/^w_/.test(k)&&!/walkin|sad|trip|pushup/.test(k));if(ws.length){PD.ph=-1;PD.t=now;S.kOut={t:now+.15,bi:MX.clip.bi,clip:ws[(Math.random()*ws.length)|0],taunt:null};pop('NOW BATTING',h.name+' · KRAKENS','hot');boo(.35);}}catch(e){}
   pdUI();}
 function pdTap(){if(S.state!=='pduel'||paused)return;if(PD.gt)return;PD.drillArm=false;if(PD.ph===0&&(!pdSel()||PD.odForce)){buzz(8);return;}
-  if(PD.ph===0){PD.ph=1;PD.t=now;PD.mph=0;PD.pw=1;buzz(15);tone('triangle',520,620,.06,.2);pdUI();return;}
+  if(PD.ph===0){PD.ph=1;PD.t=now;PD.wuT=now; /* the wind-up starts on this tap, not after the release: the pitcher answers the thumb at once */PD.mph=0;PD.pw=1;buzz(15);tone('triangle',520,620,.06,.2);pdUI();return;}
   if(PD.ph!==1)return;const e=now-PD.t,Q=pdQ();
   if(PD.style){ // the meter: first tap here sets power on the way up, the next sets accuracy on the way down
     if(!PD.mph){PD.pw=clamp(e/.8,0,1);PD.mph=1;PD.t=now;buzz(15);tone('triangle',700,760,.06,.2);pdUI();return;}
@@ -1376,7 +1376,7 @@ function pdDrill(){if(S.state!=='pduel'||paused||PD.ph!==0||PD.drilled)return;pd
 // HOW FORGIVING THE RELEASE IS: the better a pitch's control, the wider its perfect window (and the fatter the yellow circle that shows it).
 // A Juice pitch is easier still to release perfectly, and easiest of all with the Juice bar full (Overdrive).
 function pdWin(){const Q=pdQ(),jz=(!!PD.jz&&S.juice>=.245)||(S.over&&S.overOn);return (.026+.042*clamp((Q.c-50)/45,0,1))*(jz?(S.over?2:1.6):1);}
-function pdThrow(dt){pdArcOff();const a=Math.abs(dt),W=pdWin(),g=a<W?2:a<W+.07?1:0;PD.grade=g;PD.ph=2;PD.wuT=now;PD.rel=false;
+function pdThrow(dt){pdArcOff();const a=Math.abs(dt),W=pdWin(),g=a<W?2:a<W+.07?1:0;PD.grade=g;PD.wuT=PD.style||PD.ph!==1?now:now-Math.min(Math.max(0,now-PD.wuT),.82); /* (he is already most of the way through his delivery when the release is tapped: the ball is out of his hand a beat later, not a full second later) */PD.ph=2;PD.rel=false;
   const Q=pdQ(),od=(S.over&&S.overOn),jz=od||(!!PD.jz&&S.juice>=.245),tired=Math.max(0,.45-S.pStam)/.45; /* 0 fresh, 1 gassed */
   if(jz&&!od){S.juice=Math.max(0,S.juice-.25);}if(od)PD.odUsed=true;PD.jzOn=jz;if(jz&&!od){PD.pk=0;PD.sel=true;}PD.jz=false; /* (your pitch stays picked for the next one; a Juice pitch has to be chosen again) */S.pStam=Math.max(0,S.pStam-(.03+.00018*Q.v+(jz?.03:0))*(1.35-NOVA.stam/200));
   PD.lastI=Q.i;const P=PITCHES[Q.i],er=(g===2?.012:g===1?.075:.2)*(1.55-Q.c/100)*(1+tired*.9)*(jz?.75:1),an=rand(0,6.283),r=er*Math.sqrt(Math.random());let tx=PD.tx+Math.cos(an)*r,ty=PD.ty+Math.sin(an)*r*1.15;
@@ -4829,10 +4829,18 @@ function setupPlateCrew(make,skins,makeD=make,defSkin=skins.away,makeU=make,umpS
   const up=pose({y:.84,lean:.42,hL:[-.5,0,.34],kL:.85,hR:[-.5,0,-.34],kR:.85,sL:[-.35,0,.22],eL:-.5,sR:[-.35,0,-.22],eR:-.5,head:0}); // hands on knees, peering over the catcher
   MX.crew={cat,mixer,act,uf,up,show:null,um,ua,ud,uT:-99};
 }
+// YOUR CATCHER IS A COMET. When the player pitches, the man behind the plate wears a Comets body (Brickhouse's), not the Krakens' fielder
+// armour. He is built the first time he is needed, once that body is in; until then the usual catcher stands in.
+function crewComet(c){if(c.cat2!==undefined)return;const K=2,v=MX.batVar&&MX.batVar[K];if(!v){try{if(MX.batLoad)MX.batLoad(K);}catch(e){}return;}
+  try{const cat=v.make(['catch']),{B}=prepModel(cat,pitT,v.skin()),clip=cat.animations[0];if(!clip){c.cat2=null;return;}clip.tracks=clip.tracks.filter(t=>/quaternion$/.test(t.name)||/Hips\.position$/.test(t.name));
+    const mixer=new T.AnimationMixer(cat),act=mixer.clipAction(clip);act.play();act.time=.4;mixer.update(0);const gl=mkGlove('mitt');gl.position.set(0,1,0);B('LeftHand').add(gl);cat.position.set(0,0,1.45);cat.rotation.y=PI;cat.visible=false;scene.add(cat);c.cat2=cat;c.mixer2=mixer;c.act2=act;}
+  catch(e){console.warn('Comets catcher failed',e);c.cat2=null;}}
 function updatePlateCrew(){
-  const c=MX.crew;if(!c)return;const on=S.state==='walkup'||S.state==='pduel'; /* the catcher and the umpire are behind the plate while the player pitches too */
-  {const ump=on;if(on!==c.show||ump!==c.showU){c.show=on;c.showU=ump;c.cat.visible=on;c.uf.fig.root.visible=ump;}} /* (no umpire while the player pitches: he stood right behind the zone and muddied it) */
-  if(on){c.act.time=.45+.3*Math.sin(now*1.4);c.mixer.update(0);
+  const c=MX.crew;if(!c)return;const on=S.state==='walkup'||S.state==='pduel';
+  if(S.state==='pduel'&&c.cat2===undefined&&(PD.ph===-1||PD.ph===4))crewComet(c);
+  {const mine=S.state==='pduel'&&!!c.cat2;if(c.cat2&&c.cat2.visible!==mine){c.cat2.visible=mine;c.show=null;}if(mine){c.cat.visible=false;c.act2.time=.45+.3*Math.sin(now*1.4);c.mixer2.update(0);}c.mine=mine;} /* the catcher and the umpire are behind the plate while the player pitches too */
+  {const ump=on;if(on!==c.show||ump!==c.showU){c.show=on;c.showU=ump;c.cat.visible=on&&!c.mine;c.uf.fig.root.visible=ump;}} /* (no umpire while the player pitches: he stood right behind the zone and muddied it) */
+  if(on){if(!c.mine){c.act.time=.45+.3*Math.sin(now*1.4);c.mixer.update(0);}
     if(c.ua){const e=(now-c.uT)*1.15,t=e>=0&&e<c.ud-.04?e:0;if(t!==c._ut){c._ut=t;c.ua.time=t;c.um.update(0);}} /* (only touched when the frame actually changes: standing still costs nothing) */
     else{const P=lerpPose(c.up,c.up,0,tmpPose);P.y+=Math.sin(now*1.7)*.008;applyPose(c.uf.fig,P);retargetFig(c.uf.fig,c.uf.rt);}}
 }
@@ -5134,8 +5142,8 @@ function batAura(){
   if(hot&&Math.random()<.5){_p.set(0,rand(.3,.9),0);bat.localToWorld(_p);_v.set(rand(-1,1),rand(0,2),rand(-1,1));const c=batGlow.material.color;fxS.emit(_p,_v,.25,c.r,c.g,c.b,-2);}
 }
 function updatePitcher(){
-  if(MX.pit&&MX.on){const P=MX.pit;if(P.sx===undefined)P.sx=Math.abs(P.obj.scale.x);P.obj.scale.x=P.sx*(S.pName&&S.pName[2]?-1:1);const pdW=S.state==='pduel'&&PD.ph>=2&&PD.ph<=4,act=pdW||S.state==='windup'||((S.state==='pitch'||S.state==='flight'||S.state==='result')&&pitch);
-    const e=act?now-(pdW?PD.wuT:windupT0):0;let k=0;
+  if(MX.pit&&MX.on){const P=MX.pit;if(P.sx===undefined)P.sx=Math.abs(P.obj.scale.x);P.obj.scale.x=P.sx*(S.pName&&S.pName[2]?-1:1);const pdW1=S.state==='pduel'&&PD.ph===1&&!PD.style,pdW=pdW1||(S.state==='pduel'&&PD.ph>=2&&PD.ph<=4),act=pdW||S.state==='windup'||((S.state==='pitch'||S.state==='flight'||S.state==='result')&&pitch);
+    const e=act?(pdW1?Math.min(now-PD.wuT,.82):now-(pdW?PD.wuT:windupT0)):0;let k=0; /* (while the ring is still closing he winds and holds at the top) */
     for(const n in P.taunts)P.taunts[n].a.setEffectiveWeight(0);
     if(S.kOut&&S.kOut.taunt&&now>S.kOut.t&&now<S.kOut.t+DEFEAT){const tn=P.taunts[S.kOut.taunt],te=now-S.kOut.t; // struck him out: rub it in
       k=ease(clamp(te/.35,0,1))*ease(clamp((DEFEAT-te)/.35,0,1));tn.a.time=tn.dur<2.5?te%tn.dur:Math.min(tn.dur-.01,te);tn.a.setEffectiveWeight(k);}
