@@ -365,6 +365,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
 #walk .wrow b.hand.tdy{font-size:1.5em;color:#fff;vertical-align:-.06em;white-space:nowrap}
 #walk.lockd{border-color:#58d6ff;border-left-color:#58d6ff;box-shadow:0 3px 0 #000,0 0 0 2px #58d6ff,0 0 22px 4px rgba(88,214,255,.85)}#walk.lockd .wrow.sub{color:#8fe8ff}#hud.lockd>#card{border-color:#58d6ff;border-left-color:#58d6ff;box-shadow:0 3px 0 #000,0 0 14px 2px rgba(88,214,255,.8)}#hud.lockd>#card #cname::before{content:'🔥 '} /* LOCKED IN: his plates burn Overdrive blue */
 #hud>#card .stat em.splus{color:#ffd23b!important;width:auto;text-shadow:0 2px 0 #000,0 0 10px #ff8a1e,0 0 18px rgba(255,210,59,.9)}
+#hud>#card .stat em{width:auto!important;min-width:1.25em}
 #walk #wrat.tv{color:#fff;font-size:18.5px;line-height:1.2;padding-top:4px;padding-bottom:8px;max-width:min(680px,84vw)}#walk #wrat.tv i{display:block;font-size:.68em;margin-bottom:1px}@media (min-width:900px) and (min-height:560px){#walk #wrat.tv{font-size:31px}}
 #walk .wrow.sub{background:rgba(5,8,40,.55);border-top:1px solid rgba(255,255,255,.25);color:#c9d2ff}
 #hud>#card #cname{color:#fff!important}#hud>#card #cnum{color:#ffb070!important} /* a solid dark plate with a yellow edge: it stands out from the park behind it */
@@ -898,7 +899,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 554</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 555</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -1944,7 +1945,7 @@ function sbDraw(force){
   {const F=MUGS[b.name];if(F&&F.c){g.save();sbRR(g,34,250,120,104,11);g.clip();g.drawImage(F.c,34,242,120,120);g.restore();g.textAlign='right';sbText(g,String(b.num),150,336,'italic 400 34px "Russo One",Arial Black,Arial','#fff',60);g.textAlign='center';} /* his face on the board, his number tucked in the corner */
     else sbText(g,String(b.num),94,304,'italic 400 76px "Russo One",Arial Black,Arial','#fff',110);}
   g.textAlign='left';g.fillStyle='#9fb0e0';g.font='400 24px "Russo One",Arial Black,Arial';g.fillText('NOW BATTING',178,272);sbText(g,bdn(b),178,318,'italic 400 62px "Russo One",Arial Black,Arial','#ffe53b',430,'#ffb21e');
-  [['PWR',b.pwr],['CON',b.con],['SPD',b.spd]].forEach((q,k)=>{const x=650+k*112,gr=statGrade(q[1]),col={S:'#ffe53b',A:'#39ff6a',B:'#7fe6ff',C:'#fff',D:'#ffb070',F:'#ff5a36'}[gr];g.textAlign='center';g.fillStyle='#9fb0e0';g.font='400 24px "Russo One",Arial Black,Arial';g.fillText(q[0],x+40,272);sbText(g,gr,x+40,320,'400 60px "Russo One",Arial Black,Arial',col,80,col);});
+  [['PWR',b.pwr],['CON',b.con],['SPD',b.spd]].forEach((q,k)=>{const x=650+k*112,gr=statGrade(q[1]),col={S:'#ffe53b',A:'#39ff6a',B:'#7fe6ff',C:'#fff',D:'#ffb070',F:'#ff5a36'}[gr];g.textAlign='center';g.fillStyle='#9fb0e0';g.font='400 24px "Russo One",Arial Black,Arial';g.fillText(q[0],x+40,272);sbText(g,gr+gradeMod(q[1]),x+40,320,'400 60px "Russo One",Arial Black,Arial',col,80,col);});
   sbTex.needsUpdate=true;}
 function sbTick(){if(sbMsgT<0)sbMsgT=now+4.5;else if(sbMsgT&&now>sbMsgT&&S.state!=='title'&&S.state!=='over'){sbMsgT=0;sbDraw(true);}}
 {
@@ -2767,6 +2768,9 @@ const WILD_CEL=['w_salsa2','w_salute','w_backflip','w_bboy','w_macarena','w_sals
 const juiceOn=()=>juiceArmed||keys.ShiftLeft||keys.ShiftRight;
 // ratings shown as grades: S is elite, F is a liability. The same scale for power, contact and speed.
 const GRADE_COL={S:'#ffd23b',A:'#3ddc6a',B:'#3ad6ff',C:'#f2f5ff',D:'#ff9a3b',F:'#ff4d2e'};
+// EVERY RATING CARRIES A + OR A -: the top half of each letter's range is a plus, the bottom half a minus (C+ is nearly a B, C- only just
+// better than a D). The one exception is the very top: a full S has no sign, because S+ is the Power rank that has to be earned.
+function gradeMod(v){const t=(v-.85)/.32,B=[0,.2,.36,.52,.72,.9,1.04],i=t>=.9?5:t>=.72?4:t>=.52?3:t>=.36?2:t>=.2?1:0;return t>=(B[i]+B[i+1])/2?(i===5?'':'+'):'-';}
 function statGrade(v){const t=(v-.85)/.32;return t>=.9?'S':t>=.72?'A':t>=.52?'B':t>=.36?'C':t>=.2?'D':'F';}
 // The batter card. In Overdrive every rating is shown one grade higher (an S becomes S+), lit blue with an up-arrow: power and contact are
 // boosted by the Overdrive swing itself, and he runs 8% faster.
@@ -2775,7 +2779,7 @@ function cardStats(b){const od=!!(S.over&&S.overOn);$('card').classList.toggle('
   // S+ IS A POWER RANK ONLY, and it has to be earned in the moment: Overdrive lifts every rating a grade, a brawl won lifts Power a grade for
   // the rest of the game, but only Power can go past S. Contact and Speed top out at S.
   [['pw',b.pwr],['co',b.con],['sp',b.spd]].forEach(([k,v])=>{const g0=statGrade(v),up=(od?1:0)+(k==='pw'&&b.sp?1:0),g=up?GRADES[Math.min(k==='pw'?6:5,GRADES.indexOf(g0)+up)]:g0,base=g==='S+'?'S':g;
-    $('s'+k).style.width=clamp((v-.85)/.32*100+(od?22:0),6,100)+'%';$('s'+k).style.background=od?'#58d6ff':GRADE_COL[base];const e=$('g'+k);e.textContent=g;e.className='g'+base+(up&&g!==g0?' up':'')+(g==='S+'?' splus':'');});}
+    $('s'+k).style.width=clamp((v-.85)/.32*100+(od?22:0),6,100)+'%';$('s'+k).style.background=od?'#58d6ff':GRADE_COL[base];const e=$('g'+k);e.textContent=g==='S+'?g:g+gradeMod(v);e.className='g'+base+(up&&g!==g0?' up':'')+(g==='S+'?' splus':'');});}
 function setBatter(){if(MX.batPrep)setTimeout(MX.batPrep,700);if(MX.pitVar&&S.pName&&MX.pitVar[S.pName[3]||0]&&MX.pitCur!==(S.pName[3]||0))setTimeout(pitcherModel,0);
   if(S.lockG){S.over=S.lockG.over;S.overOn=false;S.juice=S.lockG.j;S.lockG=null;} /* LOCKED IN: the Overdrive a hot hitter was lent is his alone. When his turn ends the team's own bar is put back exactly as it was. */
   if(S.over&&S.overOn&&S.walked){} // a walk doesn't use it up: it stays on for the next hitter
@@ -2853,7 +2857,7 @@ function startWalkup(){
     S.walkClip=forced&&MX.clip.intros[forced]?forced:first?'w_walkin':(gamesPlayed<=3&&S.bi===1&&rare.length)?rare[(Math.random()*rare.length)|0]:r<rare.length?rare[r]:WALK.by[b.name];} // new players: the second hitter always brings one of the surprise walk-ups
   {const I=MX.clip.intros,forcedWalk=DBG.trip===true?'w_trip':DBG.trip;if(S.walkClip===lastWalk&&!(forcedWalk&&I[forcedWalk])){const alt=Object.keys(I).filter(k=>/^w_/.test(k)&&k!==lastWalk&&k!=='w_walkin');if(alt.length)S.walkClip=alt[(Math.random()*alt.length)|0];}lastWalk=S.walkClip;} // never the same walk-up twice in a row
   $('wnum').textContent=b.num;$('wname').innerHTML='<small>#'+b.num+' · '+(POS_BY[b.name]||'DH')+' · BATS '+(b.lh?'L':'R')+'</small>'+bdn(b);
-  {const gb=v=>{const g=statGrade(v);return `<b class="gr g${g}"><u>${g}</u></b>`;};$('wrat').innerHTML=`<span>${MOB?'PWR':'POWER'} ${b.sp?(()=>{const g=GRADES[Math.min(6,GRADES.indexOf(statGrade(b.pwr))+1)];return `<b class="gr g${g==='S+'?'S':g}"><u>${g}</u></b>`;})():gb(b.pwr)}</span><span>${MOB?'CON':'CONTACT'} ${gb(b.con)}</span><span>${MOB?'SPD':'SPEED'} ${gb(b.spd)}</span><span>TODAY <b class="hand tdy">${b.gs&&b.gs.ab?b.gs.h+'-'+b.gs.ab+(b.gs.hr?' · '+(b.gs.hr>1?b.gs.hr+' ':'')+'HR':''):'0-0'}</b></span>`;if(!b.gs)b.gs={ab:0,h:0,hr:0};b.gs.ab++;} /* his ratings and his day so far (hits for at-bats, homers) */
+  {const gb=v=>{const g=statGrade(v);return `<b class="gr g${g}"><u>${g}${gradeMod(v)}</u></b>`;};$('wrat').innerHTML=`<span>${MOB?'PWR':'POWER'} ${b.sp?(()=>{const g=GRADES[Math.min(6,GRADES.indexOf(statGrade(b.pwr))+1)];return `<b class="gr g${g==='S+'?'S':g}"><u>${g==='S+'?g:g+gradeMod(b.pwr)}</u></b>`;})():gb(b.pwr)}</span><span>${MOB?'CON':'CONTACT'} ${gb(b.con)}</span><span>${MOB?'SPD':'SPEED'} ${gb(b.spd)}</span>${MOB?'':'<span>TODAY <b class="hand tdy">'+(b.gs&&b.gs.ab?b.gs.h+'-'+b.gs.ab+(b.gs.hr?' · '+(b.gs.hr>1?b.gs.hr+' ':'')+'HR':''):'0-0')+'</b></span>'}<span hidden><b>${b.gs&&b.gs.ab?b.gs.h+'-'+b.gs.ab+(b.gs.hr?' · '+(b.gs.hr>1?b.gs.hr+' ':'')+'HR':''):'0-0'}</b></span>`;if(!b.gs)b.gs={ab:0,h:0,hr:0};b.gs.ab++;} /* his ratings and his day so far (hits for at-bats, homers) */
   {const tv=TRIVIA[b.name];$('wrat').classList.remove('tv');if(tv&&(DBG.trivia||Math.random()<.08)){ /* four times in five the card shows his ratings and his day; one in five, something about him */let k=(Math.random()*tv.length)|0;if(k===trivLast[b.name])k=(k+1)%tv.length;trivLast[b.name]=k;$('wrat').classList.add('tv');$('wrat').innerHTML='<span><i>DID YOU KNOW?</i> '+tv[k]+'</span>';}} /* now and then the card skips the ratings and tells you something about him instead */
   faceShow(b);
   $('wspot').textContent='BATTING '+['1ST','2ND','3RD','4TH','5TH','6TH','7TH','8TH','9TH'][i]+(b.lock?(MOB?' · 🔥 LOCKED IN':' · 🔥 LOCKED IN: OVERDRIVE UNTIL AN OUT'):SPONSOR[b.name]?' · '+SPONSOR[b.name]:'');$('walk').classList.toggle('lockd',!!b.lock);if(b.lock)setTimeout(()=>{if(S.state==='walkup')pop('LOCKED IN!','OVERDRIVE READY · EVERY AT-BAT UNTIL AN OUT','');},350); /* every Comet is somebody's property, or would like to be */$('wskip').textContent=MOB?'TAP TO SKIP':'SWING TO SKIP';
@@ -3053,7 +3057,7 @@ function hbpEnd(fk,title){const b=curBatter(),r0=Math.random(),k=fk!==undefined?
   if(k<=0)roarOff(3); // no fight, or a lost one: it settles in a long tail
   showCard();
   // He heads for first with the camera in front of him, and the walk-up banner comes back to show what getting hit (or the fight) did to his ratings.
-  {const gb=v=>{const g=statGrade(v);return `<b class="gr g${g}"><u>${g}</u></b>`;},ch=(lab,o,n)=>`<span>${lab} ${gb(o)}${k?` <i class="${k>0?'hbu':'hbd'}">➜</i> ${gb(n)}`:''}</span>`;
+  {const gb=v=>{const g=statGrade(v);return `<b class="gr g${g}"><u>${g}${gradeMod(v)}</u></b>`;},ch=(lab,o,n)=>`<span>${lab} ${gb(o)}${k?` <i class="${k>0?'hbu':'hbd'}">➜</i> ${gb(n)}`:''}</span>`;
     $('wnum').textContent=b.num;$('wname').textContent=bdn(b);$('wrat').classList.remove('tv');$('wrat').innerHTML=ch(MOB?'PWR':'POWER',was.pwr,b.pwr)+ch(MOB?'CON':'CONTACT',was.con,b.con)+ch(MOB?'SPD':'SPEED',was.spd,b.spd);$('shout').classList.remove('go');
     $('wspot').textContent=k>0?'RATINGS UP · +2 JUICE':k<0?'RATINGS DOWN FOR THE GAME':'NO HARM DONE';$('wskip').textContent='';$('walk').hidden=false;$('hud').classList.add('wk');}
   {const e=$('statfx');e.className='';e.innerHTML='';if(k){let h='';for(let i=0;i<12;i++){const left=i%2,x=left?rand(2,17):rand(83,96);h+=`<i style="left:${x.toFixed(1)}%;top:45%;font-size:${rand(26,50).toFixed(0)}px;animation-delay:${(-rand(0,1.5)).toFixed(2)}s;animation-duration:${rand(1.1,1.8).toFixed(2)}s">${k>0?'▲':'▼'}</i>`;}e.innerHTML=h;e.className=k>0?'up':'dn';}}
