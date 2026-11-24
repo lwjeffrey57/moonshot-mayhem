@@ -391,8 +391,8 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
 #dft{position:absolute;left:0;top:0;z-index:5;display:none;pointer-events:none;white-space:nowrap;will-change:transform;font-family:var(--display);font-style:italic;line-height:1;color:#fff;-webkit-text-stroke:5px #000;paint-order:stroke fill;text-shadow:0 4px 0 #000}
 #dft b{font-weight:400;font-size:clamp(34px,9vw,76px);font-variant-numeric:tabular-nums}#dft i{font-style:italic;font-size:clamp(15px,3.6vw,30px);margin-left:6px;color:var(--volt)}
 #dft.red b{color:#ff2a1e;text-shadow:0 4px 0 #000,0 0 28px rgba(255,40,20,.95)}
-#dft.fire b{color:#e8fbff;animation:dftFire .22s steps(3) infinite;font-size:calc(clamp(34px,9vw,76px)*(1 + .5*var(--fk,0)));color:#f2fcff;-webkit-text-fill-color:#f2fcff;-webkit-text-stroke:5px #020818;paint-order:stroke fill;text-shadow:none;filter:drop-shadow(0 0 2px #020818) drop-shadow(0 3px 0 #020818) drop-shadow(0 calc(-4px - 10px*var(--fk,0)) calc(6px + 8px*var(--fk,0)) hsl(var(--fh,198),100%,67%)) drop-shadow(0 calc(-12px - 34px*var(--fk,0)) calc(14px + 26px*var(--fk,0)) hsl(var(--fh,198),100%,var(--fl,62%))) drop-shadow(0 calc(-22px*var(--fk,0) - 50px*var(--fk,0)*var(--fk,0)) calc(26px*var(--fk,0)) hsl(calc(var(--fh,198) + 8),100%,42%))} /* the same white-hot-to-blue flame as an Overdrive homer */#dft.fire i{color:#8fe8ff}
-@keyframes dftFire{0%{transform:scale(1) translateY(0)}50%{transform:scale(1.05) translateY(-1px)}100%{transform:scale(1.02) translateY(1px)}}
+#dft.fire b{animation:dftFire .16s steps(3) infinite;font-size:calc(clamp(34px,9vw,76px)*(1 + .5*var(--fk,0)));-webkit-text-stroke:5px #000;paint-order:stroke fill;text-shadow:none;filter:drop-shadow(0 0 2px #ffd0a0) drop-shadow(0 3px 0 #000) drop-shadow(0 calc(-3px - 8px*var(--fk,0)) calc(6px + 8px*var(--fk,0)) #ff6a1e) drop-shadow(0 calc(-10px - 26px*var(--fk,0)) calc(12px + 22px*var(--fk,0)) rgba(255,40,10,.85))}#dft.fire i{color:#ffb070} /* a thin hot rim keeps the dark red readable against the Moon; the fire behind it grows with the distance */
+@keyframes dftFire{0%{transform:translate(0,0) scale(1)}33%{transform:translate(calc(-1px - 2px*var(--fk,0)),1px) scale(1.04)}66%{transform:translate(calc(1px + 2px*var(--fk,0)),-1px) scale(1.02)}100%{transform:translate(0,1px) scale(1.05)}}
 #dft.big b{color:var(--volt)}#dft.huge b{color:#ff7a1e;text-shadow:0 4px 0 #000,0 0 26px rgba(255,120,30,.9)}
 #pmark{position:absolute;left:0;top:0;z-index:3;pointer-events:none;display:none;will-change:transform}
 /* OVERDRIVE ON A PHONE, same look for a fraction of the work. What costs frames is anything that makes the browser REPAINT every frame:
@@ -903,7 +903,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 564</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 565</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -1055,7 +1055,11 @@ let markEl=null,markK=-1;function markDom(){if(!markEl){markEl=document.createEl
 let dftEl=null,dftOn=false,dftV=-1;function dftDom(){const on=!!(flight&&!flight.done&&flight.play.type==='hr'&&flight.trailCam&&!flight.orbit&&flight.dShow&&now-flight.t0>.3&&ball.visible&&!paused);
   if(!dftEl){if(!on)return;dftEl=document.createElement('div');dftEl.id='dft';dftEl.innerHTML='<b></b><i>FT</i>';$('hud').appendChild(dftEl);}
   if(on!==dftOn){dftOn=on;dftEl.style.display=on?'block':'none';dftV=-1;}if(!on)return;
-  const down=flight.tr&&flight.tr.outT&&now-flight.t0>=flight.tr.outT,v=down?Math.round(flight.dFt):flight.dLast|0; /* the instant it touches down the counter shows the final distance, exactly the number in the call */if(v!==dftV){dftV=v;dftEl.firstChild.textContent=v;dftEl.classList.toggle('big',v>=350&&v<410);dftEl.classList.toggle('huge',v>=410&&v<470);dftEl.classList.toggle('red',v>=470&&v<530);dftEl.classList.toggle('fire',v>=530);if(v>=530){const k=clamp((v-530)/600,0,1);dftEl.style.setProperty('--fk',k.toFixed(3));dftEl.style.setProperty('--fh',Math.round(198+44*k));dftEl.style.setProperty('--fl',Math.round(62-24*k)+'%');}} /* past 530 the fire keeps growing and the blue keeps deepening, all the way to 1,134 */ /* white, yellow at 350, orange at 410, red at 470, and from 530 it is on fire, Overdrive blue */ /* white, yellow from 360, orange from 440, and from 520 it burns Overdrive blue */
+  const down=flight.tr&&flight.tr.outT&&now-flight.t0>=flight.tr.outT,v=down?Math.round(flight.dFt):flight.dLast|0; /* the instant it touches down the counter shows the final distance, exactly the number in the call */if(v!==dftV){dftV=v;dftEl.firstChild.textContent=v;
+    // THE NUMBER HEATS UP LIKE A DAMAGE COUNTER: white, then yellow, orange, red, and from there darker and darker, through crimson to a deep
+    // blood red by 1,134 ft. Past 530 it also grows and shakes, with fire behind it.
+    {const S2=[[0,255,255,255],[350,255,255,255],[410,255,229,59],[470,255,138,30],[530,255,42,30],[700,214,18,26],[900,150,8,18],[1134,92,0,8]];let k=1;while(k<S2.length-1&&v>S2[k][0])k++;const A=S2[k-1],B=S2[k],u=clamp((v-A[0])/(B[0]-A[0]||1),0,1),c='rgb('+[1,2,3].map(q=>Math.round(A[q]+(B[q]-A[q])*u)).join(',')+')',e=dftEl.firstChild;e.style.color=c;e.style.webkitTextFillColor=c;}
+    dftEl.classList.toggle('fire',v>=530);if(v>=530)dftEl.style.setProperty('--fk',clamp((v-530)/600,0,1).toFixed(3));}
   const W=canvas.clientWidth||innerWidth,H=canvas.clientHeight||innerHeight;_s0.copy(ball.position).project(camera);const x=clamp((_s0.x*.5+.5)*W,70,W-70),y=clamp((-_s0.y*.5+.5)*H-H*.11,H*.14,H*.8);
   dftEl.style.transform='translate('+x.toFixed(1)+'px,'+y.toFixed(1)+'px) translate(-50%,-100%)';}
 // The pitcher's Overdrive tag rides above him: its bottom edge is kept over the highest point he reaches (arms up, mid-taunt, mid-flip), found
