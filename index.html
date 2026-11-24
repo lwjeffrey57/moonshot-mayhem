@@ -903,7 +903,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 567</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 568</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -1082,7 +1082,7 @@ let timPlT=0;function timPlace(force){const pn=performance.now(),t=$('tim'),b=$(
   // The read-out goes under the LOWEST of whatever is showing in the upper part of the screen.
   {const h=$('hud').getBoundingClientRect();let low=0;for(const id of ['pop','shout','orbc','podtag']){const E=$(id);if(!E)continue;const r=E.getBoundingClientRect();if(r.height<4||r.width<4)continue;{const g=E.classList.contains('go');if(g&&!E._wasGo)E._goT=pn;E._wasGo=g;}const cs=getComputedStyle(E),fresh=E.classList.contains('go')&&pn-(E._goT||0)<450;if(cs.display==='none'||cs.visibility==='hidden'||(+cs.opacity<.05&&!fresh))continue; /* (a callout that has only just been triggered counts even while it is still fading in) */
       const tm=t.getBoundingClientRect();if(r.right<tm.left+tm.width*.2||r.left>tm.right-tm.width*.2)continue; /* (off to one side of it: no conflict) */
-      const bt=id==='pop'?E.offsetTop+E.offsetHeight+(MOB?4:13):id==='shout'?E.offsetTop+E.offsetHeight*.12+(MOB?4:6):r.bottom-h.top; /* (plus the tilt and outline of the lettering, which hang below its box) */ /* measured from where the callout will SETTLE, not from its pop-in animation, so the read-out does not chase it */if(r.top-h.top<h.height*.62&&bt>low)low=bt;}
+      const est=id==='pop'?E.offsetTop+E.offsetHeight+(MOB?4:13):id==='shout'?E.offsetTop+E.offsetHeight*.2+(MOB?4:8):0,bt=Math.max(est,+cs.opacity>.5?r.bottom-h.top:0)||r.bottom-h.top; /* never less than the lettering's real bottom edge once it is on screen (tilted, outlined lettering hangs below its box) */ /* (plus the tilt and outline of the lettering, which hang below its box) */ /* measured from where the callout will SETTLE, not from its pop-in animation, so the read-out does not chase it */if(r.top-h.top<h.height*.62&&bt>low)low=bt;}
     if(low>0){const y=Math.round(low+(MOB?6:10));t.style.setProperty('top',y+'px','important');b.style.setProperty('top',(y+(t.offsetHeight||22)+(MOB?4:8))+'px','important');return;}}
   if(t.style.top){t.style.removeProperty('top');b.style.removeProperty('top');}}
 function eruptTick(L,cols,emb,onFire){const e=now-L.t;if(e>=0&&e<1.9&&S.state!=='title'&&S.state!=='over'){
