@@ -903,7 +903,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 560</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 561</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -4101,7 +4101,7 @@ const WHIFF_HOLD=1.15; // seconds of the swing-and-miss clip shown after the mis
 function batterOpacity(k){const set=m=>{if(m){m.transparent=k<1;m.opacity=k;}};
   if(MX.obj)MX.obj.traverse(n=>{if(n.userData.helm){n.visible=k>.5;return;}if(n.isMesh)[].concat(n.material).forEach(set);});set(bat.userData.wood);} // the glass helmet has its own shared material: just hide it when he fades
 function updateClip(dt){
-  if(MX.brigs&&MX.clip.bi!==undefined&&MX.clip.bi!==MX.bshown){MX.bshown=MX.clip.bi;const b=LINEUP[MX.clip.bi%LINEUP.length].body||0;batSwap(MX.brigs[b]?b:0);} /* decided once, as the new man is about to fade in */
+  if(MX.clip.bi!==undefined&&MX.clip.bi!==MX.bshown){MX.bshown=MX.clip.bi;const b=LINEUP[MX.clip.bi%LINEUP.length].body||0;if(b&&!(MX.brigs&&MX.brigs[b])&&MX.batVar&&MX.batVar[b]&&MX.batRig){try{MX.batRig(b);}catch(e){}} /* his body has arrived but has not been dressed yet: dress it now rather than send the stand-in up */if(MX.brigs)batSwap(MX.brigs[b]?b:0);} /* decided once, as the new man is about to fade in */
   const C=MX.clip,o=MX.obj;let w=0,want=0,rate=.55,skT=0;
   o.rotation.y=PI;o.scale.x=Math.abs(o.scale.x);o.position.x=C.baseX;o.position.z=C.baseZ; // everything below is worked out right-handed; a lefty is mirrored at the end
   // The next hitter is announced as soon as a play ends, but the man on screen is still the one who just swung.
@@ -4562,11 +4562,11 @@ function loadPlayers(kind){ // body file = character mesh; clips.json = motion-c
       const cur={obj:MX.obj,clip:MX.clip,D:MX.D,helmet:MX.helmet},bv=bat.visible,v=MX.batVar[k];MX.dlRef=(MX.brigs[0]||cur).clip.dl;
       try{setupModel(v.make(batNames),v.skin());MX.brigs[k]={obj:MX.obj,clip:MX.clip,D:MX.D,helmet:MX.helmet};scene.remove(MX.obj);}catch(e){console.warn('hitter rig failed',e);if(MX.obj&&MX.obj!==cur.obj)scene.remove(MX.obj);}
       MX.dlRef=null;MX.obj=cur.obj;MX.clip=cur.clip;MX.D=cur.D;MX.helmet=cur.helmet;bat.visible=bv;};
-    MX.batPrep=()=>{if(my!==MX.token)return;for(let j=0;j<3;j++){const k=LINEUP[(Math.max(0,S.bi)+j)%LINEUP.length].body||0;if(k)batLoad(k);}};
+    MX.batPrep=()=>{if(my!==MX.token)return;for(let j=0;j<4;j++){const k=LINEUP[(Math.max(0,S.bi)+j)%LINEUP.length].body||0;if(k)batLoad(k);}};
     const jobTick=()=>{if(my!==MX.token)return;setTimeout(jobTick,260);if(!jobs.length||!RUN.list.length||!MX.clip)return;const st=S.state;
       if(!(st==='title'||st==='result'||st==='over'||st==='end'||st==='pchange'||(st==='ready'&&now-S.t<.35)||(st==='walkup'&&now-S.t<.3)))return;
-      const j=jobs.shift();try{if(j[0]==='bat')batRig(j[1]);else{const R=RUN.list[j[2]],v=MX.batVar[j[1]];if(R&&R.bods&&v)runBuild(R,j[1],v.make(RUN_CLIPS),v.skin());}}catch(e){console.warn('hitter body job failed',e);}};
-    setTimeout(jobTick,4200);setTimeout(MX.batPrep,3600);
+      const bi0=jobs.findIndex(q=>q[0]==='bat'),j=bi0>=0?jobs.splice(bi0,1)[0]:jobs.shift(); /* hitters' own bodies are built before anything else in the queue, so the next man up is himself and not a stand-in */try{if(j[0]==='bat'){batRig(j[1]);const cb=S.bi>=0?(curBatter().body||0):0;if(cb===j[1]&&MX.bcur!==cb&&(st==='ready'||st==='walkup'||st==='title'))MX.bshown=undefined;}else{const R=RUN.list[j[2]],v=MX.batVar[j[1]];if(R&&R.bods&&v)runBuild(R,j[1],v.make(RUN_CLIPS),v.skin());}}catch(e){console.warn('hitter body job failed',e);}};
+    MX.batRig=batRig;setTimeout(jobTick,1500);setTimeout(MX.batPrep,500); /* started straight away: the first few hitters' bodies are fetched while the title screen is still up */
     // fielders are built one at a time so the page doesn't freeze while seven more models are prepared
     fielders.filter(f=>!f.isP).forEach((f,i)=>setTimeout(()=>{if(my!==MX.token)return;
       try{setupFielder(f,makeD(['catch','run','strafe','throw','x_dive','p_dying','d_1','d_2','d_3'].filter(k=>cj[k])),defSkin);}catch(e){console.warn('fielder model failed, using built-in figure',e);fallback(f.fig);}},400+i*220));
