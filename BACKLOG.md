@@ -170,3 +170,5 @@ Not being built yet; this is the target to steer by.
 - **Design rule this implies now:** keep the game one self-contained file with assets loaded on demand, keep phone frame rate first, and keep names, sponsors and likenesses original (no real teams, parks or brands).
 
 **Names (BUILD 550):** humans go by a simple first name: RAZOR (Ely body; was Vasquez), OSCAR (Delacroix), EDDIE (Montoya), BRICKHOUSE; Krakens TODD (Hollis), pitchers MAC, CARLOS, LEE.
+
+**Roster (BUILD 553):** Comets: RAZOR (ely), VREL (alien body), BLITZ, BRICKHOUSE, DRAAK (drake body), VANTA, ZEPHRA, CRASH, GORMAK. Krakens field: ARKON, TODD, LIV (olivia body, SS), ZLORP, EDDIE (parker body, LF), XANDU, M'NAR.
