@@ -1010,7 +1010,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 674</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 675</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -1380,7 +1380,8 @@ function pdHitter(){const h=KBAT[PD.k];PD._si=0;PD.needBody=h.body||0;PD.bodyBy=
       $('wnum').textContent=num;$('wname').innerHTML='<small>#'+num+' · KRAKENS · BATS '+(curBatter().lh?'L':'R')+'</small>'+h.name;$('wrat').classList.remove('tv');
       $('wrat').innerHTML='<span>'+(MOB?'PWR':'POWER')+' '+gb(h.pow)+'</span><span>'+(MOB?'CON':'CONTACT')+' '+gb(h.con)+'</span><span>EYE '+gb(.8+.4*h.eye)+'</span>';
       $('wspot').textContent='BATTING '+['1ST','2ND','3RD'][Math.min(2,PD.n)]+' · KEPLER KRAKENS';$('walk').classList.remove('lockd');$('wskip').textContent=MOB?'TAP TO SKIP':'ANY KEY TO SKIP';try{faceShow(h);}catch(e){}
-      $('walk').hidden=false;$('hud').classList.add('wk');if(PD.kz)PD.kz.visible=false;boo(.35);}}catch(e){}
+      PD.wkPend=!!(PD.needBody&&MX.bcur!==PD.needBody); /* his body is not in yet: the picture stays on the mound, and cuts to his walk-up (card and all) the moment he is there to walk. No empty shot, no pop-in. */
+      $('walk').hidden=PD.wkPend;$('hud').classList.add('wk');if(PD.kz)PD.kz.visible=false;if(!PD.wkPend)boo(.35);}}catch(e){}
   pdUI();}
 function pdTap(){if(S.state!=='pduel'||paused)return;if(PD.gt)return;PD.drillArm=false;if(PD.ph===0&&(!pdSel()||PD.odForce)){buzz(8);return;}
   if(PD.ph===0){PD.ph=1;PD.t=now;PD.wuT=now; /* the wind-up starts on this tap, not after the release: the pitcher answers the thumb at once */PD.mph=0;PD.pw=1;buzz(15);tone('triangle',520,620,.06,.2);pdUI();return;}
@@ -1421,7 +1422,7 @@ function pdTick(){const el=now-PD.t;if(MOB){const h=$('hud').getBoundingClientRe
     const lf=!!MX.lefty;_s0.set(lf?ZONE.x0-.2:ZONE.x1+.2,(ZONE.y0+ZONE.y1)/2,.02).project(camera);const mx=(_s0.x*.5+.5)*W,my=(-_s0.y*.5+.5)*H;M.style.transform='translate('+(mx-(mx<W/2?M.offsetWidth:0))+'px,'+(my-M.offsetHeight/2)+'px)';}
   else if(L.style.display!=='none'){L.style.display='none';$('pdmph').style.display='none';}}try{pdPitFix();}catch(e){}try{pdOdGuide();}catch(e){}if(PD.ph<=1)pdSvg();{const lp=PD._lp;PD._lp=PD.ph;if(PD.ph===0&&lp!==0){try{pdUI();}catch(e){}}if(PD.ph===0&&lp>=2){PD.holding=false;PD.pk=0;PD.sel=!(S.over&&S.overOn);pdGoHome();try{pdUI();}catch(e){}} /* every new pitch starts clean: back on the fastball, target back on the fastball's spot (in Overdrive, a pitch has to be picked) */} /* the target goes back to the middle after every pitch */
   if(PD.ph<=1&&!PD.hideBat&&now>(PD.showT||0)&&!(PD.needBody&&MX.bcur!==PD.needBody&&now<(PD.bodyBy||0))&&MX.obj&&MX.clip&&now-(PD._gh||0)>.4){PD._gh=now;try{if(!MX.obj.parent)scene.add(MX.obj);MX.obj.visible=true;if(MX.clip.swap==null)batterOpacity(1);if(MX.obj!==PD._ghO){PD._ghO=MX.obj;MX.obj.traverse(n=>{if(n.isMesh)n.frustumCulled=false;});}}catch(e){}} /* THERE IS ALWAYS A MAN IN THE BOX: a hitter left faded out (or culled by the long lens) by whatever was going on when pitching began is put back */{const th=PD.ph>=2;if(th!==PD._thr){PD._thr=th;$('pd').classList.toggle('thr',th);}} /* once the pitch is made the controls are gone until the next one */if(PD.ph<=1&&roarG)roarOff(2); /* the crowd's roar is a loop that the batting side shuts off before each pitch; pitching never did, so it roared on for good */
-  if(PD.ph===-1){if(PD.wk&&PD.needBody&&MX.bcur!==PD.needBody&&now<(PD.bodyBy||0)&&now-PD.t<5){PD.t=now;S.t=now;PD.waitMax=Math.max(PD.waitMax||0,+(4-(PD.bodyBy-now)).toFixed(1));return;}if(PD.wk&&PD.needBody&&MX.bcur!==PD.needBody&&!PD._si){PD._si=1;PD.standin=(PD.standin||0)+1;} /* (a tap still skips it) */ /* HIS WALK-UP DOES NOT START UNTIL HE IS THERE TO DO IT: the card is up, and the routine begins the moment his own body is in (four seconds at the very most, then the stand-in walks) */
+  if(PD.ph===-1){if(PD.wk&&PD.needBody&&MX.bcur!==PD.needBody&&now<(PD.bodyBy||0)&&now-PD.t<5){PD.t=now;S.t=now;PD.waitMax=Math.max(PD.waitMax||0,+(4-(PD.bodyBy-now)).toFixed(1));return;}if(PD.wk&&PD.wkPend){PD.wkPend=false;PD.t=now;S.t=now;$('walk').hidden=false;boo(.35);try{if(MX.clip){MX.clip.swap=null;batterOpacity(1);}}catch(e){}return;}if(PD.wk&&PD.needBody&&MX.bcur!==PD.needBody&&!PD._si){PD._si=1;PD.standin=(PD.standin||0)+1;} /* (a tap still skips it) */ /* HIS WALK-UP DOES NOT START UNTIL HE IS THERE TO DO IT: the card is up, and the routine begins the moment his own body is in (four seconds at the very most, then the stand-in walks) */
     if(el>=(PD.wk?WALK.dur:2.7)){if(PD.wk){PD.wk=false;$('walk').hidden=true;$('hud').classList.remove('wk');if(PD.kz)PD.kz.visible=true;try{if(MX.clip)MX.clip.swap=.2;}catch(e){}}S.kOut=null;PD._p0=0;PD.ph=0;PD.t=now;PD.holding=false;pdGoHome();pdUI();if(PD.wantTut){PD.wantTut=false;pdTut(0);}}return;} /* the guide comes up once the first batter is in and the controls are live */
   if(PD.ph===1){ // the ring closes (two-tap), or the bar runs (meter). Nobody taps: it goes anyway, badly.
     if(PD.style){const m=$('pdmfill');if(!PD.mph){m.style.height=(clamp(el/.8,0,1)*100)+'%';if(el>=.8){PD.pw=1;PD.mph=1;PD.t=now;pdUI();}}else{m.style.height=((1-clamp(el/.8,0,1))*100)+'%';if(el>=.5)pdThrow(.3);}}
@@ -3060,7 +3061,7 @@ let swing=null,pitch=null,flight=null,juiceArmed=false,windupT0=0,released=false
 const batS={b:0,h:new V3(-.36,1.36,.36),d:new V3(-.25,1,-.15).normalize(),pose:lerpPose(POSE.bStance,POSE.bStance,0)};
 const SW_T=.07; // tap-to-contact time. Short on purpose: the swing has to feel instant
 const curBatter=()=>LINEUP[S.bi%LINEUP.length];
-const wkPD=()=>S.state==='pduel'&&PD.ph===-1&&!!PD.wk; /* a Kraken's walk-up while the player pitches: the same shot, card and routine as the player's own hitters get */
+const wkPD=()=>S.state==='pduel'&&PD.ph===-1&&!!PD.wk&&!PD.wkPend; /* a Kraken's walk-up while the player pitches: the same shot, card and routine as the player's own hitters get */
 // the name-and-ratings card follows the hitter the player is looking at, not the one who is merely due up
 const POS_BY={RAZOR:'CF',XENON:'SS',VREL:'2B',BRICKHOUSE:'1B',VANTA:'RF',DRAAK:'3B',ZEPHRA:'LF',CRASH:'C',GORMAK:'DH'}; /* where each Comet plays in the field */
 function showCard(){if(S.bi<0)return;S.cardBi=S.bi;const b=curBatter();$('cnum').textContent=b.num;$('cname').innerHTML='<small>#'+b.num+' · '+(POS_BY[b.name]||'DH')+' · BATS '+(b.lh?'L':'R')+'</small>'+bdn(b)+(b.hb>0?' <i class="hbu">▲</i>':b.hb<0?' <i class="hbd">▼</i>':''); /* one arrow by the name says his ratings are up or down for the game; the letters stay clean so nothing overlaps on a phone */cardStats(b);}
@@ -5628,7 +5629,7 @@ function perfFlush(){if(PERF.busy||PERF.n<300||(window.__mmManual&&!DBG.perf))re
     Promise.resolve().then(()=>db.collection('perf').doc(PERF.id).set(r)).then(()=>{PERF.sent++;},()=>{}).then(()=>{PERF.busy=false;});};
   if(PERF.db){go(PERF.db);return;}if(PERF.dbTried)return;PERF.dbTried=true;try{if(window.claude&&window.claude.use)window.claude.use('db').then(db=>{PERF.db=db||null;if(!db)PERF.dbTried=true;else go(db);},()=>{});}catch(x){}}
 try{document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')perfFlush();});addEventListener('pagehide',()=>perfFlush());}catch(x){}
-window.__QT=QT;window.__ball=ball;window.__perf=()=>perfReport();window.__perfTick=perfTick;window.__perfFlush=perfFlush;
+window.__QT=QT;window.__batSwap=batSwap;window.__ball=ball;window.__perf=()=>perfReport();window.__perfTick=perfTick;window.__perfFlush=perfFlush;
 let fpsOn=false,fN=0,fT=0,fMax=0,fWork=0;
 {const set=on=>{fpsOn=on;$('fps').hidden=!on;$('fpsbtn').textContent='SHOW SPEED: '+(on?'ON':'OFF');$('fps1').textContent='Show speed: '+(on?'on':'off')+' — tap to change';try{localStorage.setItem('mm_fps',on?'1':'0');}catch(e){}};let on0=false;try{on0=localStorage.getItem('mm_fps')==='1';}catch(e){}set(on0);$('fpsbtn').addEventListener('click',()=>set(!fpsOn));$('fps1').addEventListener('click',()=>set(!fpsOn));} /* the speed read-out can be switched on before the game starts, and it is remembered */
 function fpsTick(ms,work){fN++;fT+=ms;fWork+=work;if(ms>fMax)fMax=ms;if(fT<500)return;
