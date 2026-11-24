@@ -351,6 +351,13 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
 #hud:not(.mob)>#card .stat{font-size:14px;gap:7px}#hud:not(.mob)>#card .stat b{width:86px;height:7px}#hud:not(.mob)>#card .stat em{font-size:24px}
 #hud>#card{background:linear-gradient(#2436b4,#111a66);border:2px solid #fff;border-left:8px solid #ff8a3a;border-radius:10px;box-shadow:0 3px 0 #000} /* its own look, nothing like the scoreboard behind it: a Comets-blue plate with a white edge and an orange team stripe (the scoreboard is black with yellow bulbs) */
 #hud>#card #cname small{display:block;font-family:var(--hud);font-style:normal;font-weight:800;font-size:.5em;letter-spacing:.1em;color:#ffb070;line-height:1.1;margin-bottom:1px;white-space:nowrap}
+/* THE WALK-UP CARD is the same plate, only bigger: Comets blue, white edge, orange team stripe, orange number, white name under the small orange line */
+#walk{background:linear-gradient(#2436b4,#111a66);border:2px solid #fff;border-left:8px solid #ff8a3a;border-radius:10px;box-shadow:0 3px 0 #000;font-style:normal}
+#walk .wn{background:none;color:#ffb070;text-shadow:0 3px 0 #000;padding-left:6px}
+#walk .wname{background:none;color:#fff;text-shadow:0 2px 0 #000;padding-bottom:2px}
+#walk .wname small{display:block;font-family:var(--hud);font-style:normal;font-weight:800;font-size:.45em;letter-spacing:.1em;color:#ffb070;line-height:1.1;margin-bottom:2px;white-space:nowrap;text-shadow:none}
+#walk .wrow{font-family:var(--hud);font-weight:800;letter-spacing:.1em;color:var(--dim);align-items:center}#walk .wrow b.gr{font-family:var(--display)}
+#walk .wrow.sub{background:rgba(5,8,40,.55);border-top:1px solid rgba(255,255,255,.25);color:#c9d2ff}
 #hud>#card #cname{color:#fff!important}#hud>#card #cnum{color:#ffb070!important} /* a solid dark plate with a yellow edge: it stands out from the park behind it */
 #hud:not(.mob)>#card #cnum{font-size:58px}#hud:not(.mob)>#card #cname{font-size:30px}#hud:not(.mob)>#card .stat{font-size:16px;color:#fff}#hud:not(.mob)>#card .stat em{font-size:30px}
 #hud.mob>#card .stat{color:#fff}
@@ -702,7 +709,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
 #duel .dl{left:0;justify-content:flex-start;padding-left:6%;background:linear-gradient(100deg,#0a2a9a,#1e7bff 70%,#58d6ff);clip-path:polygon(0 0,100% 0,84% 100%,0 100%);transform:translateX(-105%)}
 #duel .dr{right:0;justify-content:flex-end;padding-right:6%;background:linear-gradient(280deg,#8a0f08,#ff4d2e 70%,#ffb21e);clip-path:polygon(16% 0,100% 0,100% 100%,0 100%);transform:translateX(105%)}
 #duel b{position:absolute;left:0;right:0;top:50%;transform:translateY(-50%) rotate(-4deg) scale(0);text-align:center;font-weight:400;font-size:clamp(34px,11vw,96px);line-height:.9;color:#fff;-webkit-text-stroke:2px #000;text-shadow:0 5px 0 #000,0 0 30px #fff}
-#duel b span{display:block;font-size:1.5em;color:var(--volt)}
+#duel b span{display:block;font-size:1.25em;color:var(--volt)}
 #duel.go{visibility:visible}#duel.go .dl{animation:duelL 1.9s cubic-bezier(.2,1.2,.3,1) both}#duel.go .dr{animation:duelR 1.9s cubic-bezier(.2,1.2,.3,1) both}#duel.go b{animation:duelT 1.9s cubic-bezier(.2,1.5,.3,1) both}
 @keyframes duelL{0%{transform:translateX(-105%)}14%,80%{transform:none}100%{transform:translateX(-105%)}}
 @keyframes duelR{0%{transform:translateX(105%)}14%,80%{transform:none}100%{transform:translateX(105%)}}
@@ -833,7 +840,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <div id="qte" hidden><b id="qtt"></b><div id="qtr"></div><div id="qtm"><i id="qtb"></i></div></div>
     <div id="qpad" aria-hidden="true"><button type="button" data-d="U">▲</button><button type="button" data-d="L">◀</button><button type="button" data-d="R">▶</button><button type="button" data-d="D">▼</button></div>
     <div id="podtag" aria-hidden="true">PITCHER<br>OVERDRIVE ACTIVE</div>
-    <div id="duel" aria-hidden="true"><i class="dl">BATTER</i><i class="dr">PITCHER</i><b>OVERDRIVE<span>DUEL</span></b></div>
+    <div id="duel" aria-hidden="true"><i class="dl">BATTER</i><i class="dr">PITCHER</i><b><span>SHOWDOWN</span></b></div>
     <div id="goal" hidden></div>
   </div>
   <div class="overlay" id="title">
@@ -878,7 +885,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 513</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 514</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <button class="tag wkopt sens" id="sens1" type="button"></button>
@@ -1039,7 +1046,7 @@ const _pt=new V3();function podTagPos(){const e=$('podtag');if(!$('hud').classLi
   e._hi=Math.max(hi,(e._hi||hi)-.02); /* comes down slowly, so it does not bob with every gesture */
   _s0.set(0,e._hi+(MOB?.75:.35),-18.4).project(camera);const H=canvas.clientHeight||innerHeight,head=(-_s0.y*.5+.5)*H,top0=MOB?112:84;e.style.zoom='';const h0=e.offsetHeight||50,k=clamp((head-top0)/h0,.5,1);
   e.style.zoom=k<1?k.toFixed(3):'';e.style.top=(Math.max(top0,head-h0*k)/k).toFixed(0)+'px';e._on=1;}
-function draw(){podTagPos();{const ad=!!(flight&&flight.admire&&!flight.done&&now-flight.t0<(flight.A||0)+.4);if(ad!==admCls){admCls=ad;$('hud').classList.toggle('adm',ad);}}trackRing.visible=landRing.visible;if(landRing.visible){trackRing.position.set(landRing.position.x,.09,landRing.position.z);trackRing.scale.setScalar(landRing.scale.x*1.15);trackRing.rotation.z=now*1.2;}{const du=!!(S.over&&S.overOn&&pOD());if(du!==duelTag){duelTag=du;const e=$('podtag');e.innerHTML=du?'OVERCHARGED<br>DUEL!':'PITCHER<br>OVERDRIVE ACTIVE';e.classList.toggle('du',du);}}if(HALO.paint){const F=flight&&!flight.done?flight:null,st=S.state,pn=performance.now(),cnt=st==='ready'||st==='windup'||st==='pitch';
+function draw(){podTagPos();{const ad=!!(flight&&flight.admire&&!flight.done&&now-flight.t0<(flight.A||0)+.4);if(ad!==admCls){admCls=ad;$('hud').classList.toggle('adm',ad);}}trackRing.visible=landRing.visible;if(landRing.visible){trackRing.position.set(landRing.position.x,.09,landRing.position.z);trackRing.scale.setScalar(landRing.scale.x*1.15);trackRing.rotation.z=now*1.2;}{const du=!!(S.over&&S.overOn&&pOD());if(du!==duelTag){duelTag=du;const e=$('podtag');e.innerHTML=du?'SHOWDOWN!':'PITCHER<br>OVERDRIVE ACTIVE';e.classList.toggle('du',du);}}if(HALO.paint){const F=flight&&!flight.done?flight:null,st=S.state,pn=performance.now(),cnt=st==='ready'||st==='windup'||st==='pitch';
     const hm=S.walkoff||st==='end'&&S.runs>S.opp?'walkoff':F&&F.rev&&F.revOn||F&&F.orbit&&F.orb?'orbit':F&&F.play.type==='hr'&&F.clr&&S.bases.filter(Boolean).length===3?'slam':F&&F.play.type==='hr'&&F.admire?'nodoubt':F&&F.play.type==='hr'&&F.clr||st==='trot'?'hr':st==='brawl'?'fight':st==='pchange'?'change':S.kOut&&now<S.kOut.t+3&&st==='result'?'k'
       :S.over&&S.overOn&&pOD()?'duel':S.over&&S.overOn?'od':pOD()?'pod':F&&F.play.type==='hit'&&F.landed?'hit':cnt&&S.balls===3&&S.strikes===2?'full':cnt&&S.strikes===2?'two':cnt&&(S.bases[1]||S.bases[2])?'rally':'idle'+(((pn/9000)|0)%6);
     /* a message earned by a play stays up for a good few seconds after the moment has passed, so the board is felt, not flickered */
@@ -1230,6 +1237,9 @@ const basic=(o)=>new T.MeshBasicMaterial(Object.assign({side:T.DoubleSide},o));
     for(let i=0;i<24;i++){const x=rand(0,512),y=rand(0,512),r=rand(2.5,8);wrap(x,y,(px,py)=>{const gr=g.createRadialGradient(px,py,0,px,py,r*1.35);gr.addColorStop(0,'rgba(10,10,18,.5)');gr.addColorStop(.62,'rgba(10,10,18,.3)');gr.addColorStop(.8,'rgba(250,250,255,.42)');gr.addColorStop(1,'rgba(250,250,255,0)');g.fillStyle=gr;g.beginPath();g.arc(px,py,r*1.35,0,7);g.fill();});}
     for(let i=0;i<900;i++){const x=rand(0,512),y=rand(0,512),r=rand(1.4,4.2);wrap(x,y,(px,py)=>{const gr=g.createRadialGradient(px,py,0,px,py,r);gr.addColorStop(0,'rgba(250,250,255,.5)');gr.addColorStop(1,'rgba(250,250,255,0)');g.fillStyle=gr;g.beginPath();g.arc(px,py,r,0,7);g.fill();});}
     for(let i=0;i<15000;i++){const x=rand(0,512),y=rand(0,512),r=rand(.5,1.7);g.fillStyle=Math.random()<.5?`rgba(245,245,252,${rand(.1,.28)})`:`rgba(16,16,26,${rand(.12,.32)})`;wrap(x,y,(px,py)=>{g.beginPath();g.arc(px,py,r,0,7);g.fill();});}});
+  // EXPERIMENT: the playing surface inside the walls drawn like the batter's eye (dark glass solar panels, blue grid, a sheen on every panel).
+  // Set EYE_FIELD to false to go straight back to the regolith field.
+  const EYE_FIELD=true;
   const groundMat=new T.ShaderMaterial({fog:true,side:T.DoubleSide,uniforms:T.UniformsUtils.merge([T.UniformsLib.fog,{macro:{value:null},maskT:{value:null},gD:{value:null},dD:{value:null},mD:{value:null},mN:{value:null},mK:{value:0},digi:{value:DIGI?1:0}}]),extensions:{derivatives:true},
     vertexShader:`varying vec2 vW;varying float vL;
 #include <fog_pars_vertex>
@@ -1237,6 +1247,7 @@ void main(){vec4 wp=modelMatrix*vec4(position,1.0);vW=wp.xz;vec3 n=normalize(mat
 #include <fog_vertex>
 }`,
     fragmentShader:`#define GRIDK 0.0
+#define EYEF ${EYE_FIELD?'1.0':'0.0'}
 uniform sampler2D macro,maskT,gD,dD,mD,mN;uniform float digi,mK;varying vec2 vW;varying float vL;
 #include <fog_pars_fragment>
 void main(){vec2 uv=vec2((vW.x+130.0)/260.0,1.0-(vW.y+240.0)/260.0);
@@ -1264,6 +1275,14 @@ col+=vec3(1.0,0.16,0.86)*max(l.x,l.y)*(0.22+0.55*fade)*(1.0-m)*clr*GRIDK; // no 
 {float rr=length(vW-vec2(0.0,-0.2)),t=rr/6.5,aa=fwidth(t),band=smoothstep(0.25-aa,0.25+aa,abs(fract(t)-0.5));
 col*=1.0+0.17*(band-0.5)*(1.0-m)*clr;
 float rt=rr*2.6,rk=smoothstep(0.34,0.5,abs(fract(rt)-0.5))*clamp(1.0-fwidth(rt)*2.2,0.0,1.0);col*=1.0-0.11*rk*(1.0-m)*clr;}
+if(EYEF>0.5){vec2 pr=vec2(vW.x+vW.y,vW.x-vW.y)*0.70711/4.0,pf=fract(pr),pw=fwidth(pr),pd=0.5-abs(pf-0.5);
+float far=clamp(0.05/max(pw.x,pw.y),0.0,1.0),ln=max(1.0-smoothstep(0.018,0.018+pw.x*1.5,pd.x),1.0-smoothstep(0.018,0.018+pw.y*1.5,pd.y))*far;
+float sd=(pf.x+pf.y)*0.5,sh=(1.0-smoothstep(0.0,0.45,sd))*far;
+vec3 pan=vec3(0.045,0.07,0.17)*(1.0-0.22*smoothstep(0.45,1.0,sd)*far)+vec3(0.47,0.63,1.0)*0.13*sh;
+pan*=1.0+0.9*m; /* the dirt cut-outs (infield, mound, track) read as a lighter panel */
+pan+=vec3(0.27,0.43,0.75)*0.55*ln*mix(0.25,1.0,clr); /* grid kept faint in the lane behind the strike zone */
+pan+=vec3(0.3,0.45,0.9)*0.1*exp(-dot(vW+vec2(0.0,38.0),vW+vec2(0.0,38.0))/5200.0); /* the floodlights pooling on the infield */
+col=pan*vL;}
 {float o=0.19/260.0; // chalk about 40 cm wide: wherever the surface type changes within that distance
 float e=abs(texture2D(maskT,uv+vec2(o,0.0)).r-texture2D(maskT,uv-vec2(o,0.0)).r)+abs(texture2D(maskT,uv+vec2(0.0,o)).r-texture2D(maskT,uv-vec2(0.0,o)).r);
 col=mix(col,vec3(0.95,0.95,0.93),smoothstep(0.4-clamp(fwidth(e),0.03,0.22),0.4+clamp(fwidth(e),0.03,0.22),e)*0.97*clr);}} // chalk: the infield, base paths, mound and track are marked out in white lines, the way the old dome parks painted them on the carpet
@@ -1386,7 +1405,7 @@ gl_FragColor=vec4(col,1.0);
         idle5:()=>{const n=(18000+((Math.random()*24000)|0)).toLocaleString('en-US'),gag=['HOT DOGS FLOAT. HOLD ON TO YOURS.','LOST HELMET? SEE GUEST SERVICES','NEXT SHUTTLE TO EARTH: NEVER','FOUL BALLS MAY LEAVE ORBIT','PLEASE DO NOT FEED THE KRAKENS'][(Math.random()*5)|0];
           return four(['TONIGHT\'S CROWD: '+n,W],[gag,Y],['GRAVITY: STILL ONE-SIXTH',G],['KISS CAM IS BROKEN AGAIN',P]);},
         hr:four(['HOME RUN!',Y],['GONE!',O],['HOME RUN!',Y],['SEE YA!',W]),nodoubt:four(['NO DOUBTER',Y],['NO DOUBTER',W]),slam:four(['GRAND SLAM',Y],['GRAND SLAM',O]),orbit:four(['INTO ORBIT',I],['MOONSHOT',W]),
-        od:four(['OVERDRIVE',W],['OVERDRIVE',I]),pod:four(['DANGER',R],['PITCHER OVERDRIVE','#ffd0c0']),duel:four(['OVERCHARGED DUEL',W],['OVERDRIVE',I],['OVERCHARGED DUEL',W],['DANGER',R]),
+        od:four(['OVERDRIVE',W],['OVERDRIVE',I]),pod:four(['DANGER',R],['PITCHER OVERDRIVE','#ffd0c0']),duel:four(['SHOWDOWN',W],['OVERDRIVE',I],['SHOWDOWN',W],['DANGER',R]),
         rally:four(['RALLY TIME',Y],['BRING HIM IN',O],['RALLY TIME',Y],['LET\'S GO COMETS',W]),two:four(['TWO STRIKES',I],['HANG IN THERE',W]),full:four(['FULL COUNT',Y],['HERE IT COMES',W]),
         k:four(['K',I],['STRUCK HIM OUT',W],['K',I],['SIT DOWN',W]),fight:four(['FIGHT!',R],['FIGHT!',Y]),change:four(['PITCHING CHANGE',W],['HIT THE SHOWERS',O]),walkoff:four(['WALK-OFF!',Y],['COMETS WIN',O]),hit:four(['BASE HIT',G],['KEEP IT ROLLING',W])},
       THEME={idle:['#070b1e','#ff4d2e'],hr:['#2a1602',Y],nodoubt:['#2a1602',Y],slam:['#3a0a02',O],orbit:['#031436',I],od:['#031436','#3ad6ff'],pod:['#2a0504','#ff2a1e'],duel:['#1a0424',P],rally:['#1c1602',Y],two:['#04122a',I],full:['#1c1602',Y],k:['#04122a',I],fight:['#2a0504',R],change:['#101326',W],walkoff:['#2a1602',Y],hit:['#04201a',G]},
@@ -1431,15 +1450,15 @@ gl_FragColor=vec4(col,1.0);
       {const eg=g.createLinearGradient(0,0,w,0);eg.addColorStop(0,'rgba(150,190,255,.2)');eg.addColorStop(.16,'rgba(150,190,255,0)');eg.addColorStop(.84,'rgba(150,190,255,0)');eg.addColorStop(1,'rgba(150,190,255,.2)');g.fillStyle=eg;g.fillRect(0,0,w,h);
         const vg=g.createLinearGradient(0,0,0,h);vg.addColorStop(0,'rgba(255,255,255,.1)');vg.addColorStop(.25,'rgba(255,255,255,0)');vg.addColorStop(1,'rgba(0,0,0,.3)');g.fillStyle=vg;g.fillRect(0,0,w,h);}
       /* (the frame is real geometry below: a lit cyan surround, not a grey line) */});
-    EYE.mat=basic({map:sol});scene.add(new T.Mesh(ribbon(a,b,.03),EYE.mat));
+    sol.anisotropy=8;EYE.mat=basic({map:sol});scene.add(new T.Mesh(ribbon(a,b,.03),EYE.mat));
     // A PROPER SURROUND: a dark metal frame with a glowing cyan inner edge all the way round, corner beacons, and a soft pool of its glow on the
     // wall-top below. Lit like a piece of the stadium, and the panel itself stays dark so the ball still shows against it.
     {const up=new V3().subVectors(b[0],a[0]).normalize(),off=(q,k)=>q.clone().addScaledVector(up,k),fr=new T.MeshBasicMaterial({color:0x1a2148,side:T.DoubleSide,fog:false}),gl=new T.MeshBasicMaterial({color:0x3ad6ff,side:T.DoubleSide,fog:false}),
       bar=(P,Q,m)=>scene.add(new T.Mesh(ribbon(P,Q),m)),lift=(arr,d)=>arr.map(q=>{const n=q.clone().setY(0).normalize();return q.clone().addScaledVector(n,-d);});
-      const a1=lift(a,.12),b1=lift(b,.12);
-      bar(b1.map(q=>off(q,1.5)),b1,fr);bar(a1,a1.map(q=>off(q,-1.1)),fr);bar(b1.map(q=>off(q,.42)),b1.map(q=>off(q,.06)),gl);bar(a1.map(q=>off(q,-.06)),a1.map(q=>off(q,-.4)),gl);
+      const a1=lift(a,.16),b1=lift(b,.16),a2=lift(a,.42),b2=lift(b,.42); /* the glowing edge sits clear in front of the dark frame (they used to share one plane and flickered against each other as the camera moved), and the frame clear of the panel */
+      bar(b1.map(q=>off(q,1.5)),b1,fr);bar(a1,a1.map(q=>off(q,-1.1)),fr);bar(b2.map(q=>off(q,.56)),b2.map(q=>off(q,.04)),gl);bar(a2.map(q=>off(q,-.04)),a2.map(q=>off(q,-.54)),gl);
       [0,a.length-1].forEach((i,k)=>{const sd=k?1:-1,tan=new V3().subVectors(a[k?a.length-1:1],a[k?a.length-2:0]).normalize().multiplyScalar(sd),P0=off(a1[i],-1.1),P1=off(b1[i],1.5);
-        bar([P0.clone().addScaledVector(tan,1.4),P1.clone().addScaledVector(tan,1.4)],[P0,P1],fr);bar([off(a1[i],-.4).addScaledVector(tan,.42),off(b1[i],.42).addScaledVector(tan,.42)],[off(a1[i],-.4).addScaledVector(tan,.06),off(b1[i],.42).addScaledVector(tan,.06)],gl);
+        bar([P0.clone().addScaledVector(tan,1.4),P1.clone().addScaledVector(tan,1.4)],[P0,P1],fr);bar([off(a2[i],-.54).addScaledVector(tan,.56),off(b2[i],.56).addScaledVector(tan,.56)],[off(a2[i],-.54).addScaledVector(tan,.04),off(b2[i],.56).addScaledVector(tan,.04)],gl);
         [P0,P1].forEach(q=>{const sp=new T.Sprite(new T.SpriteMaterial({map:glowTex,color:0x7fe6ff,blending:T.AdditiveBlending,depthWrite:false,transparent:true,opacity:.85,fog:false}));sp.position.copy(q).addScaledVector(tan,.7);sp.scale.set(5,5,1);scene.add(sp);});});
       const halo=new T.Sprite(new T.SpriteMaterial({map:glowTex,color:0x3a8cff,blending:T.AdditiveBlending,depthWrite:false,transparent:true,opacity:.22,fog:false}));halo.position.copy(a[4]).lerp(b[4],.5);halo.scale.set(64,30,1);halo.renderOrder=-1;scene.add(halo);}} // the batter's eye is a dark solar array: still a clean backdrop to pick the ball up against
   // beyond the park: the lunar surface, crater-rim ridges on the horizon, and a small moon base with a rocket on the pad
@@ -2558,8 +2577,8 @@ function startWalkup(){
     const first=Object.keys(S.seen).length===1&&MX.clip.intros.w_walkin; // the game always opens with a plain walk to the plate; the silliness starts with the second hitter
     S.walkClip=forced&&MX.clip.intros[forced]?forced:first?'w_walkin':(gamesPlayed<=3&&S.bi===1&&rare.length)?rare[(Math.random()*rare.length)|0]:r<rare.length?rare[r]:WALK.by[b.name];} // new players: the second hitter always brings one of the surprise walk-ups
   {const I=MX.clip.intros,forcedWalk=DBG.trip===true?'w_trip':DBG.trip;if(S.walkClip===lastWalk&&!(forcedWalk&&I[forcedWalk])){const alt=Object.keys(I).filter(k=>/^w_/.test(k)&&k!==lastWalk&&k!=='w_walkin');if(alt.length)S.walkClip=alt[(Math.random()*alt.length)|0];}lastWalk=S.walkClip;} // never the same walk-up twice in a row
-  $('wnum').textContent=b.num;$('wname').textContent=bdn(b);
-  {const gb=v=>{const g=statGrade(v);return `<b class="gr g${g}"><u>${g}</u></b>`;};$('wrat').innerHTML=`<span>POWER ${gb(b.pwr)}</span><span>CONTACT ${gb(b.con)}</span><span>SPEED ${gb(b.spd)}</span><span>BATS <b class="hand">${b.lh?'L':'R'}</b></span>`;}
+  $('wnum').textContent=b.num;$('wname').innerHTML='<small>#'+b.num+' · '+(POS_BY[b.name]||'DH')+' · BATS '+(b.lh?'L':'R')+'</small>'+bdn(b);
+  {const gb=v=>{const g=statGrade(v);return `<b class="gr g${g}"><u>${g}</u></b>`;};$('wrat').innerHTML=`<span>POWER ${gb(b.pwr)}</span><span>CONTACT ${gb(b.con)}</span><span>SPEED ${gb(b.spd)}</span>`;}
   $('wspot').textContent='BATTING '+['1ST','2ND','3RD','4TH','5TH','6TH','7TH','8TH','9TH'][i];$('wskip').textContent=MOB?'TAP TO SKIP':'SWING TO SKIP';
   $('walk').hidden=false;$('hud').classList.add('wk');cheer(.16,2);
 }
