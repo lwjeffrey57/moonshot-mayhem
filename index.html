@@ -1005,7 +1005,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 661</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 662</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -1365,7 +1365,7 @@ function pdHitter(){const h=KBAT[PD.k];PD.needBody=h.body||0;PD.bodyBy=now+4;
   // the Kraken at the plate wears his own body (fetched in the background; until it is here the stand-in bats)
   try{if(MX.batLoad){const pr=MX.batLoad(h.body);if(pr&&pr.then)pr.then(()=>{if(S.state!=='pduel'||KBAT[PD.k]!==h)return;try{if(MX.batRig)MX.batRig(h.body);if(MX.brigs&&MX.brigs[h.body]){batSwap(h.body);MX.clip.swap=null;batterOpacity(1);}}catch(e){}});}}catch(e){}
   // HE GETS A WALK-UP TOO: a couple of seconds of his routine and his name before the first pitch
-  try{const I=MX.clip.intros,ws=Object.keys(I).filter(k=>/^w_/.test(k)&&!/walkin|sad|trip|pushup/.test(k));if(ws.length){PD.ph=-1;PD.t=now;S.kOut={t:now+.15,bi:MX.clip.bi,clip:ws[(Math.random()*ws.length)|0],taunt:null};pop('NOW BATTING',h.name+' · KRAKENS','hot');boo(.35);}}catch(e){}
+  try{const I=MX.clip.intros,ws=Object.keys(I).filter(k=>/^w_/.test(k)&&!/walkin|sad|trip|pushup/.test(k));if(ws.length){PD.ph=-1;PD.t=now;S.kOut={t:now+.15,bi:MX.clip.bi,clip:ws[(Math.random()*ws.length)|0],taunt:null};boo(.35); /* no callout: his walk-up routine plays and his name is on the plate at the top */}}catch(e){}
   pdUI();}
 function pdTap(){if(S.state!=='pduel'||paused)return;if(PD.gt)return;PD.drillArm=false;if(PD.ph===0&&(!pdSel()||PD.odForce)){buzz(8);return;}
   if(PD.ph===0){PD.ph=1;PD.t=now;PD.wuT=now; /* the wind-up starts on this tap, not after the release: the pitcher answers the thumb at once */PD.mph=0;PD.pw=1;buzz(15);tone('triangle',520,620,.06,.2);pdUI();return;}
