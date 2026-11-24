@@ -1002,7 +1002,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 646</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 647</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -3938,7 +3938,8 @@ function tryContact(){flight_pop=false;if(pitch.hbp){swing.done=true;swing.miss=
   // THE TAPE-MEASURE SHOT: a barreled power swing now and then catches it so flush that it carries clean out of the stadium and comes down
   // on the Moon beyond (more often with Juice behind it). The chase camera rides it the whole way.
   // PLAYTEST RULE, NEWEST FIRST: the first well-hit ball in Overdrive each game is the newest show in the park, the shot to the Apollo site.
-  const apoWant=PLAY_NEWEST_FIRST&&!!(S.over&&S.overOn)&&!S.apoG&&APO.ok&&!flight_pop&&q>.55;if(apoWant){la=clamp(la,24,34);kind='';}
+  let apoSeen=false;try{apoSeen=localStorage.getItem('mm_apo1')==='1';}catch(e){}
+  const apoOD=!!(S.over&&S.overOn)&&APO.ok&&!flight_pop&&odLastK!=='apollo', /* never the Apollo shot twice running */apoWant=apoOD&&((PLAY_NEWEST_FIRST&&!apoSeen&&q>.55)||(apoSeen&&pw&&q>.8&&Math.random()<.22)); /* forced once, the first time ever (newest first); after that it is one of the shows in the rotation */if(apoWant){la=clamp(la,24,34);kind='';}
   if(apoWant||(!kind&&!flight_pop&&pw&&q>.88&&la>21&&la<37&&(DBG.tape||DBG.apollo||Math.random()<(tb?.3:.1)))){v*=1.14;fopt.g=.8;kind='TAPE-MEASURE SHOT';
     // ...and once in a while, with Juice or Overdrive behind it, it is not a home run so much as a launch: the ball leaves at a speed nothing on
     // Earth has been hit at, catches a pocket of even thinner gravity, and comes down the best part of a quarter of a mile away (up to 1,134 ft).
@@ -3948,10 +3949,10 @@ function tryContact(){flight_pop=false;if(pitch.hbp){swing.done=true;swing.miss=
   const v0=new V3(Math.sin(phi*DEG)*Math.cos(la*DEG),Math.sin(la*DEG),-Math.cos(phi*DEG)*Math.cos(la*DEG)).multiplyScalar(v);
   let tr=simulate(p0,v0,spin,fopt);
   // THE EAGLE HAS LANDED: an Overdrive moonshot is sometimes dead on line for the old Apollo site. Its speed and direction are trimmed until it comes down right there.
-  let apo=false;if(kind==='MOONSHOT'&&APO.ok&&(DBG.apollo||apoWant||(S.over&&S.overOn&&Math.random()<.55))){const sv=v0.clone(),ss=spin.side;spin.side=0;let ph=APO.phi,sp=v0.length(),la1=la*DEG,hit=false;
+  let apo=false;if(kind==='MOONSHOT'&&APO.ok&&(DBG.apollo||apoWant||(S.over&&S.overOn&&odLastK!=='apollo'&&Math.random()<.55))){const sv=v0.clone(),ss=spin.side;spin.side=0;let ph=APO.phi,sp=v0.length(),la1=la*DEG,hit=false;
     for(let it=0;it<18;it++){v0.set(Math.sin(ph)*Math.cos(la1),Math.sin(la1),-Math.cos(ph)*Math.cos(la1)).multiplyScalar(sp);tr=simulate(p0,v0,spin,fopt);if(!tr.outD){sp*=1.06;continue;}
       const lp=tr.pts.find(q=>q.t>=tr.outT)||tr.pts[tr.pts.length-1],ang=Math.atan2(lp.x,-lp.z),er=tr.outD-APO.r;if(Math.abs(er)<1.5&&Math.abs(ang-APO.phi)<.004){hit=true;break;}ph+=APO.phi-ang;sp*=Math.sqrt(APO.r/tr.outD);}
-    if(hit){apo=true;S.apoG=true;}else{v0.copy(sv);spin.side=ss;tr=simulate(p0,v0,spin,fopt);}}
+    if(hit){apo=true;S.apoG=true;odSetLast('apollo');try{localStorage.setItem('mm_apo1','1');}catch(e){}}else{v0.copy(sv);spin.side=ss;tr=simulate(p0,v0,spin,fopt);}}
   // a liner that would die at the foot of the wall carries a touch further and bangs off it instead: more balls off the wall, fewer dropping at its base
   for(let i=0;i<7&&!tr.hr&&!tr.foul&&tr.land&&!(tr.wall&&tr.wallT<tr.land.t)&&Math.atan2(v0.y,Math.hypot(v0.x,v0.z))<26*DEG;i++){const L=tr.land,gap=fenceR(Math.atan2(L.x,-L.z))-Math.hypot(L.x,L.z),hard=v0.length()>=37;if(gap<0||gap>(hard?24:9))break;v0.multiplyScalar(hard?1.055:1.04);if(hard&&v0.y>2)v0.y*=.97;tr=simulate(p0,v0,spin,fopt);} /* a hard liner headed for the deep outfield keeps going on a rope, a laser off the wall */
   const play=judge(tr,S.over&&S.overOn?Object.assign({},b,{spd:b.spd*1.08}):b);play.tag=play.tag||tr.tag||(kind==='TOPSPIN SINKER'?'':kind);/* a bad hop is only called when it beat the fielder: if he still made the play, nobody mentions it */if(play.tag==='MOON HOP!'&&play.type!=='hit')play.tag='';if(tr.offP&&play.type==='hit'&&!play.infield)play.tag='ERROR · OFF THE PITCHER';if(tr.offF&&play.type==='hit')play.tag='ERROR · ATE HIM UP'; /* a ball a fielder should have handled and didn't is scored as his error */
@@ -4189,8 +4190,9 @@ function revTick(e){if(!REV.g)revBuild();const u=clamp(e/REV.dur,0,1),th=(PI*2+.
   REV.halo.scale.setScalar(1+.25*Math.sin(now*9));}
 function revOff(){if(REV.g)REV.g.visible=false;$('hud').classList.remove('rv');}
 // The Overdrive homer shows are dealt like cards: none comes up again until every one has been seen, and the first of a new deal is never the last of the old one.
-let sharpLast=-1,crushLast=-1,aerLast=-1,odBag=[],odLastK='';function odPick(){if(!odBag.length){odBag=['rev','lamp','sat','earth'];}const W={rev:3,lamp:2,sat:2,earth:3};let c=odBag.filter(k=>k!==odLastK);if(!c.length)c=odBag;
-  let r=Math.random()*c.reduce((a,k)=>a+W[k],0),k=c[0];for(const q of c){r-=W[q];if(r<=0){k=q;break;}}odBag.splice(odBag.indexOf(k),1);odLastK=k;return k;}
+let sharpLast=-1,crushLast=-1,aerLast=-1,odBag=[],odLastK='';try{odLastK=localStorage.getItem('mm_odlast')||'';}catch(e){}const odSetLast=k=>{odLastK=k;try{localStorage.setItem('mm_odlast',k);}catch(e){}}; /* the last Overdrive no-doubter show is remembered ACROSS games too: the same one never runs twice running, even if the second is in a new game */
+function odPick(){if(!odBag.length){odBag=['rev','lamp','sat','earth'];}const W={rev:3,lamp:2,sat:2,earth:3};let c=odBag.filter(k=>k!==odLastK);if(!c.length)c=odBag;
+  let r=Math.random()*c.reduce((a,k)=>a+W[k],0),k=c[0];for(const q of c){r-=W[q];if(r<=0){k=q;break;}}odBag.splice(odBag.indexOf(k),1);odSetLast(k);return k;}
 // BADGES. Earned once, kept on the device. Each has a name (ballplayer talk), what it takes, and an icon. badge(id) is called from wherever the feat happens.
 const BADGES=[['eagle','THE EAGLE HAS LANDED','Land an Overdrive moonshot on the Apollo site','🦅'],['hit','KNOCK','Get your first hit','🧢'],['hr','WENT YARD','Hit your first home run','💥'],['hr450','TAPE MEASURE','Hit one 450 feet or more','📏'],['hr500','5 HUNNID','Hit one 500 feet or more','🚀'],
   ['odhr','PRIME TIME','Homer in Overdrive','🔥'],['juicehr','GOT HEEEM!','Homer off a Juice pitch','😂'],['duel','BEAT THE HEAT','Homer while the pitcher is in Overdrive','🥵'],['charge','BRAWLER','Charge the mound','😤'],['showboat','SHOWBOAT','Admire one and flip the bat','🕺'],['aura','MAX AURA','Take a pitcher deep while he is in Overdrive','✨'],['ambush','AMBUSH','Homer on the first pitch','⚡'],
