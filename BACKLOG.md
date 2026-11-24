@@ -154,7 +154,7 @@ different one each time, and a reason to want the next one. Reserved for no-doub
 - To do: logos, home parks, rosters built from the character bodies, rivalries, a league table.
 
 ## Rosters v1 (BUILD 513) — every player has his own body
-**Tranquility Comets (home, you bat):** VASQUEZ (ely) · OKAFOR (exo red) · DELACROIX (olivia) · BRICKHOUSE (dreyar) · TANAKA (exo grey) · MONTOYA (parker) · ZEPHRA (jolleen, alien body; was Abernathy) · JACKSON-BELL (dummy) · GORMAK (abe, alien body; was Kowalski). Ratings live in `LINEUP`.
+**Tranquility Comets (home, you bat):** VASQUEZ (ely) · OKAFOR (exo red) · DELACROIX (olivia) · BRICKHOUSE (dreyar) · TANAKA (exo grey) · MONTOYA (parker) · ZEPHRA (jolleen, alien body; was Abernathy) · CRASH (dummy; was Jackson-Bell) · GORMAK (abe, alien body; was Kowalski). Ratings live in `LINEUP`.
 **Kepler Krakens (field):** 1B R. ARCHER #47 (crypto) · 2B T. HOLLIS #7 (racer) · SS VREL #13 (alien) · 3B ZLORP #50 · LF DRA'AK #25 (drake) · CF XANDU #4 (jones) · RF M'NAR #30 (maynar). Range/jump ratings live in `KRAKENS`.
 **Krakens arms:** J. MACDONALD #99 (van) · C. ROMERO #66 · L. HARGROVE #48 (L, astra) · BRAXX #40 (brady) · MALGOR #6 (L, demon).
 Still shared/unused: catcher wears the house body; `david` body unused; Parker body is worn by Montoya only.
