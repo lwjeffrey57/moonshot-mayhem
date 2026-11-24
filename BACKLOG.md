@@ -177,3 +177,10 @@ Not being built yet; this is the target to steer by.
 - **Mixamo** (current): characters and animation clips. Commercial terms still to be confirmed before shipping.
 - **Tripo 3D** (owner's suggestion, from ads): AI text/image-to-3D model generation. Candidate when Mixamo runs out or for things Mixamo does not have: original characters (so no licence question over the look), stadium props (bullpen carts, mascots, vendors, the catcher's gear), ball/bat skins for the cosmetics shop.
   Before relying on it, check: (1) the licence on the plan used (commercial use and ownership of generated models), (2) whether its characters come rigged in a Mixamo-compatible skeleton or need auto-rigging (our clips are retargeted by bone name), (3) triangle counts and texture sizes, which must be cut down for phones (our bodies are ~1024 px textures, 512 on phones).
+
+## Pitching (v1 shipped in BUILD 573)
+The Krakens' half of the 2nd and 3rd is now played: the player pitches to three hitters (ZLORP, XANDU, M'NAR) from behind the mound.
+- Delivery styles: TWO-TAP (default; tap THROW, tap again as the closing ring meets the target) and METER (tap to start, tap at the top for power, tap on the yellow line for accuracy). Flick-to-throw is still an idea, not built.
+- Outcome model lives in `pdDecide` (swing/chase, contact, result) and reads location, release grade, pitch type, repeat/speed-change and the hitter's ratings in `KBAT`.
+- Not in v1: Comets fielders making the plays (balls in play are a quick flight and a call), Juice/Overdrive for the pitcher, pitcher stamina, hit-by-pitch, steals, a tutorial, sound design, runner figures on the bases.
+- The old dice roll (`cpuInning`) is still used when models are missing and in the automated tests.
