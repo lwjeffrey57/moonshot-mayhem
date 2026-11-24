@@ -1002,7 +1002,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 643</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 644</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -5528,6 +5528,34 @@ function drsWatch(dt){const D=DRS;if(S.state==='title'||S.state==='over')return;
 let qN=0,qT=0,qLvl=0;function qualityWatch(dt){drsWatch(dt);qN++;qT+=dt;if(qN<90)return;const avg=qT/qN;qN=0;qT=0;if(avg<1/42||qLvl>=2||DRS.cap||DRS.k>.7)return; /* features are only switched off once resolution has given all it can, and never on a capped device */qLvl++;
   if(qLvl===1){QS*=.84;rim.castShadow=false;if(SHQ){SHQ=false;shApply();}}else{QS*=.8;composer=null;fxaa=null;}resize();}
 // optional on-screen readout (pause menu): frames per second, the slowest frame in the last half second, and the current quality level
+
+// ───────────────────────── PERFORMANCE RECORDER ─────────────────────────
+// Runs quietly in every game. It notes how long each frame took and how much of that was the game's own work, grouped by what was going on
+// (batting, pitching, the home-run chase camera...), keeps the worst individual frames with what was on screen at the time, and saves a small
+// summary to the page's shared database every so often, with nothing asked of the player. No names, nothing personal: device type and numbers.
+const PERF={id:'s'+Date.now().toString(36)+Math.random().toString(36).slice(2,7),t0:0,n:0,ms:0,ctx:{},hit:[],last:0,busy:false,db:null,dbTried:false,sent:0,hist:new Uint16Array(8),dev:null,st:''};
+function perfCtx(){const st=S.state;if(st==='title'||st==='over')return null;
+  if(PD.on){if(st==='flight')return flight&&flight.trailCam?'pitch:hr-chase':'pitch:ball-in-play';return 'pitch:'+(['walkup','aim','ring','windup','ball-flight','result','?','in-play'][(PD.ph|0)+1]||'x');}
+  if(st==='flight'&&flight)return 'bat:flight'+(flight.orbit?':orbit':flight.apollo?':apollo':flight.trailCam?':chase':flight.aerial?':aerial':flight.admire?':admire':'');
+  return 'bat:'+st;}
+function perfDev(){if(PERF.dev)return PERF.dev;let gpu='';try{const gl=renderer.getContext(),e=gl.getExtension('WEBGL_debug_renderer_info');gpu=String(e?gl.getParameter(e.UNMASKED_RENDERER_WEBGL):'').slice(0,80);}catch(x){}
+  return PERF.dev={ua:String(navigator.userAgent||'').slice(0,160),scr:screen.width+'x'+screen.height,dpr:+(window.devicePixelRatio||1).toFixed(2),cores:navigator.hardwareConcurrency||0,mem:navigator.deviceMemory||0,gpu,touch:!!MOB};}
+function perfTick(ms,work){if(window.__mmManual&&!DBG.perf)return;if(ms>1000||ms<=0)return; /* (a frame that long is the tab coming back, not the game) */const c=perfCtx();
+  if(S.state==='over'&&PERF.st!=='over')perfFlush();PERF.st=S.state;if(!c)return;if(!PERF.t0)PERF.t0=performance.now();if(performance.now()-PERF.t0<3000)return; /* the first seconds are loading, not play */
+  PERF.n++;PERF.ms+=ms;PERF.hist[ms<12?0:ms<18?1:ms<25?2:ms<34?3:ms<50?4:ms<80?5:ms<150?6:7]++;
+  const o=PERF.ctx[c]||(PERF.ctx[c]={n:0,ms:0,wk:0,s25:0,s50:0,mx:0,calls:0,tris:0,sm:0,k:0});o.n++;o.ms+=ms;o.wk+=work;if(ms>25)o.s25++;if(ms>50)o.s50++;if(ms>o.mx)o.mx=ms;
+  let calls=0,tris=0;if(ms>40||o.n%30===0){try{calls=renderer.info.render.calls|0;tris=renderer.info.render.triangles|0;}catch(x){}o.calls+=calls;o.tris+=tris;o.k+=DRS.k;o.sm++;}
+  if(ms>40){const H=PERF.hit;if(H.length<16||ms>H[H.length-1].ms){H.push({ms:Math.round(ms),wk:Math.round(work),c,at:Math.round((performance.now()-PERF.t0)/1000),calls,tris,q:qLvl,k:+DRS.k.toFixed(2),w:renderer.domElement.width,fw:fireworks.length});H.sort((a,b)=>b.ms-a.ms);if(H.length>16)H.length=16;}}
+  const pn=performance.now();if(pn-PERF.last>45000&&PERF.n>600){PERF.last=pn;perfFlush();}}
+function perfReport(){const tot=PERF.ms||1,ctx=Object.keys(PERF.ctx).map(k=>{const o=PERF.ctx[k],sm=o.sm||1;return {c:k,sec:Math.round(o.ms/1000),share:+(o.ms/tot).toFixed(3),fps:+(1000*o.n/o.ms).toFixed(1),workMs:+(o.wk/o.n).toFixed(1),slow25:+(o.s25/o.n).toFixed(3),slow50:+(o.s50/o.n).toFixed(3),worstMs:Math.round(o.mx),calls:Math.round(o.calls/sm),tris:Math.round(o.tris/sm),res:+(o.k/sm).toFixed(2)};}).sort((a,b)=>b.sec-a.sec).slice(0,28);
+  const h=PERF.hist,n=PERF.n||1;let bld='';try{bld=$('bld').textContent;}catch(x){}
+  return {v:1,build:bld,ts:Date.now(),playSec:Math.round(tot/1000),frames:PERF.n,fps:+(1000*n/tot).toFixed(1),cap30:(h[3]+h[2])/n>.8&&h[0]+h[1]<n*.05, /* nearly every frame at about 33 ms and none faster: the phone is holding the page to 30 a second (Low Power Mode does this) */
+    hist:{lt12:h[0],lt18:h[1],lt25:h[2],lt34:h[3],lt50:h[4],lt80:h[5],lt150:h[6],over150:h[7]},quality:qLvl,res:+DRS.k.toFixed(2),canvas:renderer.domElement.width+'x'+renderer.domElement.height,dev:perfDev(),ctx,worst:PERF.hit.slice(0,16)};}
+function perfFlush(){if(PERF.busy||PERF.n<300||(window.__mmManual&&!DBG.perf))return;const go=db=>{if(!db)return;PERF.busy=true;let r;try{r=perfReport();}catch(x){PERF.busy=false;return;}
+    Promise.resolve().then(()=>db.collection('perf').doc(PERF.id).set(r)).then(()=>{PERF.sent++;},()=>{}).then(()=>{PERF.busy=false;});};
+  if(PERF.db){go(PERF.db);return;}if(PERF.dbTried)return;PERF.dbTried=true;try{if(window.claude&&window.claude.use)window.claude.use('db').then(db=>{PERF.db=db||null;if(!db)PERF.dbTried=true;else go(db);},()=>{});}catch(x){}}
+try{document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')perfFlush();});addEventListener('pagehide',()=>perfFlush());}catch(x){}
+window.__perf=()=>perfReport();window.__perfTick=perfTick;window.__perfFlush=perfFlush;
 let fpsOn=false,fN=0,fT=0,fMax=0,fWork=0;
 {const set=on=>{fpsOn=on;$('fps').hidden=!on;$('fpsbtn').textContent='SHOW SPEED: '+(on?'ON':'OFF');$('fps1').textContent='Show speed: '+(on?'on':'off')+' — tap to change';try{localStorage.setItem('mm_fps',on?'1':'0');}catch(e){}};let on0=false;try{on0=localStorage.getItem('mm_fps')==='1';}catch(e){}set(on0);$('fpsbtn').addEventListener('click',()=>set(!fpsOn));$('fps1').addEventListener('click',()=>set(!fpsOn));} /* the speed read-out can be switched on before the game starts, and it is remembered */
 function fpsTick(ms,work){fN++;fT+=ms;fWork+=work;if(ms>fMax)fMax=ms;if(fT<500)return;
@@ -5548,7 +5576,7 @@ function frame(t){
   }
   updateCamera(rdt);crowdFx(rdt);
   draw();
-  if(fpsOn)fpsTick(rawMs,performance.now()-w0);
+  {const wk=performance.now()-w0;try{perfTick(rawMs,wk);}catch(e){}if(fpsOn)fpsTick(rawMs,wk);}
   requestAnimationFrame(frame);
 }
 try{const b=+localStorage.getItem('mm_best')||0;if(b)$('best').textContent='Best game: '+b+' runs';}catch(e){}
