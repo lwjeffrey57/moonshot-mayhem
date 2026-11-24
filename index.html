@@ -450,7 +450,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
 #hud.mob #pdjuice{left:auto!important;right:178px!important;bottom:148px!important;width:76px;height:76px;font-size:15px!important} /* JUICE is big and it moves: it breathes whenever there is a bar to spend, and when the bar is full it turns blue, beats harder and says OVERDRIVE */
 #hud.mob #pdjuice:not([disabled]):not(.on){animation:pdjbreathe 1s ease-in-out infinite alternate}@keyframes pdjbreathe{from{transform:scale(1);filter:brightness(1)}to{transform:scale(1.07);filter:brightness(1.22)}}
 #hud.mob #pdjuice.od:not(.on){animation:pdjod .5s ease-in-out infinite alternate;font-size:13px!important}@keyframes pdjod{from{transform:scale(1);box-shadow:0 5px 0 #000,0 0 0 3px #04102a,0 0 14px 4px rgba(60,150,255,.7)}to{transform:scale(1.13);box-shadow:0 5px 0 #000,0 0 0 4px #fff,0 0 34px 14px rgba(90,180,255,1)}}
-#hud.mob #pddrill[disabled]{filter:grayscale(1);opacity:.5}#hud.mob #pddrill{left:auto;right:242px;bottom:348px;width:44px;height:44px;padding:0;font-size:10px;line-height:1.05;border-radius:50%;background:radial-gradient(circle at 50% 35%,#ff5a3a,#b01408 62%,#5a0602);border:0;box-shadow:inset 0 0 0 2px rgba(255,255,255,.3),0 3px 6px rgba(0,0,0,.45);-webkit-text-stroke:0;white-space:pre-line}
+#hud.mob #pd:has(#pdbtns.many) #pddrill{display:none!important} /* (the nine-pitch Overdrive wheel needs that corner) */#hud.mob #pddrill[disabled]{filter:grayscale(1);opacity:.5}#hud.mob #pddrill{left:auto;right:62px;bottom:128px;width:44px;height:44px;padding:0;font-size:10px;line-height:1.05;border-radius:50%;background:radial-gradient(circle at 50% 35%,#ff5a3a,#b01408 62%,#5a0602);border:0;box-shadow:inset 0 0 0 2px rgba(255,255,255,.3),0 3px 6px rgba(0,0,0,.45);-webkit-text-stroke:0;white-space:pre-line}
 #hud.mob #pdstyle,#hud.mob #pdinfo{display:none!important}
 #hud.mob #pdgo{display:flex;flex-direction:column;align-items:center;justify-content:center;left:auto;right:112px;bottom:220px;transform:none;width:112px;height:112px;padding:0;border-radius:50%;border:0;font-size:17px;line-height:1.05;white-space:pre-line;text-align:center;color:#fff;background:rgba(40,46,66,.78);box-shadow:inset 0 0 0 2px rgba(255,255,255,.3),0 4px 10px rgba(0,0,0,.45);-webkit-text-stroke:0;text-shadow:0 2px 0 rgba(0,0,0,.5)}
 #hud.mob #pdgo small{display:block;margin-top:4px;padding-top:4px;border-top:1px solid rgba(255,255,255,.45);font:800 14px var(--hud);font-style:normal;letter-spacing:.06em}#hud.mob #pdgo i{display:block;margin-top:2px;font:800 8px var(--hud);font-style:normal;letter-spacing:.12em;opacity:.85}
@@ -1005,7 +1005,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 664</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 665</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
