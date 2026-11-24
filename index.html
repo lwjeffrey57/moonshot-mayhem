@@ -894,7 +894,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 533</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 534</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -1431,6 +1431,12 @@ gl_FragColor=vec4(col,1.0);
       const ar=(cx)=>{const aw=40,top=96;g.fillStyle='#120503';g.beginPath();g.moveTo(cx-aw,h);g.lineTo(cx-aw,top+aw);g.arc(cx,top+aw,aw,PI,0);g.lineTo(cx+aw,h);g.closePath();g.fill();
         /* the tunnels are DARK: black mouths, a shade lighter toward the floor, with the stone of the arch catching the floodlights on one side */
         const lg=g.createLinearGradient(0,top,0,h);lg.addColorStop(0,'#020103');lg.addColorStop(.7,'#07050a');lg.addColorStop(1,'#15101a');g.fillStyle=lg;g.beginPath();g.moveTo(cx-aw+6,h);g.lineTo(cx-aw+6,top+aw);g.arc(cx,top+aw,aw-6,PI,0);g.lineTo(cx+aw-6,h);g.closePath();g.fill();
+        /* ...and they are FENCED, the way the arches at the real bayside park are: a steel screen across every one, a kick-rail along the bottom, and
+           a few fans standing behind it watching for free. Nothing rolls in there. */
+        g.save();g.beginPath();g.moveTo(cx-aw+6,h);g.lineTo(cx-aw+6,top+aw);g.arc(cx,top+aw,aw-6,PI,0);g.lineTo(cx+aw-6,h);g.closePath();g.clip();
+        for(let k=0;k<4;k++){const fx=cx-aw+14+k*((aw*2-28)/3)+((cx*7+k*13)%9-4),fh=44+((cx*3+k*17)%14);g.fillStyle=['#2a2f48','#3a2630','#243a3a','#33304a'][(k+(cx|0))%4];g.fillRect(fx-9,h-fh+12,18,fh);g.beginPath();g.arc(fx,h-fh+6,8,0,7);g.fill();g.fillStyle='rgba(160,220,255,.22)';g.beginPath();g.arc(fx,h-fh+5,10,0,7);g.fill();}
+        g.strokeStyle='rgba(200,210,230,.6)';g.lineWidth=1.6;for(let d=-h;d<aw*2+h;d+=11){g.beginPath();g.moveTo(cx-aw+d,top);g.lineTo(cx-aw+d+h,top+h);g.moveTo(cx-aw+d+h,top);g.lineTo(cx-aw+d,top+h);g.stroke();}
+        g.fillStyle='#b9c0d4';g.fillRect(cx-aw,h-9,aw*2,9);g.fillRect(cx-aw,top+aw+34,aw*2,4);g.fillRect(cx-2,top,4,h-top);g.restore();
         g.strokeStyle='#6a4034';g.lineWidth=7;g.beginPath();g.moveTo(cx-aw,h);g.lineTo(cx-aw,top+aw);g.arc(cx,top+aw,aw,PI,0);g.lineTo(cx+aw,h);g.stroke();
         g.strokeStyle='#f0d2b4';g.lineWidth=3;g.beginPath();g.moveTo(cx-aw-2,h);g.lineTo(cx-aw-2,top+aw);g.arc(cx,top+aw,aw+2,PI,PI*1.55);g.stroke();
         g.fillStyle='rgba(0,0,0,.35)';g.fillRect(cx+aw+3,top+aw,5,h-top-aw);};
