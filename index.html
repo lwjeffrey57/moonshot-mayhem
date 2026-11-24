@@ -1002,7 +1002,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 631</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 632</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -4570,7 +4570,7 @@ function updateClip(dt){
     batterOpacity(C.swap<.2?1-C.swap/.2:Math.min(1,(C.swap-.2)/.25));
     if(C.swap>=.45){C.swap=null;batterOpacity(1);}}
   if(S.state==='celly2'||S.state==='hbp'||S.state==='brawl'||S.state==='qte')batterOpacity(1); // the man who just doubled is on show at second, whatever the box is doing
-  const incoming=S.state==='pitch'||(S.state==='windup'&&now-windupT0>C.loadAt);
+  const incoming=S.state==='pitch'||(S.state==='windup'&&now-windupT0>C.loadAt)||(S.state==='pduel'&&(PD.ph===3||(PD.ph===2&&now-PD.wuT>.5))),wasInc=C._inc;C._inc=incoming; /* (the Kraken at the plate loads up for your pitch too) */
   if(swing&&C.sw!==swing){C.sw=swing;C.c0=C.t;C.mode='swing';}
   if(C.mode==='swing'){const ts=now-C.sw.t0;
     w=ts<SW_T?ease(ts/SW_T):clamp(1-(ts-SW_T-.1)/.3,0,1);
@@ -4581,8 +4581,12 @@ function updateClip(dt){
   if(C.mode==='whiff'){const u=now-C.ws;C.st=Math.min(C.sDur-.01,C.tCs+u*1.1);skT=1;want=1;rate=.5; // play the miss and the first beat of the reaction, then ease back to the stance
     if(C.sk>.98)C.t=0;
     if(u>=WHIFF_HOLD||(incoming&&u>.6))C.mode='idle';}
-  else if(C.mode==='idle'){want=incoming?1:0;
-    if(incoming)C.t=Math.min(C.tL,C.t+dt*1.25);else if(C.h<=.001){C.t=0;C.sk=0;}
+  else if(C.mode==='idle'){
+    // THE TAKE. He does not just go limp the instant the ball is past him: he stays loaded and watches it into the mitt, and on a pitch
+    // close enough to tempt him he starts his hands, checks the swing, and brings the bat back. Then he relaxes into his stance.
+    if(wasInc&&!incoming&&S.state!=='hbp'&&!(swing&&now-swing.t0<1.2)){C.takeT=now;let close=false;try{const P=PD.on?PD.pt:pitch;close=!!P&&P.tx>ZONE.x0-.14&&P.tx<ZONE.x1+.14&&P.ty>ZONE.y0-.14&&P.ty<ZONE.y1+.14;}catch(e){}C.chk=close&&Math.random()<.6;}
+    const tk=now-(C.takeT===undefined?-9:C.takeT),tkOn=!incoming&&tk<(C.chk?.66:.5)&&S.state!=='hbp';want=incoming||tkOn?1:0;
+    if(incoming)C.t=Math.min(C.tL,C.t+dt*1.25);else if(tkOn)C.t=C.chk?C.tL+(C.tC-C.tL)*.5*Math.sin(Math.min(1,tk/.56)*PI):C.tL;else if(C.h<=.001){C.t=0;C.sk=0;}
     skT=C.sk>0&&!incoming&&C.h>.001?1:0;}
   C.h=clamp(C.h+clamp(want-C.h,-dt/rate,dt/.22),0,1);
   C.sk=clamp(C.sk+clamp(skT-C.sk,-dt/.25,dt/.12),0,1);
