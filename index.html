@@ -284,7 +284,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
 #hud.qs #pop{left:4%;right:4%}#hud.qs #pop .t{font-size:clamp(34px,7vw,84px);-webkit-text-stroke:clamp(4px,.8vw,6px) #000;paint-order:stroke fill}#hud.mob.qs #pop .t{font-size:clamp(22px,7.4vw,34px)} /* HE'S TAGGING UP! and the rest: the standard yellow outlined call, sized to fit a phone with room to spare */
 #hud.pcut #pop .s{font-size:clamp(12px,2.4vw,22px);margin-top:3px}
 #pop.logo{top:13%}#hud.mob #pop.logo{top:16%} /* PLAY BALL: below the batter card, above the pitcher */
-#hud.mob #pop{top:25%} /* on phones: clear of the batter card and the buttons above it */
+#hud.mob #pop{top:21.5%} /* on phones: clear of the batter card and the buttons above it */
 /* the shout over a player celebrating on the bag */
 #shout{position:absolute;left:50%;top:30%;z-index:6;pointer-events:none;white-space:nowrap;opacity:0;font-family:var(--display);font-style:italic;font-size:clamp(34px,9vw,84px);line-height:1;color:var(--volt);-webkit-text-stroke:2px #000;text-shadow:0 4px 0 #000,0 0 22px rgba(255,229,59,.55);transform:translate(-50%,-100%) rotate(-6deg)}
 #shout.go{animation:shoutIn 1.5s cubic-bezier(.2,1.4,.4,1) forwards}
@@ -377,7 +377,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
 #pdask{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:47;width:min(520px,92vw);padding:18px 18px 16px;text-align:center;border-radius:16px;background:linear-gradient(#1b2a8c,#0b1040);border:3px solid #fff;box-shadow:0 6px 0 #000;color:#fff;font-family:var(--display);font-style:italic;pointer-events:auto}#pdask[hidden]{display:none}
 #pdask b{display:block;font-weight:400;font-size:clamp(18px,4.8vw,26px);text-shadow:0 2px 0 #000}#pdask span{display:block;margin:6px 0 14px;font-family:var(--hud);font-style:normal;font-weight:700;font-size:13px;line-height:1.3;color:#c9d2ff}
 #pdask div{display:flex;gap:12px;justify-content:center}#pdask button{flex:1;font:inherit;font-size:clamp(20px,5.4vw,28px);padding:14px 8px 11px;border-radius:14px;border:4px solid #000;color:#fff;box-shadow:0 5px 0 #000;-webkit-text-stroke:4px #05060f;paint-order:stroke fill;touch-action:manipulation}
-#pdask button small{display:block;font-family:var(--hud);font-style:normal;font-weight:800;font-size:10px;letter-spacing:.08em;-webkit-text-stroke:0;color:#fff;opacity:.9}#pdyes{background:linear-gradient(#ff7a5a,#d2261a)}#pdno{background:linear-gradient(#5a6ad8,#27308a)}
+#pdask button small{display:block;font-family:var(--hud);font-style:normal;font-weight:800;font-size:10px;letter-spacing:.08em;-webkit-text-stroke:0;color:#fff;opacity:.9}#pdask b{margin-bottom:14px}#pdyes{background:linear-gradient(#ff7a5a,#d2261a)}#pdno{background:linear-gradient(#5a6ad8,#27308a)}
 #pdjuice{position:absolute;left:max(14px,2vw);bottom:286px;pointer-events:auto;font:inherit;font-size:16px;padding:9px 14px 7px;border-radius:12px;border:3px solid #000;color:#fff;background:linear-gradient(#34406e,#151a36);box-shadow:0 4px 0 #000;-webkit-text-stroke:3px #05060f;paint-order:stroke fill;touch-action:manipulation}#pdjuice.on{background:linear-gradient(#ffb03a,#e2401a);box-shadow:0 4px 0 #000,0 0 0 3px #fff,0 0 18px 4px rgba(255,120,30,.9)}#pdjuice[disabled]{opacity:.4}
 #hud.mob #pdjuice{left:150px;bottom:300px;font-size:13px;padding:7px 10px 5px}
 #pddrill{position:absolute;left:calc(max(14px,2vw) + 150px);bottom:286px;pointer-events:auto;font:inherit;font-size:16px;padding:9px 14px 7px;border-radius:12px;border:3px solid #000;color:#fff;background:linear-gradient(#8a1a14,#3a0806);box-shadow:0 4px 0 #000;-webkit-text-stroke:3px #05060f;paint-order:stroke fill;touch-action:manipulation}#pddrill[disabled]{opacity:.35}#hud.mob #pddrill{left:10px;bottom:336px;font-size:13px;padding:7px 10px 5px}
@@ -390,7 +390,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
 #pdpad{position:absolute;right:max(18px,3vw);bottom:150px;width:190px;height:230px;border-radius:12px;background:rgba(6,8,24,.72);border:2px solid rgba(255,255,255,.55);pointer-events:auto;touch-action:none;cursor:crosshair}
 #pdzone{position:absolute;left:25%;top:22%;width:50%;height:56%;border:2px solid #fff;background:linear-gradient(rgba(255,255,255,.1),rgba(255,255,255,.1)) 33.3% 0/1px 100% no-repeat,linear-gradient(rgba(255,255,255,.1),rgba(255,255,255,.1)) 66.6% 0/1px 100% no-repeat,linear-gradient(rgba(255,255,255,.1),rgba(255,255,255,.1)) 0 33.3%/100% 1px no-repeat,linear-gradient(rgba(255,255,255,.1),rgba(255,255,255,.1)) 0 66.6%/100% 1px no-repeat,rgba(58,214,255,.12)}
 #pdcur{position:absolute;width:26px;height:26px;margin:-13px 0 0 -13px;border-radius:50%;border:3px solid #ffe53b;box-shadow:0 0 0 2px #000,0 0 10px #ffe53b;pointer-events:none}
-#pdring{position:absolute;border-radius:50%;border:4px solid #fff;box-shadow:0 0 0 2px #000;pointer-events:none;display:none}
+#pdring{position:absolute;left:0;top:0;border-radius:50%;border:4px solid #fff;box-shadow:0 0 0 2px #000,inset 0 0 0 2px #000;pointer-events:none;display:none;box-sizing:border-box}
 #pdbtns{position:absolute;left:max(14px,2vw);bottom:150px;display:grid;grid-template-columns:1fr 1fr;gap:8px;pointer-events:auto}
 #pdbtns button{font:inherit;font-size:16px;padding:12px 12px 10px;min-width:116px;border-radius:12px;border:3px solid #000;color:#fff;background:linear-gradient(#34406e,#151a36);box-shadow:0 4px 0 #000;-webkit-text-stroke:3px #05060f;paint-order:stroke fill;touch-action:manipulation}
 #pdbtns button small{display:block;font-family:var(--hud);font-style:normal;font-weight:800;font-size:10px;letter-spacing:.08em;-webkit-text-stroke:0;color:#bfc8ee}
@@ -408,7 +408,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
 #hud>#card #cname{color:#fff!important}#hud>#card #cnum{color:#ffb070!important} /* a solid dark plate with a yellow edge: it stands out from the park behind it */
 #hud:not(.mob)>#card #cnum{font-size:58px}#hud:not(.mob)>#card #cname{font-size:30px}#hud:not(.mob)>#card .stat{font-size:16px;color:#fff}#hud:not(.mob)>#card .stat em{font-size:30px}
 #hud.mob>#card .stat{color:#fff}
-#hud.mob>#card,#hud.mob.lh>#card{max-width:52vw;padding:7px 9px 8px;overflow:visible}#hud.mob>#card #cname{font-size:clamp(17px,5.2vw,22px)!important}#hud.mob>#card .stat{font-size:10px!important;gap:2px}#hud.mob>#card .stat em{font-size:22px!important}#hud.mob>#card .stats{gap:4px!important}
+#hud.mob>#card,#hud.mob.lh>#card{max-width:52vw;min-width:136px;padding:7px 9px 8px;overflow:visible}#hud.mob>#card #cname{font-size:clamp(17px,5.2vw,22px)!important}#hud.mob>#card .stat{font-size:10px!important;gap:2px}#hud.mob>#card .stat em{font-size:22px!important}#hud.mob>#card .stats{gap:4px!important}
 /* WHERE IT SITS: just over the head of the infielder on the open side of the plate (second baseman for a right-handed hitter, shortstop for
    a left-handed one), on phones and computers alike: where the eyes already are, and never across the hitter or the strike zone. */
 #hud:not(.mob)>#card,#hud.kr:not(.mob)>#card{left:auto;right:5%;top:auto;bottom:54.5%;max-width:24vw} /* right-hander: lower and further right, beside the second baseman, never on him */#hud.lh:not(.mob)>#card,#hud.kr.lh:not(.mob)>#card{left:5%;right:auto;bottom:54.5%;max-width:24vw}
@@ -828,9 +828,9 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
         <div class="mcap" id="pcap">PITCHER</div></div>
     </div>
     <div id="podx" hidden><b>PITCHER OVERDRIVE</b><span>The pitcher has a Juice meter too. Strikes and outs fill it, and when it is full he goes into <i>Overdrive</i>.</span><ul><li>Every pitch he throws is a nasty <i>Juice pitch</i> until someone gets a hit.</li><li>His meter is the red bar at the top, next to yours.</li><li>Answer with your own Overdrive for a <i>Showdown</i>, or just put the ball in play to end it.</li></ul><button id="podxok" type="button">GOT IT</button></div>
-    <div id="pdask" hidden><b>TOP OF THE INNING · KRAKENS BAT</b><span>Pitch to three batters yourself, or let it play out and get straight back to hitting.</span><div><button id="pdyes" type="button">PITCH<small>FACE THREE BATTERS</small></button><button id="pdno" type="button">SKIP<small>KEEP BATTING</small></button></div></div>
+    <div id="pdask" hidden><b>SKIP PITCHING?</b><div><button id="pdno" type="button">YES</button><button id="pdyes" type="button">NO</button></div></div>
     <div id="pd" hidden><div id="pdtop"><b id="pdwho"></b><span id="pdcnt"></span><span id="pdstam"><i></i></span></div><button id="pdjuice" type="button">JUICE PITCH</button><button id="pddrill" type="button">DRILL HIM</button>
-      <div id="pdpad"><div id="pdzone"></div><i id="pdcur"></i><i id="pdring"></i></div>
+      <div id="pdpad"><div id="pdzone"></div><i id="pdcur"></i></div><i id="pdring"></i>
       <div id="pdmeter" hidden><i id="pdmline"></i><i id="pdmfill"></i></div>
       <div id="pdbtns"></div><button id="pdgo" type="button">THROW</button><button id="pdstyle" type="button"></button><div id="pdhint"></div></div>
     <div id="walk" hidden><img id="wface" alt="" hidden><div class="wn" id="wnum"></div><div class="wb"><div class="wname" id="wname"></div><div class="wrow" id="wrat"></div><div class="wrow sub"><span id="wspot"></span><span id="wskip"></span></div></div></div>
@@ -943,7 +943,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 581</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 583</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -1123,7 +1123,7 @@ let timPlT=0;function timPlace(force){const pn=performance.now(),t=$('tim'),b=$(
   {const h=$('hud').getBoundingClientRect();let low=0;for(const id of ['pop','shout','orbc','podtag','bdg']){const E=$(id);if(!E)continue;const r=E.getBoundingClientRect();if(r.height<4||r.width<4)continue;{const g=E.classList.contains('go');if(g&&!E._wasGo)E._goT=pn;E._wasGo=g;}const cs=getComputedStyle(E),fresh=E.classList.contains('go')&&pn-(E._goT||0)<450;if(cs.display==='none'||cs.visibility==='hidden'||(+cs.opacity<.05&&!fresh))continue; /* (a callout that has only just been triggered counts even while it is still fading in) */
       const tm=t.getBoundingClientRect();if(r.right<tm.left+tm.width*.2||r.left>tm.right-tm.width*.2)continue; /* (off to one side of it: no conflict) */
       const est=id==='pop'?E.offsetTop+E.offsetHeight+(MOB?4:13):id==='shout'?E.offsetTop+E.offsetHeight*.2+(MOB?4:8):0,bt=Math.max(est,+cs.opacity>.5?r.bottom-h.top:0)||r.bottom-h.top; /* never less than the lettering's real bottom edge once it is on screen (tilted, outlined lettering hangs below its box) */ /* (plus the tilt and outline of the lettering, which hang below its box) */ /* measured from where the callout will SETTLE, not from its pop-in animation, so the read-out does not chase it */if(r.top-h.top<h.height*.62&&bt>low)low=bt;}
-    if(low>0){const y=Math.round(low+(MOB?6:10));t.style.setProperty('top',y+'px','important');b.style.setProperty('top',(y+(t.offsetHeight||22)+(MOB?4:8))+'px','important');return;}}
+    if(low>0){const y=Math.round(low+(MOB?16:16)); /* a clear gap: the callout's pop-in overshoots its resting size for a few frames */t.style.setProperty('top',y+'px','important');b.style.setProperty('top',(y+(t.offsetHeight||22)+(MOB?4:8))+'px','important');return;}}
   if(t.style.top){t.style.removeProperty('top');b.style.removeProperty('top');}}
 // ───────────────────────── PITCHING ─────────────────────────
 // The Krakens' half of the 2nd and 3rd: the player pitches to three of them. Pick one of four pitches, aim on the pad, deliver.
@@ -1149,7 +1149,7 @@ function pdDom(){if(PD.dom)return;PD.dom=true;const B=$('pdbtns');PPITCH.forEach
   $('pdjuice').addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();if(PD.ph!==0||S.juice<.245)return;PD.jz=!PD.jz;buzz(15);pdUI();});
   {const z=$('pdzone');for(let k=0;k<9;k++){const u=document.createElement('u');u.style.left=(k%3*33.33)+'%';u.style.top=(((k/3)|0)*33.33)+'%';z.appendChild(u);}}
   $('pdstyle').addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();if(PD.ph!==0)return;PD.style=PD.style?0:1;try{localStorage.setItem('mm_pstyle',PD.style);}catch(x){}pdUI();});}
-function pdCur(){{const c=$('pdcur'),w=Math.round(2+pdWin()*95);if(c._w!==w){c._w=w;c.style.borderWidth=w+'px';c.style.width=c.style.height=(20+w*2)+'px';c.style.margin=(-(10+w))+'px 0 0 '+(-(10+w))+'px';}} /* the thicker the yellow circle, the easier the perfect release */const u=(ZONE.x1+(ZONE.x1-ZONE.x0)*.5-PD.tx)/((ZONE.x1-ZONE.x0)*2),v=(ZONE.y1+(ZONE.y1-ZONE.y0)*.393-PD.ty)/((ZONE.y1-ZONE.y0)*1.786),c=$('pdcur');c.style.left=(u*100)+'%';c.style.top=(v*100)+'%';const r=$('pdring');r.style.left=(u*100)+'%';r.style.top=(v*100)+'%';
+function pdCur(){{const c=$('pdcur'),w=Math.round(2+pdWin()*95);if(c._w!==w){c._w=w;c.style.borderWidth=w+'px';c.style.width=c.style.height=(20+w*2)+'px';c.style.margin=(-(10+w))+'px 0 0 '+(-(10+w))+'px';}} /* the thicker the yellow circle, the easier the perfect release */const u=(ZONE.x1+(ZONE.x1-ZONE.x0)*.5-PD.tx)/((ZONE.x1-ZONE.x0)*2),v=(ZONE.y1+(ZONE.y1-ZONE.y0)*.393-PD.ty)/((ZONE.y1-ZONE.y0)*1.786),c=$('pdcur');c.style.left=(u*100)+'%';c.style.top=(v*100)+'%';
   if(PD.mark){PD.mark.position.set(PD.tx,PD.ty,.02);}}
 function pdPick(i){if(PD.ph!==0)return;PD.pk=i;try{pdCur();}catch(e){}[...$('pdbtns').children].forEach((b,k)=>b.classList.toggle('on',k===i));buzz(10);}
 function pdUI(){const h=KBAT[PD.k],on=['','MAN ON 1ST','MAN ON 2ND','1ST & 2ND','MAN ON 3RD','CORNERS','2ND & 3RD','BASES LOADED'][PD.bases[0]+PD.bases[1]*2+PD.bases[2]*4];
@@ -1195,20 +1195,23 @@ function pdThrow(dt){const a=Math.abs(dt),W=pdWin(),g=a<W?2:a<W+.07?1:0;PD.grade
   const P=jz?Object.assign({},PITCHES[Q.i],{col:[1,.4,.08],tp:'thick'}):PITCHES[Q.i],er=(g===2?.012:g===1?.075:.2)*(1.55-Q.c/100)*(1+tired*.9)*(jz?.75:1),an=rand(0,6.283),r=er*Math.sqrt(Math.random());let tx=PD.tx+Math.cos(an)*r,ty=PD.ty+Math.sin(an)*r*1.15;
   if(g===0){const k=rand(.35,.75);tx=lerp(tx,0,k);ty=lerp(ty,.86,k);} /* a bad release leaves it up and over the middle */
   const bk=(g===2?1.15:g===1?1:.7)*(.62+.6*Q.b/100)*(jz?1.3:1)*(1-tired*.25),sp=(PD.style?1.1-.14*PD.pw:1)*(g===2?.97:1)*(1.2-.26*Q.v/100)*(1+tired*.1)*(jz?.9:1);PD.perf=g===2?(PD.perf||0)+1:0;if(PD.perf===3)badge('dialed');
-  PD.pt={P,tx,ty,dur:P.dur*1.3*sp,brk:new V3(P.brk[0]*bk,P.brk[1]*bk,0),arc:P.arc,rel:new V3(0,1.9,-17.2),t0:0,lh:false};
+  PD.pt={P,tx,ty,dur:P.dur*sp, /* the same speeds the player faces when he bats */brk:new V3(P.brk[0]*bk,P.brk[1]*bk,0),arc:P.arc,rel:new V3(0,1.9,-17.2),t0:0,lh:false};
   if(jz){flash(.12);try{sfx('crush',.6,.8);}catch(e){}}
   timing(g===2?'PERFECT RELEASE!':g===1?'GOOD RELEASE':dt<0?'TOO EARLY · IT HANGS':'TOO LATE · IT HANGS',g===2?'#ffe53b':g===1?'#f2f5ff':'#ff4d2e',g===2?4:2);buzz(g===2?[20,30,60]:20);tone(g===2?'triangle':'sine',g===2?880:g===1?660:200,g===2?1320:g===1?700:120,.14,.3);pdUI();}
 function pdTick(){const el=now-PD.t;
   if(PD.ph===-1){if(el>=2.7){S.kOut=null;PD.ph=0;PD.t=now;pdUI();}return;}
   if(PD.ph===1){ // the ring closes (two-tap), or the bar runs (meter). Nobody taps: it goes anyway, badly.
     if(PD.style){const m=$('pdmfill');if(!PD.mph){m.style.height=(clamp(el/.8,0,1)*100)+'%';if(el>=.8){PD.pw=1;PD.mph=1;PD.t=now;pdUI();}}else{m.style.height=((1-clamp(el/.8,0,1))*100)+'%';if(el>=.86)pdThrow(-.3);}}
-    else{const Q=PPITCH[PD.pk],u=clamp(el/Q.T,0,1.05),R=(10+Math.round(2+pdWin()*95)/2)+(1-u/.84)*70,r=$('pdring');r.style.width=r.style.height=(Math.max(2,R)*2)+'px';r.style.margin=(-Math.max(2,R))+'px 0 0 '+(-Math.max(2,R))+'px';r.style.borderColor=Math.abs(el-Q.T*.84)<pdWin()?'#39ff6a':'#fff';if(el>=Q.T*1.06)pdThrow(.3);}
+    else{ // THE RING CLOSES ON THE TARGET ITSELF, out at the plate: it shrinks onto the yellow circle there, centred on it exactly
+      const Q=PPITCH[PD.pk],u=clamp(el/Q.T,0,1.05),r=$('pdring'),h=$('hud').getBoundingClientRect(),W=h.width,H=h.height;
+      _s0.set(PD.tx,PD.ty,.02).project(camera);const cx=(_s0.x*.5+.5)*W,cy=(-_s0.y*.5+.5)*H;_s0.set(PD.tx+.0875,PD.ty,.02).project(camera);const mp=Math.max(5,Math.abs((_s0.x*.5+.5)*W-cx)),R=mp*(1+Math.max(0,1-u/.84)*6.5)+2;
+      r.style.width=r.style.height=(R*2)+'px';r.style.transform='translate('+(cx-R)+'px,'+(cy-R)+'px)';r.style.borderColor=Math.abs(el-Q.T*.84)<pdWin()?'#39ff6a':'#fff';if(el>=Q.T*1.06)pdThrow(.3);}
     return;}
   if(PD.ph===2){if(now-PD.wuT>=1.0){const pt=PD.pt;try{MX.pit.obj.updateMatrixWorld(true);MX.pit.hand.getWorldPosition(pt.rel);}catch(e){}pt.t0=now;PD.ph=3;ball.visible=true;ballShadow.visible=true;SND.pitch();pdDecide();}return;}
-  if(PD.ph===3){const pt=PD.pt,u=(now-pt.t0)/pt.dur;pitchPos(pt,Math.min(u,1.04),ball.position);if(PD.jzOn&&u<1){try{trail(pt,pt.P.col,u<.75,true,pt.P.tp);}catch(e){}}ballShadow.position.set(ball.position.x,.02,ball.position.z);
-    if(PD.res.swing&&!PD.sw&&u>=.8){PD.sw=true;swing={t0:now,type:PD.res.kind==='play'&&PD.res.q>.6?'power':'contact',turbo:false,done:true,miss:true,practice:true};SND.whoosh();}
+  if(PD.ph===3){const pt=PD.pt,u=(now-pt.t0)/pt.dur;pitchPos(pt,Math.min(u,1.04),ball.position);ball.scale.setScalar(1);ballShadow.scale.setScalar(.16); /* its true size, as when batting (it had been left at the blown-up size of the last ball in flight) */if(PD.jzOn&&u<1){try{trail(pt,pt.P.col,u<.75,true,pt.P.tp);}catch(e){}}ballShadow.position.set(ball.position.x,.02,ball.position.z);
+    if(PD.res.swing&&!PD.sw&&u>=.72){PD.sw=true;swing={t0:now,type:PD.res.kind==='play'&&PD.res.q>.6?'power':'contact',turbo:false,done:true,miss:true,practice:true};SND.whoosh();}
     if(u>=1){PD.ph=4;PD.t=now;pdResolve();}return;}
-  if(PD.ph===5){const B=PD.fly,u=clamp((now-B.t0)/B.T,0,1);ball.position.set(B.x*u,.9+B.h*4*u*(1-u)-.9*u+(B.hr?0:0),B.z*u);ballShadow.position.set(ball.position.x,.02,ball.position.z);PD.bx=ball.position.x;PD.bz=ball.position.z;
+  if(PD.ph===5){const B=PD.fly,u=clamp((now-B.t0)/B.T,0,1);ball.scale.setScalar(Math.max(1,camera.position.distanceTo(ball.position)*.04));ball.position.set(B.x*u,.9+B.h*4*u*(1-u)-.9*u,B.z*u);ballShadow.position.set(ball.position.x,.02,ball.position.z);PD.bx=ball.position.x;PD.bz=ball.position.z;
     if(u>=1){ball.visible=false;ballShadow.visible=false;PD.ph=4;PD.t=now-(B.hr?-.9:.2);B.end();}return;}
   if(PD.ph===4&&el>=1.25){if(PD.after){const f=PD.after;PD.after=null;f();}}}
 // What the hitter does with it. Decided as the ball leaves the hand; shown when it gets there.
@@ -1600,11 +1603,7 @@ gl_FragColor=vec4(col,1.0);
       const pw=w/12;for(let x=0;x<w;x+=pw){const cg=g.createLinearGradient(x,0,x+pw,0);cg.addColorStop(0,'rgba(0,0,0,.4)');cg.addColorStop(.06,'rgba(255,255,255,.14)');cg.addColorStop(.4,'rgba(255,255,255,0)');cg.addColorStop(.92,'rgba(0,0,0,.14)');cg.addColorStop(1,'rgba(0,0,0,.4)');g.fillStyle=cg;g.fillRect(x,0,pw,h);
         g.fillStyle='rgba(8,14,12,.8)';for(let y=14;y<h;y+=38)for(const dx of [9,pw-9]){g.beginPath();g.arc(x+dx,y,3,0,7);g.fill();}}
       g.fillStyle='rgba(0,0,0,.35)';g.fillRect(0,h*.5-1,w,3);
-      g.textAlign='center';g.textBaseline='middle';g.font='italic 400 64px "Russo One",Arial Black,Arial';g.fillStyle='rgba(0,0,0,.5)';g.fillText('THE PORCH',w*.5+3,h*.27+3);g.fillStyle='#f2f4fb';g.fillText('THE PORCH',w*.5,h*.27);
-      g.font='400 30px "Russo One",Arial Black,Arial';g.fillStyle='#ffe53b';g.fillText('38 FT',w*.07,h*.27);g.fillText('38 FT',w*.93,h*.27);
-      g.font='italic 400 52px "Russo One",Arial Black,Arial';g.fillStyle='#061412';g.fillRect(w*.035-62,h*.78-34,124,62);g.fillStyle='#ffe53b';g.fillText('330',w*.035,h*.78);
-      const sc=[['THUNDER',4,'ACES',2],['MAMMOTHS',7,'KINGS',7],['OUTLAWS',1,'DJINN',0]];/* (scores sit in the middle band) */g.font='400 34px "Russo One",Arial Black,Arial';
-      sc.forEach((q,i)=>{const cx=w*(.22+.29*i),cy=h*.56;g.fillStyle='#061412';g.fillRect(cx-250,cy-34,500,68);g.strokeStyle='rgba(255,255,255,.25)';g.lineWidth=2;g.strokeRect(cx-250,cy-34,500,68);g.shadowColor='#ffb020';g.shadowBlur=10;g.fillStyle='#ffd23b';g.fillText(q[0]+' '+q[1]+'   ·   '+q[2]+' '+q[3],cx,cy+2,470);g.shadowBlur=0;});
+      /* plain green for now: no lettering, no scores */
       const vg=g.createLinearGradient(0,0,0,h);vg.addColorStop(0,'rgba(255,255,255,.2)');vg.addColorStop(.25,'rgba(255,255,255,0)');vg.addColorStop(.7,'rgba(0,0,0,.05)');vg.addColorStop(1,'rgba(0,0,0,.4)');g.fillStyle=vg;g.fillRect(0,0,w,h);
       g.save();g.globalCompositeOperation='overlay';for(let i=0;i<=3;i++){const R0=h*1.5;g.save();g.translate(w*(i/3),0);g.scale((w*.16)/R0,1);const rg=g.createRadialGradient(0,0,0,0,0,R0);rg.addColorStop(0,'rgba(255,246,220,.85)');rg.addColorStop(.5,'rgba(255,240,205,.35)');rg.addColorStop(1,'rgba(255,240,205,0)');g.fillStyle=rg;g.fillRect(-R0,0,R0*2,h);g.restore();}g.restore();},[1,1]);bt.repeat.set(1/L,1);bt.anisotropy=ANISO;
     const hullB=basic({color:0x12201e});scene.add(new T.Mesh(ribbon(A,B,1),basic({map:bt})));scene.add(new T.Mesh(ribbon(B,B2),hullB));scene.add(new T.Mesh(ribbon(B2,C2),hullB));
@@ -2336,10 +2335,10 @@ function ik(sh,el,target,L1,L2,poleV){
 // teams (fictional)
 const HOME={base:'#1b2a6b',trim:'#f26a1b',ink:'#f4f4f0',word:'Comets'};
 const AWAY={base:'#f4f4f0',trim:'#0e7c86',ink:'#0e3c46',pin:'rgba(14,60,70,.35)',word:'Krakens'};
-const LINEUP=[ /* batting order: the three hitters in similar armour (Razor, Blitz, Draak) are never next to each other */
+const LINEUP=[ /* batting order: the three hitters in similar armour (Razor, Xenon, Draak) are never next to each other */
   {name:'RAZOR',ini:'',num:27,spd:1.0,pwr:1.0,con:1.05,skin:0xb9794f},
   {name:'VREL',ini:'',body:7,num:3,crouch:true,spd:1.02,pwr:1.06,con:1.0,skin:0xe2b08a},
-  {name:'BLITZ',ini:'',body:1,lh:true,num:8,spd:1.14,pwr:.96,con:1.12,skin:0x6b4226},
+  {name:'XENON',ini:'',body:1,lh:true,num:8,spd:1.14,pwr:.96,con:1.12,skin:0x6b4226},
   {name:'BRICKHOUSE',ini:'',body:2,num:44,spd:0.78,pwr:1.16,con:.82,skin:0xd9a47c},
   {name:'DRAAK',ini:'',body:9,up:.45,num:19,crouch:true,spd:0.95,pwr:1.1,con:.95,skin:0xa8683e},
   {name:'VANTA',ini:'',body:6,lh:true,num:51,spd:1.1,pwr:1.02,con:1.08,skin:0xe6bd94},
@@ -2783,7 +2782,7 @@ const batS={b:0,h:new V3(-.36,1.36,.36),d:new V3(-.25,1,-.15).normalize(),pose:l
 const SW_T=.07; // tap-to-contact time. Short on purpose: the swing has to feel instant
 const curBatter=()=>LINEUP[S.bi%LINEUP.length];
 // the name-and-ratings card follows the hitter the player is looking at, not the one who is merely due up
-const POS_BY={RAZOR:'CF',BLITZ:'SS',VREL:'2B',BRICKHOUSE:'1B',VANTA:'RF',DRAAK:'3B',ZEPHRA:'LF',CRASH:'C',GORMAK:'DH'}; /* where each Comet plays in the field */
+const POS_BY={RAZOR:'CF',XENON:'SS',VREL:'2B',BRICKHOUSE:'1B',VANTA:'RF',DRAAK:'3B',ZEPHRA:'LF',CRASH:'C',GORMAK:'DH'}; /* where each Comet plays in the field */
 function showCard(){if(S.bi<0)return;S.cardBi=S.bi;const b=curBatter();$('cnum').textContent=b.num;$('cname').innerHTML='<small>#'+b.num+' · '+(POS_BY[b.name]||'DH')+' · BATS '+(b.lh?'L':'R')+'</small>'+bdn(b)+(b.hb>0?' <i class="hbu">▲</i>':b.hb<0?' <i class="hbd">▼</i>':''); /* one arrow by the name says his ratings are up or down for the game; the letters stay clean so nothing overlaps on a phone */cardStats(b);}
 
 function pop(t,s='',cls='',long=false){
@@ -3006,14 +3005,14 @@ function setBatter(){if(MX.batPrep)setTimeout(MX.batPrep,700);if(MX.pitVar&&S.pN
   readyDur=1.7;S.fresh=true;
 }
 // Walk-ups: the first time each hitter comes up, a short intro animation with his card. Any swing button skips it.
-const WALK={on:true,dur:3.4,by:{RAZOR:'w_milling',BLITZ:'w_flair',VREL:'w_drive',BRICKHOUSE:'w_boxing',VANTA:'w_arrow',DRAAK:'w_macarena',ZEPHRA:'w_bdance',CRASH:'w_sad',GORMAK:'w_salsa'}};
+const WALK={on:true,dur:3.4,by:{RAZOR:'w_milling',XENON:'w_flair',VREL:'w_drive',BRICKHOUSE:'w_boxing',VANTA:'w_arrow',DRAAK:'w_macarena',ZEPHRA:'w_bdance',CRASH:'w_sad',GORMAK:'w_salsa'}};
 try{WALK.on=localStorage.getItem('mm_walk2')!=='0';}catch(e){}
 // LORE ON THE WALK-UP CARD. The Lunar League is company property: the parks, the air, the players and (technically) the fans. The card says so
 // with a straight face, the way a broadcast sponsored by the people it is about would.
-const SPONSOR={RAZOR:'A ZAPP COLA ATHLETE',BLITZ:'SEEKING SPONSOR',VREL:'DRIVEN BY TURBO TIRE',BRICKHOUSE:'FED BY BURGER BARN',VANTA:'BETWEEN SPONSORS',DRAAK:'A MEGA ARCADE PLAYER',ZEPHRA:'14 SPONSORS AND COUNTING',CRASH:'SEEKING SPONSOR',GORMAK:'FINANCED BY LUNAR LOANS'};
+const SPONSOR={RAZOR:'A ZAPP COLA ATHLETE',XENON:'SEEKING SPONSOR',VREL:'DRIVEN BY TURBO TIRE',BRICKHOUSE:'FED BY BURGER BARN',VANTA:'BETWEEN SPONSORS',DRAAK:'A MEGA ARCADE PLAYER',ZEPHRA:'14 SPONSORS AND COUNTING',CRASH:'SEEKING SPONSOR',GORMAK:'FINANCED BY LUNAR LOANS'};
 const trivLast={},TRIVIA={ /* ten each, and every one has to be funny cold: nothing that needs the backstory to land */
   RAZOR:['Makes 40 million a year. Sees about six of it.','Paid to drink Zapp Cola on camera. Spits it out when the light goes off.','Hit one into orbit as a rookie. Got billed for the satellite.','Oxygen plan is Premium. The free tier has ads. You breathe the ads.','80 million followers. The League owns 60 million of them.','Signed at 17 in a parking structure. The agent got a house. Razor got a hat.','Favorite meal is mom’s rice. Eleven years since the last plate.','Current deal: 12 years, 480 million. The League can end it with one phone call. Razor can’t.','Sends money home every month. The League takes 30% for the transfer.','Career home runs: 412. Baseballs recovered: 3.','Three-time Moonball MVP. The League keeps the trophies. For safekeeping.'],
-  BLITZ:['Paid per stolen base, like a delivery driver. Tips not included.','The helmet plays an unskippable ad before every at-bat.','Stole 71 bases last year. Fined for 70 under a rule written that winter.','Tested positive for moondust. Says it was secondhand. Lives on the Moon. The appeal is ongoing.','Seeking sponsor. Will breakdance for footwear.','Shoe deal died when the shoes were ruled “load-bearing evidence.”','Favorite color is green. It’s the airlock light that means you can breathe.','Won’t ride the lift. Stairs only.','3.4 seconds home to first. Faster with a repo drone behind.','Favorite movie: the safety video. It’s the only one licensed in the dorms.'],
+  XENON:['Paid per stolen base, like a delivery driver. Tips not included.','The helmet plays an unskippable ad before every at-bat.','Stole 71 bases last year. Fined for 70 under a rule written that winter.','Tested positive for moondust. Says it was secondhand. Lives on the Moon. The appeal is ongoing.','Seeking sponsor. Will breakdance for footwear.','Shoe deal died when the shoes were ruled “load-bearing evidence.”','Favorite color is green. It’s the airlock light that means you can breathe.','Won’t ride the lift. Stairs only.','3.4 seconds home to first. Faster with a repo drone behind.','Favorite movie: the safety video. It’s the only one licensed in the dorms.'],
   VREL:['Clicked “I do not agree” on the terms of service. Nothing happened. The button isn’t connected to anything.','Posted the contract online. It was taken down for copyright. By the League.','Argues every call with the robot umpire. Calls it the only honest official left.','Turbo Tire paid a record fee for the face. Then a bigger one to stop the interviews.','The deal has a morality clause. Four pages. Three are about talking.','Batting .340 against humans, .900 against robots, .000 against Legal.','Sponsor: Turbo Tire. Has never seen a road.','Owns 14 moon buggies. All 14 are advertisements.','Signs nothing on game day. Not autographs, not receipts.','Was offered a front office job to go quiet. Framed the letter.'],
   BRICKHOUSE:['Face of Burger Barn. Asked twice what’s in it. Was told to stop.','The protein shake is a subscription. Cancelling takes a notarised letter and a blood test.','Burger Barn patented the home run swing. A royalty is owed per swing.','Broke the weight room. Not a machine. The room.','Suspended 25 games for moondust. It was in the tomatoes. Nobody believes the tomato thing.','Apologises to pitchers after home runs. Means it.','Hit a ball 1,104 feet. It landed in a different tax bracket.','Was once intentionally walked in a home run derby.','Favorite food is a real tomato. Has eaten four.','Each arm is insured separately. The left bicep has a board of directors.'],
   VANTA:['Actually reads the terms and conditions. Is the reason they got longer.','Turned notifications off years ago. The League turned them back on.','Read the whole contract. All 4,000 pages. Stopped talking around page 900.','Sponsor was bought mid-season. Found out from the patch on the jersey.','Counts the cameras in the dugout before sitting down. The number changes.','Sleeps in the batting cage. The rent is lower.','Year four of a seven-year deal. Years five to seven are the club’s option. So is year four.','Favorite number is 51. It was assigned.','Favorite book: the rulebook. Second favorite: the appendix.','Won the Compliance Award three times. Has never picked it up.'],
@@ -3104,7 +3103,7 @@ function startTrot(){const R=RUN.list.find(R=>!R.active)||null;if(!R||!R.jogAct)
   {const C=MX.clip,own=celClip(WALK.by[curBatter().name]);const wild=wildTrot&&C?WILD_CEL.filter(k=>C.intros[k]):[];wildTrot=false;
     const all0=C?WILD_CEL.filter(k=>C.intros[k]&&k!=='p_loser'&&k!==celLast):[],all=all0.concat(all0.filter(k=>CEL_FAV.includes(k)),all0.filter(k=>CEL_FAV.includes(k))),pick=a=>a[(Math.random()*a.length)|0], /* the crowd-pleasers (break dance, backflip, twerk, macarena) come up three times as often as the rest */w2=wild.filter(k=>k!=='p_loser'&&k!==celLast);
     // his own routine about a third of the time, the 'loser' sign at the pitcher now and then, otherwise anything from the whole book (dances, flexes, the pitcher's own strikeout taunts thrown back at him), never the same one twice running
-    TROT.clip=w2.length&&!DBG.loser?pick(w2):C&&C.intros.w_flair&&celLast!=='w_flair'&&!DBG.loser&&Math.random()<.24?'w_flair': /* the flair (Blitz's walk-up) is a house favourite at the plate too: about one homer in four */C&&C.intros.w_bboy&&celLast!=='w_bboy'&&!DBG.loser&&Math.random()<.3?'w_bboy': /* the break dance is the house favourite: three times in ten, never twice running */C&&C.intros.p_loser&&(DBG.loser||Math.random()<.22)?'p_loser':C&&C.intros[own]&&own!==celLast&&Math.random()<.35?own:all.length?pick(all):C&&C.intros[own]?own:'';celLast=TROT.clip;} // sometimes he turns and gives the pitcher the 'loser' sign instead // his own routine once he has touched home
+    TROT.clip=w2.length&&!DBG.loser?pick(w2):C&&C.intros.w_flair&&celLast!=='w_flair'&&!DBG.loser&&Math.random()<.24?'w_flair': /* the flair (Xenon's walk-up) is a house favourite at the plate too: about one homer in four */C&&C.intros.w_bboy&&celLast!=='w_bboy'&&!DBG.loser&&Math.random()<.3?'w_bboy': /* the break dance is the house favourite: three times in ten, never twice running */C&&C.intros.p_loser&&(DBG.loser||Math.random()<.22)?'p_loser':C&&C.intros[own]&&own!==celLast&&Math.random()<.35?own:all.length?pick(all):C&&C.intros[own]?own:'';celLast=TROT.clip;} // sometimes he turns and gives the pitcher the 'loser' sign instead // his own routine once he has touched home
   // men already on base stay ahead of him: when the highlight cuts in, each is at least three-quarters of a base in front of the man behind, and they keep that lead home
   RUN.list.filter(o=>o!==R&&o.active&&o.target>=4).sort((a,b)=>a.s-b.s).forEach((o,k)=>{o.s=Math.max(o.s,Math.min(3.7,1.7+.75*(k+1)));o.lead=true;o.delay=0;});
  if(DBG.cel)TROT.clip=DBG.cel;
@@ -4305,9 +4304,9 @@ function updateClip(dt){
   // Keep showing him (and his side of the plate) until he is back in his stance, then fade to the new batter.
   if(S.bi>=0&&C.bi!==S.bi){
     if(C.bi===undefined){C.bi=S.bi;MX.lefty=!!curBatter().lh;}
-    else if(C.swap==null&&S.state!=='trot'&&!(S.kOut&&now<S.kOut.t+DEFEAT)&&((C.mode==='idle'&&C.h<=.001)||(S.state==='ready'&&now-S.t>.6)||S.state==='walkup'))C.swap=0;}
+    else if(C.swap==null&&S.state!=='trot'&&!(S.kOut&&now<S.kOut.t+DEFEAT)&&((C.mode==='idle'&&C.h<=.001)||(S.state==='ready'&&now-S.t>.6)||S.state==='walkup'||S.state==='pduel'))C.swap=0;} /* (while the player pitches there is always a man in the box) */
   // if the next hitter has a walk-up coming, the box stays empty after the last man fades out; he first appears in his intro
-  const waitWalk=S.bi>=0&&C.bi!==S.bi&&S.state!=='walkup'&&WALK.on&&S.fresh&&walkWant()&&!!C.intros[WALK.by[curBatter().name]];
+  const waitWalk=S.state!=='pduel'&&S.state!=='pask'&&S.bi>=0&&C.bi!==S.bi&&S.state!=='walkup'&&WALK.on&&S.fresh&&walkWant()&&!!C.intros[WALK.by[curBatter().name]];
   if(C.swap!=null){C.swap+=dt;if(waitWalk)C.swap=Math.min(C.swap,.2);
     if(C.swap>=.2&&C.bi!==S.bi&&!waitWalk){C.bi=S.bi;MX.lefty=!!curBatter().lh;C.mode='idle';C.h=0;C.sk=0;C.t=0;}
     batterOpacity(C.swap<.2?1-C.swap/.2:Math.min(1,(C.swap-.2)/.25));
@@ -4479,7 +4478,7 @@ function addHat(B,D,hm,flap){
 }
 const pitC=document.createElement('canvas');pitC.width=pitC.height=1024;const pitT=new T.CanvasTexture(pitC);
 // Which body the man on the mound should be wearing (by his place in the bullpen), and the swap itself. Only ever done between hitters.
-function pitcherModel(force){if(!MX.pitVar||!MX.pit||!MX.pitLoad)return;const bi=Math.max(0,BULLPEN.indexOf(S.pName)),own=BULLPEN[bi][3]||0,want=force===undefined?own:force;
+function pitcherModel(force){if(!MX.pitVar||!MX.pit||!MX.pitLoad)return;const bi=Math.max(0,BULLPEN.indexOf(S.pName)),own=BULLPEN[bi][3]||0,want=S.state==='pduel'||S.state==='pask'?14:force===undefined?own:force; /* while the player pitches it is always the Comets' own man on the mound */
   if(force===undefined&&S.state==='qte')return; /* the close-up at the bag keeps the fielder's body until it is over */
   MX.pitLoad(own);MX.pitLoad(BULLPEN[(bi+1)%BULLPEN.length][3]||0); // his own body, and the next arm's, so it is here before he is needed
   const tgt=MX.pitVar[want]?want:MX.pitCur;if(tgt===MX.pitCur)return;
@@ -5141,7 +5140,7 @@ function updateCamera(rdt){
   if(!DBG.cam)applyCam();
   if(S.state==='flight'&&flight&&!flight.done&&now-flight.t0>.02)camMode='chase';
   if(DBG.cam){camPos.copy(CAM_HOME);camLook.copy(CAM_LOOK);}
-  else if(S.state==='pduel'){if(PD.ph===5){camPos.set(0,15,17);camLook.set(PD.bx*.5,3,PD.bz*.5-12);}else if(camera.aspect<1){const sg=curBatter().lh?-1:1;camPos.set(-.75*sg,2.4,-30);camLook.set(0,-.4,0);} /* an upright phone: the pitcher stands on the left, the plate sits in the upper middle, clear of the aiming pad */else{const sg=curBatter().lh?-1:1;camPos.set(1.35*sg,2.55,-30);camLook.set(-.05*sg,1.2,0);} /* mirrored for a left-handed hitter, so the pitcher never stands between the camera and the man at the plate */camera.position.copy(camPos);} /* from behind and just to the side of your pitcher, long lens, the zone in the clear beside him; a ball in play is watched from behind the plate */
+  else if(S.state==='pduel'){if(PD.ph===5&&now-PD.fly.t0>.5){camPos.set(0,15,17);camLook.set(PD.bx*.5,3,PD.bz*.5-12);} /* (the first half second of a ball in play is still seen from the mound: the swing, and the ball coming off the bat) */else if(camera.aspect<1){const sg=curBatter().lh?-1:1;camPos.set(-.75*sg,2.4,-30);camLook.set(0,-.4,0);} /* an upright phone: the pitcher stands on the left, the plate sits in the upper middle, clear of the aiming pad */else{const sg=curBatter().lh?-1:1;camPos.set(1.35*sg,2.55,-30);camLook.set(-.05*sg,1.2,0);} /* mirrored for a left-handed hitter, so the pitcher never stands between the camera and the man at the plate */camera.position.copy(camPos);} /* from behind and just to the side of your pitcher, long lens, the zone in the clear beside him; a ball in play is watched from behind the plate */
   else if(flight&&flight.aerial&&!flight.done&&flight.clr){if(!flight.aerT){flight.aerT=now;{const BAG=[5,5,5,0,0,1,2,3,4]; /* the interceptor shots come up most: the chase camera behind them (5) and the straight-down view with them crossing underneath (0) */let k=DBG.aerK!==undefined?DBG.aerK:BAG[(Math.random()*BAG.length)|0];if(DBG.aerK===undefined&&k===aerLast){const o=BAG.filter(q=>q!==aerLast);k=o[(Math.random()*o.length)|0];}aerLast=flight.aerK=k;flight.aerA=rand(0,6.28);if(k===2&&now-ROCKET.t>19)ROCKET.t=now+.8;if(k===5||k===0){FLY.t=now+(k===5?.15:.5);try{tone('sawtooth',420,70,2.6,.4,.3);}catch(e){}}}flight.play.endT=Math.max(flight.play.endT,now-flight.t0+5.2); /* held for a good five seconds */
       // THE SHOW IS TIMED TO THE SHOT: the lasers come on as the camera goes up, fireworks burst over the bowl through it, and the scoreboard takes a power surge near the end
       if(!LAS.on&&!LAMP.on)laserStart();for(let i=0;i<14;i++)fireworks.push({t:now+.3+i*.33,p:new V3(rand(-70,70),rand(40,80),rand(-150,-20))});flight.aerZap=now+3.1;crowdPump(1);}
@@ -5222,7 +5221,7 @@ function updateCamera(rdt){
   if(rumble>.02){const t=performance.now()/1000,a=rumble*FX; // the whole picture trembles, like a broadcast camera on a deck that 50,000 people are jumping on: the frame shakes, not the stands (applied after the camera is aimed, or the aim would undo it)
     camera.rotateZ((Math.sin(t*47)+Math.sin(t*71.3))*.007*a);camera.rotateX((Math.sin(t*53.7)+Math.sin(t*83.1))*.0045*a);camera.rotateY(Math.sin(t*61.3)*.0035*a);rumble*=Math.exp(-3.5*rdt);}
   if(S.state!=='walkup')wkFovT=0;wkFov+=(wkFovT-wkFov)*Math.min(1,rdt*(wkFovT?30:8));
-  fovKick*=Math.exp(-5*rdt);const f=S.state==='pduel'&&PD.ph!==5?(camera.aspect<1?17:14):camera.userData.baseFov+fovKick+wkFov;if(Math.abs(f-camera.fov)>.01){camera.fov=f;camera.updateProjectionMatrix();}
+  fovKick*=Math.exp(-5*rdt);const f=S.state==='pduel'&&!(PD.ph===5&&now-PD.fly.t0>.5)?(camera.aspect<1?17:14):camera.userData.baseFov+fovKick+wkFov;if(Math.abs(f-camera.fov)>.01){camera.fov=f;camera.updateProjectionMatrix();}
   towerGlows.forEach((g,i)=>g.material.opacity=Math.min(1,(LAMP.out===(i>>1)?0:1)*(i%2?.5:.75)*(1+.1*Math.sin(performance.now()*.004+i))*(ZAP.lv===undefined?1:ZAP.lv)));
 }
 let last=performance.now();

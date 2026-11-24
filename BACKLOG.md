@@ -159,7 +159,7 @@ different one each time, and a reason to want the next one. Reserved for no-doub
 **Krakens arms:** J. MACDONALD #99 (van) · C. ROMERO #66 · L. HARGROVE #48 (L, astra) · BRAXX #40 (brady) · MALGOR #6 (L, demon).
 Still shared/unused: catcher wears the house body; `david` body unused; Parker body is worn by Montoya only.
 
-**Roster update (BUILD 548):** Comets order: R. VASQUEZ, O. DELACROIX, BLITZ (exo red; was Okafor), BRICKHOUSE, E. MONTOYA, VANTA (crypto; was Tanaka), ZEPHRA, CRASH, GORMAK. Krakens 1B is ARKON (exo grey; was Archer). Aliens, exo suits and the dummy go by one name.
+**Roster update (BUILD 548):** Comets order: R. VASQUEZ, O. DELACROIX, XENON (exo red; was Okafor), BRICKHOUSE, E. MONTOYA, VANTA (crypto; was Tanaka), ZEPHRA, CRASH, GORMAK. Krakens 1B is ARKON (exo grey; was Archer). Aliens, exo suits and the dummy go by one name.
 
 ## Shipping: minimum viable App Store build (freemium) — owner's note, keep in mind for every decision
 Not being built yet; this is the target to steer by.
@@ -171,7 +171,7 @@ Not being built yet; this is the target to steer by.
 
 **Names (BUILD 550):** humans go by a simple first name: RAZOR (Ely body; was Vasquez), OSCAR (Delacroix), EDDIE (Montoya), BRICKHOUSE; Krakens TODD (Hollis), pitchers MAC, CARLOS, LEE.
 
-**Roster (BUILD 553):** Comets: RAZOR (ely), VREL (alien body), BLITZ, BRICKHOUSE, DRAAK (drake body), VANTA, ZEPHRA, CRASH, GORMAK. Krakens field: ARKON, TODD, LIV (olivia body, SS), ZLORP, EDDIE (parker body, LF), XANDU, M'NAR.
+**Roster (BUILD 553):** Comets: RAZOR (ely), VREL (alien body), XENON, BRICKHOUSE, DRAAK (drake body), VANTA, ZEPHRA, CRASH, GORMAK. Krakens field: ARKON, TODD, LIV (olivia body, SS), ZLORP, EDDIE (parker body, LF), XANDU, M'NAR.
 
 ## Asset sources to keep in mind
 - **Mixamo** (current): characters and animation clips. Commercial terms still to be confirmed before shipping.
