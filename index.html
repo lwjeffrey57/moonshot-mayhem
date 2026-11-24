@@ -1010,7 +1010,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 670</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 671</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -1370,7 +1370,7 @@ function pdHome(){if(PD.ph!==0||!MOB)return;const hm=pdHomeXY(),cx=hm[0],cy=hm[1
 function pdOdEnd(){if((S.over&&S.overOn)){S.over=false;S.overOn=false;S.juice=0;PD.pk=0;PD.sel=true;}PD.odUsed=false;}
 function pdHitter(){const h=KBAT[PD.k];PD._si=0;PD.needBody=h.body||0;PD.bodyBy=now+4;
   try{const nb=KBAT[(PD.k+1)%KBAT.length].body||0;if(nb&&MX.batLoad&&!(MX.brigs&&MX.brigs[nb])){const pr=MX.batLoad(nb);if(pr&&pr.then)pr.then(()=>safeMoment(8000)).then(()=>{try{if(PD.on&&MX.batRig&&!(MX.brigs&&MX.brigs[nb]))MX.batRig(nb);}catch(e){}});}}catch(e){} /* the man on deck is dressed while this one bats, so he is ready the moment he is called */
-  try{if(PD.needBody&&MX.brigs&&MX.brigs[PD.needBody]&&MX.bcur!==PD.needBody){batSwap(PD.needBody);MX.clip.swap=null;batterOpacity(1);}}catch(e){} /* THE BOX STAYS EMPTY UNTIL THE NEW MAN IS IN HIS OWN BODY: the retired hitter was coming back into view for a moment and then changing into the next one */PD._wu=0;PD.holding=false;PD.hideBat=false;PD.showT=now+.28;pdOdEnd(); /* pitcher Overdrive lasts for the one batter */PD.drillArm=false;PD.balls=0;PD.strikes=0;PD.last=-1;PD.ph=0;PD.rattle=false;
+  try{if(PD.needBody&&MX.brigs&&MX.brigs[PD.needBody]&&MX.bcur!==PD.needBody){batSwap(PD.needBody);MX.clip.swap=null;batterOpacity(1);}}catch(e){} /* THE BOX STAYS EMPTY UNTIL THE NEW MAN IS IN HIS OWN BODY: the retired hitter was coming back into view for a moment and then changing into the next one */PD._wu=0;PD.holding=false;PD.hideBat=false;PD.showT=(!PD.needBody||MX.bcur===PD.needBody)?0:now+.28; /* if he is already in his own body he is there on the first frame of his walk-up: no empty beat and no pop-in */try{if(!PD.showT&&MX.clip){MX.clip.swap=null;batterOpacity(1);MX.obj.visible=true;}}catch(e){}pdOdEnd(); /* pitcher Overdrive lasts for the one batter */PD.drillArm=false;PD.balls=0;PD.strikes=0;PD.last=-1;PD.ph=0;PD.rattle=false;
   // the Kraken at the plate wears his own body (fetched in the background; until it is here the stand-in bats)
   try{if(MX.batLoad){const pr=MX.batLoad(h.body);if(pr&&pr.then)pr.then(()=>{if(S.state!=='pduel'||KBAT[PD.k]!==h)return;try{if(MX.batRig)MX.batRig(h.body);if(MX.brigs&&MX.brigs[h.body]){batSwap(h.body);MX.clip.swap=null;batterOpacity(1);}}catch(e){}});}}catch(e){}
   // HE GETS A WALK-UP TOO: a couple of seconds of his routine and his name before the first pitch
@@ -1474,7 +1474,7 @@ function pdResolve(){const R=PD.res,h=KBAT[PD.k];ball.visible=false;ballShadow.v
   const g=PD.grade,soft=1-.5*Math.min(R.e,1.2),qq=clamp((.18+Math.random()*.82)*(.72+.38*soft)*(g===2?.8:g===1?1:1.25)*(R.hz>0?1.22:R.hz<0?.78:1)*(R.jz?.72:1)*h.pow,0,1),
     gs=()=>(Math.random()+Math.random()+Math.random()-1.5)/1.5,v=22+25*qq,la=clamp((qq>.6?17:7)+gs()*17,-18,52),lh=!!curBatter().lh,phi=clamp((lh?9:-9)+gs()*30,-52,52),pt=PD.pt;
   // HE CAN TAKE YOU DEEP THE WAY YOU TAKE HIM DEEP: a ball he squares up (a hung pitch most of all) now and then becomes a tape-measure shot, out of the park and onto the Moon
-  let v1=v,la1=la,fo={};if(DBG.pdmon||(qq>.78&&Math.random()<(g===0?.45:R.hz>0?.3:.16))){const k=Math.random();la1=rand(24,34);v1=Math.max(v,44)*(1.14+.2*k);fo={g:.8-.2*k};}
+  let v1=v,la1=DBG.pdgb?-6:la,fo={};if(DBG.pdmon||(qq>.78&&Math.random()<(g===0?.45:R.hz>0?.3:.16))){const k=Math.random();la1=rand(24,34);v1=Math.max(v,44)*(1.14+.2*k);fo={g:.8-.2*k};}
   const p0=new V3(pt.tx,pt.ty,0),v0=new V3(Math.sin(phi*DEG)*Math.cos(la1*DEG),Math.sin(la1*DEG),-Math.cos(phi*DEG)*Math.cos(la1*DEG)).multiplyScalar(v1),tr=simulate(p0,v0,{side:phi/40*3.2,lift:clamp(gs()*2,-2,2)},fo);
   const play=judge(tr,{spd:1});if(play.f)play.from=play.f.fig.root.position.clone();try{SND.crack(qq,qq>.6);}catch(e){}
   flight={tr,play,t0:now,q:qq,pw:qq>.6,tb:false,jp:false,pod:false,fp:false,od:false,v,done:false,called:false,pd:true,trailC:qq>.75?[1,.85,.25]:[.5,.5,.55]};
@@ -1487,16 +1487,18 @@ function pdResolve(){const R=PD.res,h=KBAT[PD.k];ball.visible=false;ballShadow.v
 // carried over the cut.
 function pdBack(f){f.done=true;S.state='pduel';PD.ph=4;PD.t=now-.9;$('pd').style.visibility='';if(PD.mark)PD.mark.visible=true;if(PD.kz)PD.kz.visible=true;try{$('pop').className='';}catch(e){}try{pdUI();hud();}catch(e){}
   if(PD.after){const fn=PD.after;PD.after=null;try{fn();}catch(e){}}} /* STRAIGHT FROM THE PLAY TO WHAT COMES NEXT (the next man's walk-up, the play at the bag, or the end of the half): never a beat of the mound with an empty box in between */
-function pdFinish(f,pl){if(f._res){f.t0=now-pl.endT;ball.visible=false;ballShadow.visible=false;ballGlow.material.opacity=0; /* THE PLAY IS OVER THE MOMENT IT IS CALLED: the clock of the flight is held at the catch, so the ball can never be seen carrying on past (or through) the man who caught it while the call is up */if(now-f._res>=(pl.type==='hr'?2.2:1.5))pdBack(f);return;}
+function pdFinish(f,pl){if(f._res){f.t0=now-pl.endT;if(f.thr){if(!f.thr.done&&now-f._res<4)return;if(!f._thrD)f._thrD=now;if(now-f._thrD>=1.3)pdBack(f);return;} /* a grounder: the throw across the diamond is seen all the way to the bag, the out is called when it gets there, and the call has its moment */ball.visible=false;ballShadow.visible=false;ballGlow.material.opacity=0; /* THE PLAY IS OVER THE MOMENT IT IS CALLED: the clock of the flight is held at the catch, so the ball can never be seen carrying on past (or through) the man who caught it while the call is up */if(now-f._res>=(pl.type==='hr'?2.2:1.5))pdBack(f);return;}
   if(pl.type!=='foul'){f._res=now;PD.hideBat=true;}else{f.done=true;S.state='pduel';PD.ph=4;PD.t=now+.5;$('pd').style.visibility='';if(PD.mark)PD.mark.visible=true;if(PD.kz)PD.kz.visible=true;}
   ball.visible=false;ballShadow.visible=false;ballGlow.material.opacity=0;const h=KBAT[PD.k];
   const next=()=>{PD.ph=0;pdUI();},over=()=>{PD.n++;PD.k=(PD.k+1)%KBAT.length;if(PD.n>=3||PD.outs>=3)pdEnd();else pdHitter();};
   if(pl.type==='foul'){if(PD.strikes<2)PD.strikes++;timing('FOULED OFF'+(PD.res&&PD.res.tim?' · '+PD.res.tim.replace('WAY ','')+' ON IT':''),'#f2f5ff',2);PD.after=next;pdUI();return;}
-  if(pl.type==='out'){PD.outs++;const dp=!!pl.dp&&PD.bases[0]&&PD.outs<3;if(dp){PD.outs++;PD.bases[0]=0;}pop(dp?'DOUBLE PLAY!':pl.dive?'WHAT A CATCH!':pl.rob?'ROBBED HIM!':'OUT!',pl.label+' · '+h.name+' IS RETIRED','cool');cheer(.5,2.5);if(pl.dive||pl.rob||dp){roar(.8,.3);badge('web');}SND.mitt();PD.after=over;pdUI();hud();return;}
+  if(pl.type==='out'){PD.outs++;const dp=!!pl.dp&&PD.bases[0]&&PD.outs<3;if(dp){PD.outs++;PD.bases[0]=0;}
+    {const call=()=>{pop(dp?'DOUBLE PLAY!':pl.dive?'WHAT A CATCH!':pl.rob?'ROBBED HIM!':'OUT!',pl.label+' · '+h.name+' IS RETIRED','cool');cheer(.5,2.5);};if(pl.label==='GROUND OUT'&&pl.f&&pl.f.thrAct&&pl.f!==fielders[0]){f.thr={t0:now+.05,to:new V3(BASES[1][0],1.2,BASES[1][1]),next:null,full:true,call};}else call();}
+    if(pl.dive||pl.rob||dp){roar(.8,.3);badge('web');}SND.mitt();PD.after=over;pdUI();hud();return;}
   const nb=pl.type==='hr'?4:(pl.bases||1),r=pdAdvance(nb,false);pop(pl.type==='hr'?(pl.dist*3.281>=600?'TOOK YOU TO THE MOON':pl.dist*3.281>=470?'TOOK YOU DEEP':'KRAKENS GO DEEP'):['BASE HIT','DOUBLE','TRIPLE'][nb-1],h.name+(pl.type==='hr'?' · '+Math.round(pl.dist*3.281)+' FT':'')+(r?' · KRAKENS +'+r:'')+(pl.tag?' · '+pl.tag:''),'hot',pl.type==='hr');boo(r?.6:.3);if(pl.type==='hr'){flash(.25);shake=Math.max(shake,.2*FX);}
   PD.after=over;
   // HE GETS GREEDY: on a single or a double with the next base open, the Kraken sometimes tries to stretch it, and the player gets the play at the bag (the first chance each game always, then about two in five)
-  try{if(pl.type!=='hr'&&(nb===1||nb===2)&&PD.bases[nb]===0&&PD.outs<3&&qteParts()&&(DBG.dqte||(PLAY_NEWEST_FIRST&&!S.dqG)||Math.random()<.4)){S.dqG=true;const kind=nb===1?'dstretch2':'dstretch3';PD.after=()=>{PD.qAfter=over;PD.hideBat=false;try{qteStart(kind,true);}catch(e){PD.hideBat=true;over();}};}}catch(e){}
+  try{if(pl.type!=='hr'&&(nb===1||nb===2)&&PD.bases[nb]===0&&PD.outs<3&&qteParts()&&!DBG.nodq&&(DBG.dqte||(PLAY_NEWEST_FIRST&&!S.dqG)||Math.random()<.4)){S.dqG=true;const kind=nb===1?'dstretch2':'dstretch3';PD.after=()=>{PD.qAfter=over;PD.hideBat=false;try{qteStart(kind,true);}catch(e){PD.hideBat=true;over();}};}}catch(e){}
   pdUI();hud();}
 function pdEnd(){if(PD.wk){PD.wk=false;$('walk').hidden=true;$('hud').classList.remove('wk');}try{const T2=$('tim');T2._px=T2._py=null;T2.style.left='';T2.style.top='';T2.style.textAlign='';}catch(e){}try{if(MX.pit&&MX.pit.obj)MX.pit.obj.visible=true;}catch(e){}pdOdEnd();const k=PD.runs,done=PD.done;PD.on=false;PD.ph=0;$('pd').hidden=true;$('hud').classList.remove('pd');pdArcOff();if(PD.mark)PD.mark.visible=false;if(PD.kz)PD.kz.visible=false;ball.visible=false;ballShadow.visible=false;swing=null;
   fielders.forEach(f=>{if(f._sp){f.speed=f._sp[0];f.react=f._sp[1];f.reach=f._sp[2];f._sp=null;}});flight=null;$('pd').style.visibility='';
@@ -5215,7 +5217,7 @@ function updatePitcher(){
   applyPose(pitcher,P);pitcher.root.position.z=-18.4+P.rz;
 }
 function updateFielders(dt){
-  if(flight&&flight._res)return; /* the play has been called (the player is pitching): everyone holds exactly as they were at that moment. Before, the man who made the play wheeled round and started back to his spot while the call was still up. */
+  if(flight&&flight._res&&!flight.thr)return; /* the play has been called (the player is pitching): everyone holds exactly as they were at that moment. Before, the man who made the play wheeled round and started back to his spot while the call was still up. */
   const tf=flight?now-flight.t0:0;
   for(const f of fielders){if(f.isP)continue;const r=f.fig.root;let clipT=-1,running=false,strafe=0;
     let diving=false,dmir=false;
