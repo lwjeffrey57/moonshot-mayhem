@@ -1002,7 +1002,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 648</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 649</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -1480,7 +1480,7 @@ function eruptTick(L,cols,emb,onFire){const e=now-L.t;if(e>=0&&e<1.9&&S.state!==
     L.c.position.set(L.x,.4,L.z);L.c.scale.set(3+e*16,1.6+e*2,1);L.c.material.opacity=.7*k*k;
     if(e<1.3)burst(fxL,_p.set(L.x+rand(-.5,.5),rand(.3,2.2),L.z+rand(-.5,.5)),5,4,.8,emb,-4,5);}
   else if(L.a&&L.a.visible){L.a.visible=L.b.visible=L.c.visible=false;}}
-function draw(){if(APO.flag){const e=now-APO.wob;APO.flag.rotation.y=e<3?Math.sin(e*15)*.6*(1-e/3):Math.sin(now*1.3)*.06;}podTagPos();timPlace();{const o=!!(flight&&flight.od&&flight.play&&flight.play.type==='hr'&&(!flight.done||S.state==='trot'||S.state==='celebrate'));if(o!==odhrCls){odhrCls=o;$('hud').classList.toggle('odhr',o);}} /* an Overdrive homer: every callout for it burns Overdrive blue */
+function draw(){{const hf=PD.on&&S.state==='pduel';if(hf!==PD._hf){PD._hf=hf;try{fielders.forEach(f=>{if(!f.isP&&f.fig&&f.fig.root)f.fig.root.visible=!hf;});}catch(e){}}} /* FROM THE MOUND THE FIELDERS ARE ALL BEHIND OR BESIDE THE CAMERA, yet they were still being drawn in full detail because they are close to it: the pitching view drew three to four times the triangles of the batting view. They are switched off until a ball is in play. */if(APO.flag){const e=now-APO.wob;APO.flag.rotation.y=e<3?Math.sin(e*15)*.6*(1-e/3):Math.sin(now*1.3)*.06;}podTagPos();timPlace();{const o=!!(flight&&flight.od&&flight.play&&flight.play.type==='hr'&&(!flight.done||S.state==='trot'||S.state==='celebrate'));if(o!==odhrCls){odhrCls=o;$('hud').classList.toggle('odhr',o);}} /* an Overdrive homer: every callout for it burns Overdrive blue */
   // LOCKED IN: he erupts in blue flame. A pillar of fire shoots up round him, a ring blows out along the ground, embers pour off it, the
   // screen flashes and the call goes up. About a second and a half, then he is simply a man on base again (with Overdrive waiting).
   // LOCKED IN erupts exactly when the picture cuts to him celebrating: at the plate once his home-run celebration starts, or on his base
@@ -4898,6 +4898,14 @@ function unloadPlayers(){
   fielders.forEach(f=>{if(f.obj){f.fig.root.remove(f.obj);f.obj=f.rt=f.mixer=f.act=f.runAct=f.strAct=f.thrAct=f.defActs=f.dieAct=null;f.mode='pose';unfitDriver(f.fig);showChunky(f.fig,true);}});
 }
 function retarget(){retargetFig(batter,MX);}
+// HEAVY WORK WAITS FOR A QUIET MOMENT. Turning a downloaded body into a model freezes the picture for a fifth of a second or more on a phone
+// (the performance reports showed 200-450 ms frames in the first minute, with the batter standing in the box). That work is now queued and
+// let through one job at a time, only while nothing is being asked of the player: the title, a result, a trot, a pitching change. A job that
+// has waited twenty seconds goes anyway.
+const HEAVY={q:[],on:false};
+function heavyOK(w){const st=S.state;if(paused||st==='title'||st==='over'||st==='end'||st==='result'||st==='trot'||st==='celebrate'||st==='celly2'||st==='pchange'||st==='pask'||st==='pod'||st==='pdef')return true;
+  if(st==='pduel')return PD.ph===4||(PD.ph===-1&&w>1500);if(st==='ready')return now-S.t<.3;if(st==='walkup')return w>7000;return false;}
+function safeMoment(maxMs=20000){return new Promise(res=>{HEAVY.q.push({res,t0:performance.now(),maxMs});if(HEAVY.on)return;HEAVY.on=true;const tick=()=>{const j=HEAVY.q[0];if(!j){HEAVY.on=false;return;}const w=performance.now()-j.t0;let ok=false;try{ok=heavyOK(w);}catch(e){ok=true;}if(ok||w>j.maxMs){HEAVY.q.shift();j.res();setTimeout(tick,260);}else setTimeout(tick,80);};tick();});}
 const loadBuf=url=>fetch(url).then(r=>r.ok?r.text():Promise.reject(new Error(url))).then(b64=>{ // models ship as base64 text
   const bin=atob(b64.trim()),buf=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)buf[i]=bin.charCodeAt(i);return buf.buffer;});
 // bat.txt: a modelled bat that replaces the code-built one. Re-oriented so the knob sits at the hands and the barrel runs up +Y.
@@ -5016,7 +5024,7 @@ function loadPlayers(kind){ // body file = character mesh; clips.json = motion-c
     MX.pitVar=[{make:()=>makeD(pitNames),skin:defSkin}];MX.pitCur=0;MX.rigs=null;
     // Bodies are fetched only when a pitcher who wears one is due (the man on the mound, and the next arm in the bullpen), never all at once.
     const pitP={};MX.pitLoad=want=>{const v=cfg.pit&&canClone&&cfg.pit[want-1];if(!v||want<1)return null;if(pitP[want])return pitP[want];const keys=Object.keys(v.tex);
-      return pitP[want]=Promise.all([loadBuf(v.body),...keys.map(k=>Promise.all(v.tex[k].map(loadImg)))]).then(r=>{if(my!==MX.token)return;
+      return pitP[want]=Promise.all([loadBuf(v.body),...keys.map(k=>Promise.all(v.tex[k].map(loadImg)))]).then(r=>safeMoment(want===14&&PD.on?1200:20000).then(()=>r)).then(r=>{if(my!==MX.token)return;
         const PH=matchMedia('(pointer:coarse)').matches,vb=new T.FBXLoader().parse(r[0],''),tx=i=>{let im=i;if(PH&&i.width>512){const c=document.createElement('canvas');c.width=c.height=512;c.getContext('2d').drawImage(i,0,0,512,512);im=c;} /* phones: half-size textures, no bump map, so nine extra bodies fit in memory */const t=new T.Texture(im);t.needsUpdate=true;t.anisotropy=ANISO;return t;},mats={},geos=new Map();
         keys.forEach((k,i)=>{const o={map:tx(r[1+i][0]),color:0xffffff,emissive:0x1c1c22,specular:0x333340,shininess:26,skinning:true};if(r[1+i][1]&&!PH)o.normalMap=tx(r[1+i][1]);mats[k]=new T.MeshPhongMaterial(o);});
         let vclips=null;MX.pitVar[want]={makeN:names=>{const o=T.SkeletonUtils.clone(vb);o.animations=fitClips(o,names.filter(n=>cj[n]));return o;},make:()=>{const o=T.SkeletonUtils.clone(vb);o.animations=vclips=vclips||fitClips(o,pitNames);return o;},
@@ -5036,7 +5044,7 @@ function loadPlayers(kind){ // body file = character mesh; clips.json = motion-c
     const batNames=['hit','idle','idle2','strike'].filter(k=>cj[k]).concat(Object.keys(cj).filter(k=>/^[wdcbq]_/.test(k)||k==='run'||/^p_(loser|twerk|chicken|runman|fist|clap|threat|dying)$/.test(k))),batP={},jobs=[];
     MX.batVar=[];MX.brigs=null;MX.bcur=0;MX.bshown=undefined;
     const batLoad=k=>{const v=cfg.bat&&canClone&&cfg.bat[k-1];if(!v)return null;if(batP[k])return batP[k];const keys=Object.keys(v.tex);
-      return batP[k]=Promise.all([loadBuf(v.body),...keys.map(q=>Promise.all(v.tex[q].map(loadImg)))]).then(r=>{if(my!==MX.token)return;
+      return batP[k]=Promise.all([loadBuf(v.body),...keys.map(q=>Promise.all(v.tex[q].map(loadImg)))]).then(r=>safeMoment().then(()=>r)).then(r=>{if(my!==MX.token)return;
         const vb=new T.FBXLoader().parse(r[0],''),tx=i=>{const t=new T.Texture(i);t.needsUpdate=true;t.anisotropy=ANISO;return t;},mats={},geos=new Map();
         keys.forEach((q,i)=>{const o={map:tx(r[1+i][0]),color:v.col||0xffffff,emissive:v.col?0x0c0c10:0x1c1c22,specular:0x333340,shininess:26,skinning:true};if(r[1+i][1])o.normalMap=tx(r[1+i][1]);mats[q]=new T.MeshPhongMaterial(o);});
         MX.batVar[k]={make:names=>{const o=T.SkeletonUtils.clone(vb);o.animations=fitClips(o,names.filter(n=>cj[n]));return o;},
