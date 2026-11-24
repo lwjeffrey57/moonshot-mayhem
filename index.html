@@ -939,7 +939,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 576</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 577</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -1381,7 +1381,7 @@ const glowTex=tex(64,64,(g)=>{const r=g.createRadialGradient(32,32,0,32,32,32);r
 const WALL_H=3.4;
 // THE BULKHEAD: from the left-field pole round to left-centre the wall is 30 feet high (9.1 m). A ball has to clear all of it to be a home
 // run; anything lower clangs off it and stays in play. THE COVE: a stretch of right field where the seats give way to an open lava vent.
-const BIG_H=9.1,BIG_PHI=-.3927,BIG_I=9,ARC_H=8.6,ARC_W=7,wallH=phi=>phi<BIG_PHI?BIG_H:phi>.1765&&phi<=PI/4+.001?ARC_H:WALL_H,COVE_A0=.1745,COVE_A1=.7854,CV0=22,CV1=36,COVE={};
+const BIG_H=9.1,BIG_PHI=-.48,BIG_I=7, /* (it ends at 27.5 degrees, a little short of the 379 marker) */ARC_H=8.6,ARC_W=7,wallH=phi=>phi<BIG_PHI?BIG_H:phi>.1765&&phi<=PI/4+.001?ARC_H:WALL_H,COVE_A0=.1745,COVE_A1=.7854,CV0=22,CV1=36,COVE={};
 // THE PORCH: in left field the Bulkhead also juts IN toward the plate by seven metres (a short porch, 302 ft down the line), with the seats
 // sitting right on top of it. It steps back out to the normal fence through an angled jog in left-centre.
 const PORCH=0,PORCH2=0, /* (the jutting porch was tried and taken out: left field is the plain tall Bulkhead on the normal fence line. Set these to 7 and 15 to bring it back.) */fenceR=phi=>Math.abs(phi)<=PI/4?99+23*Math.cos(2*phi)-lerp(PORCH,PORCH2,clamp((phi+PI/4)/(BIG_PHI+PI/4),0,1))*clamp((BIG_PHI-phi)/.0436,0,1):99; /* the porch face runs nearly straight across left field (7 m in at the pole, 15 m in by left-centre) and then jogs sharply back out */
@@ -1587,15 +1587,16 @@ gl_FragColor=vec4(col,1.0);
   ads.repeat.set(1/WL,1);ads.anisotropy=ANISO;
   scene.add(new T.Mesh(ribbon(fa,fb,1),basic({map:ads})));
   // THE BULKHEAD (left field): thirty feet of riveted hull plate on top of the padded wall, with the out-of-town scores lit along it.
-  {const A=[],B=[],B2=[],C2=[],ya=[],yb=[];let L=0;for(let i=0;i<=BIG_I;i++){const phi=lerp(-PI/4,PI/4,i/N),r=fenceR(phi);A.push(pol(r,phi,WALL_H));B.push(pol(r,phi,BIG_H));B2.push(pol(r+1.3,phi,BIG_H));C2.push(pol(r+1.3,phi,WALL_H));ya.push(pol(r-.06,phi,BIG_H-.3));yb.push(pol(r-.06,phi,BIG_H+.02));if(i)L+=A[i].distanceTo(A[i-1]);}
+  {const A=[],B=[],B2=[],C2=[],ya=[],yb=[];let L=0;for(let i=0;i<=BIG_I;i++){const phi=lerp(-PI/4,PI/4,i/N),r=fenceR(phi);A.push(pol(r-.09,phi,0));B.push(pol(r-.09,phi,BIG_H));B2.push(pol(r+1.3,phi,BIG_H)); /* ONE WALL from the dirt to the top: the plate stands just proud of the padded fence and covers it, so there is no second yellow line half-way up */C2.push(pol(r+1.3,phi,WALL_H));ya.push(pol(r-.06,phi,BIG_H-.3));yb.push(pol(r-.06,phi,BIG_H+.02));if(i)L+=A[i].distanceTo(A[i-1]);}
     const bt=tex(2048,256,(g,w,h)=>{const bg=g.createLinearGradient(0,0,0,h);bg.addColorStop(0,'#2f5a52');bg.addColorStop(.5,'#1f4640');bg.addColorStop(1,'#0e2622');g.fillStyle=bg;g.fillRect(0,0,w,h);
       const pw=w/12;for(let x=0;x<w;x+=pw){const cg=g.createLinearGradient(x,0,x+pw,0);cg.addColorStop(0,'rgba(0,0,0,.4)');cg.addColorStop(.06,'rgba(255,255,255,.14)');cg.addColorStop(.4,'rgba(255,255,255,0)');cg.addColorStop(.92,'rgba(0,0,0,.14)');cg.addColorStop(1,'rgba(0,0,0,.4)');g.fillStyle=cg;g.fillRect(x,0,pw,h);
         g.fillStyle='rgba(8,14,12,.8)';for(let y=14;y<h;y+=38)for(const dx of [9,pw-9]){g.beginPath();g.arc(x+dx,y,3,0,7);g.fill();}}
       g.fillStyle='rgba(0,0,0,.35)';g.fillRect(0,h*.5-1,w,3);
       g.textAlign='center';g.textBaseline='middle';g.font='italic 400 64px "Russo One",Arial Black,Arial';g.fillStyle='rgba(0,0,0,.5)';g.fillText('THE BULKHEAD',w*.5+3,h*.27+3);g.fillStyle='#f2f4fb';g.fillText('THE BULKHEAD',w*.5,h*.27);
       g.font='400 30px "Russo One",Arial Black,Arial';g.fillStyle='#ffe53b';g.fillText('30 FT',w*.07,h*.27);g.fillText('30 FT',w*.93,h*.27);
-      const sc=[['THUNDER',4,'ACES',2],['MAMMOTHS',7,'KINGS',7],['OUTLAWS',1,'DJINN',0]];g.font='400 34px "Russo One",Arial Black,Arial';
-      sc.forEach((q,i)=>{const cx=w*(.2+.3*i),cy=h*.72;g.fillStyle='#061412';g.fillRect(cx-250,cy-34,500,68);g.strokeStyle='rgba(255,255,255,.25)';g.lineWidth=2;g.strokeRect(cx-250,cy-34,500,68);g.shadowColor='#ffb020';g.shadowBlur=10;g.fillStyle='#ffd23b';g.fillText(q[0]+' '+q[1]+'   ·   '+q[2]+' '+q[3],cx,cy+2,470);g.shadowBlur=0;});
+      g.font='italic 400 52px "Russo One",Arial Black,Arial';g.fillStyle='#061412';g.fillRect(w*.035-62,h*.78-34,124,62);g.fillStyle='#ffe53b';g.fillText('330',w*.035,h*.78);
+      const sc=[['THUNDER',4,'ACES',2],['MAMMOTHS',7,'KINGS',7],['OUTLAWS',1,'DJINN',0]];/* (scores sit in the middle band) */g.font='400 34px "Russo One",Arial Black,Arial';
+      sc.forEach((q,i)=>{const cx=w*(.22+.29*i),cy=h*.56;g.fillStyle='#061412';g.fillRect(cx-250,cy-34,500,68);g.strokeStyle='rgba(255,255,255,.25)';g.lineWidth=2;g.strokeRect(cx-250,cy-34,500,68);g.shadowColor='#ffb020';g.shadowBlur=10;g.fillStyle='#ffd23b';g.fillText(q[0]+' '+q[1]+'   ·   '+q[2]+' '+q[3],cx,cy+2,470);g.shadowBlur=0;});
       const vg=g.createLinearGradient(0,0,0,h);vg.addColorStop(0,'rgba(255,255,255,.2)');vg.addColorStop(.25,'rgba(255,255,255,0)');vg.addColorStop(.7,'rgba(0,0,0,.05)');vg.addColorStop(1,'rgba(0,0,0,.4)');g.fillStyle=vg;g.fillRect(0,0,w,h);
       g.save();g.globalCompositeOperation='overlay';for(let i=0;i<=3;i++){const R0=h*1.5;g.save();g.translate(w*(i/3),0);g.scale((w*.16)/R0,1);const rg=g.createRadialGradient(0,0,0,0,0,R0);rg.addColorStop(0,'rgba(255,246,220,.85)');rg.addColorStop(.5,'rgba(255,240,205,.35)');rg.addColorStop(1,'rgba(255,240,205,0)');g.fillStyle=rg;g.fillRect(-R0,0,R0*2,h);g.restore();}g.restore();},[1,1]);bt.repeat.set(1/L,1);bt.anisotropy=ANISO;
     const hullB=basic({color:0x12201e});scene.add(new T.Mesh(ribbon(A,B,1),basic({map:bt})));scene.add(new T.Mesh(ribbon(B,B2),hullB));scene.add(new T.Mesh(ribbon(B2,C2),hullB));
