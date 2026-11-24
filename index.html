@@ -1005,7 +1005,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 663</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 664</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -1476,7 +1476,7 @@ function pdResolve(){const R=PD.res,h=KBAT[PD.k];ball.visible=false;ballShadow.v
 // second and a half, the callout is taken down, and only then does the picture go back to the mound for the next man. The call is never
 // carried over the cut.
 function pdBack(f){f.done=true;S.state='pduel';PD.ph=4;PD.t=now-.9;$('pd').style.visibility='';if(PD.mark)PD.mark.visible=true;if(PD.kz)PD.kz.visible=true;try{$('pop').className='';}catch(e){}try{pdUI();hud();}catch(e){}}
-function pdFinish(f,pl){if(f._res){if(now-f._res>=(pl.type==='hr'?2.2:1.5))pdBack(f);return;}
+function pdFinish(f,pl){if(f._res){f.t0=now-pl.endT;ball.visible=false;ballShadow.visible=false;ballGlow.material.opacity=0; /* THE PLAY IS OVER THE MOMENT IT IS CALLED: the clock of the flight is held at the catch, so the ball can never be seen carrying on past (or through) the man who caught it while the call is up */if(now-f._res>=(pl.type==='hr'?2.2:1.5))pdBack(f);return;}
   if(pl.type!=='foul'){f._res=now;PD.hideBat=true;}else{f.done=true;S.state='pduel';PD.ph=4;PD.t=now+.5;$('pd').style.visibility='';if(PD.mark)PD.mark.visible=true;if(PD.kz)PD.kz.visible=true;}
   ball.visible=false;ballShadow.visible=false;ballGlow.material.opacity=0;const h=KBAT[PD.k];
   const next=()=>{PD.ph=0;pdUI();},over=()=>{PD.n++;PD.k=(PD.k+1)%KBAT.length;if(PD.n>=3||PD.outs>=3)pdEnd();else pdHitter();};
@@ -5601,7 +5601,7 @@ function perfFlush(){if(PERF.busy||PERF.n<300||(window.__mmManual&&!DBG.perf))re
     Promise.resolve().then(()=>db.collection('perf').doc(PERF.id).set(r)).then(()=>{PERF.sent++;},()=>{}).then(()=>{PERF.busy=false;});};
   if(PERF.db){go(PERF.db);return;}if(PERF.dbTried)return;PERF.dbTried=true;try{if(window.claude&&window.claude.use)window.claude.use('db').then(db=>{PERF.db=db||null;if(!db)PERF.dbTried=true;else go(db);},()=>{});}catch(x){}}
 try{document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')perfFlush();});addEventListener('pagehide',()=>perfFlush());}catch(x){}
-window.__QT=QT;window.__perf=()=>perfReport();window.__perfTick=perfTick;window.__perfFlush=perfFlush;
+window.__QT=QT;window.__ball=ball;window.__perf=()=>perfReport();window.__perfTick=perfTick;window.__perfFlush=perfFlush;
 let fpsOn=false,fN=0,fT=0,fMax=0,fWork=0;
 {const set=on=>{fpsOn=on;$('fps').hidden=!on;$('fpsbtn').textContent='SHOW SPEED: '+(on?'ON':'OFF');$('fps1').textContent='Show speed: '+(on?'on':'off')+' — tap to change';try{localStorage.setItem('mm_fps',on?'1':'0');}catch(e){}};let on0=false;try{on0=localStorage.getItem('mm_fps')==='1';}catch(e){}set(on0);$('fpsbtn').addEventListener('click',()=>set(!fpsOn));$('fps1').addEventListener('click',()=>set(!fpsOn));} /* the speed read-out can be switched on before the game starts, and it is remembered */
 function fpsTick(ms,work){fN++;fT+=ms;fWork+=work;if(ms>fMax)fMax=ms;if(fT<500)return;
