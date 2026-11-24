@@ -1002,7 +1002,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 653</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 654</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -1301,7 +1301,7 @@ const GT=[null,['PICK YOUR PITCH','Right thumb: tap one on the wheel','Each one 
    control is SHOWN AT WORK (the wheel turning through its pitches, the stick steering the ball, the dial and the ring). Nothing has to be
    done: a tap anywhere is NEXT. */
 function gtOff(){[...$('pdbtns').children].forEach(b=>b.classList.remove('show'));PD.gtK=-1;const P=$('pd');P.classList.remove('gtm','g1','g2','g3','g4');['pdbtns','pdpad','pdgo'].forEach(i=>$(i).classList.remove('lit','gtap'));$('ptut').hidden=true;$('ptut').classList.remove('gt');const SP=$('ptspot');SP.hidden=true;SP.classList.remove('arw','gts','msk');SP.style.borderRadius='';try{const M=$('gtmask');if(M)M.style.display='none';}catch(e){}
-  try{const kn=$('pdcur');kn.style.transition='';kn.style.transform='';$('pdring').style.display='none';PD.holding=false;PD.pk=0;PD.sel=true;pdGoHome();pdUI();}catch(e){}}
+  try{const kn=$('pdcur');kn.style.transition='';kn.style.transform='';$('pdring').style.display='none';$('pdring').style.boxShadow='';PD.holding=false;PD.pk=0;PD.sel=true;pdGoHome();pdUI();}catch(e){}}
 function gtShow(){const g=PD.gt|0,q=GT[g],T=$('ptut'),SP=$('ptspot'),P=$('pd');if(!q)return;P.classList.add('gtm');for(let k=1;k<=4;k++)P.classList.toggle('g'+k,k===g);$('pdbtns').classList.toggle('lit',g===1);$('pdpad').classList.toggle('lit',g===2);$('pdgo').classList.toggle('lit',g>=3);
   T.hidden=false;SP.hidden=false;T.classList.add('gt');SP.classList.add('gts');$('ptn').textContent=g+'/3 · TAP FOR NEXT ▶';$('ptt').textContent=q[0];$('ptx').innerHTML=q[1]+(q[2]?'<small>'+q[2]+'</small>':'');
   const h=$('hud').getBoundingClientRect(),Pj=(x,y)=>{_s0.set(x,y,0).project(camera);return [(_s0.x*.5+.5)*h.width,(-_s0.y*.5+.5)*h.height];},a=Pj(ZONE.x0-.24,ZONE.y1+.14),b=Pj(ZONE.x1+.24,ZONE.y0-.2); /* the window in the blackout is always the strike zone */
@@ -1311,7 +1311,7 @@ function gtShow(){const g=PD.gt|0,q=GT[g],T=$('ptut'),SP=$('ptspot'),P=$('pd');i
   const W=h.width,H=h.height,zx=Math.min(a[0],b[0]),zy=Math.min(a[1],b[1]),zw=Math.abs(a[0]-b[0]),zh=Math.abs(a[1]-b[1]),q2=14;let d='M0 0H'+W+'V'+H+'H0Z M'+(zx+q2)+' '+zy+'h'+(zw-2*q2)+'a'+q2+' '+q2+' 0 0 1 '+q2+' '+q2+'v'+(zh-2*q2)+'a'+q2+' '+q2+' 0 0 1 -'+q2+' '+q2+'h-'+(zw-2*q2)+'a'+q2+' '+q2+' 0 0 1 -'+q2+' -'+q2+'v-'+(zh-2*q2)+'a'+q2+' '+q2+' 0 0 1 '+q2+' -'+q2+'Z';
   if(g===1){const e=$('pdbtns').getBoundingClientRect(),cx=e.left-h.left+e.width/2,cy=e.top-h.top+e.height/2,R=e.width/2+16;d+=' M'+(cx-R)+' '+cy+'a'+R+' '+R+' 0 1 0 '+(2*R)+' 0a'+R+' '+R+' 0 1 0 -'+(2*R)+' 0Z';}
   if(M._d!==d){M._d=d;M.firstChild.setAttribute('d',d);}M.style.display='block';SP.classList.add('msk');}
-function gtEnter(g){PD.gt=g;PD.gtIn=performance.now();PD.gtK=-1;const kn=$('pdcur');kn.style.transition='';kn.style.transform='';PD.holding=false;[...$('pdbtns').children].forEach(b=>b.classList.remove('show'));$('pdgo').classList.remove('gtap');$('pdring').style.display='none';$('pd').classList.remove('arm');
+function gtEnter(g){PD.gt=g;PD.gtIn=performance.now();PD.gtK=-1;const kn=$('pdcur');kn.style.transition='';kn.style.transform='';PD.holding=false;[...$('pdbtns').children].forEach(b=>b.classList.remove('show'));$('pdgo').classList.remove('gtap');$('pdring').style.display='none';$('pdring').style.boxShadow='';$('pd').classList.remove('arm');
   if(g>=2){PD.pk=g===3?1:0;PD.sel=true;pdGoHome();try{pdUI();}catch(e){}} /* (the timing step is shown with the curveball, down in the zone where the ring is easy to follow) */ /* from the aim step on the fastball is the pitch on the dial */
 }
 function gtNext(){const g=PD.gt|0;if(g>=3){PD.gt=0;infoHold=false;gtOff();PD.t=now;try{localStorage.setItem('mm_ptut3','1');}catch(e){}return;}gtEnter(g+1);}
@@ -1322,8 +1322,8 @@ function gtTick(){const g=PD.gt|0;if(!g)return;if(S.state!=='pduel'||!PD.on){PD.
     const c=t%2.3,P=$('pd'),go=$('pdgo'),r=$('pdring');
     if(c<.8){if(P.classList.contains('arm')){P.classList.remove('arm');try{pdUI();}catch(e){}}r.style.display='none';const pr=c>.45&&c<.68;go.style.transform=pr?'scale(.88)':'';go.style.filter=pr?'brightness(1.4)':'';}
     else{const u=(c-.8)/1.05,h=$('hud').getBoundingClientRect(),W=h.width,H=h.height;P.classList.add('arm');go.textContent='TAP!';go.classList.remove('rdy');
-      _s0.set(PD.tx,PD.ty,.02).project(camera);const cx=(_s0.x*.5+.5)*W,cy=(-_s0.y*.5+.5)*H;_s0.set(PD.tx+.0875,PD.ty,.02).project(camera);const mp=Math.max(5,Math.abs((_s0.x*.5+.5)*W-cx)),R=mp*(1+Math.max(0,1-u/.84)*6.5)+2,hit=u>=.8;
-      r.style.display='block';r.style.width=r.style.height=(R*2)+'px';r.style.transform='translate('+(cx-R)+'px,'+(cy-R)+'px)';r.style.borderColor=hit?'#39ff6a':'#fff';go.style.transform=hit&&u<1?'scale(.9)':'';go.style.filter=hit&&u<1?'brightness(1.35)':'';}}
+      _s0.set(PD.tx,PD.ty,.02).project(camera);const cx=(_s0.x*.5+.5)*W,cy=(-_s0.y*.5+.5)*H;_s0.set(PD.tx+.0875,PD.ty,.02).project(camera);const mp=Math.max(5,Math.abs((_s0.x*.5+.5)*W-cx)),R=mp*(1+Math.max(0,1-u/.84)*6.5)+2,hit=u>=.84,pr=hit&&u<.98; /* the button goes down on the very frame the ring lands on the circle and turns green: one beat, seen in both places at once */
+      r.style.display='block';r.style.width=r.style.height=(R*2)+'px';r.style.transform='translate('+(cx-R)+'px,'+(cy-R)+'px)';r.style.borderColor=hit?'#39ff6a':'#fff';r.style.boxShadow=pr?'0 0 0 2px #000,inset 0 0 0 2px #000,0 0 16px 6px rgba(57,255,106,.9)':'';go.style.transform=pr?'scale(.86)':'';go.style.filter=pr?'brightness(1.45)':'';}}
   if(g!==3){const go=$('pdgo');go.style.transform='';go.style.filter='';}
   try{pdSvg();}catch(e){} /* (the ball in the target keeps spinning through every step) */
   gtShow();}
