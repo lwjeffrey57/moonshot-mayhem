@@ -196,7 +196,7 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 #hud.mob #hitinfo #hdr:not([hidden]){display:flex;align-items:center;border-top:0;padding:0 11px;font-size:15px}#hud.mob #hdr span{display:none}
 #hud.mob #plast{top:130px;bottom:auto;left:max(14px,env(safe-area-inset-left,0px));transform:none;font-size:14px}
 #hud.mob #hitinfo:not([hidden])~#plast{visibility:hidden}
-#hud.mob #tim{top:47%;font-size:18px}#hud.mob #tim[data-l="4"]{font-size:25px}#hud.mob #tim[data-l="1"]{font-size:14px}#hud.mob #tim.go{animation-duration:1.15s}
+#hud.mob #tim{top:41%;font-size:18px}#hud.mob #tim[data-l="4"]{font-size:25px}#hud.mob #tim[data-l="1"]{font-size:14px}#hud.mob #tim.go{animation-duration:1.15s}
 @media (max-height:520px){#hitinfo{top:auto;bottom:12px;left:50%;transform:translateX(-50%)}}
 /* walk-up card */
 #walk{left:50%;bottom:clamp(56px,15vh,150px);transform:translateX(-50%);display:flex;align-items:stretch;min-width:min(460px,92vw);background:linear-gradient(#1b1f4a,#0b0c22);border:2px solid var(--pilllo);border-radius:8px;box-shadow:0 4px 0 #000;font-family:var(--display);font-style:italic;overflow:hidden;animation:walkin .35s cubic-bezier(.2,1.3,.4,1) both}
@@ -336,10 +336,10 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
 #pop.go.long{animation-duration:3.2s}
 @keyframes slam{0%{opacity:0;transform:scale(2.6) rotate(-4deg)}9%{opacity:1;transform:scale(.94) rotate(-2deg)}14%{transform:scale(1.04) rotate(-2deg)}20%,80%{opacity:1;transform:scale(1) rotate(-2deg)}100%{opacity:0;transform:scale(1.08) rotate(-2deg)}}
 #tim[data-rk="1"]{margin-top:-34px} /* the rocket is lifting off the bar underneath: move the line up out of its way */
-#tim{left:0;right:0;top:66%;text-align:center;font-family:var(--display);font-size:clamp(14px,2.4vw,22px);opacity:0;text-shadow:0 2px 0 #000}
+#tim{left:0;right:0;top:60%;text-align:center;font-family:var(--display);font-size:clamp(14px,2.4vw,22px);opacity:0;text-shadow:0 2px 0 #000}
 #tim.go{animation:tim 1.5s ease-out both}
 /* timing meter under the swing feedback: where your swing landed between early and late */
-#tbar{left:50%;top:calc(66% + 36px);margin-left:-150px;width:300px;display:flex;align-items:center;gap:8px;opacity:0;font-family:var(--hud);font-weight:800;font-size:12px;letter-spacing:.12em;color:var(--chrome);text-shadow:0 1px 0 #000}
+#tbar{left:50%;top:calc(60% + 36px);margin-left:-150px;width:300px;display:flex;align-items:center;gap:8px;opacity:0;font-family:var(--hud);font-weight:800;font-size:12px;letter-spacing:.12em;color:var(--chrome);text-shadow:0 1px 0 #000}
 #tbar .trk{position:relative;flex:1;height:10px;border-radius:5px;background:rgba(8,9,26,.8);border:2px solid rgba(242,245,255,.55)}
 #tbar .trk i{position:absolute;top:0;bottom:0;border-radius:3px}
 #tbar .gc{background:linear-gradient(90deg,rgba(61,220,106,.28),rgba(61,220,106,.75) 36%,#7dffa0 42%,#7dffa0 58%,rgba(61,220,106,.75) 64%,rgba(61,220,106,.28))}
@@ -471,7 +471,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
 @keyframes mkFlame{0%{transform:translateY(0) scale(.2);opacity:0}18%{opacity:1;transform:translateY(2px) scale(1.2)}100%{transform:translateY(-12px) scale(1);opacity:.95}}
 @keyframes mkFlick{from{width:16px}to{width:12px;margin-left:-6px}}
 @keyframes mkRocket{0%{transform:translate(-50%,-30%) rotate(-45deg) scale(.2)}18%{transform:translate(-50%,-55%) rotate(-45deg) scale(1.45)}32%{transform:translate(-50%,-55%) rotate(-45deg) scale(1)}100%{transform:translate(-50%,-110%) rotate(-45deg) scale(1.05)}}
-#tbar.go{animation:tim 1.7s ease-out both}#tbar.go.qk,#tim.go.qk{animation-duration:.6s} /* a ball hit on the ground or on a line at the infield: the read-out is gone in half a second, before it can sit across a fielder */#hud.mob #tbar{top:calc(47% + 32px);margin-left:-130px;width:260px}#hud.wk #tbar{visibility:hidden}
+#tbar.go{animation:tim 1.7s ease-out both}#tbar.go.qk,#tim.go.qk{animation-duration:.6s} /* a ball hit on the ground or on a line at the infield: the read-out is gone in half a second, before it can sit across a fielder */#hud.mob #tbar{top:calc(41% + 32px);margin-left:-130px;width:260px}#hud.wk #tbar{visibility:hidden}
 @keyframes tim{0%{opacity:0;transform:translateY(8px)}15%,70%{opacity:1;transform:none}100%{opacity:0}}
 #flash{inset:0;background:radial-gradient(circle at 50% 55%,#fff,rgba(255,240,180,.7) 40%,transparent 75%);opacity:0}
 /* touch */
@@ -903,7 +903,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 556</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 557</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -1070,6 +1070,13 @@ const _pt=new V3();function podTagPos(){const e=$('podtag');if(!$('hud').classLi
 // The flyover's height along its run: it comes in ABOVE both ridges beyond centre field (the far one tops out near 235 m, the near one near
 // 190), drops to 116 m over the park, and pulls up again before the ridge behind the plate. It never passes through rock.
 function flyY(z){return z<-200?116+205*Math.pow((-z-200)/480,.8):z>150?116+(z-150)*.62:116+8*Math.sin((z+200)/350*PI);}
+// THE CONTACT READ-OUT SITS DIRECTLY UNDER THE CALLOUT: whenever a callout is up, the timing line and the ball-on-barrel bar are placed just
+// below its bottom edge (measured, so a two-line or oversized call pushes them down by exactly as much): never across it, never a gap.
+let timPlT=0;function timPlace(){const pn=performance.now();if(pn-timPlT<70)return;timPlT=pn;const t=$('tim'),b=$('tbar'),on=t.classList.contains('go')||b.classList.contains('go');
+  if(!on){if(t.style.top){t.style.removeProperty('top');b.style.removeProperty('top');}return;}
+  const P=$('pop');if(P.classList.contains('go')){const r=P.getBoundingClientRect(),h=$('hud').getBoundingClientRect(),cs=+getComputedStyle(P).opacity;
+    if(r.height>4&&cs>.05){const y=Math.round(r.bottom-h.top+(MOB?6:10));t.style.setProperty('top',y+'px','important');b.style.setProperty('top',(y+(t.offsetHeight||22)+(MOB?4:8))+'px','important');return;}}
+  if(t.style.top){t.style.removeProperty('top');b.style.removeProperty('top');}}
 function eruptTick(L,cols,emb,onFire){const e=now-L.t;if(e>=0&&e<1.9&&S.state!=='title'&&S.state!=='over'){
     if(!L.a){const mk=c=>{const sp=new T.Sprite(new T.SpriteMaterial({map:glowTex,color:c,blending:T.AdditiveBlending,transparent:true,depthWrite:false,fog:false}));sp.renderOrder=20;scene.add(sp);return sp;};L.a=mk(cols[0]);L.b=mk(cols[1]);L.c=mk(cols[2]);}
     if(!L.fired){L.fired=true;onFire(L);for(let i=0;i<3;i++)burst(fxL,_p.set(L.x,1,L.z),40,9,1,emb,-3,7);}
@@ -1079,7 +1086,7 @@ function eruptTick(L,cols,emb,onFire){const e=now-L.t;if(e>=0&&e<1.9&&S.state!==
     L.c.position.set(L.x,.4,L.z);L.c.scale.set(3+e*16,1.6+e*2,1);L.c.material.opacity=.7*k*k;
     if(e<1.3)burst(fxL,_p.set(L.x+rand(-.5,.5),rand(.3,2.2),L.z+rand(-.5,.5)),5,4,.8,emb,-4,5);}
   else if(L.a&&L.a.visible){L.a.visible=L.b.visible=L.c.visible=false;}}
-function draw(){podTagPos();
+function draw(){podTagPos();timPlace();
   // LOCKED IN: he erupts in blue flame. A pillar of fire shoots up round him, a ring blows out along the ground, embers pour off it, the
   // screen flashes and the call goes up. About a second and a half, then he is simply a man on base again (with Overdrive waiting).
   // LOCKED IN erupts exactly when the picture cuts to him celebrating: at the plate once his home-run celebration starts, or on his base
