@@ -169,4 +169,4 @@ Not being built yet; this is the target to steer by.
 - **Hard blockers before any store submission:** replace ripped audio; confirm licences for every model, the moon maps, horn and claps; show the ESO sky credit; set TUT_EVERY_LAUNCH false; wrap the web build as a native app (Capacitor or similar) and test on real iPhones; privacy policy; age rating (cartoon violence: brawls, hit-by-pitch).
 - **Design rule this implies now:** keep the game one self-contained file with assets loaded on demand, keep phone frame rate first, and keep names, sponsors and likenesses original (no real teams, parks or brands).
 
-**Names (BUILD 550):** humans go by a simple first name: RICO (was Vasquez), OSCAR (Delacroix), EDDIE (Montoya), BRICKHOUSE; Krakens TODD (Hollis), pitchers MAC, CARLOS, LEE.
+**Names (BUILD 550):** humans go by a simple first name: RAZOR (Ely body; was Vasquez), OSCAR (Delacroix), EDDIE (Montoya), BRICKHOUSE; Krakens TODD (Hollis), pitchers MAC, CARLOS, LEE.

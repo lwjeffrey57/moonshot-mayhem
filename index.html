@@ -797,7 +797,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
       <circle class="base" id="b1" cx="70" cy="60" r="5.5"/><circle class="base" id="b2" cx="52" cy="42" r="5.5"/><circle class="base" id="b3" cx="34" cy="60" r="5.5"/>
       <circle cx="52" cy="78" r="5" fill="#e23a22" stroke="#fff" stroke-width="1.5"/>
     </svg>
-    <div id="card" class="slab"><span id="cnum">27</span><div><div id="cname">RICO</div>
+    <div id="card" class="slab"><span id="cnum">27</span><div><div id="cname">RAZOR</div>
       <div class="stats"><div class="stat">PWR <b><i id="spw"></i></b><em id="gpw"></em></div><div class="stat">CON <b><i id="sco"></i></b><em id="gco"></em></div><div class="stat">SPD <b><i id="ssp"></i></b><em id="gsp"></em></div></div></div></div>
     <div id="hitinfo" hidden><div class="q" id="hq"></div><div class="r"><span>EXIT VELO</span><b id="hev"></b></div><div class="r"><span>LAUNCH</span><b id="hla"></b></div>
       <div class="r" id="hdr" hidden><span>DISTANCE</span><b id="hds"></b></div>
@@ -898,7 +898,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 550</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 551</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -1522,8 +1522,8 @@ gl_FragColor=vec4(col,1.0);
         const fg=g.createLinearGradient(0,h*.86,0,h);fg.addColorStop(0,'rgba(255,60,10,0)');fg.addColorStop(1,'rgba(255,70,16,.75)');g.fillStyle=fg;g.fillRect(0,h*.86,w,h*.14);},[1,1]);vt.anisotropy=ANISO;
       const prof=[[0,128],[10,128],[16,138],[22,132],[46,92],[78,44],[112,10],[130,0]].map(q=>new T.Vector2(q[0],q[1])),vm=new T.Mesh(new T.LatheGeometry(prof,22),new T.MeshBasicMaterial({map:vt,fog:false,side:T.DoubleSide}));
       const uv=vm.geometry.attributes.uv,ps=vm.geometry.attributes.position;for(let k=0;k<uv.count;k++)uv.setY(k,ps.getY(k)/138);
-      const vph=31*DEG;vm.position.copy(pol(372,vph,0));scene.add(vm);
-      [[150,0xff5a14,.55,150],[90,0xffd070,.5,142]].forEach(([sz,c,op,y])=>{const sp=new T.Sprite(new T.SpriteMaterial({map:glowTex,color:c,blending:T.AdditiveBlending,depthWrite:false,transparent:true,opacity:op,fog:false}));sp.position.copy(pol(372,vph,y));sp.scale.set(sz,sz*.8,1);scene.add(sp);});}
+      const vph=31*DEG;vm.scale.setScalar(1.75);vm.position.copy(pol(585,vph,0));scene.add(vm); /* set back beyond the near ridge and made bigger to suit: the longest shots (1,134 ft is 346 m) come down well short of its foot, never into it */
+      [[150,0xff5a14,.55,150],[90,0xffd070,.5,142]].forEach(([sz,c,op,y])=>{const sp=new T.Sprite(new T.SpriteMaterial({map:glowTex,color:c,blending:T.AdditiveBlending,depthWrite:false,transparent:true,opacity:op,fog:false}));sp.position.copy(pol(585,vph,y*1.75));sp.scale.set(sz*1.75,sz*1.4,1);scene.add(sp);});}
     const gl=new T.Sprite(new T.SpriteMaterial({map:glowTex,color:0xff2a10,blending:T.AdditiveBlending,depthWrite:false,transparent:true,opacity:.3,fog:false}));gl.position.copy(pol(rm+60,mid,4));gl.scale.set(190,34,1);scene.add(gl);COVE.gl=gl.material;}
   if(UPPER)split(s2a).forEach((a,k)=>scene.add(new T.Mesh(ribbon(a,split(s2b)[k],1),cm)));
   // luxury boxes between the decks
@@ -2125,8 +2125,8 @@ function ik(sh,el,target,L1,L2,poleV){
 // teams (fictional)
 const HOME={base:'#1b2a6b',trim:'#f26a1b',ink:'#f4f4f0',word:'Comets'};
 const AWAY={base:'#f4f4f0',trim:'#0e7c86',ink:'#0e3c46',pin:'rgba(14,60,70,.35)',word:'Krakens'};
-const LINEUP=[ /* batting order: the three hitters in similar armour (Rico, Blitz, Eddie) are never next to each other */
-  {name:'RICO',ini:'',num:27,spd:1.0,pwr:1.0,con:1.05,skin:0xb9794f},
+const LINEUP=[ /* batting order: the three hitters in similar armour (Razor, Blitz, Eddie) are never next to each other */
+  {name:'RAZOR',ini:'',num:27,spd:1.0,pwr:1.0,con:1.05,skin:0xb9794f},
   {name:'OSCAR',ini:'',body:7,num:3,crouch:true,spd:1.02,pwr:1.06,con:1.0,skin:0xe2b08a},
   {name:'BLITZ',ini:'',body:1,lh:true,num:8,spd:1.14,pwr:.96,con:1.12,skin:0x6b4226},
   {name:'BRICKHOUSE',ini:'',body:2,num:44,spd:0.78,pwr:1.16,con:.82,skin:0xd9a47c},
@@ -2136,7 +2136,7 @@ const LINEUP=[ /* batting order: the three hitters in similar armour (Rico, Blit
   {name:'CRASH',ini:'',body:8,num:35,crouch:true,spd:0.81,pwr:1.12,con:.93,skin:0x5a3820},
   {name:'GORMAK',ini:'',body:5,num:6,spd:1.04,pwr:.98,con:1.04,skin:0xe8b690},
 ];
-const batter=makeFigure({skin:0xb9794f,pants:0xb9bcc8,stripe:0x1b2a6b,trimC:0xf26a1b,sleeve:0x1b2a6b,cap:0x14204a,helmet:true,bglove:0xf26a1b,jersey:Object.assign({name:'RICO',num:27},HOME)});
+const batter=makeFigure({skin:0xb9794f,pants:0xb9bcc8,stripe:0x1b2a6b,trimC:0xf26a1b,sleeve:0x1b2a6b,cap:0x14204a,helmet:true,bglove:0xf26a1b,jersey:Object.assign({name:'RAZOR',num:27},HOME)});
 batter.root.position.set(-.97,0,.12);batter.root.rotation.y=PI/2;scene.add(batter.root);
 const bat=new T.Group();
 {const wood=new T.MeshLambertMaterial({color:0xd8a25a});
@@ -2572,7 +2572,7 @@ const batS={b:0,h:new V3(-.36,1.36,.36),d:new V3(-.25,1,-.15).normalize(),pose:l
 const SW_T=.07; // tap-to-contact time. Short on purpose: the swing has to feel instant
 const curBatter=()=>LINEUP[S.bi%LINEUP.length];
 // the name-and-ratings card follows the hitter the player is looking at, not the one who is merely due up
-const POS_BY={RICO:'CF',BLITZ:'SS',OSCAR:'2B',BRICKHOUSE:'1B',VANTA:'RF',EDDIE:'3B',ZEPHRA:'LF',CRASH:'C',GORMAK:'DH'}; /* where each Comet plays in the field */
+const POS_BY={RAZOR:'CF',BLITZ:'SS',OSCAR:'2B',BRICKHOUSE:'1B',VANTA:'RF',EDDIE:'3B',ZEPHRA:'LF',CRASH:'C',GORMAK:'DH'}; /* where each Comet plays in the field */
 function showCard(){if(S.bi<0)return;S.cardBi=S.bi;const b=curBatter();$('cnum').textContent=b.num;$('cname').innerHTML='<small>#'+b.num+' · '+(POS_BY[b.name]||'DH')+' · BATS '+(b.lh?'L':'R')+'</small>'+bdn(b)+(b.hb>0?' <i class="hbu">▲</i>':b.hb<0?' <i class="hbd">▼</i>':''); /* one arrow by the name says his ratings are up or down for the game; the letters stay clean so nothing overlaps on a phone */cardStats(b);}
 
 function pop(t,s='',cls='',long=false){
@@ -2792,13 +2792,13 @@ function setBatter(){if(MX.batPrep)setTimeout(MX.batPrep,700);if(MX.pitVar&&S.pN
   readyDur=1.7;S.fresh=true;
 }
 // Walk-ups: the first time each hitter comes up, a short intro animation with his card. Any swing button skips it.
-const WALK={on:true,dur:3.4,by:{RICO:'w_milling',BLITZ:'w_flair',OSCAR:'w_drive',BRICKHOUSE:'w_boxing',VANTA:'w_arrow',EDDIE:'w_macarena',ZEPHRA:'w_bdance',CRASH:'w_sad',GORMAK:'w_salsa'}};
+const WALK={on:true,dur:3.4,by:{RAZOR:'w_milling',BLITZ:'w_flair',OSCAR:'w_drive',BRICKHOUSE:'w_boxing',VANTA:'w_arrow',EDDIE:'w_macarena',ZEPHRA:'w_bdance',CRASH:'w_sad',GORMAK:'w_salsa'}};
 try{WALK.on=localStorage.getItem('mm_walk2')!=='0';}catch(e){}
 // LORE ON THE WALK-UP CARD. The Lunar League is company property: the parks, the air, the players and (technically) the fans. The card says so
 // with a straight face, the way a broadcast sponsored by the people it is about would.
-const SPONSOR={RICO:'A ZAPP COLA ATHLETE',BLITZ:'SEEKING SPONSOR',OSCAR:'DRIVEN BY TURBO TIRE',BRICKHOUSE:'FED BY BURGER BARN',VANTA:'BETWEEN SPONSORS',EDDIE:'A MEGA ARCADE PLAYER',ZEPHRA:'14 SPONSORS AND COUNTING',CRASH:'SEEKING SPONSOR',GORMAK:'FINANCED BY LUNAR LOANS'};
+const SPONSOR={RAZOR:'A ZAPP COLA ATHLETE',BLITZ:'SEEKING SPONSOR',OSCAR:'DRIVEN BY TURBO TIRE',BRICKHOUSE:'FED BY BURGER BARN',VANTA:'BETWEEN SPONSORS',EDDIE:'A MEGA ARCADE PLAYER',ZEPHRA:'14 SPONSORS AND COUNTING',CRASH:'SEEKING SPONSOR',GORMAK:'FINANCED BY LUNAR LOANS'};
 const trivLast={},TRIVIA={ /* ten each, and every one has to be funny cold: nothing that needs the backstory to land */
-  RICO:['Makes 40 million a year. Sees about six of it.','Paid to drink Zapp Cola on camera. Spits it out when the light goes off.','Hit one into orbit as a rookie. Got billed for the satellite.','Oxygen plan is Premium. The free tier has ads. You breathe the ads.','80 million followers. The League owns 60 million of them.','Signed at 17 in a parking structure. The agent got a house. Rico got a hat.','Favorite meal is mom’s rice. Eleven years since the last plate.','Current deal: 12 years, 480 million. The League can end it with one phone call. Rico can’t.','Sends money home every month. The League takes 30% for the transfer.','Career home runs: 412. Baseballs recovered: 3.','Three-time Moonball MVP. The League keeps the trophies. For safekeeping.'],
+  RAZOR:['Makes 40 million a year. Sees about six of it.','Paid to drink Zapp Cola on camera. Spits it out when the light goes off.','Hit one into orbit as a rookie. Got billed for the satellite.','Oxygen plan is Premium. The free tier has ads. You breathe the ads.','80 million followers. The League owns 60 million of them.','Signed at 17 in a parking structure. The agent got a house. Razor got a hat.','Favorite meal is mom’s rice. Eleven years since the last plate.','Current deal: 12 years, 480 million. The League can end it with one phone call. Razor can’t.','Sends money home every month. The League takes 30% for the transfer.','Career home runs: 412. Baseballs recovered: 3.','Three-time Moonball MVP. The League keeps the trophies. For safekeeping.'],
   BLITZ:['Paid per stolen base, like a delivery driver. Tips not included.','The helmet plays an unskippable ad before every at-bat.','Stole 71 bases last year. Fined for 70 under a rule written that winter.','Tested positive for moondust. Says it was secondhand. Lives on the Moon. The appeal is ongoing.','Seeking sponsor. Will breakdance for footwear.','Shoe deal died when the shoes were ruled “load-bearing evidence.”','Favorite color is green. It’s the airlock light that means you can breathe.','Won’t ride the lift. Stairs only.','3.4 seconds home to first. Faster with a repo drone behind.','Favorite movie: the safety video. It’s the only one licensed in the dorms.'],
   OSCAR:['Clicked “I do not agree” on the terms of service. Nothing happened. The button isn’t connected to anything.','Posted the contract online. It was taken down for copyright. By the League.','Argues every call with the robot umpire. Calls it the only honest official left.','Turbo Tire paid a record fee for the face. Then a bigger one to stop the interviews.','The deal has a morality clause. Four pages. Three are about talking.','Batting .340 against humans, .900 against robots, .000 against Legal.','Sponsor: Turbo Tire. Has never seen a road.','Owns 14 moon buggies. All 14 are advertisements.','Signs nothing on game day. Not autographs, not receipts.','Was offered a front office job to go quiet. Framed the letter.'],
   BRICKHOUSE:['Face of Burger Barn. Asked twice what’s in it. Was told to stop.','The protein shake is a subscription. Cancelling takes a notarised letter and a blood test.','Burger Barn patented the home run swing. A royalty is owed per swing.','Broke the weight room. Not a machine. The room.','Suspended 25 games for moondust. It was in the tomatoes. Nobody believes the tomato thing.','Apologises to pitchers after home runs. Means it.','Hit a ball 1,104 feet. It landed in a different tax bracket.','Was once intentionally walked in a home run derby.','Favorite food is a real tomato. Has eaten four.','Each arm is insured separately. The left bicep has a board of directors.'],
@@ -2844,7 +2844,7 @@ function startWalkup(){
   {const I=MX.clip.intros,forcedWalk=DBG.trip===true?'w_trip':DBG.trip;if(S.walkClip===lastWalk&&!(forcedWalk&&I[forcedWalk])){const alt=Object.keys(I).filter(k=>/^w_/.test(k)&&k!==lastWalk&&k!=='w_walkin');if(alt.length)S.walkClip=alt[(Math.random()*alt.length)|0];}lastWalk=S.walkClip;} // never the same walk-up twice in a row
   $('wnum').textContent=b.num;$('wname').innerHTML='<small>#'+b.num+' · '+(POS_BY[b.name]||'DH')+' · BATS '+(b.lh?'L':'R')+'</small>'+bdn(b);
   {const gb=v=>{const g=statGrade(v);return `<b class="gr g${g}"><u>${g}</u></b>`;};$('wrat').innerHTML=`<span>${MOB?'PWR':'POWER'} ${b.sp?(()=>{const g=GRADES[Math.min(6,GRADES.indexOf(statGrade(b.pwr))+1)];return `<b class="gr g${g==='S+'?'S':g}"><u>${g}</u></b>`;})():gb(b.pwr)}</span><span>${MOB?'CON':'CONTACT'} ${gb(b.con)}</span><span>${MOB?'SPD':'SPEED'} ${gb(b.spd)}</span><span>TODAY <b class="hand tdy">${b.gs&&b.gs.ab?b.gs.h+'-'+b.gs.ab+(b.gs.hr?' · '+(b.gs.hr>1?b.gs.hr+' ':'')+'HR':''):'0-0'}</b></span>`;if(!b.gs)b.gs={ab:0,h:0,hr:0};b.gs.ab++;} /* his ratings and his day so far (hits for at-bats, homers) */
-  {const tv=TRIVIA[b.name];$('wrat').classList.remove('tv');if(tv&&(DBG.trivia||Math.random()<.2)){ /* four times in five the card shows his ratings and his day; one in five, something about him */let k=(Math.random()*tv.length)|0;if(k===trivLast[b.name])k=(k+1)%tv.length;trivLast[b.name]=k;$('wrat').classList.add('tv');$('wrat').innerHTML='<span><i>DID YOU KNOW?</i> '+tv[k]+'</span>';}} /* now and then the card skips the ratings and tells you something about him instead */
+  {const tv=TRIVIA[b.name];$('wrat').classList.remove('tv');if(tv&&(DBG.trivia||Math.random()<.08)){ /* four times in five the card shows his ratings and his day; one in five, something about him */let k=(Math.random()*tv.length)|0;if(k===trivLast[b.name])k=(k+1)%tv.length;trivLast[b.name]=k;$('wrat').classList.add('tv');$('wrat').innerHTML='<span><i>DID YOU KNOW?</i> '+tv[k]+'</span>';}} /* now and then the card skips the ratings and tells you something about him instead */
   faceShow(b);
   $('wspot').textContent='BATTING '+['1ST','2ND','3RD','4TH','5TH','6TH','7TH','8TH','9TH'][i]+(b.lock?(MOB?' · 🔥 LOCKED IN':' · 🔥 LOCKED IN: OVERDRIVE UNTIL AN OUT'):SPONSOR[b.name]?' · '+SPONSOR[b.name]:'');$('walk').classList.toggle('lockd',!!b.lock);if(b.lock)setTimeout(()=>{if(S.state==='walkup')pop('LOCKED IN!','OVERDRIVE READY · EVERY AT-BAT UNTIL AN OUT','');},350); /* every Comet is somebody's property, or would like to be */$('wskip').textContent=MOB?'TAP TO SKIP':'SWING TO SKIP';
   {const F=MUGS[b.name];S.cardPend=!(F&&F.url!==undefined);$('walk').hidden=S.cardPend;} /* CARD AND PORTRAIT ARRIVE TOGETHER: the first time a hitter comes up the card waits a beat for his head shot (it never waits more than a second) */
@@ -3452,7 +3452,10 @@ function tryContact(){flight_pop=false;if(pitch.hbp){swing.done=true;swing.miss=
   if(!kind&&!flight_pop){if(lift>2.7&&la>14)kind='BACKSPIN CARRY';else if(lift<-2.7&&la>5&&la<32)kind='TOPSPIN SINKER';}
   // THE TAPE-MEASURE SHOT: a barreled power swing now and then catches it so flush that it carries clean out of the stadium and comes down
   // on the Moon beyond (more often with Juice behind it). The chase camera rides it the whole way.
-  if(!kind&&!flight_pop&&pw&&q>.88&&la>21&&la<37&&(DBG.tape||Math.random()<(tb?.3:.1))){v*=1.14;fopt.g=.8;kind='TAPE-MEASURE SHOT';}
+  if(!kind&&!flight_pop&&pw&&q>.88&&la>21&&la<37&&(DBG.tape||Math.random()<(tb?.3:.1))){v*=1.14;fopt.g=.8;kind='TAPE-MEASURE SHOT';
+    // ...and once in a while, with Juice or Overdrive behind it, it is not a home run so much as a launch: the ball leaves at a speed nothing on
+    // Earth has been hit at, catches a pocket of even thinner gravity, and comes down the best part of a quarter of a mile away (up to 1,134 ft).
+    if(DBG.tape==='far'||(tb&&Math.random()<.3)){const k=DBG.tape==='far'?rand(.3,1):Math.random();v*=1.06+.225*k;fopt.g=.72-.225*k;la=clamp(la,24,34);kind='MOONSHOT';}}
   const spin={side:phi/40*3.2+gs()*4,lift};
   const p0=new V3(pitch.tx,pitch.ty,clamp(-dt*6,-.7,.3));
   const v0=new V3(Math.sin(phi*DEG)*Math.cos(la*DEG),Math.sin(la*DEG),-Math.cos(phi*DEG)*Math.cos(la*DEG)).multiplyScalar(v);
@@ -3506,7 +3509,7 @@ function tryContact(){flight_pop=false;if(pitch.hbp){swing.done=true;swing.miss=
    
     lasWant=!!(kind&&(DBG.laser||Math.random()<.45)); // a no-doubter: now and then the lasers come on, but never before the ball has actually cleared the wall
     if(kind){flight.admire=kind;{const F=flight;setTimeout(()=>{if(flight===F)badge('showboat');},1100);} /* after the flip has been seen */flight.trot=WALK.on&&RUN.list.length>0;flight.A=Math.max(1.2,Math.min(kind==='show'&&!flight.trot?3.9:2.5,play.endT-1.3));{const c=['NO DOUBTER!','SEE YA!','CRANKED!','ABSOLUTE TANK!','MOONSHOT!','ABSOLUTE NUKE!','ABSOLUTE BOMB!','LIFT OFF!','PIMPED IT!','PIMPED IT!'][(Math.random()*10)|0];flight.pimp=c==='PIMPED IT!';if(flight.pimp){const F=flight,hot=tb?'hot':'';setTimeout(()=>{if(flight===F&&!F.done)pop(c,'',hot);},1000);}else pop(c,'',tb?'hot':'');} /* PIMPED IT waits a second: you see the bat flip first, then the word */ /* pimp: said here, so the home-plate shout will not say it again */}}
-  if(!flight.admire&&q>.82&&pw&&play.type!=='foul'){const C=['CRUSHED!','SMOKED!','TATTOOED!','OBLITERATED!','MASHED!'];let k=(Math.random()*C.length)|0;if(k===crushLast)k=(k+1)%C.length;crushLast=k;pop(C[k],'',tb?'hot':'');} /* never the same call twice running */
+  if(!flight.admire&&q>.82&&pw&&play.type!=='foul'){const C=['CRUSHED!','SMOKED!','TATTOOED!','OBLITERATED!','MASHED!','GOT ALL OF IT!'];let k=(Math.random()*C.length)|0;if(k===crushLast)k=(k+1)%C.length;crushLast=k;pop(C[k],'',tb?'hot':'');} /* never the same call twice running */
   if(play.type!=='foul'&&(tb||(S.over&&S.overOn)||(play.type==='hr'&&play.dist*3.281>=420)))sfx('crush',1);
   if(play.type==='hr'&&S.over&&S.overOn){const k=$('tmk');k.classList.add('pf','od');$('tim').dataset.rk=1;}else $('tmk').classList.remove('od'); // an Overdrive homer always gets the rocket, burning blue
   {const od=tb||(S.over&&S.overOn),ft=play.dist*3.281,on=S.bases.filter(Boolean).length,top=play.type==='hr'&&(flight.orbit||on===3||ft>=500||(S.over&&S.overOn&&ft>=450)||(S.inning===3&&S.runs<=S.opp&&S.runs+on+1>S.opp));
@@ -5057,7 +5060,7 @@ $('shbtn').addEventListener('click',()=>{SHQ=!SHQ;if(SHQ&&!rim.castShadow)rim.ca
 shApply();
 resize();hud();
 const DBG={dive:'',hbp:false,pcut:false,fl:'',rob:false,pc:false,staunt:false,pod:false,trail:false,orbit:false,sat:false,drill:false,brawl:false,qte:false,mash:false,slide:false,pn:'',laser:false,lamp:false,mw:false,rev:false,stop:false,aerial:false,pdef:false,dbl:false,cam:false,admire:'',trip:false,fist:false,pop:false,loser:false}; // test hook: pin the camera to CAM_HOME/CAM_LOOK
-window.__ret=()=>reticle.position;window.__rocket=()=>{ROCKET.t=now;};window.__lockfx=(x,z)=>{Object.assign(LOCKFX,{t:now,x,z,hr:true,name:'R. RICO',fired:false});};window.__fly=()=>{FLY.t=now;};window.__jt=juiceTap;window.__sb=scoreboard;window.__sbd=()=>sbDraw(true);window.__sync=syncRunners;window.__lr=()=>landRing.visible+' at '+landRing.position.x.toFixed(0)+','+landRing.position.z.toFixed(0)+' scale '+landRing.scale.x.toFixed(1)+' geo '+landRing.geometry.type+' rot '+landRing.rotation.x.toFixed(2)+' op '+landRing.material.opacity.toFixed(2)+' par '+(landRing.parent&&landRing.parent.type)+' scr '+(()=>{const v=landRing.position.clone().project(camera);return v.x.toFixed(2)+','+v.y.toFixed(2)+','+v.z.toFixed(3);})()+' y '+landRing.position.y;window.__pop=pop;window.__bdg=id=>{delete bdgGot[id];if(S.bdgGame)delete S.bdgGame[id];badge(id);pop('GONE!','512 FT · +1 RUN','hot',true);};window.__lu=LINEUP;window.__bp=k=>BULLPEN[k];window.__mm={pitcherModel,crowdFx,setE:v=>{crowdE=v;crowdShow=v;},GLOVE,renderer,scene,LODM,camera,zapStart,acState:()=>AC?(zoneLP?"lp="+Math.round(zoneLP.frequency.value)+" ":"")+AC.state+" t="+AC.currentTime.toFixed(1)+" real="+crowdReal+" roar="+(roarG?roarG.gain.value.toFixed(2)+(roarTop?"T":""):"off")+" bed="+crowdGain.gain.value.toFixed(2):"none",roar,roarOff,boo,cheer,crowdRise,crowdDrop,S,aim,MX,DBG,landRingOn:()=>landRing.visible,hud,tutAnim,draw:()=>draw(),endGame,TROT,SFX,RUN,ballPos:()=>ball.position,ballVisible:()=>ball.visible,fielders,toReady,CAM_HOME,CAM_LOOK,now:()=>now,simulate,judge,get pitch(){return pitch;},get flight(){return flight;},lastSwing:()=>{const t=swing&&swing.type;swing=null;return t;},lastSwingTurbo:()=>!!(swing&&swing.turbo),doSwing,newGame,V3,
+window.__ret=()=>reticle.position;window.__rocket=()=>{ROCKET.t=now;};window.__lockfx=(x,z)=>{Object.assign(LOCKFX,{t:now,x,z,hr:true,name:'R. RAZOR',fired:false});};window.__fly=()=>{FLY.t=now;};window.__jt=juiceTap;window.__sb=scoreboard;window.__sbd=()=>sbDraw(true);window.__sync=syncRunners;window.__lr=()=>landRing.visible+' at '+landRing.position.x.toFixed(0)+','+landRing.position.z.toFixed(0)+' scale '+landRing.scale.x.toFixed(1)+' geo '+landRing.geometry.type+' rot '+landRing.rotation.x.toFixed(2)+' op '+landRing.material.opacity.toFixed(2)+' par '+(landRing.parent&&landRing.parent.type)+' scr '+(()=>{const v=landRing.position.clone().project(camera);return v.x.toFixed(2)+','+v.y.toFixed(2)+','+v.z.toFixed(3);})()+' y '+landRing.position.y;window.__pop=pop;window.__bdg=id=>{delete bdgGot[id];if(S.bdgGame)delete S.bdgGame[id];badge(id);pop('GONE!','512 FT · +1 RUN','hot',true);};window.__lu=LINEUP;window.__bp=k=>BULLPEN[k];window.__mm={pitcherModel,crowdFx,setE:v=>{crowdE=v;crowdShow=v;},GLOVE,renderer,scene,LODM,camera,zapStart,acState:()=>AC?(zoneLP?"lp="+Math.round(zoneLP.frequency.value)+" ":"")+AC.state+" t="+AC.currentTime.toFixed(1)+" real="+crowdReal+" roar="+(roarG?roarG.gain.value.toFixed(2)+(roarTop?"T":""):"off")+" bed="+crowdGain.gain.value.toFixed(2):"none",roar,roarOff,boo,cheer,crowdRise,crowdDrop,S,aim,MX,DBG,landRingOn:()=>landRing.visible,hud,tutAnim,draw:()=>draw(),endGame,TROT,SFX,RUN,ballPos:()=>ball.position,ballVisible:()=>ball.visible,fielders,toReady,CAM_HOME,CAM_LOOK,now:()=>now,simulate,judge,get pitch(){return pitch;},get flight(){return flight;},lastSwing:()=>{const t=swing&&swing.type;swing=null;return t;},lastSwingTurbo:()=>!!(swing&&swing.turbo),doSwing,newGame,V3,
   sim:(dt)=>{hitstop=0;now+=dt;step(dt);},
   step:(n,dt=1/60)=>{for(let i=0;i<n;i++){if(hitstop>0)hitstop=0;now+=dt;step(dt);}updateCamera(dt);draw();}};
 if(!window.__mmManual)requestAnimationFrame(frame);
