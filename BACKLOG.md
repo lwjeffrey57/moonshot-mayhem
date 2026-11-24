@@ -172,3 +172,8 @@ Not being built yet; this is the target to steer by.
 **Names (BUILD 550):** humans go by a simple first name: RAZOR (Ely body; was Vasquez), OSCAR (Delacroix), EDDIE (Montoya), BRICKHOUSE; Krakens TODD (Hollis), pitchers MAC, CARLOS, LEE.
 
 **Roster (BUILD 553):** Comets: RAZOR (ely), VREL (alien body), BLITZ, BRICKHOUSE, DRAAK (drake body), VANTA, ZEPHRA, CRASH, GORMAK. Krakens field: ARKON, TODD, LIV (olivia body, SS), ZLORP, EDDIE (parker body, LF), XANDU, M'NAR.
+
+## Asset sources to keep in mind
+- **Mixamo** (current): characters and animation clips. Commercial terms still to be confirmed before shipping.
+- **Tripo 3D** (owner's suggestion, from ads): AI text/image-to-3D model generation. Candidate when Mixamo runs out or for things Mixamo does not have: original characters (so no licence question over the look), stadium props (bullpen carts, mascots, vendors, the catcher's gear), ball/bat skins for the cosmetics shop.
+  Before relying on it, check: (1) the licence on the plan used (commercial use and ownership of generated models), (2) whether its characters come rigged in a Mixamo-compatible skeleton or need auto-rigging (our clips are retargeted by bone name), (3) triangle counts and texture sizes, which must be cut down for phones (our bodies are ~1024 px textures, 512 on phones).
