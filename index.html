@@ -943,7 +943,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 583</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 584</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -3316,7 +3316,7 @@ const QPB={};
 function qteKey(d){if(S.state!=='qte'||QT.ph!=='input')return;
   {const b=QPB[d]||(QPB[d]=document.querySelector('#qpad [data-d='+d+']')),good=QT.mash||d===QT.code[QT.i];if(b){b.className=good?'hit':'miss';clearTimeout(b._t);b._t=setTimeout(()=>{b.className='';},150);}}
   if(QT.stop){ // JUDGED WHERE YOU SAW IT: by the time a tap arrives the needle has moved on (the screen is a frame or two behind, and a finger takes time to land). The press is scored against where the needle was that long ago, and the needle is put back there so the picture agrees.
-    const H=QT.hist||[],tp=performance.now()-(qteTouch?72:34);let x=QT.sx;if(H.length){let a=H[0];for(const h of H){if(h[0]<=tp)a=h;else break;}const b=H[H.indexOf(a)+1];x=b&&b[0]>a[0]?a[1]+(b[1]-a[1])*clamp((tp-a[0])/(b[0]-a[0]),0,1):a[1];}
+    const H=QT.hist||[],tp=(inT&&performance.now()-inT<120?inT:performance.now())-17; /* the browser stamps the press with the moment the finger or key actually went down: the needle is put back to exactly where it was drawn then (one frame of display earlier), not to a guess */let x=QT.sx;if(H.length){let a=H[0];for(const h of H){if(h[0]<=tp)a=h;else break;}const b=H[H.indexOf(a)+1];x=b&&b[0]>a[0]?a[1]+(b[1]-a[1])*clamp((tp-a[0])/(b[0]-a[0]),0,1):a[1];}
     QT.sx=x;{const n0=$('qsn');if(n0&&QT.sw)n0.style.transform='translateX('+(x*QT.sw).toFixed(1)+'px)';}
     const ins=z=>x>=z[0]-.012&&x<=z[0]+z[1]+.012; /* and a hair of grace at the edges */QT.gold=ins(QT.so);const grn=ins(QT.sg),ok=QT.gold||(grn&&Math.random()<QT.gp); /* THE SMALL MARK IS THE SURE THING: land on gold and he is safe, every time. The wide green band only gets him a chance (better on an easy send, worse on a long shot): close, but the throw can still beat him. */if(grn&&!QT.gold&&!ok)timing('BANG-BANG PLAY · THROW BEAT HIM','#ff8a2e',3);buzz(ok?[20,30,60]:[40,30,40]);tone(ok?'triangle':'sawtooth',QT.gold?990:ok?660:150,QT.gold?1480:ok?880:80,.12,.3);const n=$('qsn');if(n)n.className=QT.gold?'au':ok?'ok':'no';qteDone(ok);return;}
   if(QT.mash){QT.fill+=1/(15*Math.pow(QT.D||1,.7));buzz(10);tone('triangle',380+520*Math.min(1,QT.fill),420+560*Math.min(1,QT.fill),.06,.5);qteShow();if(QT.fill>=1)qteDone(true);return;}
@@ -3573,6 +3573,11 @@ function judge0(tr,bt){const spd=bt&&bt.spd||1; // batter's speed: 0.85 (plodder
   if(tr.grd&&!tr.foul){ // ground-rule double: the nearest outfielder still goes after it until it hops the wall
     const L=tr.land||tr.pts[tr.pts.length-1],endT=tr.endT;let f=null,bd=1e9;for(const c of fielders){if(c.isP||!c.of)continue;const d=Math.hypot(c.home.x-L.x,c.home.z-L.z);if(d<bd){bd=d;f=c;}}
     if(!f)return {type:'hit',bases:2,endT,grd:true};
+    // IF HE WAS RIGHT THERE, IT IS HIS ERROR: an outfielder who gets under the ball and still lets it bounce over the wall did not just stand
+    // and watch. He is shown arriving on the spot as it comes down, and the play is called as a misplay, so it reads as a mistake by the
+    // fielder and never as the game forgetting to catch it.
+    {const Lt=(tr.land&&tr.land.t)||endT,can=f.speed*Math.max(0,Lt-f.react);if(can>=bd-2.5){const tags=['ERROR · LOST IT IN THE LIGHTS','ERROR · MISJUDGED IT','ERROR · OFF THE HEEL OF THE GLOVE','ERROR · LOW-GRAVITY HOP'];
+        return {type:'hit',bases:2,endT,grd:true,f,p:{x:L.x,y:0,z:L.z,t:Lt},chase:true,tag:tags[(Math.random()*tags.length)|0],misplay:true};}}
     const go=Math.min(bd*.85,f.speed*.9*Math.max(0,endT-f.react)),k=bd>0?go/bd:0;
     return {type:'hit',bases:2,endT,grd:true,f,p:{x:lerp(f.home.x,L.x,k),y:0,z:lerp(f.home.z,L.z,k),t:endT},chase:true};}
   if(!tr.foul&&tr.foulT!==undefined&&!tr.hr){let got=false; // it rolled foul short of the bag: fair only if somebody got to it first
@@ -4102,7 +4107,7 @@ walkLabel();$('wk').addEventListener('click',()=>{WALK.on=!WALK.on;try{localStor
 $('mdl').addEventListener('click',()=>loadPlayers(ORDER[(ORDER.indexOf(MX.kind)+1)%ORDER.length]));
 $('again').addEventListener('click',()=>{audioInit();startGame();});
 // pause / restart / main menu
-let paused=false,infoHold=false,odhrCls=false;
+let paused=false,infoHold=false,odhrCls=false,inT=0;['pointerdown','keydown','touchstart','mousedown'].forEach(n=>addEventListener(n,e=>{inT=e.timeStamp||performance.now();},{capture:true,passive:true}));
 const inPlay=()=>S.state!=='title'&&S.state!=='over';
 function setPaused(on){
   if(on&&!inPlay())return;
