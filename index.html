@@ -878,7 +878,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 512</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 513</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <button class="tag wkopt sens" id="sens1" type="button"></button>
@@ -1888,7 +1888,7 @@ const AWAY={base:'#f4f4f0',trim:'#0e7c86',ink:'#0e3c46',pin:'rgba(14,60,70,.35)'
 const LINEUP=[
   {name:'VASQUEZ',ini:'R',num:27,spd:1.0,pwr:1.0,con:1.05,skin:0xb9794f},{name:'OKAFOR',ini:'D',body:1,lh:true,num:8,spd:1.14,pwr:.96,con:1.12,skin:0x6b4226},
   {name:'DELACROIX',ini:'O',body:7,num:3,crouch:true,spd:1.02,pwr:1.06,con:1.0,skin:0xe2b08a},{name:'BRICKHOUSE',ini:'T',body:2,num:44,spd:0.78,pwr:1.16,con:.82,skin:0xd9a47c},
-  {name:'TANAKA',ini:'K',body:6,lh:true,num:51,spd:1.1,pwr:1.02,con:1.08,skin:0xe6bd94},{name:'MONTOYA',ini:'E',num:19,crouch:true,spd:0.95,pwr:1.1,con:.95,skin:0xa8683e},
+  {name:'TANAKA',ini:'K',body:6,lh:true,num:51,spd:1.1,pwr:1.02,con:1.08,skin:0xe6bd94},{name:'MONTOYA',ini:'E',body:9,num:19,crouch:true,spd:0.95,pwr:1.1,con:.95,skin:0xa8683e},
   {name:'ABERNATHY',ini:'J',body:4,lh:true,num:12,spd:1.15,pwr:.94,con:1.1,skin:0xf0c4a0},{name:'JACKSON-BELL',ini:'M',body:8,num:35,crouch:true,spd:0.81,pwr:1.12,con:.93,skin:0x5a3820},
   {name:'KOWALSKI',ini:'A',body:5,num:6,spd:1.04,pwr:.98,con:1.04,skin:0xe8b690},
 ];
@@ -1909,9 +1909,12 @@ const pitcher=mkFielder('MACDONALD',99);pitcher.root.position.set(0,.25,-18.4);s
 // Fielders are drawn larger than life so they read at distance (taller, not bulkier): outfielders most, since they are furthest away.
 const FSCALE={inf:1.22,of:1.55,p:1.1};
 const FIELD=[['1B',16,-23,0],['2B',9,-34,0],['SS',-10,-34,0],['3B',-16,-23,0],['LF',-36,-71,1],['CF',0,-90,1],['RF',36,-71,1]];
-const fielders=FIELD.map((d,i)=>{const fig=mkFielder(['REEF','SQUALL','TIDE','FATHOM','BRINE','MAELSTROM','ANCHOR'][i],[11,2,7,23,31,5,40][i]);
+// THE KEPLER KRAKENS in the field (the pitcher and the bullpen are in BULLPEN). name, initial ('' for the aliens, who go by one name), number,
+// body (index into the extra-bodies list), range (how much ground he covers), jump (how quickly he reacts). Every one wears his own body.
+const KRAKENS=[['ARCHER','R',47,1,1.0,1.0],['HOLLIS','T',7,3,1.06,.95],['VREL','',13,2,1.1,.9],['ZLORP','',50,4,.94,1.05],["DRA'AK",'',25,5,1.04,1.0],['XANDU','',4,7,1.12,.92],["M'NAR",'',30,6,.97,1.08]];
+const fielders=FIELD.map((d,i)=>{const fig=mkFielder(KRAKENS[i][0],KRAKENS[i][2]);
   const home=new V3(d[1],0,d[2]);fig.root.scale.setScalar(d[3]?FSCALE.of:FSCALE.inf);fig.root.position.copy(home);fig.root.rotation.y=Math.atan2(-home.x,-home.z);scene.add(fig.root);
-  return {fig,home,name:['REEF','SQUALL','TIDE','FATHOM','BRINE','MAELSTROM','ANCHOR'][i],num:[11,2,7,23,31,5,40][i],pos:d[0],of:!!d[3],scale:d[3]?FSCALE.of:FSCALE.inf,speed:d[3]?5.6:5.2,react:d[3]?.6:.32,reach:d[3]?1.2:1.0,ph:Math.random()*6};});
+  const K=KRAKENS[i];return {fig,home,name:(K[1]?K[1]+'. ':'')+K[0],num:K[2],body:K[3],pos:d[0],of:!!d[3],scale:d[3]?FSCALE.of:FSCALE.inf,speed:(d[3]?5.6:5.2)*K[4],react:(d[3]?.6:.32)*K[5],reach:(d[3]?1.2:1.0)*Math.sqrt(K[4]),ph:Math.random()*6};});
 fielders.push({fig:pitcher,home:new V3(0,0,-17.2),of:false,speed:3.5,react:.55,reach:.6,isP:true,ph:0});
 
 const POSE={
@@ -2698,7 +2701,7 @@ function toReady(d){if(S.walkoff&&S.state!=='end'&&S.state!=='over'){S.walkoff=f
   if(WALK.on&&S.fresh&&S.bi>=0&&walkWant()&&MX.clip&&MX.clip.intros[WALK.by[curBatter().name]])startWalkup();}
 // The Krakens' arms. name, number, 'L' = left-hander, which body he wears, first initial. The human ones have everyday surnames; the aliens go
 // by a single name, the way it is said where they come from (no initial).
-const BULLPEN=[['MACDONALD',99,'',0,'J'],['ARCHER',47,'L',1,'R'],['VREL',13,'',2,''],['HOLLIS',7,'',3,'T'],['ZLORP',50,'L',4,''],["DRA'AK",25,'',5,''],["M'NAR",30,'',6,''],['XANDU',4,'L',7,''],['PARKER',21,'',8,'D'],['WHITLOCK',54,'L',9,'S'],['ROMERO',66,'',10,'C'],['HARGROVE',48,'L',11,'L'],['BRAXX',40,'',12,''],['MALGOR',6,'',13,'']],
+const BULLPEN=[['MACDONALD',99,'',0,'J'],['ROMERO',66,'',10,'C'],['HARGROVE',48,'L',11,'L'],['BRAXX',40,'',12,''],['MALGOR',6,'L',13,'']],
   pdn=P=>(P&&P[4]?P[4]+'. ':'')+(P?P[0]:''),bdn=b=>(b.ini?b.ini+'. ':'')+b.name /* how a pitcher's and a hitter's name are written out: initial and surname */,PCH=2.7,PCW=2.8;
 // HIT BY PITCH. He wears it: down in a heap, a beat on the ground, back to his feet, then he limps to first with an extra bar of Juice for his trouble.
 const HB1=3.0,HBD=5.0;
@@ -3594,7 +3597,7 @@ const MX={ready:false,map:[],on:true,token:0,kind:'ely'};
 const MODELS={ely:{label:'armoured',body:'ely.txt',clips:'ely_clips.min.json',tex:{d:'ely_d.jpg',n:'ely_n.jpg',s:'ely_s.jpg',g:'ely_g.jpg'},
   bat:[{body:'exored.txt',hide:/Eye_Spec|Brows/,tex:{Body_MAT:['exored_d0.jpg','exored_n0.jpg'],Exo_MAT:['exored_d1.jpg','exored_n1.jpg']}},{body:'dreyar.txt',tex:{dreyar_M3:['dreyar_d0.jpg','dreyar_n0.jpg']}},
     {body:'david.txt',tex:{Ch28_body:['david_d0.jpg','david_n0.jpg']}},{body:'jolleen.txt',tex:{phong1:['jolleen_d0.jpg','jolleen_n0.jpg']}},{body:'abe.txt',tex:{Ch39_Body:['abe_d0.jpg','abe_n0.jpg']}},{body:'exo.txt',hide:/Eye_Spec|Brows/,tex:{Body_MAT:['exo_body.jpg'],Exo_MAT:['exo_suit.jpg']}},
-    {body:'olivia.txt',col:0xa4a4a8,tex:{Ch11_body1:['olivia_d0.jpg','olivia_n0.jpg'],Ch11_body:['olivia_d1.jpg','olivia_n1.jpg']}},{body:'dummy.txt',tex:{Ch32_body:['dummy_d0.jpg','dummy_n0.jpg']}}], /* hitters who are not the house model: LINEUP[..].body is 1-based into this list */
+    {body:'olivia.txt',col:0xa4a4a8,tex:{Ch11_body1:['olivia_d0.jpg','olivia_n0.jpg'],Ch11_body:['olivia_d1.jpg','olivia_n1.jpg']}},{body:'dummy.txt',tex:{Ch32_body:['dummy_d0.jpg','dummy_n0.jpg']}},{body:'parker.txt',tex:{Body_MAT:['parker_d0.jpg']}}], /* hitters who are not the house model: LINEUP[..].body is 1-based into this list */
   def:{body:'van.txt',tex:{d:'van_d.jpg',n:'van_n.jpg',s:'van_s.jpg'}},ump:{body:'exo.txt',tex:{Body_MAT:'exo_body.jpg',Exo_MAT:'exo_suit.jpg'}},
   // other bodies for the mound: every pitching change brings a different-looking arm (each material: colour map, normal map)
   pit:[{body:'crypto.txt',tex:{Ch45_Body:['crypto_d.jpg','crypto_n.jpg']}},{body:'alien.txt',tex:{Ch44_Body:['alien_d0.jpg','alien_n0.jpg'],Ch44_body1:['alien_d1.jpg','alien_n1.jpg']}},
@@ -4190,12 +4193,21 @@ function loadPlayers(kind){ // body file = character mesh; clips.json = motion-c
     // Bodies are fetched only when a pitcher who wears one is due (the man on the mound, and the next arm in the bullpen), never all at once.
     const pitP={};MX.pitLoad=want=>{const v=cfg.pit&&canClone&&cfg.pit[want-1];if(!v||want<1)return null;if(pitP[want])return pitP[want];const keys=Object.keys(v.tex);
       return pitP[want]=Promise.all([loadBuf(v.body),...keys.map(k=>Promise.all(v.tex[k].map(loadImg)))]).then(r=>{if(my!==MX.token)return;
-        const vb=new T.FBXLoader().parse(r[0],''),tx=i=>{const t=new T.Texture(i);t.needsUpdate=true;t.anisotropy=ANISO;return t;},mats={},geos=new Map();
-        keys.forEach((k,i)=>{const o={map:tx(r[1+i][0]),color:0xffffff,emissive:0x1c1c22,specular:0x333340,shininess:26,skinning:true};if(r[1+i][1])o.normalMap=tx(r[1+i][1]);mats[k]=new T.MeshPhongMaterial(o);});
-        let vclips=null;MX.pitVar[want]={make:()=>{const o=T.SkeletonUtils.clone(vb);o.animations=vclips=vclips||fitClips(o,pitNames);return o;},
+        const PH=matchMedia('(pointer:coarse)').matches,vb=new T.FBXLoader().parse(r[0],''),tx=i=>{let im=i;if(PH&&i.width>512){const c=document.createElement('canvas');c.width=c.height=512;c.getContext('2d').drawImage(i,0,0,512,512);im=c;} /* phones: half-size textures, no bump map, so nine extra bodies fit in memory */const t=new T.Texture(im);t.needsUpdate=true;t.anisotropy=ANISO;return t;},mats={},geos=new Map();
+        keys.forEach((k,i)=>{const o={map:tx(r[1+i][0]),color:0xffffff,emissive:0x1c1c22,specular:0x333340,shininess:26,skinning:true};if(r[1+i][1]&&!PH)o.normalMap=tx(r[1+i][1]);mats[k]=new T.MeshPhongMaterial(o);});
+        let vclips=null;MX.pitVar[want]={makeN:names=>{const o=T.SkeletonUtils.clone(vb);o.animations=fitClips(o,names.filter(n=>cj[n]));return o;},make:()=>{const o=T.SkeletonUtils.clone(vb);o.animations=vclips=vclips||fitClips(o,pitNames);return o;},
           skin:{mat:mats[keys[0]],mats,hide:v.hide,trim:g=>{let o=geos.get(g.uuid);if(!o){o=weld(g);o.userData.lite=liteGeo(o,LOD_CELL);geos.set(g.uuid,o);}return o;}}};
         if(S.state==='title'||S.state==='over'||S.state==='walkup')pitcherModel();}).catch(e=>console.warn('pitcher body '+v.body+' not loaded',e));};
     setTimeout(()=>{if(my===MX.token)pitcherModel();},3000);
+    // EVERY KRAKEN IN HIS OWN BODY: the fielders start in the house body so the game is never held up, then each is re-dressed in his own as it
+    // arrives, one at a time, only between plays.
+    {const FN=['catch','run','strafe','throw','x_dive','p_dying','d_1','d_2','d_3'],todo=fielders.filter(f=>!f.isP&&f.body);let qi=0;
+      const next=()=>{if(my!==MX.token||qi>=todo.length)return;const f=todo[qi],pr=MX.pitLoad(f.body);if(!pr){qi++;setTimeout(next,200);return;}
+        pr.then(()=>{const go=()=>{if(my!==MX.token)return;const st=S.state,v=MX.pitVar[f.body];if(!v){qi++;setTimeout(next,300);return;}
+            if(!f.obj||!(st==='title'||st==='over'||(st==='ready'&&now-S.t<.4)||st==='walkup'||st==='pchange')||f.run){setTimeout(go,300);return;}
+            try{const old=f.obj;unfitDriver(f.fig);['mixer','act','runAct','strAct','thrAct','dieAct','defActs','rt'].forEach(k=>{f[k]=null;});setupFielder(f,v.makeN(FN),v.skin);if(old&&old.parent)old.parent.remove(old);f.mode=null;}catch(e){console.warn('fielder body failed',e);}
+            qi++;setTimeout(next,700);};go();});};
+      setTimeout(next,6000);}
     // Hitters' bodies: fetched a couple of hitters ahead, then measured for the swing and dressed as runners in quiet moments (never during a pitch).
     const batNames=['hit','idle','idle2','strike'].filter(k=>cj[k]).concat(Object.keys(cj).filter(k=>/^[wdcbq]_/.test(k)||k==='run'||/^p_(loser|twerk|chicken|runman|fist|clap|threat|dying)$/.test(k))),batP={},jobs=[];
     MX.batVar=[];MX.brigs=null;MX.bcur=0;MX.bshown=undefined;
