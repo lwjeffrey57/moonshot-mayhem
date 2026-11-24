@@ -903,7 +903,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 566</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 567</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -1536,11 +1536,26 @@ gl_FragColor=vec4(col,1.0);
       sign=new T.Mesh(new T.PlaneGeometry(52,13),new T.MeshBasicMaterial({map:sg,fog:false,side:T.DoubleSide}));sg.anisotropy=ANISO;sign.position.copy(pol(rm+70,mid,14));sign.lookAt(0,14,0);scene.add(sign);
     [-20,20].forEach(dx=>{const m=new T.Mesh(new T.BoxGeometry(1,8,1),new T.MeshBasicMaterial({color:0x2c2a4a}));m.position.copy(sign.position);m.position.y=4;m.translateX(dx);scene.add(m);});
     // the landmark: a ten-storey bottle of the sponsor's product standing in the lava
-    {const bt=tex(128,512,(g,w,h)=>{const gr=g.createLinearGradient(0,0,w,0);gr.addColorStop(0,'#3a0d06');gr.addColorStop(.3,'#b8301a');gr.addColorStop(.45,'#ff8a5a');gr.addColorStop(.6,'#c2351c');gr.addColorStop(1,'#3a0d06');g.fillStyle=gr;g.fillRect(0,0,w,h);
-        g.fillStyle='#f4f1e6';g.fillRect(0,h*.42,w,h*.26);g.save();g.translate(w*.42,h*.55);g.rotate(-PI/2);g.font='italic 400 62px "Russo One",Arial Black,Arial';g.textAlign='center';g.textBaseline='middle';g.fillStyle='#c2251a';g.fillText('ZAPP',0,0);g.restore();g.fillStyle='#d8d8de';g.fillRect(0,0,w,h*.05);});
+    {const bt=tex(512,1024,(g,w,h)=>{
+        // PAINTED LIGHT, like everything else in the park: dark cola glass with the floodlights running down it as two long highlights, a
+        // paler empty neck above the fill line, the lava's orange glow climbing up from the foot, a shaded cream label and a bright steel cap.
+        const gr=g.createLinearGradient(0,0,w,0);[[0,'#2a0703'],[.12,'#7a1a0c'],[.22,'#d8452a'],[.3,'#8a2010'],[.5,'#2a0703'],[.62,'#7a1a0c'],[.72,'#d8452a'],[.8,'#8a2010'],[1,'#2a0703']].forEach(q=>gr.addColorStop(q[0],q[1]));g.fillStyle=gr;g.fillRect(0,0,w,h);
+        {const nk=g.createLinearGradient(0,0,0,h*.24);nk.addColorStop(0,'rgba(255,190,150,.42)');nk.addColorStop(.85,'rgba(255,190,150,.3)');nk.addColorStop(1,'rgba(255,190,150,0)');g.fillStyle=nk;g.fillRect(0,h*.05,w,h*.2);g.fillStyle='rgba(255,230,200,.5)';g.fillRect(0,h*.243,w,4);} /* the empty neck and the line of the drink */
+        for(const u of [.2,.7]){const hl=g.createLinearGradient(w*(u-.035),0,w*(u+.035),0);hl.addColorStop(0,'rgba(255,255,255,0)');hl.addColorStop(.5,'rgba(255,250,235,.85)');hl.addColorStop(1,'rgba(255,255,255,0)');g.fillStyle=hl;g.fillRect(w*(u-.035),h*.06,w*.07,h*.9);
+          const h2=g.createLinearGradient(w*(u+.06),0,w*(u+.1),0);h2.addColorStop(0,'rgba(255,255,255,0)');h2.addColorStop(.5,'rgba(255,220,200,.3)');h2.addColorStop(1,'rgba(255,255,255,0)');g.fillStyle=h2;g.fillRect(w*(u+.06),h*.1,w*.04,h*.8);}
+        // the label, twice round the bottle so it reads from the plate and from the air
+        for(const u of [.25,.75]){const x0=w*(u-.2),lw=w*.4,y0=h*.4,lh=h*.3;const lg=g.createLinearGradient(x0,0,x0+lw,0);lg.addColorStop(0,'#b9b29c');lg.addColorStop(.3,'#fffaf0');lg.addColorStop(.7,'#efe7d2');lg.addColorStop(1,'#a59e88');g.fillStyle=lg;g.fillRect(x0,y0,lw,lh);
+          g.fillStyle='#c2251a';g.fillRect(x0,y0,lw,10);g.fillRect(x0,y0+lh-10,lw,10);g.fillStyle='#ffd23b';g.fillRect(x0,y0+10,lw,4);g.fillRect(x0,y0+lh-14,lw,4);
+          g.save();g.translate(x0+lw/2,y0+lh/2);g.rotate(-PI/2);g.scale(1,-1); /* (the bottle's skin runs the other way round it: drawn mirrored here so it reads the right way on the model) */g.textAlign='center';g.textBaseline='middle';g.lineJoin='round';
+          g.font='italic 400 118px "Russo One",Arial Black,Arial';g.lineWidth=12;g.strokeStyle='#5a0d06';g.strokeText('ZAPP',0,-38);g.fillStyle='#e02a1c';g.fillText('ZAPP',0,-38);
+          g.font='italic 400 84px "Russo One",Arial Black,Arial';g.lineWidth=9;g.strokeStyle='#04123a';g.strokeText('COLA',0,52);g.fillStyle='#1b3ad8';g.fillText('COLA',0,52);g.restore();
+          const sh=g.createLinearGradient(0,y0,0,y0+lh);sh.addColorStop(0,'rgba(255,255,255,.22)');sh.addColorStop(.4,'rgba(255,255,255,0)');sh.addColorStop(1,'rgba(0,0,0,.28)');g.fillStyle=sh;g.fillRect(x0,y0,lw,lh);}
+        {const vg=g.createLinearGradient(0,0,0,h);vg.addColorStop(0,'rgba(255,255,255,.12)');vg.addColorStop(.3,'rgba(0,0,0,0)');vg.addColorStop(.72,'rgba(0,0,0,.12)');vg.addColorStop(.86,'rgba(255,90,20,.35)');vg.addColorStop(1,'rgba(255,150,40,.8)');g.fillStyle=vg;g.fillRect(0,0,w,h);} /* lit from above, and from below by the lava it stands in */
+        {const cp=g.createLinearGradient(0,0,w,0);[[0,'#6a6e7c'],[.2,'#f4f6ff'],[.3,'#9aa0b2'],[.5,'#5a5e6c'],[.7,'#f4f6ff'],[.8,'#9aa0b2'],[1,'#6a6e7c']].forEach(q=>cp.addColorStop(q[0],q[1]));g.fillStyle=cp;g.fillRect(0,0,w,h*.05);g.fillStyle='rgba(0,0,0,.35)';for(let x=0;x<w;x+=14)g.fillRect(x,h*.012,5,h*.038);}});bt.anisotropy=ANISO;
       const prof=[[0,0],[3.1,0],[3.3,1],[3.3,13],[2.6,16.5],[1.25,20],[1.15,24],[1.5,24.3],[1.5,25.3],[0,25.3]].map(q=>new T.Vector2(q[0],q[1])),bm=new T.Mesh(new T.LatheGeometry(prof,14),new T.MeshBasicMaterial({map:bt,fog:false}));
       const uv=bm.geometry.attributes.uv,ps=bm.geometry.attributes.position;for(let k=0;k<uv.count;k++)uv.setY(k,1-ps.getY(k)/25.3);
-      const ph=lerp(-PI/4,PI/4,(CV0+3)/N);bm.scale.setScalar(1.5);bm.position.copy(pol(fenceR(ph)+34,ph,0));bm.rotation.z=.14;bm.rotation.y=-ph;scene.add(bm);}
+      const ph=lerp(-PI/4,PI/4,(CV0+3)/N);bm.scale.setScalar(1.5);bm.position.copy(pol(fenceR(ph)+34,ph,0));bm.rotation.z=.14;bm.rotation.y=-ph;scene.add(bm);
+      [[26,0xff5a1e,.5,3],[16,0xfff0d0,.35,30]].forEach(([sz,c,op,y])=>{const sp=new T.Sprite(new T.SpriteMaterial({map:glowTex,color:c,blending:T.AdditiveBlending,depthWrite:false,transparent:true,opacity:op,fog:false}));sp.position.copy(pol(fenceR(ph)+34,ph,y));sp.scale.set(sz,sz*.7,1);scene.add(sp);});} /* a pool of lava-light round its foot and a glint on its shoulder */
     // THE VOLCANO: the bay has a source. One of the peaks on its far shore is live: black basalt with rivers of lava running down its
     // flanks into the bay, and a glow over the crater. (A cone and one painted texture.)
     {const vt=tex(512,512,(g,w,h)=>{const bg=g.createLinearGradient(0,0,0,h);bg.addColorStop(0,'#3a1c14');bg.addColorStop(.3,'#241512');bg.addColorStop(1,'#0e0807');g.fillStyle=bg;g.fillRect(0,0,w,h);
