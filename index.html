@@ -384,6 +384,8 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
 #hud.mob>#card #cname{font-size:clamp(16px,4.7vw,20px)!important}#hud.mob>#card .stat{font-size:11px!important}#hud.mob>#card .stat em{font-size:21px!important}
 #dft{position:absolute;left:0;top:0;z-index:5;display:none;pointer-events:none;white-space:nowrap;will-change:transform;font-family:var(--display);font-style:italic;line-height:1;color:#fff;-webkit-text-stroke:5px #000;paint-order:stroke fill;text-shadow:0 4px 0 #000}
 #dft b{font-weight:400;font-size:clamp(34px,9vw,76px);font-variant-numeric:tabular-nums}#dft i{font-style:italic;font-size:clamp(15px,3.6vw,30px);margin-left:6px;color:var(--volt)}
+#dft.fire b{color:#e8fbff;animation:dftFire .28s steps(3) infinite}#dft.fire i{color:#8fe8ff}
+@keyframes dftFire{0%{text-shadow:0 4px 0 #000,0 -6px 14px #58d6ff,-3px -14px 22px #2a8cff,3px -22px 34px rgba(40,110,255,.8);transform:scale(1)}50%{text-shadow:0 4px 0 #000,2px -8px 16px #8fe8ff,3px -18px 26px #2a8cff,-4px -28px 38px rgba(40,110,255,.75);transform:scale(1.05)}100%{text-shadow:0 4px 0 #000,-2px -7px 12px #58d6ff,-4px -16px 24px #3a9cff,2px -24px 36px rgba(40,110,255,.85);transform:scale(1.02)}}
 #dft.big b{color:var(--volt)}#dft.huge b{color:#ff7a1e;text-shadow:0 4px 0 #000,0 0 26px rgba(255,120,30,.9)}
 #pmark{position:absolute;left:0;top:0;z-index:3;pointer-events:none;display:none;will-change:transform}
 /* OVERDRIVE ON A PHONE, same look for a fraction of the work. What costs frames is anything that makes the browser REPAINT every frame:
@@ -894,7 +896,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 535</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 537</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -1046,7 +1048,7 @@ let markEl=null,markK=-1;function markDom(){if(!markEl){markEl=document.createEl
 let dftEl=null,dftOn=false,dftV=-1;function dftDom(){const on=!!(flight&&!flight.done&&flight.play.type==='hr'&&flight.trailCam&&!flight.orbit&&flight.dShow&&now-flight.t0>.3&&ball.visible&&!paused);
   if(!dftEl){if(!on)return;dftEl=document.createElement('div');dftEl.id='dft';dftEl.innerHTML='<b></b><i>FT</i>';$('hud').appendChild(dftEl);}
   if(on!==dftOn){dftOn=on;dftEl.style.display=on?'block':'none';dftV=-1;}if(!on)return;
-  const v=flight.dLast|0;if(v!==dftV){dftV=v;dftEl.firstChild.textContent=v;dftEl.classList.toggle('big',v>=450);dftEl.classList.toggle('huge',v>=500);}
+  const v=flight.dLast|0;if(v!==dftV){dftV=v;dftEl.firstChild.textContent=v;dftEl.classList.toggle('big',v>=360);dftEl.classList.toggle('huge',v>=440&&v<520);dftEl.classList.toggle('fire',v>=520);} /* white, yellow from 360, orange from 440, and from 520 it burns Overdrive blue */
   const W=canvas.clientWidth||innerWidth,H=canvas.clientHeight||innerHeight;_s0.copy(ball.position).project(camera);const x=clamp((_s0.x*.5+.5)*W,70,W-70),y=clamp((-_s0.y*.5+.5)*H-H*.11,H*.14,H*.8);
   dftEl.style.transform='translate('+x.toFixed(1)+'px,'+y.toFixed(1)+'px) translate(-50%,-100%)';}
 // The pitcher's Overdrive tag rides above him: its bottom edge is kept over the highest point he reaches (arms up, mid-taunt, mid-flip), found
@@ -1464,6 +1466,12 @@ gl_FragColor=vec4(col,1.0);
         for(const ox of [-w,0,w])for(const oy of [-h,0,h]){g.beginPath();pts.forEach((q,k)=>k?g.lineTo(x+ox+q[0],y+oy+q[1]):g.moveTo(x+ox+q[0],y+oy+q[1]));g.closePath();g.fillStyle=`rgba(${20+((Math.random()*20)|0)},8,6,.93)`;g.fill();g.strokeStyle='rgba(120,30,8,.8)';g.lineWidth=2;g.stroke();}}},[1,1]);lq.repeat.set(1/26,14);lq.anisotropy=ANISO;COVE.t=lq;
     scene.add(new T.Mesh(ribbon(LA,LB,1),new T.MeshBasicMaterial({map:lq,side:T.DoubleSide,fog:false})));
     const edge=new T.MeshBasicMaterial({color:0xff3312,side:T.DoubleSide,fog:false});scene.add(new T.Mesh(ribbon(C2.map(q=>q.clone().setY(1.1)),C2.map(q=>q.clone().setY(.55))),edge));
+    // SOLAR FARM: the League collects the heat and the light. Rows of collector panels stand on the regolith along both shores of the bay,
+    // tilted toward the park, each on its own post.
+    {const pt=tex(128,64,(g,w,h)=>{g.fillStyle='#0a1230';g.fillRect(0,0,w,h);const sg=g.createLinearGradient(0,0,w,h);sg.addColorStop(0,'rgba(140,190,255,.5)');sg.addColorStop(.45,'rgba(90,130,255,.08)');sg.addColorStop(1,'rgba(0,0,0,.3)');g.fillStyle=sg;g.fillRect(0,0,w,h);
+        g.strokeStyle='rgba(120,170,255,.75)';g.lineWidth=2;for(let x=0;x<=w;x+=16){g.beginPath();g.moveTo(x,0);g.lineTo(x,h);g.stroke();}for(let y=0;y<=h;y+=16){g.beginPath();g.moveTo(0,y);g.lineTo(w,y);g.stroke();}g.strokeStyle='#c8d4f0';g.lineWidth=5;g.strokeRect(0,0,w,h);}),pm=new T.MeshBasicMaterial({map:pt,side:T.DoubleSide,fog:false}),post=new T.MeshBasicMaterial({color:0x4a5070,fog:false}),pg=new T.PlaneGeometry(15,7.5),sg2=new T.BoxGeometry(.6,5,.6);pt.anisotropy=ANISO;
+      const row=(phi0,sg,off)=>{for(let r=175;r<=350;r+=25){const q=pol(r,phi0+sg*off/r,0),m=new T.Mesh(pg,pm);m.position.set(q.x,6.4,q.z);m.lookAt(q.x*.2,70,q.z*.2);scene.add(m);const ps=new T.Mesh(sg2,post);ps.position.set(q.x,2.5,q.z);scene.add(ps);}};
+      row(PI/4+.05,1,62);row(PI/4+.05,1,84);row(COVE_A0-.012,-1,66);}
     // THE SHORE: the lava does not stop at a ruled line. Along both sides of the bay an uneven band runs out over the regolith: a thread of
     // glow at the lava's edge, then black cooled crust, then scorched grey dust thinning away to nothing. One small see-through texture.
     {const sh=tex(8,128,(g,w,h)=>{g.clearRect(0,0,w,h);const gr=g.createLinearGradient(0,0,0,h);gr.addColorStop(0,'rgba(18,7,5,0)');gr.addColorStop(.14,'rgba(18,7,5,.96)');gr.addColorStop(.2,'rgba(255,90,20,.95)');gr.addColorStop(.25,'rgba(20,8,6,.97)');gr.addColorStop(.5,'rgba(30,22,22,.85)');gr.addColorStop(.75,'rgba(46,42,44,.4)');gr.addColorStop(1,'rgba(60,58,62,0)');g.fillStyle=gr;g.fillRect(0,0,w,h);}),
@@ -1608,7 +1616,7 @@ vec3 old=texture2D(rk,vU).rgb;gl_FragColor=vec4(mix(old,moon,mK)*tint,1.0);}`}):
       scene.add(new T.Mesh(ribbon(B,A,.004),mm));});
     const reg=tex(512,512,(g,w,h)=>{g.fillStyle='#77777e';g.fillRect(0,0,w,h);for(let i=0;i<5000;i++){g.fillStyle=`rgba(${Math.random()<.5?'0,0,0':'255,255,255'},${rand(.02,.09)})`;g.fillRect(rand(0,w),rand(0,h),rand(1,5),rand(1,5));}
       for(let i=0;i<34;i++){const x=rand(20,w-20),y=rand(20,h-20),r=rand(5,26);g.fillStyle='rgba(20,20,26,.35)';g.beginPath();g.ellipse(x,y,r,r*.6,0,0,PI*2);g.fill();g.strokeStyle='rgba(235,235,240,.5)';g.lineWidth=1.6;g.beginPath();g.ellipse(x,y+1,r,r*.6,0,.1,PI-.1);g.stroke();}},[9,9]);
-    const gnd=new T.Mesh(new T.CircleGeometry(1150,48),new T.MeshBasicMaterial({map:reg,fog:false}));gnd.rotation.x=-PI/2;gnd.position.y=-9; /* well below the field's own ground sheet: from the blimp the two were close enough to flicker through each other in bands */scene.add(gnd);
+    const gnd=new T.Mesh(new T.CircleGeometry(1150,48),new T.MeshBasicMaterial({map:reg,fog:false}));gnd.rotation.x=-PI/2;gnd.position.y=-45; /* well below the field's own ground sheet: from the blimp the two were close enough to flicker through each other in bands */scene.add(gnd);
     // moon base: habitat domes with lit windows
     const dome=tex(128,64,(g,w,h)=>{const gr=g.createLinearGradient(0,0,0,h);gr.addColorStop(0,'#f1f3fa');gr.addColorStop(1,'#8f94a6');g.fillStyle=gr;g.fillRect(0,0,w,h);for(let x=4;x<w;x+=11){g.fillStyle=Math.random()<.75?'#ffd98a':'#9ad6ff';g.fillRect(x,h*.62,6,5);}g.fillStyle='rgba(0,0,0,.25)';for(let x=0;x<w;x+=32)g.fillRect(x,0,1.5,h);});
     [[-62,330,26],[-50,372,17],[47,345,22],[60,380,30],[72,335,15]].forEach(([d,r,R])=>{const m=new T.Mesh(new T.SphereGeometry(R,16,8,0,PI*2,0,PI/2),new T.MeshBasicMaterial({map:dome,fog:false}));m.position.copy(pol(r,d*DEG,-1));scene.add(m);});
@@ -3462,7 +3470,7 @@ function tryContact(){flight_pop=false;if(pitch.hbp){swing.done=true;swing.miss=
   {const la0=Math.atan2(v0.y,Math.hypot(v0.x,v0.z))/DEG;if(la0<14&&play.type!=='hr'&&play.type!=='foul'){$('tbar').classList.add('qk');$('tim').classList.add('qk');}}
   if(play.type==='hr'&&MX.clip){const ft=play.dist*3.281,big=tb||ft>=500,r=Math.random(),early=earlyShow(S.hrs),kind=DBG.trail||(ft>=600&&!flight.orbit)?'':DBG.admire||(early?'show':big?(r<.34?'show':r<.5?'admire':''):ft>=440?(r<.3?'admire':''):'');wildTrot=early;
     if(!kind&&!flight.orbit&&ft>=385&&(ft>=600||DBG.trail||Math.random()<.82))flight.trailCam=true; /* 600 ft and up is always followed the whole way, out of the park and down onto the Moon */ /* most homers that stay on the ball are now watched from behind it, with the distance running up above it */
-    if(!kind&&!flight.orbit&&(DBG.aerial||(ft<600&&hrCamLast!=='aerial'&&Math.random()<.36))){flight.aerial=true;flight.trailCam=false;}hrCamLast=flight.aerial?'aerial':''; /* THE BLIMP SHOT: now and then, once it is over the wall, the homer is seen from high above the whole park */
+    if(!kind&&!flight.orbit&&(DBG.aerial||(ft<600&&hrCamLast!=='aerial'&&Math.random()<.45))){flight.aerial=true;flight.trailCam=false;}hrCamLast=flight.aerial?'aerial':''; /* THE BLIMP SHOT: now and then, once it is over the wall, the homer is seen from high above the whole park */
     flight.noSb=hrShowLast==='board'&&Math.random()<.92;flight.noEye=hrShowLast==='eye'&&Math.random()<.92; /* the scoreboard light-show almost never comes up on two homers running: the second one just sails by */ // some no-doubters are watched from right behind the ball
    
     lasWant=!!(kind&&(DBG.laser||Math.random()<.45)); // a no-doubter: now and then the lasers come on, but never before the ball has actually cleared the wall
@@ -3652,7 +3660,7 @@ let aerLast=-1,odBag=[],odLastK='';function odPick(){if(!odBag.length){odBag=['r
 const BADGES=[['hit','KNOCK','Get your first hit','🧢'],['hr','WENT YARD','Hit your first home run','💥'],['hr450','TAPE MEASURE','Hit one 450 feet or more','📏'],['hr500','5 HUNNID','Hit one 500 feet or more','🚀'],
   ['odhr','PRIME TIME','Homer in Overdrive','🔥'],['juicehr','GOT HEEEM!','Homer off a Juice pitch','😂'],['duel','BEAT THE HEAT','Homer while the pitcher is in Overdrive','🥵'],['charge','BRAWLER','Charge the mound','😤'],['showboat','SHOWBOAT','Admire one and flip the bat','🕺'],['aura','MAX AURA','Take a pitcher deep while he is in Overdrive','✨'],['ambush','AMBUSH','Homer on the first pitch','⚡'],
   ['slam','GRAND SALAMI','Hit a grand slam','🍖'],['b2b','BACK TO BACK','Homers in consecutive at-bats','👯'],['five','DERBY NIGHT','Five homers in one game','🎆'],['heater','ON A HEATER','Five hits in a row','♨️'],
-  ['rev','IN ORBIT','Put one into orbit round the Moon','🌕'],['earth','NEXT STOP: EARTH','Hit one clean off the Moon','🌍'],['sat','SPACE JUNK','Take out the satellite','🛰️'],['lamp','LIGHTS OUT','Smash a light tower','💡'],['pole','DOINK!','Homer off the foul pole','🔔'],['board','OFF THE SCOREBOARD','Homer off the scoreboard','📺'],['lock','LOCKED IN','Two hits in a row with one hitter','🔥'],['cove','MELTDOWN','Homer into the lava in the Cove','🌋'],['eye','OFF THE BATTER\'S EYE','Homer off the batter\'s eye','👁️'],
+  ['rev','IN ORBIT','Put one into orbit round the Moon','🌕'],['earth','NEXT STOP: EARTH','Hit one clean off the Moon','🌍'],['sat','SPACE JUNK','Take out the satellite','🛰️'],['lamp','LIGHTS OUT','Smash a light tower','💡'],['pole','DOINK!','Homer off the foul pole','🔔'],['board','SCOREBOARD!','Homer off the scoreboard','📺'],['lock','LOCKED IN','Two hits in a row with one hitter','🔥'],['cove','MELTDOWN','Homer into the lava in the Cove','🌋'],['eye','OFF THE BATTER\'S EYE','Homer off the batter\'s eye','👁️'],
   ['send','WHEELS','Win a showdown at the bag','👟'],['jump','PERFECT JUMP','Stop the needle on gold','🥇'],['brawl','LAST MAN STANDING','Win a brawl','🥊'],['wore','WORE IT','Get hit by a pitch','🩹'],
   // THE DISTANCE TREE: every home run's feet are added to a career total, kept on the device. Seven rungs, from a thousand feet to a million.
   ['ft1','FIRST THOUSAND','1,000 career feet of home runs','📐'],['ft2','MILE HIGH','5,280 career feet: one mile of homers','🏔️'],['ft3','CRATER HOPPER','26,400 career feet: five miles','🦘'],['ft4','MARATHON','138,336 career feet: a marathon of homers','🏅'],
@@ -4827,7 +4835,7 @@ function step(dt){
   const b=S.bi>=0?curBatter():LINEUP[0],tb=(S.over&&S.overOn)||(!S.over&&juiceOn()&&S.juice>=.25);
   if(QT.pb!=null&&S.state!=='qte'){QT.pb=null;pitcherModel();}
   stickHint();sbTick();zapTick();crowdTick(dt);shoutTick();poleTick();satTick();lampTick(dt);laserTick(dt);organTick();vendorTick();clapTick();roarTick();heartTick();zoneTick();
-  if(flight&&flight.play.type==='hr'&&!flight.sbHit&&!flight.noSb&&!flight.orbit&&ball.visible&&Math.abs(ball.position.x-SBX)<33&&ball.position.y>30&&ball.position.y<48&&ball.position.z<-(fenceR(0)+15)&&ball.position.z>-(fenceR(0)+24)){flight.sbHit=true;badge('board');pop('OFF THE SCOREBOARD!','','hot');zapStart(ball.position,true);burst(fxL,ball.position,26,9,.7,[.6,.85,1],7,1);}
+  if(flight&&flight.play.type==='hr'&&!flight.sbHit&&!flight.noSb&&!flight.orbit&&ball.visible&&Math.abs(ball.position.x-SBX)<33&&ball.position.y>30&&ball.position.y<48&&ball.position.z<-(fenceR(0)+15)&&ball.position.z>-(fenceR(0)+24)){flight.sbHit=true;badge('board');pop('SCOREBOARD!','','hot');zapStart(ball.position,true);burst(fxL,ball.position,26,9,.7,[.6,.85,1],7,1);}
   if(!!MX.lefty!==lhCls){lhCls=!!MX.lefty;$('hud').classList.toggle('lh',lhCls);}
   if(rawMouse&&rawMouse.d){rawMouse.d=0;pointerAim(rawMouse);}
   touchSettle();reticle.position.set(aim.x,aim.y,0);
@@ -4863,7 +4871,7 @@ function updateCamera(rdt){
   if(!DBG.cam)applyCam();
   if(S.state==='flight'&&flight&&!flight.done&&now-flight.t0>.02)camMode='chase';
   if(DBG.cam){camPos.copy(CAM_HOME);camLook.copy(CAM_LOOK);}
-  else if(flight&&flight.aerial&&!flight.done&&flight.clr){if(!flight.aerT){flight.aerT=now;{let k=DBG.aerK!==undefined?DBG.aerK:(Math.random()*6)|0;if(DBG.aerK===undefined&&k===aerLast)k=(k+1+((Math.random()*5)|0))%6;aerLast=flight.aerK=k;flight.aerA=rand(0,6.28);if(k===2&&now-ROCKET.t>19)ROCKET.t=now+.8;if(k===5){FLY.t=now+.15;try{tone('sawtooth',420,70,2.6,.4,.3);}catch(e){}}}flight.play.endT=Math.max(flight.play.endT,now-flight.t0+5.2); /* held for a good five seconds */
+  else if(flight&&flight.aerial&&!flight.done&&flight.clr){if(!flight.aerT){flight.aerT=now;{const BAG=[5,5,5,0,0,1,2,3,4]; /* the interceptor shots come up most: the chase camera behind them (5) and the straight-down view with them crossing underneath (0) */let k=DBG.aerK!==undefined?DBG.aerK:BAG[(Math.random()*BAG.length)|0];if(DBG.aerK===undefined&&k===aerLast){const o=BAG.filter(q=>q!==aerLast);k=o[(Math.random()*o.length)|0];}aerLast=flight.aerK=k;flight.aerA=rand(0,6.28);if(k===2&&now-ROCKET.t>19)ROCKET.t=now+.8;if(k===5||k===0){FLY.t=now+(k===5?.15:.5);try{tone('sawtooth',420,70,2.6,.4,.3);}catch(e){}}}flight.play.endT=Math.max(flight.play.endT,now-flight.t0+5.2); /* held for a good five seconds */
       // THE SHOW IS TIMED TO THE SHOT: the lasers come on as the camera goes up, fireworks burst over the bowl through it, and the scoreboard takes a power surge near the end
       if(!LAS.on&&!LAMP.on)laserStart();for(let i=0;i<14;i++)fireworks.push({t:now+.3+i*.33,p:new V3(rand(-70,70),rand(40,80),rand(-150,-20))});flight.aerZap=now+3.1;crowdPump(1);}
     if(flight.aerZap&&now>=flight.aerZap){flight.aerZap=0;try{zapStart(_p.set(SBX,39,-(fenceR(0)+17)),true,true);}catch(e){}}
@@ -4876,7 +4884,7 @@ function updateCamera(rdt){
     else if(K===2&&ROCKET.at){const A=ROCKET.at;camPos.set(78-e*3,124+e*3,72);camLook.set(A.x*.72,46+e*9,A.z*.72);} /* from high over the first-base side, looking across the whole park to the rocket going up beyond left field */
     else if(K===3){camPos.set(0,72+e*13,78+e*4);camLook.set(0,0,-70);}
     else if(K===4){camPos.set(ball.position.x*.55,Math.max(96,ball.position.y+62),ball.position.z*.55+62);camLook.copy(ball.position);}
-    else{const a=.4+e*.2;camPos.set(Math.sin(a)*40,188-e*4,-62+Math.cos(a)*40);camLook.set(0,0,-62);}
+    else{const a=.4+e*.2;camPos.set(Math.sin(a)*40,268-e*5,-62+Math.cos(a)*40);camLook.set(0,0,-62);} /* high enough that the interceptors crossing underneath are seen whole, with the park all round them */
     camera.position.lerp(camPos,e<.08?1:.3);} /* a slow sweep high over the stadium, the ball a streak below */
   else if(flight&&flight.trailCam&&!flight.done&&now-flight.t0>.25&&!(flight.tr.eyeT&&now-flight.t0>flight.tr.eyeT-.25)){const tr=flight.tr, // (the chase camera lets go just before a ball hits the batter's eye, so the carom and the short circuit are watched from the field)
    i=Math.min(tr.pts.length-1,Math.floor((now-flight.t0)*120)),q=tr.pts[Math.min(tr.pts.length-1,i+6)],p0=tr.pts[i];
