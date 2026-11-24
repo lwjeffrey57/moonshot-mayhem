@@ -1010,7 +1010,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 681</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 682</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -1255,7 +1255,7 @@ function pdDom(){if(PD.dom)return;PD.dom=true;const B=$('pdbtns');[].forEach((q,
   ['pointerup','pointercancel'].forEach(n=>pad.addEventListener(n,()=>{st=null;PD.holding=false;pad.classList.remove('drag');kn.style.transform='';pdHome();}));
   $('pdgo').addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();try{const g=$('pdgo');g.classList.remove('tap');void g.offsetWidth;g.classList.add('tap');setTimeout(()=>g.classList.remove('tap'),220);}catch(x){}if(PD.drillArm){PD.drillArm=false;pdDrill();pdUI();return;}pdTap();});
   $('pddrill').addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();if(MOB){if(PD.ph===0&&!PD.drilled&&!paused&&!PD.gt){PD.drillArm=true;buzz(15);pdUI();}return;}pdDrill();}); /* on a phone: choose it, then one DRILL! button to do it */
-  $('pdjuice').addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();if(PD.ph!==0||paused||PD.gt)return;if(S.over){if(!S.overOn){S.overOn=true;PD.odUsed=false;SND.zap();buzz([20,30,60]);flash(.25);pop('OVERDRIVE!','EVERY JUICE PITCH · THIS BATTER','hot');}else if(!PD.odUsed){S.overOn=false;}PD.jz=false;PD.pk=0;PD.sel=false;pdGoHome();pdUI();return;} /* a full bar: the same button is the OVERDRIVE switch, as when batting */if(S.juice<.245)return;PD.jz=!PD.jz;PD.pk=0;PD.sel=!PD.jz;pdGoHome();buzz(15);pdUI();});
+  $('pdjuice').addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();if(PD.ph!==0||paused||PD.gt)return;if(S.over){if(!S.overOn){S.overOn=true;PD.odUsed=false;PDODFX.t=now+.05;PDODFX.fired=false;SND.zap();buzz([20,30,60]);flash(.25);pop('OVERDRIVE!','EVERY JUICE PITCH · THIS BATTER','hot');}else if(!PD.odUsed){S.overOn=false;}PD.jz=false;PD.pk=0;PD.sel=false;pdGoHome();pdUI();return;} /* a full bar: the same button is the OVERDRIVE switch, as when batting */if(S.juice<.245)return;PD.jz=!PD.jz;PD.pk=0;PD.sel=!PD.jz;pdGoHome();buzz(15);pdUI();});
   {const z=$('pdzone');for(let k=0;k<9;k++){const u=document.createElement('u');u.style.left=(k%3*33.33)+'%';u.style.top=(((k/3)|0)*33.33)+'%';z.appendChild(u);}}
   $('pdstyle').addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();if(PD.ph!==0)return;PD.style=PD.style?0:1;try{localStorage.setItem('mm_pstyle',PD.style);}catch(x){}pdUI();});}
 function pdCur(){{const c=$('pdcur'),w=Math.round(2+pdWin()*95);if(c._w!==w&&!MOB){c._w=w;c.style.borderWidth=w+'px';c.style.width=c.style.height=(20+w*2)+'px';c.style.margin=(-(10+w))+'px 0 0 '+(-(10+w))+'px';}} /* the thicker the yellow circle, the easier the perfect release */const u=(ZONE.x1+(ZONE.x1-ZONE.x0)*.5-PD.tx)/((ZONE.x1-ZONE.x0)*2),v=(ZONE.y1+(ZONE.y1-ZONE.y0)*.393-PD.ty)/((ZONE.y1-ZONE.y0)*1.786),c=$('pdcur');if(!MOB){c.style.left=(u*100)+'%';c.style.top=(v*100)+'%';}
@@ -1533,6 +1533,7 @@ function draw(){{const hf=PD.on&&S.state==='pduel';if(hf!==PD._hf){PD._hf=hf;try
     infoOnce('mm_lkx',1000,()=>true,'blue','LOCKED IN','<span>Two hits in a row with the same hitter and he is <i>LOCKED IN</i>.</span><ul><li>He comes up with <i>Overdrive ready</i> every at-bat, on top of the team’s own Juice bar.</li><li>It is still your call: press the Overdrive button to use it.</li><li>It lasts until that hitter makes an <i>out</i>.</li></ul>');});
   {const L=LOCKFX;if(now>L.t-.25&&now<L.t+1.9)RUN.list.forEach(R=>{const q=R.fig.root.position;if(R.fig.root.visible&&Math.hypot(q.x-L.x,q.z-L.z)>2.5)R.fig.root.visible=false;});} /* his moment: for the second and a half of the eruption no other runner is in the picture */
   // ...and the pitcher does the same in red when he switches his own Overdrive on, in the middle of his routine on the mound
+  eruptTick(PDODFX,[0x1e6bff,0xbfe4ff,0x4aa0ff],[.2,.55,1],()=>{flash(.2);shake=Math.max(shake,.3*FX);try{tone('sawtooth',90,420,.5,.4);}catch(x){}}); /* YOUR pitcher erupts in blue flame the moment you switch his Overdrive on */
   eruptTick(PODFX,[0xff2a14,0xffd0a0,0xff5a2a],[1,.3,.1],()=>{flash(.2);shake=Math.max(shake,.3*FX);try{tone('sawtooth',70,300,.5,.4);tone('square',50,110,.6,.25,.05);}catch(x){}});if(FLY.g){const e=now-FLY.t,u=e/4.6;if(e<0||u>1){if(FLY.g.visible)FLY.g.visible=false;}else{FLY.g.visible=true;const z=lerp(-680,330,u);FLY.g.position.set(Math.sin(u*3.1)*14,flyY(z),z);FLY.g.rotation.set(0,PI,Math.sin(u*6.3)*.16);}} /* the flyover: in over the far ridge (above it), down across centre field toward the plate and away over the grandstand, in under five seconds. It comes AT the hitter's camera, so it is seen from the field as well as from the air. */if(ROCKET.g){const e=now-ROCKET.t,R=ROCKET.g; /* the launch: a shudder on the pad, then away on a pillar of fire, gone in ten seconds; a fresh vehicle rises out of the pad afterwards */
     if(e<0||e>19){if(R.position.y!==0||ROCKET.fl.opacity){R.position.set(0,0,0);ROCKET.fl.opacity=0;ROCKET.fl2.opacity=0;}}
     else if(e>16){R.position.set(0,-112*(1-(e-16)/3),0);ROCKET.fl.opacity=0;ROCKET.fl2.opacity=0;}
@@ -1584,7 +1585,7 @@ function initPost(){ // stadium-light bloom + edge smoothing; skipped cleanly if
   }catch(e){composer=null;fxaa=null;}
 }
 
-const LOCKFX={t:-99,x:0,z:0,hr:false,name:'',fired:true,a:null,b:null},PODFX={t:-99,x:0,z:-18.4,fired:true,a:null},ROCKET={g:null,t:-99,fl:null,fl2:null,at:null},FLY={g:null,t:-99,p:null},POLE_NETS=[],POLE_CAPS=[];let poleFlash=-9,poleNetT=null,POLE_T=null;
+const PDODFX={t:-99,x:0,z:-18.4,fired:true,a:null};const LOCKFX={t:-99,x:0,z:0,hr:false,name:'',fired:true,a:null,b:null},PODFX={t:-99,x:0,z:-18.4,fired:true,a:null},ROCKET={g:null,t:-99,fl:null,fl2:null,at:null},FLY={g:null,t:-99,p:null},POLE_NETS=[],POLE_CAPS=[];let poleFlash=-9,poleNetT=null,POLE_T=null;
 function poleTick(){const k=Math.max(0,1-(now-poleFlash)/1.2);POLE_NETS.forEach(n=>{n.material.opacity=.5+.08*Math.sin(now*2.2)+.5*k;});POLE_CAPS.forEach(c=>c.material.color.setHex((now%1.6)<.8||k>0?0xff3b3b:0x551010));}
 // ONE TYPEFACE EVERYWHERE: everything painted into the park (scoreboard, wall distances, signs) is lettered in the same face as the screen
 // text. A painted texture that has lettering on it is painted again once that face has finished loading, so none is left in a stand-in font.
