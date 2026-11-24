@@ -1010,7 +1010,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 679</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 680</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -1559,7 +1559,7 @@ function draw(){{const hf=PD.on&&S.state==='pduel';if(hf!==PD._hf){PD._hf=hf;try
         e.style.zoom=k<1?k.toFixed(3):'';e._k=k;e.style.bottom='auto';e.style.top=(Math.max(top0,head-10-h0*k)/k).toFixed(0)+'px';e.style.left=(dx/k).toFixed(0)+'px';e.style.right=(-dx/k).toFixed(0)+'px';e._f=1;}}
     else if(e._f){e._f=0;e.style.top='';e.style.bottom='';e.style.left='';e.style.right='';e.style.zoom='';e._k=1;}
     else if(e._k&&e._k!==1){e.style.zoom='';e._k=1;}}} // call-outs sit just above the head of whoever the close-up is on
- lodTick();gloveTick();if(composer&&!window.__noPost)composer.render();else renderer.render(scene,camera);sharpTick();tagsTick();cardTick();}
+ lodTick();gloveTick();{const sl=!!window.__shLite;if(renderer.shadowMap.autoUpdate===sl)renderer.shadowMap.autoUpdate=!sl;if(sl&&((window.__shN=(window.__shN|0)+1)%3)===0)renderer.shadowMap.needsUpdate=true;} /* shadow-lite: the shadow map is redrawn every third frame, not every frame (the shadows it holds are a twentieth of a second old at most) */if(composer)composer.render();else renderer.render(scene,camera);sharpTick();tagsTick();cardTick();}
 const scene=new T.Scene();
 scene.fog=new T.Fog(0x06060c,320,1500); // no atmosphere: distance only fades far-off stands a little
 const camera=new T.PerspectiveCamera(42,16/9,0.1,1600);
@@ -5610,13 +5610,14 @@ function perfDev(){if(PERF.dev)return PERF.dev;let gpu='';try{const gl=renderer.
 const PLAG={ch:null,t:0,lag:0,slowN:0,slowLag:0,slowBusy:0,allN:0,allLag:0,busy:0};
 try{PLAG.ch=new MessageChannel();PLAG.ch.port1.onmessage=()=>{PLAG.lag=performance.now()-PLAG.t;PLAG.allN++;PLAG.allLag+=PLAG.lag;if(PLAG.lag>8)PLAG.busy++;};}catch(e){}
 // THE PHONE STUTTER, TESTED ON THE PHONE ITSELF. The reports say one frame in fourteen is dropped on an iPhone whatever is on screen, with the
-// page's own thread idle: the time is going in the graphics chip. The one cost that is the same in every scene is the post-processing (the
-// bloom and the edge smoothing: several full-screen passes a frame). So on a touch device the game tries it both ways, twenty seconds
-// at a time, counts the dropped frames each way, and keeps whichever is clearly smoother. The verdict is remembered and sent with the report.
-const PAB2={arm:0,t:0,n:[0,0],slow:[0,0],lock:-1,skip:0};try{const v=localStorage.getItem('mm_post2');if(v==='off'){PAB2.lock=1;window.__noPost=true;}else if(v==='on')PAB2.lock=0;}catch(e){}
-function perfAB(ms){if(!MOB||PAB2.lock>=0||!composer)return;const pn=performance.now();if(!PAB2.t)PAB2.t=pn;if(pn-PAB2.t>20000){PAB2.arm^=1;PAB2.t=pn;PAB2.skip=45;window.__noPost=!!PAB2.arm;}
+// page's own thread idle: the time is going in the graphics chip. Phones already run without the bloom pass, so the cost that is the same in
+// every scene is the real-time shadow: the whole cast of characters is drawn a second time, every frame, into the shadow map. So on a touch
+// device the game tries it both ways, twenty seconds at a time (every frame, against every third frame), counts the dropped frames each
+// way, and keeps the lighter one if it is clearly smoother. The verdict is remembered on the phone and sent with the report.
+const PAB2={arm:0,t:0,n:[0,0],slow:[0,0],lock:-1,skip:0};try{const v=localStorage.getItem('mm_shl');if(v==='lite'){PAB2.lock=1;window.__shLite=true;}else if(v==='full')PAB2.lock=0;}catch(e){}
+function perfAB(ms){if(!MOB||PAB2.lock>=0)return;const pn=performance.now();if(!PAB2.t)PAB2.t=pn;if(pn-PAB2.t>20000){PAB2.arm^=1;PAB2.t=pn;PAB2.skip=30;window.__shLite=!!PAB2.arm;}
   if(PAB2.skip>0){PAB2.skip--;return;}PAB2.n[PAB2.arm]++;if(ms>34)PAB2.slow[PAB2.arm]++;
-  if(PAB2.n[0]>2400&&PAB2.n[1]>2400){const a=PAB2.slow[0]/PAB2.n[0],b=PAB2.slow[1]/PAB2.n[1];PAB2.lock=b<a*.6?1:0;window.__noPost=PAB2.lock===1;try{localStorage.setItem('mm_post2',PAB2.lock?'off':'on');}catch(e){}}}
+  if(PAB2.n[0]>2400&&PAB2.n[1]>2400){const a=PAB2.slow[0]/PAB2.n[0],b=PAB2.slow[1]/PAB2.n[1];PAB2.lock=b<a*.7?1:0;window.__shLite=PAB2.lock===1;try{localStorage.setItem('mm_shl',PAB2.lock?'lite':'full');}catch(e){}}}
 function perfTick(ms,work){try{if(perfCtx())perfAB(ms);}catch(e){}if(PLAG.ch){if(ms>34&&PLAG.allN>0){PLAG.slowN++;PLAG.slowLag+=PLAG.lag;if(PLAG.lag>8)PLAG.slowBusy++;}PLAG.t=performance.now();try{PLAG.ch.port2.postMessage(0);}catch(e){}}if(window.__mmManual&&!DBG.perf)return;if(ms>1000||ms<=0)return; /* (a frame that long is the tab coming back, not the game) */const c=perfCtx();
   if(S.state==='over'&&PERF.st!=='over')perfFlush();PERF.st=S.state;if(!c)return;if(!PERF.t0)PERF.t0=performance.now();if(performance.now()-PERF.t0<3000)return; /* the first seconds are loading, not play */
   PERF.n++;PERF.ms+=ms;PERF.hist[ms<12?0:ms<18?1:ms<25?2:ms<34?3:ms<50?4:ms<80?5:ms<150?6:7]++;
@@ -5627,7 +5628,7 @@ function perfTick(ms,work){try{if(perfCtx())perfAB(ms);}catch(e){}if(PLAG.ch){if
 function perfReport(){const tot=PERF.ms||1,ctx=Object.keys(PERF.ctx).map(k=>{const o=PERF.ctx[k],sm=o.sm||1;return {c:k,sec:Math.round(o.ms/1000),share:+(o.ms/tot).toFixed(3),fps:+(1000*o.n/o.ms).toFixed(1),workMs:+(o.wk/o.n).toFixed(1),slow25:+(o.s25/o.n).toFixed(3),slow50:+(o.s50/o.n).toFixed(3),worstMs:Math.round(o.mx),calls:Math.round(o.calls/sm),tris:Math.round(o.tris/sm),res:+(o.k/sm).toFixed(2)};}).sort((a,b)=>b.sec-a.sec).slice(0,28);
   const h=PERF.hist,n=PERF.n||1;let bld='';try{bld=$('bld').textContent;}catch(x){}
   return {v:1,build:bld,ts:Date.now(),playSec:Math.round(tot/1000),frames:PERF.n,fps:+(1000*n/tot).toFixed(1),cap30:(h[3]+h[2])/n>.8&&h[0]+h[1]<n*.05, /* nearly every frame at about 33 ms and none faster: the phone is holding the page to 30 a second (Low Power Mode does this) */
-    hist:{lt12:h[0],lt18:h[1],lt25:h[2],lt34:h[3],lt50:h[4],lt80:h[5],lt150:h[6],over150:h[7]},quality:qLvl,res:+DRS.k.toFixed(2),canvas:renderer.domElement.width+'x'+renderer.domElement.height,ab:{n:PAB2.n.slice(),slow:PAB2.slow.slice(),rate:[+(PAB2.slow[0]/Math.max(1,PAB2.n[0])).toFixed(4),+(PAB2.slow[1]/Math.max(1,PAB2.n[1])).toFixed(4)],lock:PAB2.lock},lag:{avgMs:+(PLAG.allLag/Math.max(1,PLAG.allN)).toFixed(2),busyShare:+(PLAG.busy/Math.max(1,PLAG.allN)).toFixed(3),slowFrames:PLAG.slowN,slowAvgMs:+(PLAG.slowLag/Math.max(1,PLAG.slowN)).toFixed(1),slowBusyShare:+(PLAG.slowBusy/Math.max(1,PLAG.slowN)).toFixed(3)},dev:perfDev(),models:(()=>{try{return {bcur:MX.bcur,pit:MX.pitCur,rigs:Object.keys(MX.brigs||{}).join(','),bodies:Object.keys(MX.batVar||{}).join(','),pits:Object.keys(MX.pitVar||{}).join(','),at:MX.dlT||{},batErr:MX.batErr||{},pitErr:MX.pitErr||{},wait:PD.waitMax||0,standin:PD.standin||0};}catch(e){return {};}})(),ctx,worst:PERF.hit.slice(0,16)};}
+    hist:{lt12:h[0],lt18:h[1],lt25:h[2],lt34:h[3],lt50:h[4],lt80:h[5],lt150:h[6],over150:h[7]},quality:qLvl,res:+DRS.k.toFixed(2),canvas:renderer.domElement.width+'x'+renderer.domElement.height,ab:{test:'shadow-every-3rd',n:PAB2.n.slice(),slow:PAB2.slow.slice(),rate:[+(PAB2.slow[0]/Math.max(1,PAB2.n[0])).toFixed(4),+(PAB2.slow[1]/Math.max(1,PAB2.n[1])).toFixed(4)],lock:PAB2.lock},lag:{avgMs:+(PLAG.allLag/Math.max(1,PLAG.allN)).toFixed(2),busyShare:+(PLAG.busy/Math.max(1,PLAG.allN)).toFixed(3),slowFrames:PLAG.slowN,slowAvgMs:+(PLAG.slowLag/Math.max(1,PLAG.slowN)).toFixed(1),slowBusyShare:+(PLAG.slowBusy/Math.max(1,PLAG.slowN)).toFixed(3)},dev:perfDev(),models:(()=>{try{return {bcur:MX.bcur,pit:MX.pitCur,rigs:Object.keys(MX.brigs||{}).join(','),bodies:Object.keys(MX.batVar||{}).join(','),pits:Object.keys(MX.pitVar||{}).join(','),at:MX.dlT||{},batErr:MX.batErr||{},pitErr:MX.pitErr||{},wait:PD.waitMax||0,standin:PD.standin||0};}catch(e){return {};}})(),ctx,worst:PERF.hit.slice(0,16)};}
 function perfFlush(){if(PERF.busy||PERF.n<300||(window.__mmManual&&!DBG.perf))return;const go=db=>{if(!db)return;PERF.busy=true;let r;try{r=perfReport();}catch(x){PERF.busy=false;return;}
     Promise.resolve().then(()=>db.collection('perf').doc(PERF.id).set(r)).then(()=>{PERF.sent++;},()=>{}).then(()=>{PERF.busy=false;});};
   if(PERF.db){go(PERF.db);return;}if(PERF.dbTried)return;PERF.dbTried=true;try{if(window.claude&&window.claude.use)window.claude.use('db').then(db=>{PERF.db=db||null;if(!db)PERF.dbTried=true;else go(db);},()=>{});}catch(x){}}
