@@ -204,3 +204,6 @@ One excellent reusable ballpark before any others. If a stadium model is made el
 - BUILD 677: Vanguard removed (files deleted); `cfg.def` is Parker (stand-in fielder/catcher body). Fielders still swap to their own Kraken bodies later via `f.body`.
 - BUILD 678 pitching balance (40-half sims, random locations, ~55% perfect releases): Krakens went from 0.05-0.10 to about 0.2-0.25 runs per three-batter half, average about .330, whiffs down from 52% to ~35-45% of swings. Levers: `pC` base in `pdDecide`, `qq` floor and the monster-shot gate in `pdResolve`, defence boost in `pdStart`.
 - Not done: Comets-bodied fielders while the player pitches (would need a second rig per fielder; memory risk on phones).
+- BUILD 679: defensive play at the plate (`dplate`): a run that scores on a single/double is sometimes contested; win and it comes off the board. Still not done on defence: tag-ups, first-to-third.
+- BUILD 680: phones are LITE (no bloom pass), so the stutter test now compares the shadow map redrawn every frame vs every third frame (`window.__shLite`, verdict in localStorage `mm_shl`, reported under `ab`). Next suspects if that is not it: MSAA (`antialias:true`), then DOM compositing of the HUD.
+- BUILD 681: Kraken hitters get a head shot on their walk-up card.
