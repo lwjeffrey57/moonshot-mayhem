@@ -903,7 +903,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 561</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 562</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -2891,7 +2891,7 @@ function runWear(R,k){const b=R.bods&&R.bods[k];if(!b)return false;for(const j i
   RUN_KEYS.forEach(q=>R[q]=b[q]);const d=R.fig,m=b.dm;d.hipW=m.hipW;d.hipDrop=m.hipDrop;d.yOff=m.yOff;d.L1=m.L1;d.L2=m.L2;d.kneeL.position.y=d.kneeR.position.y=m.k;d.footL.position.y=d.footR.position.y=m.f;d.elL.position.y=d.elR.position.y=m.e;d.shL.position.copy(m.sl);d.shR.position.copy(m.sr);
   R.bk=k;R.mode=null;return true;}
 function runBuild(R,k,obj,skin){if(R.bods[k])return;const cur=R.bk,T2={fig:R.fig};dressRunner(T2,obj,skin);R.bods[k]=runSnap(T2);runWear(R,cur);} /* dressed on a stand-in, so the man himself is not disturbed if he is on base right now */
-function runnerWear(R){R.spd=curBatter().spd||1; /* he carries his own speed round the bases with him */const want=curBatter().body||0,k=R.bods&&R.bods[want]?want:(MX.bcur||0);if(R.bk!==k&&!runWear(R,k))runWear(R,0);} /* always the body of the man who is actually batting (after a hit-by-pitch or a brawl the model at the plate may not be his) /* the man leaving the box wears the hitter's body (the house body if his isn't ready) */
+function runnerWear(R){R.spd=curBatter().spd||1; /* he carries his own speed round the bases with him */const want=curBatter().body||0;if(want&&R.bods&&!R.bods[want]&&MX.batVar&&MX.batVar[want]){try{const v=MX.batVar[want];runBuild(R,want,v.make(RUN_CLIPS),v.skin());}catch(e){console.warn('runner body on demand failed',e);}} /* his body is here but this runner has not been fitted with it yet: fit it now, so the man going to first is the man who was at the plate (never a stand-in) */const k=R.bods&&R.bods[want]?want:(MX.bcur||0);if(R.bk!==k&&!runWear(R,k))runWear(R,0);} /* always the body of the man who is actually batting (after a hit-by-pitch or a brawl the model at the plate may not be his) /* the man leaving the box wears the hitter's body (the house body if his isn't ready) */
 function dressRunner(R,obj,skin){
     setupFielder(R,obj,skin,true);
     R.obj.traverse(o=>{if(o.isMesh&&o.material&&!Array.isArray(o.material)){o.material=o.material.clone();o.material.transparent=false;o.material.opacity=1;o.material.depthWrite=true;}}); // runners get their own copy of the uniform material: the hitter's fades in and out as batters change, and that was fading the men on base with him
