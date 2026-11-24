@@ -1014,7 +1014,7 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 696</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 697</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -1526,12 +1526,17 @@ function draw(){{const hf=PD.on&&S.state==='pduel';if(hf!==PD._hf){PD._hf=hf;try
   // screen flashes and the call goes up. About a second and a half, then he is simply a man on base again (with Overdrive waiting).
   // LOCKED IN erupts exactly when the picture cuts to him celebrating: at the plate once his home-run celebration starts, or on his base
   // after a hit. It belongs to that shot only: the moment the game moves on (next hitter, walk-up, a pitch) every trace of it is gone.
+  // THE LOCKED-IN FIRE BURNS FOR THE WHOLE CELEBRATION AND GOES WHERE HE GOES. While his celebration is playing (at the plate after a homer,
+  // or on whatever base he ended up on) the flame is held at full height and follows his body every frame; when the routine ends it dies down.
+  {const L=LOCKFX,st=S.state;if(L.cel&&now>=L.t){const on=st==='celebrate'||(st==='trot'&&TROT.cele)||st==='celly2';
+      if(on){try{if(MX.clip&&MX.clip.hips&&MX.obj.visible){MX.clip.hips.getWorldPosition(_a);L.x=_a.x;L.z=_a.z;}}catch(e){}if(now-L.t>.5)L.t=now-.5;L.celSeen=true;}
+      else if(L.celSeen||now-L.t>.6){L.cel=false;L.celSeen=false;}}}
   {const L=LOCKFX,st=S.state,cel=st==='celebrate'||(st==='trot'&&TROT.cele),live=st==='result'||st==='flight'||st==='trot'||st==='celebrate'||st==='celly2'||st==='qte';
     // on a base hit it waits for any send to be settled first: never before or during the quick time event, always after it, on the base he ends up on
-    if(L.wait){if(st==='qte'){if(QT.ph==='out'&&now-QT.t1>1.2){L.wait=false;const mine=QT.kind==='stretch2'||QT.kind==='stretch3';if(mine&&!QT.ok){L.t=-99;timing('🔥 '+L.name+' IS LOCKED IN!','#58d6ff',4);}else{if(mine){L.x=QT.bx;L.z=QT.bz;}L.t=now;}}}
-      else if(st==='result'&&!S.goK&&!S.next&&now>=L.t0){L.wait=false;L.t=now;}
+    if(L.wait){if(st==='qte'){if(QT.ph==='out'&&now-QT.t1>1.2){L.wait=false;const mine=QT.kind==='stretch2'||QT.kind==='stretch3';if(mine&&!QT.ok){L.t=-99;timing('🔥 '+L.name+' IS LOCKED IN!','#58d6ff',4);}else{if(mine){L.x=QT.bx;L.z=QT.bz;}L.t=now;L.cel=true;}}}
+      else if(st==='result'&&!S.goK&&!S.next&&now>=L.t0){L.wait=false;L.t=now;L.cel=true;}
       else if(!live){L.wait=false;L.t=-99;timing('🔥 '+L.name+' IS LOCKED IN!','#58d6ff',4);}}
-    if(L.pend&&cel){L.pend=false;L.t=now+.2;if(MX.clip&&MX.clip.hips){MX.clip.hips.getWorldPosition(_a);L.x=_a.x;L.z=_a.z;}}
+    if(L.pend&&cel){L.pend=false;L.t=now+.2;L.cel=true;if(MX.clip&&MX.clip.hips){MX.clip.hips.getWorldPosition(_a);L.x=_a.x;L.z=_a.z;}}
     else if(L.pend&&!live){L.pend=false;L.t=-99;timing('🔥 '+L.name+' IS LOCKED IN!','#58d6ff',4);} /* the celebration was skipped: no fire, just the word */
     if(!live&&now-L.t<2){L.t=-99;if(L.a)L.a.visible=L.b.visible=L.c.visible=false;}}
   eruptTick(LOCKFX,[0x3aa8ff,0xcff4ff,0x58d6ff],[.4,.85,1],L=>{flash(.3);shake=Math.max(shake,.35*FX);buzz([30,30,30,30,160]);try{SND.zap();tone('sawtooth',90,520,.5,.4);tone('triangle',520,1040,.35,.3,.12);}catch(x){}crowdPump(1);pop('LOCKED IN!',L.name+' · OVERDRIVE UNTIL AN OUT','');
@@ -5652,7 +5657,7 @@ function perfFlush(){if(PERF.busy||PERF.n<300||(window.__mmManual&&!DBG.perf))re
     Promise.resolve().then(()=>db.collection('perf').doc(PERF.id).set(r)).then(()=>{PERF.sent++;},()=>{}).then(()=>{PERF.busy=false;});};
   if(PERF.db){go(PERF.db);return;}if(PERF.dbTried)return;PERF.dbTried=true;try{if(window.claude&&window.claude.use)window.claude.use('db').then(db=>{PERF.db=db||null;if(!db)PERF.dbTried=true;else go(db);},()=>{});}catch(x){}}
 try{document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')perfFlush();});addEventListener('pagehide',()=>perfFlush());}catch(x){}
-window.__QT=QT;window.__batSwap=batSwap;window.__ball=ball;window.__perf=()=>perfReport();window.__perfTick=perfTick;window.__perfFlush=perfFlush;
+window.__QT=QT;window.__LU=LINEUP;window.__batSwap=batSwap;window.__ball=ball;window.__perf=()=>perfReport();window.__perfTick=perfTick;window.__perfFlush=perfFlush;
 let fpsOn=false,fN=0,fT=0,fMax=0,fWork=0;
 {const set=on=>{fpsOn=on;$('fps').hidden=!on;$('fpsbtn').textContent='SHOW SPEED: '+(on?'ON':'OFF');$('fps1').textContent='Show speed: '+(on?'on':'off')+' — tap to change';try{localStorage.setItem('mm_fps',on?'1':'0');}catch(e){}};let on0=false;try{on0=localStorage.getItem('mm_fps')==='1';}catch(e){}set(on0);$('fpsbtn').addEventListener('click',()=>set(!fpsOn));$('fps1').addEventListener('click',()=>set(!fpsOn));} /* the speed read-out can be switched on before the game starts, and it is remembered */
 function fpsTick(ms,work){fN++;fT+=ms;fWork+=work;if(ms>fMax)fMax=ms;if(fT<500)return;
