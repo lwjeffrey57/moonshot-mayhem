@@ -187,3 +187,10 @@ The Krakens' half of the 2nd and 3rd is now played: the player pitches to three 
 - BUILD 574 added to pitching: a PITCH / SKIP choice before each half, hot and cold zones per hitter (on the pad) and a K zone at the plate with the catcher and umpire behind it, pitch ratings (velocity, control, break), pitcher stamina (carries between innings), Juice pitches (a quarter bar each; a strikeout earns a bar), and five pitching achievements.
 - OPEN (owner): the current batting game is to become its own batter-only arcade mode; pitching stays in it only until modes are separated.
 - OPEN (owner, unfinished note): "The higher the stamina and the ..." — sentence was cut off; ask what stamina should scale.
+
+## Stadium art (owner is exploring outside help)
+One excellent reusable ballpark before any others. If a stadium model is made elsewhere (Blender, a bought low-poly kit, Tripo), what the game needs:
+- Format: a single .glb (preferred) or .fbx. NOT via Mixamo (Mixamo only handles humanoid characters).
+- Scale and origin: metres; home plate at the origin, centre field toward -Z, ground at Y=0. Fence about 99 m down the lines, 122 m to centre, to match the game's physics (or tell me the numbers and I change the physics).
+- Budget for phones: roughly 30-60k triangles for the whole park, one or two 2048 px texture atlases, lighting BAKED into the textures (the game uses no real-time lights on the park).
+- Separate named pieces help: field, walls, stands, scoreboard, foul poles, so the game can still animate the board, the crowd wave and wall collisions.
