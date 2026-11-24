@@ -939,7 +939,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 575</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 576</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -1145,9 +1145,9 @@ function pdDom(){if(PD.dom)return;PD.dom=true;const B=$('pdbtns');PPITCH.forEach
   $('pdjuice').addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();if(PD.ph!==0||S.juice<.245)return;PD.jz=!PD.jz;buzz(15);pdUI();});
   {const z=$('pdzone');for(let k=0;k<9;k++){const u=document.createElement('u');u.style.left=(k%3*33.33)+'%';u.style.top=(((k/3)|0)*33.33)+'%';z.appendChild(u);}}
   $('pdstyle').addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();if(PD.ph!==0)return;PD.style=PD.style?0:1;try{localStorage.setItem('mm_pstyle',PD.style);}catch(x){}pdUI();});}
-function pdCur(){const u=(ZONE.x1+(ZONE.x1-ZONE.x0)*.5-PD.tx)/((ZONE.x1-ZONE.x0)*2),v=(ZONE.y1+(ZONE.y1-ZONE.y0)*.393-PD.ty)/((ZONE.y1-ZONE.y0)*1.786),c=$('pdcur');c.style.left=(u*100)+'%';c.style.top=(v*100)+'%';const r=$('pdring');r.style.left=(u*100)+'%';r.style.top=(v*100)+'%';
+function pdCur(){{const c=$('pdcur'),w=Math.round(2+pdWin()*95);if(c._w!==w){c._w=w;c.style.borderWidth=w+'px';c.style.width=c.style.height=(20+w*2)+'px';c.style.margin=(-(10+w))+'px 0 0 '+(-(10+w))+'px';}} /* the thicker the yellow circle, the easier the perfect release */const u=(ZONE.x1+(ZONE.x1-ZONE.x0)*.5-PD.tx)/((ZONE.x1-ZONE.x0)*2),v=(ZONE.y1+(ZONE.y1-ZONE.y0)*.393-PD.ty)/((ZONE.y1-ZONE.y0)*1.786),c=$('pdcur');c.style.left=(u*100)+'%';c.style.top=(v*100)+'%';const r=$('pdring');r.style.left=(u*100)+'%';r.style.top=(v*100)+'%';
   if(PD.mark){PD.mark.position.set(PD.tx,PD.ty,.02);}}
-function pdPick(i){if(PD.ph!==0)return;PD.pk=i;[...$('pdbtns').children].forEach((b,k)=>b.classList.toggle('on',k===i));buzz(10);}
+function pdPick(i){if(PD.ph!==0)return;PD.pk=i;try{pdCur();}catch(e){}[...$('pdbtns').children].forEach((b,k)=>b.classList.toggle('on',k===i));buzz(10);}
 function pdUI(){const h=KBAT[PD.k],on=['','MAN ON 1ST','MAN ON 2ND','1ST & 2ND','MAN ON 3RD','CORNERS','2ND & 3RD','BASES LOADED'][PD.bases[0]+PD.bases[1]*2+PD.bases[2]*4];
   S.balls=PD.balls;S.strikes=PD.strikes;S.outs=Math.min(2,PD.outs);S.bases=PD.bases.slice(); /* the scorebug and the little diamond show the Krakens' at-bat while the player pitches */
   [...$('pdzone').children].forEach((u,k)=>{u.className=h.hot[k]>0?'h':h.hot[k]<0?'c':'';}); /* his hot zones (red) and cold zones (blue) on the aiming pad */
@@ -1179,7 +1179,10 @@ function pdTap(){if(S.state!=='pduel'||paused)return;
 // and the next man up is rattled (he makes less contact and chases more). A message pitch: it costs a baserunner.
 function pdDrill(){if(S.state!=='pduel'||paused||PD.ph!==0||PD.drilled)return;PD.drilled=true;PD.drillOn=true;PD.jz=false;PD.grade=1;PD.ph=2;PD.wuT=now;const lh=!!curBatter().lh,P=PITCHES[0];
   PD.pt={P,tx:lh?.6:-.6,ty:1.15,dur:P.dur*1.05,brk:new V3(0,0,0),arc:.05,rel:new V3(0,1.9,-17.2),t0:0,lh:false};S.pStam=Math.max(0,S.pStam-.03);timing('SENDING A MESSAGE...','#ff4d2e',3);buzz([20,30,20]);pdUI();}
-function pdThrow(dt){const a=Math.abs(dt),g=a<.045?2:a<.115?1:0;PD.grade=g;PD.ph=2;PD.wuT=now;PD.rel=false;
+// HOW FORGIVING THE RELEASE IS: the better a pitch's control, the wider its perfect window (and the fatter the yellow circle that shows it).
+// A Juice pitch is easier still to release perfectly, and easiest of all with the Juice bar full (Overdrive).
+function pdWin(){const Q=PPITCH[PD.pk],jz=!!PD.jz&&S.juice>=.245;return (.026+.042*clamp((Q.c-50)/45,0,1))*(jz?(S.over?2:1.6):1);}
+function pdThrow(dt){const a=Math.abs(dt),W=pdWin(),g=a<W?2:a<W+.07?1:0;PD.grade=g;PD.ph=2;PD.wuT=now;PD.rel=false;
   const Q=PPITCH[PD.pk],jz=!!PD.jz&&S.juice>=.245,tired=Math.max(0,.45-S.pStam)/.45; /* 0 fresh, 1 gassed */
   if(jz){S.juice=Math.max(0,S.juice-.25);}PD.jzOn=jz;PD.jz=false;S.pStam=Math.max(0,S.pStam-(.03+.00018*Q.v+(jz?.03:0))*(1.35-NOVA.stam/200));
   const P=jz?Object.assign({},PITCHES[Q.i],{col:[1,.4,.08],tp:'thick'}):PITCHES[Q.i],er=(g===2?.012:g===1?.075:.2)*(1.55-Q.c/100)*(1+tired*.9)*(jz?.75:1),an=rand(0,6.283),r=er*Math.sqrt(Math.random());let tx=PD.tx+Math.cos(an)*r,ty=PD.ty+Math.sin(an)*r*1.15;
@@ -1191,7 +1194,7 @@ function pdThrow(dt){const a=Math.abs(dt),g=a<.045?2:a<.115?1:0;PD.grade=g;PD.ph
 function pdTick(){const el=now-PD.t;
   if(PD.ph===1){ // the ring closes (two-tap), or the bar runs (meter). Nobody taps: it goes anyway, badly.
     if(PD.style){const m=$('pdmfill');if(!PD.mph){m.style.height=(clamp(el/.8,0,1)*100)+'%';if(el>=.8){PD.pw=1;PD.mph=1;PD.t=now;pdUI();}}else{m.style.height=((1-clamp(el/.8,0,1))*100)+'%';if(el>=.86)pdThrow(-.3);}}
-    else{const Q=PPITCH[PD.pk],u=clamp(el/Q.T,0,1.05),R=13+(1-u/.84)*70,r=$('pdring');r.style.width=r.style.height=(Math.max(2,R)*2)+'px';r.style.margin=(-Math.max(2,R))+'px 0 0 '+(-Math.max(2,R))+'px';r.style.borderColor=Math.abs(el-Q.T*.84)<.045?'#39ff6a':'#fff';if(el>=Q.T*1.06)pdThrow(.3);}
+    else{const Q=PPITCH[PD.pk],u=clamp(el/Q.T,0,1.05),R=(10+Math.round(2+pdWin()*95)/2)+(1-u/.84)*70,r=$('pdring');r.style.width=r.style.height=(Math.max(2,R)*2)+'px';r.style.margin=(-Math.max(2,R))+'px 0 0 '+(-Math.max(2,R))+'px';r.style.borderColor=Math.abs(el-Q.T*.84)<pdWin()?'#39ff6a':'#fff';if(el>=Q.T*1.06)pdThrow(.3);}
     return;}
   if(PD.ph===2){if(now-PD.wuT>=1.0){const pt=PD.pt;try{MX.pit.obj.updateMatrixWorld(true);MX.pit.hand.getWorldPosition(pt.rel);}catch(e){}pt.t0=now;PD.ph=3;ball.visible=true;ballShadow.visible=true;SND.pitch();pdDecide();}return;}
   if(PD.ph===3){const pt=PD.pt,u=(now-pt.t0)/pt.dur;pitchPos(pt,Math.min(u,1.04),ball.position);if(PD.jzOn&&u<1){try{trail(pt,pt.P.col,u<.75,true,pt.P.tp);}catch(e){}}ballShadow.position.set(ball.position.x,.02,ball.position.z);
