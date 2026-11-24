@@ -220,8 +220,8 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 #podtag{-webkit-text-stroke:clamp(4px,.8vw,6px) #fff;text-shadow:0 3px 0 #05060f,0 0 3px #05060f,0 0 16px rgba(255,70,40,.8)} /* red lettering with a white outline */#podtag.du{color:#ff5a36;text-shadow:0 3px 0 #05060f,-3px 0 14px rgba(58,170,255,.95),3px 0 14px rgba(255,70,40,.95)}
 #hud.podlive #podtag{opacity:1;animation:podtag .62s ease-in-out infinite alternate}
 @keyframes podtag{from{filter:brightness(1)}to{filter:brightness(1.5)}}
-#hud.mob #podtag{top:34%} /* on the batter's eye, just over the pitcher's head */
-@media (orientation:landscape) and (max-height:520px){#hud.mob #podtag{top:33.5%}}
+#hud.mob #podtag{top:30.5%} /* on the batter's eye, just over the pitcher's head */
+@media (orientation:landscape) and (max-height:520px){#hud.mob #podtag{top:30%}}
 /* quick time event: the move's name, its arrow code, a clock that drains; on phones a d-pad where the aim stick usually is */
 #gobtn{position:absolute;left:50%;bottom:max(26px,env(safe-area-inset-bottom,0px));transform:translateX(-50%) scale(.6);opacity:0;pointer-events:none;z-index:47;padding:14px 26px;font-family:var(--display);font-style:italic;font-size:clamp(22px,6.4vw,34px);letter-spacing:.03em;color:#04140a;background:linear-gradient(#7dff9c,#1fd153);border:4px solid #000;border-radius:18px;box-shadow:0 6px 0 #000,0 0 0 4px rgba(255,255,255,.7),0 0 30px 8px rgba(57,255,106,.7);white-space:nowrap;touch-action:none}
 body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
@@ -284,7 +284,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
 #hud.qs #pop{left:4%;right:4%}#hud.qs #pop .t{font-size:clamp(34px,7vw,84px);-webkit-text-stroke:clamp(4px,.8vw,6px) #000;paint-order:stroke fill}#hud.mob.qs #pop .t{font-size:clamp(22px,7.4vw,34px)} /* HE'S TAGGING UP! and the rest: the standard yellow outlined call, sized to fit a phone with room to spare */
 #hud.pcut #pop .s{font-size:clamp(12px,2.4vw,22px);margin-top:3px}
 #pop.logo{top:13%}#hud.mob #pop.logo{top:16%} /* PLAY BALL: below the batter card, above the pitcher */
-#hud.mob #pop{top:31.5%} /* on phones: clear of the batter card and the buttons above it */
+#hud.mob #pop{top:25%} /* on phones: clear of the batter card and the buttons above it */
 /* the shout over a player celebrating on the bag */
 #shout{position:absolute;left:50%;top:30%;z-index:6;pointer-events:none;white-space:nowrap;opacity:0;font-family:var(--display);font-style:italic;font-size:clamp(34px,9vw,84px);line-height:1;color:var(--volt);-webkit-text-stroke:2px #000;text-shadow:0 4px 0 #000,0 0 22px rgba(255,229,59,.55);transform:translate(-50%,-100%) rotate(-6deg)}
 #shout.go{animation:shoutIn 1.5s cubic-bezier(.2,1.4,.4,1) forwards}
@@ -384,7 +384,8 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
 #hud.mob>#card #cname{font-size:clamp(16px,4.7vw,20px)!important}#hud.mob>#card .stat{font-size:11px!important}#hud.mob>#card .stat em{font-size:21px!important}
 #dft{position:absolute;left:0;top:0;z-index:5;display:none;pointer-events:none;white-space:nowrap;will-change:transform;font-family:var(--display);font-style:italic;line-height:1;color:#fff;-webkit-text-stroke:5px #000;paint-order:stroke fill;text-shadow:0 4px 0 #000}
 #dft b{font-weight:400;font-size:clamp(34px,9vw,76px);font-variant-numeric:tabular-nums}#dft i{font-style:italic;font-size:clamp(15px,3.6vw,30px);margin-left:6px;color:var(--volt)}
-#dft.fire b{color:#e8fbff;animation:dftFire .28s steps(3) infinite}#dft.fire i{color:#8fe8ff}
+#dft.red b{color:#ff2a1e;text-shadow:0 4px 0 #000,0 0 28px rgba(255,40,20,.95)}
+#dft.fire b{color:#e8fbff;animation:dftFire .22s steps(3) infinite;background:linear-gradient(#ffffff 30%,#8fe8ff 60%,#2a8cff);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;-webkit-text-stroke:0;filter:drop-shadow(0 3px 0 #04102a) drop-shadow(0 -4px 6px #58d6ff) drop-shadow(0 -12px 14px rgba(42,140,255,.9))} /* the same white-hot-to-blue flame as an Overdrive homer */#dft.fire i{color:#8fe8ff}
 @keyframes dftFire{0%{text-shadow:0 4px 0 #000,0 -6px 14px #58d6ff,-3px -14px 22px #2a8cff,3px -22px 34px rgba(40,110,255,.8);transform:scale(1)}50%{text-shadow:0 4px 0 #000,2px -8px 16px #8fe8ff,3px -18px 26px #2a8cff,-4px -28px 38px rgba(40,110,255,.75);transform:scale(1.05)}100%{text-shadow:0 4px 0 #000,-2px -7px 12px #58d6ff,-4px -16px 24px #3a9cff,2px -24px 36px rgba(40,110,255,.85);transform:scale(1.02)}}
 #dft.big b{color:var(--volt)}#dft.huge b{color:#ff7a1e;text-shadow:0 4px 0 #000,0 0 26px rgba(255,120,30,.9)}
 #pmark{position:absolute;left:0;top:0;z-index:3;pointer-events:none;display:none;will-change:transform}
@@ -896,7 +897,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 539</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 540</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -1048,7 +1049,7 @@ let markEl=null,markK=-1;function markDom(){if(!markEl){markEl=document.createEl
 let dftEl=null,dftOn=false,dftV=-1;function dftDom(){const on=!!(flight&&!flight.done&&flight.play.type==='hr'&&flight.trailCam&&!flight.orbit&&flight.dShow&&now-flight.t0>.3&&ball.visible&&!paused);
   if(!dftEl){if(!on)return;dftEl=document.createElement('div');dftEl.id='dft';dftEl.innerHTML='<b></b><i>FT</i>';$('hud').appendChild(dftEl);}
   if(on!==dftOn){dftOn=on;dftEl.style.display=on?'block':'none';dftV=-1;}if(!on)return;
-  const v=flight.dLast|0;if(v!==dftV){dftV=v;dftEl.firstChild.textContent=v;dftEl.classList.toggle('big',v>=360);dftEl.classList.toggle('huge',v>=440&&v<520);dftEl.classList.toggle('fire',v>=520);} /* white, yellow from 360, orange from 440, and from 520 it burns Overdrive blue */
+  const v=flight.dLast|0;if(v!==dftV){dftV=v;dftEl.firstChild.textContent=v;dftEl.classList.toggle('big',v>=350&&v<410);dftEl.classList.toggle('huge',v>=410&&v<470);dftEl.classList.toggle('red',v>=470&&v<530);dftEl.classList.toggle('fire',v>=530);} /* white, yellow at 350, orange at 410, red at 470, and from 530 it is on fire, Overdrive blue */ /* white, yellow from 360, orange from 440, and from 520 it burns Overdrive blue */
   const W=canvas.clientWidth||innerWidth,H=canvas.clientHeight||innerHeight;_s0.copy(ball.position).project(camera);const x=clamp((_s0.x*.5+.5)*W,70,W-70),y=clamp((-_s0.y*.5+.5)*H-H*.11,H*.14,H*.8);
   dftEl.style.transform='translate('+x.toFixed(1)+'px,'+y.toFixed(1)+'px) translate(-50%,-100%)';}
 // The pitcher's Overdrive tag rides above him: its bottom edge is kept over the highest point he reaches (arms up, mid-taunt, mid-flip), found
