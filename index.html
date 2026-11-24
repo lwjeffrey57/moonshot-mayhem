@@ -1002,12 +1002,13 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 642</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 643</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
     <button class="tag wkopt sens" id="sens1" type="button"></button>
     <button class="tag wkopt" id="mark1" type="button"></button>
+    <button class="tag wkopt" id="fps1" type="button"></button>
     <button class="tag wkopt" id="ring1" type="button"></button>
     <button class="tag wkopt" id="diff1" type="button"></button>
     <button class="tag wkopt" id="mute1" type="button"></button>
@@ -4260,6 +4261,7 @@ function doSwing(type){
   if(S.state==='pchange'){if(pcWalk()){S.t=now-S.pcW;return;} /* first tap skips the walk-off, the second skips the new arm */S.t=now-PCH-(S.pcW||0);return;}
   if(S.state==='walkup'){if(now-S.t<1.5)return; /* a walk-up cannot be skipped in its first second and a half: a thumb already resting on the buttons was skipping them before they were ever seen */S.t=Math.min(S.t,now-WALK.dur);return;} // skip the intro
   if(flight&&flight.admire&&!flight.done){flight.A=Math.min(flight.A,now-flight.t0);return;} // cut to the ball
+  if(flight&&flight.trailCam&&!flight.done&&S.state==='flight'&&flight.play&&flight.play.type==='hr'){const tf=now-flight.t0;if(tf>1){if(flight.apollo&&!flight.apoDone){flight.apoDone=true;try{badge('eagle');}catch(e){}}flight.play.endT=Math.min(flight.play.endT,tf+.05);}return;} /* a tap cuts the chase camera short (nothing on screen says so: it is there for the player who has seen enough) */
   if(swing)return;
   // between pitches the buttons still swing the bat: a practice cut, no cost, so the first tap always teaches what the button does
   if(S.state==='ready'||(S.state==='windup'&&now-windupT0<=.55)){swing={t0:now,type,turbo:false,done:false,miss:false,practice:true};SND.whoosh();return;}
@@ -4342,7 +4344,7 @@ function cornerTap(x,y){
   for(const id of ['pausebtn','mutebtn']){const b=$(id);if(b.hidden)continue;const r=b.getBoundingClientRect();if(r.width&&x>=r.left-6&&x<=r.right+6&&y>=r.top-6&&y<=r.bottom+6)return false;} // PAUSE and SOUND always work, even mid-cutscene; a tap anywhere else skips
   if(performance.now()<tapBlock)return true;
   if(S.state==='walkup'){doSwing('contact');return true;}
-  if(S.state==='trot'||S.state==='celly2'||S.state==='hbp'||S.state==='brawl'||S.state==='hbprun'||S.state==='pod'||S.state==='pdef'||S.state==='pchange'||(flight&&flight.admire&&!flight.done&&S.state==='flight')){doSwing('contact');return true;} // with the buttons away, a touch anywhere skips the cutscene
+  if(S.state==='trot'||S.state==='celly2'||S.state==='hbp'||S.state==='brawl'||S.state==='hbprun'||S.state==='pod'||S.state==='pdef'||S.state==='pchange'||(flight&&flight.admire&&!flight.done&&S.state==='flight')||(flight&&flight.trailCam&&!flight.done&&S.state==='flight'&&flight.play&&flight.play.type==='hr')){doSwing('contact');return true;} // with the buttons away, a touch anywhere skips the cutscene
   if(ctlHidden)return false; // during a walk-up nothing is a button: a touch anywhere on the screen skips it, and that is all it does
   const c=id=>{const r=$(id).getBoundingClientRect();return {x:r.left+r.width/2,y:r.top+r.height/2,r:r.width/2,l:r.left,t:r.top};},d=o=>Math.hypot(x-o.x,y-o.y);
   const J=c('tj'),C=c('tc'),P=c('tp');if(!C.r)return false;
@@ -5527,7 +5529,7 @@ let qN=0,qT=0,qLvl=0;function qualityWatch(dt){drsWatch(dt);qN++;qT+=dt;if(qN<90
   if(qLvl===1){QS*=.84;rim.castShadow=false;if(SHQ){SHQ=false;shApply();}}else{QS*=.8;composer=null;fxaa=null;}resize();}
 // optional on-screen readout (pause menu): frames per second, the slowest frame in the last half second, and the current quality level
 let fpsOn=false,fN=0,fT=0,fMax=0,fWork=0;
-$('fpsbtn').addEventListener('click',()=>{fpsOn=!fpsOn;$('fps').hidden=!fpsOn;$('fpsbtn').textContent='SHOW SPEED: '+(fpsOn?'ON':'OFF');});
+{const set=on=>{fpsOn=on;$('fps').hidden=!on;$('fpsbtn').textContent='SHOW SPEED: '+(on?'ON':'OFF');$('fps1').textContent='Show speed: '+(on?'on':'off')+' — tap to change';try{localStorage.setItem('mm_fps',on?'1':'0');}catch(e){}};let on0=false;try{on0=localStorage.getItem('mm_fps')==='1';}catch(e){}set(on0);$('fpsbtn').addEventListener('click',()=>set(!fpsOn));$('fps1').addEventListener('click',()=>set(!fpsOn));} /* the speed read-out can be switched on before the game starts, and it is remembered */
 function fpsTick(ms,work){fN++;fT+=ms;fWork+=work;if(ms>fMax)fMax=ms;if(fT<500)return;
   $('fps').textContent=Math.round(fN*1000/fT)+' fps · worst '+Math.round(fMax)+' ms · work '+(fWork/fN).toFixed(1)+' ms · Q'+qLvl+(DRS.cap?' · capped':'')+' · '+Math.round(DRS.k*100)+'%'+(PD.on?' · P'+MX.pitCur+(MX.pitVar&&MX.pitVar[14]?' ready':' none')+(MX.pitErr&&MX.pitErr[14]?' ERR '+MX.pitErr[14]:''):'')+' · '+renderer.domElement.width+'×'+renderer.domElement.height;fN=0;fT=0;fMax=0;fWork=0;}
 function frame(t){
