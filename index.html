@@ -976,7 +976,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 592</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 593</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -1208,7 +1208,18 @@ function pdDom(){if(PD.dom)return;PD.dom=true;const B=$('pdbtns');[].forEach((q,
   {const z=$('pdzone');for(let k=0;k<9;k++){const u=document.createElement('u');u.style.left=(k%3*33.33)+'%';u.style.top=(((k/3)|0)*33.33)+'%';z.appendChild(u);}}
   $('pdstyle').addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();if(PD.ph!==0)return;PD.style=PD.style?0:1;try{localStorage.setItem('mm_pstyle',PD.style);}catch(x){}pdUI();});}
 function pdCur(){{const c=$('pdcur'),w=Math.round(2+pdWin()*95);if(c._w!==w){c._w=w;c.style.borderWidth=w+'px';c.style.width=c.style.height=(20+w*2)+'px';c.style.margin=(-(10+w))+'px 0 0 '+(-(10+w))+'px';}} /* the thicker the yellow circle, the easier the perfect release */const u=(ZONE.x1+(ZONE.x1-ZONE.x0)*.5-PD.tx)/((ZONE.x1-ZONE.x0)*2),v=(ZONE.y1+(ZONE.y1-ZONE.y0)*.393-PD.ty)/((ZONE.y1-ZONE.y0)*1.786),c=$('pdcur');c.style.left=(u*100)+'%';c.style.top=(v*100)+'%';
-  if(PD.mark){PD.mark.position.set(PD.tx,PD.ty,.02);}}
+  if(PD.mark){PD.mark.position.set(PD.tx,PD.ty,.02);}pdArc();}
+// THE MOVEMENT ARC: while a pitch is being chosen and aimed, a line shows the path it will take from the hand to the target (how much it
+// drops, which way it breaks, how late). It is the flight of a well-released pitch: a poor release will not follow it.
+function pdArc(){if(!PD.on)return;const N=28;if(!PD.arc){const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(new Float32Array(N*3),3));g.setAttribute('color',new T.Float32BufferAttribute(new Float32Array(N*3),3));
+    PD.arc=new T.Line(g,new T.LineBasicMaterial({vertexColors:true,transparent:true,opacity:.95,depthTest:false,fog:false}));PD.arc.renderOrder=27;PD.arc.frustumCulled=false;scene.add(PD.arc);
+    PD.arcDots=new T.Points(g,new T.PointsMaterial({size:5,sizeAttenuation:false,vertexColors:true,transparent:true,opacity:.95,depthTest:false,fog:false}));PD.arcDots.renderOrder=27;PD.arcDots.frustumCulled=false;scene.add(PD.arcDots);PD.arcP={rel:new V3(),brk:new V3()};}
+  const show=PD.ph===0||PD.ph===1;PD.arc.visible=PD.arcDots.visible=show;if(!show)return;
+  const Q=pdQ(),P=PITCHES[Q.i],pt=PD.arcP,c=P.col||[1,.9,.25],pos=PD.arc.geometry.attributes.position,col=PD.arc.geometry.attributes.color,bk=.62+.6*Q.b/100;
+  pt.P=P;pt.tx=PD.tx;pt.ty=PD.ty;pt.arc=P.arc;pt.brk.set(P.brk[0]*bk,P.brk[1]*bk,0);pt.sd=1;pt.ph=[0,0,0];try{MX.pit.hand.getWorldPosition(pt.rel);}catch(e){pt.rel.set(0,1.9,-17.2);}if(pt.rel.z>-10)pt.rel.set(0,1.9,-17.2);
+  for(let i=0;i<N;i++){const u=i/(N-1);pitchPos(pt,u,_s0);pos.setXYZ(i,_s0.x,_s0.y,_s0.z);const k=.25+.75*u;col.setXYZ(i,c[0]*k,c[1]*k,c[2]*k);} /* faint at the hand, bright at the plate, in the pitch's own colour */
+  pos.needsUpdate=true;col.needsUpdate=true;}
+function pdArcOff(){if(PD.arc)PD.arc.visible=PD.arcDots.visible=false;}
 function pdPick(i){if(PD.ph!==0)return;PD.pk=i;try{pdBtns();pdCur();}catch(e){}[...$('pdbtns').children].forEach((b,k)=>b.classList.toggle('on',k===i));buzz(10);}
 function pdUI(){const h=KBAT[PD.k],on=['','MAN ON 1ST','MAN ON 2ND','1ST & 2ND','MAN ON 3RD','CORNERS','2ND & 3RD','BASES LOADED'][PD.bases[0]+PD.bases[1]*2+PD.bases[2]*4];
   S.balls=PD.balls;S.strikes=PD.strikes;S.outs=Math.min(2,PD.outs);S.bases=PD.bases.slice(); /* the scorebug and the little diamond show the Krakens' at-bat while the player pitches */
@@ -1255,12 +1266,12 @@ function pdTap(){if(S.state!=='pduel'||paused)return;
   pdThrow(e-Q.T*.84);}
 // DRILL HIM: once a half the pitcher can put one in the hitter's ribs on purpose. He takes his base, the crowd lets you hear about it,
 // and the next man up is rattled (he makes less contact and chases more). A message pitch: it costs a baserunner.
-function pdDrill(){if(S.state!=='pduel'||paused||PD.ph!==0||PD.drilled)return;PD.drilled=true;PD.drillOn=true;PD.jz=false;PD.grade=1;PD.ph=2;PD.wuT=now;const lh=!!curBatter().lh,P=PITCHES[0];
+function pdDrill(){if(S.state!=='pduel'||paused||PD.ph!==0||PD.drilled)return;pdArcOff();PD.drilled=true;PD.drillOn=true;PD.jz=false;PD.grade=1;PD.ph=2;PD.wuT=now;const lh=!!curBatter().lh,P=PITCHES[0];
   PD.pt={P,tx:lh?.6:-.6,ty:1.15,dur:P.dur*1.05,brk:new V3(0,0,0),arc:.05,rel:new V3(0,1.9,-17.2),t0:0,lh:false};S.pStam=Math.max(0,S.pStam-.03);timing('SENDING A MESSAGE...','#ff4d2e',3);buzz([20,30,20]);pdUI();}
 // HOW FORGIVING THE RELEASE IS: the better a pitch's control, the wider its perfect window (and the fatter the yellow circle that shows it).
 // A Juice pitch is easier still to release perfectly, and easiest of all with the Juice bar full (Overdrive).
 function pdWin(){const Q=pdQ(),jz=!!PD.jz&&S.juice>=.245;return (.026+.042*clamp((Q.c-50)/45,0,1))*(jz?(S.over?2:1.6):1);}
-function pdThrow(dt){const a=Math.abs(dt),W=pdWin(),g=a<W?2:a<W+.07?1:0;PD.grade=g;PD.ph=2;PD.wuT=now;PD.rel=false;
+function pdThrow(dt){pdArcOff();const a=Math.abs(dt),W=pdWin(),g=a<W?2:a<W+.07?1:0;PD.grade=g;PD.ph=2;PD.wuT=now;PD.rel=false;
   const Q=pdQ(),jz=!!PD.jz&&S.juice>=.245,tired=Math.max(0,.45-S.pStam)/.45; /* 0 fresh, 1 gassed */
   if(jz){S.juice=Math.max(0,S.juice-.25);}PD.jzOn=jz;PD.jz=false;PD.pk=0;S.pStam=Math.max(0,S.pStam-(.03+.00018*Q.v+(jz?.03:0))*(1.35-NOVA.stam/200));
   PD.lastI=Q.i;const P=PITCHES[Q.i],er=(g===2?.012:g===1?.075:.2)*(1.55-Q.c/100)*(1+tired*.9)*(jz?.75:1),an=rand(0,6.283),r=er*Math.sqrt(Math.random());let tx=PD.tx+Math.cos(an)*r,ty=PD.ty+Math.sin(an)*r*1.15;
@@ -1328,7 +1339,7 @@ function pdFinish(f,pl){f.done=true;ball.visible=false;ballShadow.visible=false;
   if(pl.type==='out'){PD.outs++;const dp=!!pl.dp&&PD.bases[0]&&PD.outs<3;if(dp){PD.outs++;PD.bases[0]=0;}pop(dp?'DOUBLE PLAY!':pl.dive?'WHAT A CATCH!':pl.rob?'ROBBED HIM!':'OUT!',pl.label+' · '+h.name+' IS RETIRED','cool');cheer(.5,2.5);if(pl.dive||pl.rob||dp){roar(.8,.3);badge('web');}SND.mitt();PD.after=over;pdUI();hud();return;}
   const nb=pl.type==='hr'?4:(pl.bases||1),r=pdAdvance(nb,false);pop(pl.type==='hr'?'KRAKENS GO DEEP':['BASE HIT','DOUBLE','TRIPLE'][nb-1],h.name+(r?' · KRAKENS +'+r:'')+(pl.tag?' · '+pl.tag:''),'hot',pl.type==='hr');boo(r?.6:.3);if(pl.type==='hr'){flash(.25);shake=Math.max(shake,.2*FX);}
   PD.after=over;pdUI();hud();}
-function pdEnd(){const k=PD.runs,done=PD.done;PD.on=false;PD.ph=0;$('pd').hidden=true;$('hud').classList.remove('pd');if(PD.mark)PD.mark.visible=false;if(PD.kz)PD.kz.visible=false;ball.visible=false;ballShadow.visible=false;swing=null;
+function pdEnd(){const k=PD.runs,done=PD.done;PD.on=false;PD.ph=0;$('pd').hidden=true;$('hud').classList.remove('pd');pdArcOff();if(PD.mark)PD.mark.visible=false;if(PD.kz)PD.kz.visible=false;ball.visible=false;ballShadow.visible=false;swing=null;
   fielders.forEach(f=>{if(f._sp){f.speed=f._sp[0];f.react=f._sp[1];f.reach=f._sp[2];f._sp=null;}});flight=null;$('pd').style.visibility='';
   S.kOut=null;S.balls=0;S.strikes=0;S.outs=0;S.bases=[0,0,0];S.pName=PD.sv.pName;try{pitcherModel();}catch(e){}MX.bshown=undefined; /* the Kraken pitcher is back on the mound and the next Comet takes his own body back */
   if(!k&&PD.outs>=3)badge('side');S.state='result';S.t=now;readyDur=.1;S.next=()=>{if(done)done(k);};hud();}
