@@ -1002,7 +1002,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 630</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 631</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -1378,7 +1378,7 @@ function pdThrow(dt){pdArcOff();const a=Math.abs(dt),W=pdWin(),g=a<W?2:a<W+.07?1
   if(jz){flash(.12);buzz([15,25,15,25,70]);} /* a Juice pitch is felt as well as seen (on phones that can vibrate) */
   timing(g===2?'PERFECT RELEASE!':g===1?'GOOD RELEASE':dt<0?'TOO EARLY · HUNG IT':'TOO LATE · HUNG IT',g===2?'#ffe53b':g===1?'#f2f5ff':'#ff4d2e',g===2?4:2);buzz(g===2?[20,30,60]:20);if(g===0)tone('sine',200,120,.14,.3);pdUI();}
 function pdPitFix(){if(!PD.on||!MX.pit||!MX.pit.obj)return;const ok=MX.pitCur===14,pn=performance.now();if(!PD._p0)PD._p0=pn;
-  MX.pit.obj.visible=ok||(PD.ph!==-1&&pn-PD._p0>600); /* YOUR pitcher is the Comets' own man. While his body is still arriving the mound is left empty for a moment rather than show the stand-in; if he is not there after two and a half seconds the stand-in pitches, because a pitcher nobody can see is worse */
+  MX.pit.obj.visible=ok||PD.ph!==-1; /* nothing makes the player wait: if his own body is not in yet when the first pitch is due, the stand-in takes the mound until it is */ /* YOUR pitcher is the Comets' own man. While his body is still arriving the mound is left empty for a moment rather than show the stand-in; if he is not there after two and a half seconds the stand-in pitches, because a pitcher nobody can see is worse */
   if(!ok&&(PD._pn|0)<8&&pn-(PD._pl||0)>1500){PD._pl=pn;PD._pn=(PD._pn|0)+1;try{pitcherModel(14);const pr=MX.pitLoad&&MX.pitLoad(14);if(pr&&pr.then)pr.then(()=>{if(PD.on)try{pitcherModel(14);}catch(e){}});}catch(e){}}}
 function pdOdGuide(){if(PD.ph!==0||PD.gt)return;
   if(!PD.odForce&&!PD.odAsk&&S.over&&!S.overOn){let seen=false;try{seen=localStorage.getItem('mm_odpf')==='1';}catch(e){}if(!seen){PD.odAsk=true;PD.odForce=true; /* forced from this moment, whether or not the explainer gets to show */
@@ -1387,8 +1387,7 @@ function pdOdGuide(){if(PD.ph!==0||PD.gt)return;
     const h=$('hud').getBoundingClientRect(),e=$('pdjuice').getBoundingClientRect(),pad=8;if(e.width>4){SP.hidden=false;SP.classList.add('arw','gts');SP.style.borderRadius='50%';SP.style.transform='translate('+(e.left-h.left-pad)+'px,'+(e.top-h.top-pad)+'px)';SP.style.width=(e.width+pad*2)+'px';SP.style.height=(e.height+pad*2)+'px';}}}
 function pdTick(){const el=now-PD.t;try{pdPitFix();}catch(e){}try{pdOdGuide();}catch(e){}if(PD.ph<=1)pdSvg();{const lp=PD._lp;PD._lp=PD.ph;if(PD.ph===0&&lp!==0){try{pdUI();}catch(e){}}if(PD.ph===0&&lp>=2){PD.holding=false;pdGoHome();}} /* the target goes back to the middle after every pitch */
   if(PD.ph<=1&&!PD.hideBat&&now>(PD.showT||0)&&MX.obj&&MX.clip&&now-(PD._gh||0)>.4){PD._gh=now;try{if(!MX.obj.parent)scene.add(MX.obj);MX.obj.visible=true;if(MX.clip.swap==null)batterOpacity(1);if(MX.obj!==PD._ghO){PD._ghO=MX.obj;MX.obj.traverse(n=>{if(n.isMesh)n.frustumCulled=false;});}}catch(e){}} /* THERE IS ALWAYS A MAN IN THE BOX: a hitter left faded out (or culled by the long lens) by whatever was going on when pitching began is put back */{const th=PD.ph>=2;if(th!==PD._thr){PD._thr=th;$('pd').classList.toggle('thr',th);}} /* once the pitch is made the controls are gone until the next one */if(PD.ph<=1&&roarG)roarOff(2); /* the crowd's roar is a loop that the batting side shuts off before each pitch; pitching never did, so it roared on for good */
-  if(PD.ph===-1){if(el>=2.7&&MX.pitCur!==14&&el<10&&!PD._wu){PD._wu=1;try{timing('YOUR PITCHER IS WARMING UP…','#f2f5ff',2);}catch(e){}}
-    if(el>=2.7&&(MX.pitCur===14||el>=10)){S.kOut=null;PD._p0=0;PD.ph=0;PD.t=now;PD.holding=false;pdGoHome();pdUI();if(PD.wantTut){PD.wantTut=false;pdTut(0);}}return;} /* the guide comes up once the first batter is in and the controls are live */
+  if(PD.ph===-1){if(el>=2.7){S.kOut=null;PD._p0=0;PD.ph=0;PD.t=now;PD.holding=false;pdGoHome();pdUI();if(PD.wantTut){PD.wantTut=false;pdTut(0);}}return;} /* the guide comes up once the first batter is in and the controls are live */
   if(PD.ph===1){ // the ring closes (two-tap), or the bar runs (meter). Nobody taps: it goes anyway, badly.
     if(PD.style){const m=$('pdmfill');if(!PD.mph){m.style.height=(clamp(el/.8,0,1)*100)+'%';if(el>=.8){PD.pw=1;PD.mph=1;PD.t=now;pdUI();}}else{m.style.height=((1-clamp(el/.8,0,1))*100)+'%';if(el>=.5)pdThrow(.3);}}
     else{ // THE RING CLOSES ON THE TARGET ITSELF, out at the plate: it shrinks onto the yellow circle there, centred on it exactly
@@ -4339,7 +4338,7 @@ function cornerTap(x,y){
 // game is embedded in another page, a mouse-only player would never get focus, so no key reached it. Every click now takes focus explicitly.
 canvas.tabIndex=-1;canvas.style.outline='none';const grabKeys=()=>{try{window.focus();if(document.activeElement!==canvas)canvas.focus({preventScroll:true});}catch(e){}};
 document.addEventListener('pointerdown',grabKeys,{capture:true});
-['pointerdown','touchstart','keydown'].forEach(n=>document.addEventListener(n,e=>{if(S.state!=='pduel'||PD.ph!==-1||paused||infoHold||now-PD.t<.12)return;if(e.target&&e.target.closest&&e.target.closest('#pausebtn,#mutebtn,#pause'))return;if(n==='keydown'&&(e.code==='Escape'||e.code==='KeyP'))return;PD.t=now-(MX.pitCur===14?9:Math.max(2.8,now-PD.t));},{capture:true,passive:true})); /* PITCHING: any touch or key skips the hitter's walk-up at once */
+['pointerdown','touchstart','keydown'].forEach(n=>document.addEventListener(n,e=>{if(S.state!=='pduel'||PD.ph!==-1||paused||infoHold||now-PD.t<.12)return;if(e.target&&e.target.closest&&e.target.closest('#pausebtn,#mutebtn,#pause'))return;if(n==='keydown'&&(e.code==='Escape'||e.code==='KeyP'))return;PD.t=now-9;},{capture:true,passive:true})); /* PITCHING: any touch or key skips the hitter's walk-up at once */
 document.addEventListener('pointerdown',e=>{if(e.pointerType!=='mouse'||MOB){if(cornerTap(e.clientX,e.clientY)){e.preventDefault();e.stopPropagation();}}},{capture:true});
 document.addEventListener('touchstart',e=>{let hit=false;for(const t of e.changedTouches)if(cornerTap(t.clientX,t.clientY))hit=true;if(hit){e.preventDefault();e.stopPropagation();}},{capture:true,passive:false});
 ['tc','tp','tj'].forEach(id=>$(id).addEventListener('click',e=>{if(e.detail===0){press(id);if(id==='tj')juiceTap();else doSwing(id==='tp'?'power':'contact');}})); // keyboard activation
