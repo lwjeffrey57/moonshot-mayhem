@@ -373,6 +373,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
 /* PITCHING: the player's half of the duel. An aiming pad (the strike zone with room round it for balls), four pitches, and the delivery. */
 #hud.odhr #pop .t,#hud.odhr #shout{color:#eafaff!important;text-shadow:0 clamp(4px,.6vw,6px) 0 #04102a,0 -6px 12px #58d6ff,0 -16px 26px #2a8cff,0 -30px 44px rgba(40,110,255,.75)!important;animation:odCall .2s steps(3) infinite}#hud.odhr #pop.go .t{animation:odCall .2s steps(3) infinite}#hud.odhr #pop .s{color:#8fe8ff!important;border-color:#58d6ff!important}
 @keyframes odCall{0%{filter:drop-shadow(0 -3px 5px #58d6ff)}50%{filter:drop-shadow(2px -7px 9px #2a8cff)}100%{filter:drop-shadow(-2px -5px 7px #58d6ff)}}
+#pause.sub>.cta,#pause.sub>.tag{display:none}#pset{display:flex;flex-direction:column;align-items:center;gap:inherit;width:100%}#pset[hidden]{display:none}
 #podx{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:70;width:min(540px,92vw);padding:18px 20px 16px;border-radius:16px;background:linear-gradient(#5a0d08,#1c0403);border:3px solid #fff;box-shadow:0 6px 0 #000,0 0 30px 6px rgba(255,60,30,.6);color:#fff;font-family:var(--hud);font-weight:700;font-size:15px;line-height:1.35;pointer-events:auto}#podx[hidden]{display:none}#podx b{display:block;font-family:var(--display);font-style:italic;font-weight:400;font-size:clamp(22px,6vw,32px);color:#ff8a5a;text-shadow:0 3px 0 #000;margin-bottom:6px}#podx i{font-style:normal;color:#ffe53b}#podx ul{margin:8px 0 14px;padding-left:20px}#podx li{margin:4px 0}#podx button{display:block;width:100%;font-family:var(--display);font-style:italic;font-size:24px;padding:12px;border-radius:14px;border:4px solid #000;color:#fff;background:linear-gradient(#7dff9c,#1fd153);box-shadow:0 5px 0 #000;-webkit-text-stroke:4px #05060f;paint-order:stroke fill}
 #pdask{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:47;width:min(520px,92vw);padding:18px 18px 16px;text-align:center;border-radius:16px;background:linear-gradient(#1b2a8c,#0b1040);border:3px solid #fff;box-shadow:0 6px 0 #000;color:#fff;font-family:var(--display);font-style:italic;pointer-events:auto}#pdask[hidden]{display:none}
 #pdask b{display:block;font-weight:400;font-size:clamp(18px,4.8vw,26px);text-shadow:0 2px 0 #000}#pdask span{display:block;margin:6px 0 14px;font-family:var(--hud);font-style:normal;font-weight:700;font-size:13px;line-height:1.3;color:#c9d2ff}
@@ -943,7 +944,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 584</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 585</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -967,6 +968,11 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
   <div class="overlay" id="pause" hidden>
     <div class="logo"><span class="b">PAUSED</span></div>
     <button class="cta" id="resume" type="button">RESUME</button>
+    <button class="cta alt" id="pdtest" type="button">SKIP TO PITCHING</button>
+    <button class="cta alt" id="psetbtn" type="button">SETTINGS</button>
+    <button class="cta alt" id="restart" type="button">RESTART GAME</button>
+    <button class="cta alt" id="quit" type="button">QUIT TO MAIN MENU</button>
+    <div id="pset" hidden>
     <button class="cta alt" id="cambtn" type="button">CAMERA</button>
     <button class="cta alt sens" id="sens2" type="button"></button>
     <button class="cta alt" id="mark2" type="button"></button>
@@ -975,8 +981,8 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta alt" id="howbtn" type="button">HOW TO PLAY</button>
     <button class="cta alt" id="shbtn" type="button">FIELD SHADOWS: OFF</button>
     <button class="cta alt" id="fpsbtn" type="button">SHOW SPEED: OFF</button>
-    <button class="cta alt" id="restart" type="button">RESTART GAME</button>
-    <button class="cta alt" id="quit" type="button">QUIT TO MAIN MENU</button>
+    <button class="cta" id="psetback" type="button">BACK</button>
+    </div>
     <div class="tag">Esc or P to resume</div>
   </div>
 </div>
@@ -1603,7 +1609,8 @@ gl_FragColor=vec4(col,1.0);
       const pw=w/12;for(let x=0;x<w;x+=pw){const cg=g.createLinearGradient(x,0,x+pw,0);cg.addColorStop(0,'rgba(0,0,0,.4)');cg.addColorStop(.06,'rgba(255,255,255,.14)');cg.addColorStop(.4,'rgba(255,255,255,0)');cg.addColorStop(.92,'rgba(0,0,0,.14)');cg.addColorStop(1,'rgba(0,0,0,.4)');g.fillStyle=cg;g.fillRect(x,0,pw,h);
         g.fillStyle='rgba(8,14,12,.8)';for(let y=14;y<h;y+=38)for(const dx of [9,pw-9]){g.beginPath();g.arc(x+dx,y,3,0,7);g.fill();}}
       g.fillStyle='rgba(0,0,0,.35)';g.fillRect(0,h*.5-1,w,3);
-      /* plain green for now: no lettering, no scores */
+      /* plain green for now: no lettering, no scores. Only the distance down the line, painted at its foot like every other marker. */
+      g.textAlign='center';g.textBaseline='middle';g.font='400 58px "Russo One",Arial Black,Arial';g.fillStyle='rgba(0,0,0,.55)';g.fillText('330',w*.045+3,h*.82+3);g.fillStyle='#ffe53b';g.fillText('330',w*.045,h*.82);
       const vg=g.createLinearGradient(0,0,0,h);vg.addColorStop(0,'rgba(255,255,255,.2)');vg.addColorStop(.25,'rgba(255,255,255,0)');vg.addColorStop(.7,'rgba(0,0,0,.05)');vg.addColorStop(1,'rgba(0,0,0,.4)');g.fillStyle=vg;g.fillRect(0,0,w,h);
       g.save();g.globalCompositeOperation='overlay';for(let i=0;i<=3;i++){const R0=h*1.5;g.save();g.translate(w*(i/3),0);g.scale((w*.16)/R0,1);const rg=g.createRadialGradient(0,0,0,0,0,R0);rg.addColorStop(0,'rgba(255,246,220,.85)');rg.addColorStop(.5,'rgba(255,240,205,.35)');rg.addColorStop(1,'rgba(255,240,205,0)');g.fillStyle=rg;g.fillRect(-R0,0,R0*2,h);g.restore();}g.restore();},[1,1]);bt.repeat.set(1/L,1);bt.anisotropy=ANISO;
     const hullB=basic({color:0x12201e});scene.add(new T.Mesh(ribbon(A,B,1),basic({map:bt})));scene.add(new T.Mesh(ribbon(B,B2),hullB));scene.add(new T.Mesh(ribbon(B2,C2),hullB));
@@ -4107,9 +4114,9 @@ walkLabel();$('wk').addEventListener('click',()=>{WALK.on=!WALK.on;try{localStor
 $('mdl').addEventListener('click',()=>loadPlayers(ORDER[(ORDER.indexOf(MX.kind)+1)%ORDER.length]));
 $('again').addEventListener('click',()=>{audioInit();startGame();});
 // pause / restart / main menu
-let paused=false,infoHold=false,odhrCls=false,inT=0;['pointerdown','keydown','touchstart','mousedown'].forEach(n=>addEventListener(n,e=>{inT=e.timeStamp||performance.now();},{capture:true,passive:true}));
+let PSET=null,paused=false,infoHold=false,odhrCls=false,inT=0;['pointerdown','keydown','touchstart','mousedown'].forEach(n=>addEventListener(n,e=>{inT=e.timeStamp||performance.now();},{capture:true,passive:true}));
 const inPlay=()=>S.state!=='title'&&S.state!=='over';
-function setPaused(on){
+function setPaused(on){try{if(PSET)PSET(false);}catch(e){}
   if(on&&!inPlay())return;
   paused=on;$('pause').hidden=!on;document.body.classList.toggle('paused',on);for(const k in keys)keys[k]=false;
   if(AC){try{on?AC.suspend():AC.resume();}catch(e){}}
@@ -4123,6 +4130,11 @@ function toMenu(){
 }
 $('pausebtn').addEventListener('click',()=>setPaused(true));
 $('resume').addEventListener('click',()=>setPaused(false));
+// THE PAUSE MENU IS SHORT: resume, skip to pitching, settings, restart, quit. Everything adjustable lives one tap down, under SETTINGS.
+{const P=$('pause'),set=on=>{$('pset').hidden=!on;P.classList.toggle('sub',on);};$('psetbtn').addEventListener('click',e=>{e.stopPropagation();set(true);});$('psetback').addEventListener('click',e=>{e.stopPropagation();set(false);});PSET=set;
+  $('pdtest').addEventListener('click',e=>{e.stopPropagation();setPaused(false);if(!pdCan()||S.state==='pduel'||S.state==='title'||S.state==='over')return;
+    try{$('walk').hidden=true;$('hud').classList.remove('wk');goHide();$('pdask').hidden=true;}catch(x){}flight=null;pitch=null;swing=null;S.kOut=null;S.next=null;
+    pdStart(k=>{pop('BACK TO BATTING',k?'KRAKENS SCORED '+k:'KRAKENS HELD','cool',true);toReady(2.4);hud();});});}
 $('howbtn').addEventListener('click',()=>{setPaused(false);tutShow('s1');}); // the thumb guide again, on demand
 $('cambtn').addEventListener('click',()=>{nextCam();draw();});
 $('restart').addEventListener('click',()=>{setPaused(false);fireworks.length=0;newGame();});
