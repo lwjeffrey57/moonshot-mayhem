@@ -894,7 +894,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 534</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 535</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -1434,8 +1434,9 @@ gl_FragColor=vec4(col,1.0);
         /* ...and they are FENCED, the way the arches at the real bayside park are: a steel screen across every one, a kick-rail along the bottom, and
            a few fans standing behind it watching for free. Nothing rolls in there. */
         g.save();g.beginPath();g.moveTo(cx-aw+6,h);g.lineTo(cx-aw+6,top+aw);g.arc(cx,top+aw,aw-6,PI,0);g.lineTo(cx+aw-6,h);g.closePath();g.clip();
-        for(let k=0;k<4;k++){const fx=cx-aw+14+k*((aw*2-28)/3)+((cx*7+k*13)%9-4),fh=44+((cx*3+k*17)%14);g.fillStyle=['#2a2f48','#3a2630','#243a3a','#33304a'][(k+(cx|0))%4];g.fillRect(fx-9,h-fh+12,18,fh);g.beginPath();g.arc(fx,h-fh+6,8,0,7);g.fill();g.fillStyle='rgba(160,220,255,.22)';g.beginPath();g.arc(fx,h-fh+5,10,0,7);g.fill();}
-        g.strokeStyle='rgba(200,210,230,.6)';g.lineWidth=1.6;for(let d=-h;d<aw*2+h;d+=11){g.beginPath();g.moveTo(cx-aw+d,top);g.lineTo(cx-aw+d+h,top+h);g.moveTo(cx-aw+d+h,top);g.lineTo(cx-aw+d,top+h);g.stroke();}
+        for(let k=0;k<4;k++){const fx=cx-aw+14+k*((aw*2-28)/3)+((cx*7+k*13)%9-4),fh=50+((cx*3+k*17)%16);g.fillStyle=['#e2402a','#3a6ad8','#f0c838','#ff8a3a','#3ad6ff','#e8e8f0'][(k*2+(cx|0))%6];g.fillRect(fx-10,h-fh+14,20,fh);g.fillStyle='rgba(0,0,0,.3)';g.fillRect(fx-10,h-fh+30,20,fh);
+          g.fillStyle=['#f0c4a0','#c98f62','#8a5a3a','#e2b08a'][(k+(cx|0))%4];g.beginPath();g.arc(fx,h-fh+5,8,0,7);g.fill();g.strokeStyle='rgba(200,235,255,.85)';g.lineWidth=2;g.beginPath();g.arc(fx,h-fh+4,11,0,7);g.stroke();g.fillStyle='rgba(160,220,255,.25)';g.beginPath();g.arc(fx,h-fh+4,11,0,7);g.fill();} /* fans in team colours and bubble helmets, bright enough to read through the screen */
+        g.strokeStyle='rgba(200,210,230,.36)';g.lineWidth=1.3;for(let d=-h;d<aw*2+h;d+=11){g.beginPath();g.moveTo(cx-aw+d,top);g.lineTo(cx-aw+d+h,top+h);g.moveTo(cx-aw+d+h,top);g.lineTo(cx-aw+d,top+h);g.stroke();}
         g.fillStyle='#b9c0d4';g.fillRect(cx-aw,h-9,aw*2,9);g.fillRect(cx-aw,top+aw+34,aw*2,4);g.fillRect(cx-2,top,4,h-top);g.restore();
         g.strokeStyle='#6a4034';g.lineWidth=7;g.beginPath();g.moveTo(cx-aw,h);g.lineTo(cx-aw,top+aw);g.arc(cx,top+aw,aw,PI,0);g.lineTo(cx+aw,h);g.stroke();
         g.strokeStyle='#f0d2b4';g.lineWidth=3;g.beginPath();g.moveTo(cx-aw-2,h);g.lineTo(cx-aw-2,top+aw);g.arc(cx,top+aw,aw+2,PI,PI*1.55);g.stroke();
@@ -1481,6 +1482,19 @@ gl_FragColor=vec4(col,1.0);
       const prof=[[0,0],[3.1,0],[3.3,1],[3.3,13],[2.6,16.5],[1.25,20],[1.15,24],[1.5,24.3],[1.5,25.3],[0,25.3]].map(q=>new T.Vector2(q[0],q[1])),bm=new T.Mesh(new T.LatheGeometry(prof,14),new T.MeshBasicMaterial({map:bt,fog:false}));
       const uv=bm.geometry.attributes.uv,ps=bm.geometry.attributes.position;for(let k=0;k<uv.count;k++)uv.setY(k,1-ps.getY(k)/25.3);
       const ph=lerp(-PI/4,PI/4,(CV0+3)/N);bm.scale.setScalar(1.5);bm.position.copy(pol(fenceR(ph)+34,ph,0));bm.rotation.z=.14;bm.rotation.y=-ph;scene.add(bm);}
+    // THE VOLCANO: the bay has a source. One of the peaks on its far shore is live: black basalt with rivers of lava running down its
+    // flanks into the bay, and a glow over the crater. (A cone and one painted texture.)
+    {const vt=tex(512,512,(g,w,h)=>{const bg=g.createLinearGradient(0,0,0,h);bg.addColorStop(0,'#3a1c14');bg.addColorStop(.3,'#241512');bg.addColorStop(1,'#0e0807');g.fillStyle=bg;g.fillRect(0,0,w,h);
+        for(let i=0;i<900;i++){g.fillStyle=`rgba(${Math.random()<.5?'0,0,0':'120,90,80'},${rand(.05,.2)})`;g.fillRect(rand(0,w),rand(0,h),rand(2,16),rand(2,7));}
+        const river=(x0,wd)=>{let x=x0;const pts=[];for(let y=0;y<=h;y+=8){x+=rand(-2.2,2.2)+Math.sin(y*.022+x0)*2.2; /* slow bends, like something flowing, not forks of lightning */pts.push([x,y]);}
+          [['rgba(120,10,4,.9)',wd*2.6,0],['#e01c08',wd*1.5,16],['#ff7a1e',wd*.8,10],['#ffe08a',wd*.3,0]].forEach(([c,lw,bl])=>{g.strokeStyle=c;g.lineWidth=lw;g.shadowColor='#ff3a10';g.shadowBlur=bl;g.lineCap='round';g.lineJoin='round';for(const ox of [-w,0,w]){g.beginPath();pts.forEach((q,k)=>k?g.lineTo(q[0]+ox,q[1]):g.moveTo(q[0]+ox,q[1]));g.stroke();}});g.shadowBlur=0;};
+        [[40,9],[120,6],[205,11],[290,5],[350,8],[440,10],[485,5]].forEach(q=>river(q[0],q[1]));
+        const tg=g.createLinearGradient(0,0,0,h*.14);tg.addColorStop(0,'rgba(255,200,90,.95)');tg.addColorStop(.5,'rgba(255,70,20,.6)');tg.addColorStop(1,'rgba(255,60,10,0)');g.fillStyle=tg;g.fillRect(0,0,w,h*.14);
+        const fg=g.createLinearGradient(0,h*.86,0,h);fg.addColorStop(0,'rgba(255,60,10,0)');fg.addColorStop(1,'rgba(255,70,16,.75)');g.fillStyle=fg;g.fillRect(0,h*.86,w,h*.14);},[1,1]);vt.anisotropy=ANISO;
+      const prof=[[0,128],[10,128],[16,138],[22,132],[46,92],[78,44],[112,10],[130,0]].map(q=>new T.Vector2(q[0],q[1])),vm=new T.Mesh(new T.LatheGeometry(prof,22),new T.MeshBasicMaterial({map:vt,fog:false,side:T.DoubleSide}));
+      const uv=vm.geometry.attributes.uv,ps=vm.geometry.attributes.position;for(let k=0;k<uv.count;k++)uv.setY(k,ps.getY(k)/138);
+      const vph=31*DEG;vm.position.copy(pol(372,vph,0));scene.add(vm);
+      [[150,0xff5a14,.55,150],[90,0xffd070,.5,142]].forEach(([sz,c,op,y])=>{const sp=new T.Sprite(new T.SpriteMaterial({map:glowTex,color:c,blending:T.AdditiveBlending,depthWrite:false,transparent:true,opacity:op,fog:false}));sp.position.copy(pol(372,vph,y));sp.scale.set(sz,sz*.8,1);scene.add(sp);});}
     const gl=new T.Sprite(new T.SpriteMaterial({map:glowTex,color:0xff2a10,blending:T.AdditiveBlending,depthWrite:false,transparent:true,opacity:.3,fog:false}));gl.position.copy(pol(rm+60,mid,4));gl.scale.set(190,34,1);scene.add(gl);COVE.gl=gl.material;}
   if(UPPER)split(s2a).forEach((a,k)=>scene.add(new T.Mesh(ribbon(a,split(s2b)[k],1),cm)));
   // luxury boxes between the decks
