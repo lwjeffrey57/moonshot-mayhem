@@ -158,3 +158,13 @@ different one each time, and a reason to want the next one. Reserved for no-doub
 **Kepler Krakens (field):** 1B R. ARCHER #47 (crypto) · 2B T. HOLLIS #7 (racer) · SS VREL #13 (alien) · 3B ZLORP #50 · LF DRA'AK #25 (drake) · CF XANDU #4 (jones) · RF M'NAR #30 (maynar). Range/jump ratings live in `KRAKENS`.
 **Krakens arms:** J. MACDONALD #99 (van) · C. ROMERO #66 · L. HARGROVE #48 (L, astra) · BRAXX #40 (brady) · MALGOR #6 (L, demon).
 Still shared/unused: catcher wears the house body; `david` body unused; Parker body is worn by Montoya only.
+
+**Roster update (BUILD 548):** Comets order: R. VASQUEZ, O. DELACROIX, BLITZ (exo red; was Okafor), BRICKHOUSE, E. MONTOYA, VANTA (crypto; was Tanaka), ZEPHRA, CRASH, GORMAK. Krakens 1B is ARKON (exo grey; was Archer). Aliens, exo suits and the dummy go by one name.
+
+## Shipping: minimum viable App Store build (freemium) — owner's note, keep in mind for every decision
+Not being built yet; this is the target to steer by.
+- **Free:** the current game (one park, Comets v Krakens, three innings), achievements, daily play.
+- **Paid, cosmetic or content only (no pay-to-win):** extra teams/rosters, extra parks, walk-up and celebration packs, bat/trail/flame skins, a one-time "remove ads / supporter" unlock.
+- **Retention before monetisation:** a reason to come back (daily challenge, season ladder or Derby mode), saved career totals (home-run feet tree already exists).
+- **Hard blockers before any store submission:** replace ripped audio; confirm licences for every model, the moon maps, horn and claps; show the ESO sky credit; set TUT_EVERY_LAUNCH false; wrap the web build as a native app (Capacitor or similar) and test on real iPhones; privacy policy; age rating (cartoon violence: brawls, hit-by-pitch).
+- **Design rule this implies now:** keep the game one self-contained file with assets loaded on demand, keep phone frame rate first, and keep names, sponsors and likenesses original (no real teams, parks or brands).
