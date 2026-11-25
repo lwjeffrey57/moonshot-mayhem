@@ -1029,7 +1029,7 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 819</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 820</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -4703,7 +4703,7 @@ $('resume').addEventListener('click',()=>setPaused(false));
   $('howpit').addEventListener('click',e=>{e.stopPropagation();PD.forceTut=true;if(S.state==='pduel'){setPaused(false);PD.forceTut=false;if(PD.ph===0)pdTut(0);else PD.wantTut=true;}else $('pdtest').click();});
   $('pdtest').addEventListener('click',e=>{e.stopPropagation();setPaused(false);if(!pdCan()||S.state==='pduel'||S.state==='title'||S.state==='over')return;
     try{$('walk').hidden=true;$('hud').classList.remove('wk');goHide();$('pdask').hidden=true;}catch(x){}try{endTrot();RUN.list.forEach(R=>{R.active=false;R.trot=false;R.fig.root.visible=false;});}catch(x){}flight=null;pitch=null;swing=null;S.kOut=null;S.next=null;
-    pdStart(k=>{S.forceWalk=true;S.over=false;S.overOn=false;S.juice=.75;S.ptBi=S.bi; /* PLAYTEST: back from a skipped-to pitching half with three bars of Juice, and Overdrive ready for the second man up */pop('BACK TO BATTING',k?'KRAKENS SCORED '+k:'KRAKENS HELD','cool',true);toReady(2.4);hud();});});}
+    pdStart(k=>{S.forceWalk=true;S.over=false;S.overOn=false;S.juice=.75;S.ptBi=S.bi;S.bases=[0,0,0];S.stealArm='';S.hnr='';try{syncRunners();stealUI(true);}catch(x){} /* (the skip took the runners off the field; the bases are cleared to match, or the game still thought a man was on and offered a steal with nobody there) */ /* PLAYTEST: back from a skipped-to pitching half with three bars of Juice, and Overdrive ready for the second man up */pop('BACK TO BATTING',k?'KRAKENS SCORED '+k:'KRAKENS HELD','cool',true);toReady(2.4);hud();});});}
 $('howbtn').addEventListener('click',()=>{setPaused(false);tutShow('s1');}); // the thumb guide again, on demand
 $('cambtn').addEventListener('click',()=>{nextCam();draw();});
 $('restart').addEventListener('click',()=>{setPaused(false);fireworks.length=0;newGame();});
