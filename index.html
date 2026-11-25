@@ -1029,7 +1029,7 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 756</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 757</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -1540,7 +1540,8 @@ function cqStart(f){const c=f.cq;c.st=1;CQ.on=true;{const e=$('bdg');if(e.classL
 function cqEnd(ok){const f=CQ.f,c=f.cq;CQ.on=false;c.st=2;$('hud').classList.remove('qon','qm');setTimeout(()=>{if(!CQ.on)$('qte').hidden=true;},300);
   if(ok){buzz([20,30,60]);tone('triangle',660,990,.12,.3);timing('MADE THE PLAY!','#39ff6a',3);}
   else{buzz([40,30,40]);tone('sawtooth',150,80,.12,.3);const pl=c.lose;if(c.win.f)pl.from=c.win.f.fig.root.position.clone();pl.tS=now-f.t0;f.play=pl;timing(pl.type==='hr'?'OVER HIS GLOVE!':pl.type==='foul'?'JUST OUT OF REACH':'GOT BY HIM!','#ff8a2e',3);}}
-function cqTick(dt){const f=flight;if(!f||!f.cq)return;const c=f.cq;if(c.st===0&&now-f.t0>=c.t)cqStart(f);if(!CQ.on||CQ.f!==f)return;
+function cqOff(){CQ.on=false;CQ.f=null;try{$('hud').classList.remove('qon','qm');$('qte').hidden=true;}catch(e){}}
+function cqTick(dt){if(CQ.on&&(CQ.f!==flight||!PD.on||S.state!=='flight'||paused)){if(!paused)cqOff();return;} /* A SHOWDOWN CAN NEVER OUTLIVE ITS PLAY: left switched on after the ball was dead it swallowed every touch for the rest of the game */const f=flight;if(!f||!f.cq)return;const c=f.cq;if(c.st===0&&now-f.t0>=c.t)cqStart(f);if(!CQ.on||CQ.f!==f)return;
   f.t0+=dt*.94; /* the play hangs in slow motion while you make it */
   const e=now-CQ.t0,left=1-e/CQ.lim;$('qtb').style.transform='scaleX('+Math.max(0,left).toFixed(3)+')';$('qtb').classList.toggle('low',left<.35);
   if(CQ.stop){CQ.sx+=CQ.sd*CQ.sv*dt;if(CQ.sx>=1){CQ.sx=1;CQ.sd=-1;CQ.sv*=1.1;}else if(CQ.sx<=0){CQ.sx=0;CQ.sd=1;CQ.sv*=1.1;}const n=$('qsn');if(n){if(!CQ.sw)CQ.sw=n.parentNode.clientWidth||300;n.style.transform='translateX('+(CQ.sx*CQ.sw).toFixed(1)+'px)';}}
@@ -1600,7 +1601,7 @@ function pdFinish(f,pl){if(f._res){f.t0=now-pl.endT;if(f.thr){if(!f.thr.done&&no
   /* FIRST TO THIRD: a single with a man on first, and he keeps going round second. The player throws to third */
   try{if(!dq&&nb===1&&PD.bases[1]&&!PD.bases[2]&&PD.outs<3&&qteParts()&&!DBG.nodq&&(DBG.dadv||(PLAY_NEWEST_FIRST&&!S.daG)||Math.random()<.35)){S.daG=true;PD.after=()=>{PD.qAfter=over;PD.hideBat=false;try{qteStart('dadv3',true);}catch(e){PD.hideBat=true;over();}};}}catch(e){}
   pdUI();hud();}
-function pdEnd(){if(PD.wk){PD.wk=false;$('walk').hidden=true;$('hud').classList.remove('wk');}try{const T2=$('tim');T2._px=T2._py=null;T2.style.left='';T2.style.top='';T2.style.textAlign='';}catch(e){}try{if(MX.pit&&MX.pit.obj)MX.pit.obj.visible=true;}catch(e){}pdOdEnd();const k=PD.runs,done=PD.done;PD.on=false;if(S.pdJ0!==undefined){if(!S.over)S.juice=Math.max(S.juice,S.pdJ0);S.pdJ0=undefined;} /* (the batting side gets back the bars it had) */PD.ph=0;$('pd').hidden=true;$('hud').classList.remove('pd');pdArcOff();if(PD.mark)PD.mark.visible=false;if(PD.kz)PD.kz.visible=false;ball.visible=false;ballShadow.visible=false;swing=null;
+function pdEnd(){try{cqOff();}catch(e){}if(PD.wk){PD.wk=false;$('walk').hidden=true;$('hud').classList.remove('wk');}try{const T2=$('tim');T2._px=T2._py=null;T2.style.left='';T2.style.top='';T2.style.textAlign='';}catch(e){}try{if(MX.pit&&MX.pit.obj)MX.pit.obj.visible=true;}catch(e){}pdOdEnd();const k=PD.runs,done=PD.done;PD.on=false;if(S.pdJ0!==undefined){if(!S.over)S.juice=Math.max(S.juice,S.pdJ0);S.pdJ0=undefined;} /* (the batting side gets back the bars it had) */PD.ph=0;$('pd').hidden=true;$('hud').classList.remove('pd');pdArcOff();if(PD.mark)PD.mark.visible=false;if(PD.kz)PD.kz.visible=false;ball.visible=false;ballShadow.visible=false;swing=null;
   fielders.forEach(f=>{if(f._sp){f.speed=f._sp[0];f.react=f._sp[1];f.reach=f._sp[2];f._sp=null;}});flight=null;$('pd').style.visibility='';
   S.kOut=null;S.balls=0;S.strikes=0;S.outs=0;S.bases=[0,0,0];S.pName=PD.sv.pName;try{pitcherModel();}catch(e){}MX.bshown=undefined; /* the Kraken pitcher is back on the mound and the next Comet takes his own body back */
   if(!k&&PD.outs>=3)badge('side');S.state='result';S.t=now;readyDur=.1;S.next=()=>{if(done)done(k);};hud();}
@@ -3729,7 +3730,7 @@ function qteShow(){if(!MOB&&!QT.fk){QT.fk=1;grabKeys();}const M=QT.M,e=$('qte');
   if(QT.mash){if(!$('qmf')){$('qtr').innerHTML='<div id="qmw"><em id="qmf"></em><span>'+(MOB?'TAP! TAP! TAP!':'MASH SPACE!')+'</span></div>';}$('hud').classList.add('qm');$('qmf').style.transform='scaleX('+Math.min(1,QT.fill).toFixed(3)+')';e.hidden=false;$('hud').classList.add('qon');return;} // the other kind: no code, just hammer the arrows until the bar is full
  {const r=$('qtr');if(r.children.length!==QT.code.length||r.firstChild.tagName!=='I')r.innerHTML=QT.code.map(c=>`<i data-d="${c}">${{U:'⬆️',D:'⬇️',L:'⬅️',R:'➡️'}[c]}</i>`).join('');for(let i=0;i<QT.code.length;i++){const c=i<QT.i?'ok':i===QT.i?'cur':'';if(r.children[i].className!==c)r.children[i].className=c;}}e.hidden=false;$('hud').classList.add('qon');}
 const QPB={};
-function qteKey(d){if(CQ.on){cqKey();return;}if(S.state!=='qte'||QT.ph!=='input')return;
+function qteKey(d){if(CQ.on&&CQ.f===flight&&S.state==='flight'){cqKey();return;}if(S.state!=='qte'||QT.ph!=='input')return;
   {const b=QPB[d]||(QPB[d]=document.querySelector('#qpad [data-d='+d+']')),good=QT.mash||d===QT.code[QT.i];if(b){b.className=good?'hit':'miss';clearTimeout(b._t);b._t=setTimeout(()=>{b.className='';},150);}}
   if(QT.stop){ // JUDGED WHERE YOU SAW IT: by the time a tap arrives the needle has moved on (the screen is a frame or two behind, and a finger takes time to land). The press is scored against where the needle was that long ago, and the needle is put back there so the picture agrees.
     const H=QT.hist||[],tp=(inT&&performance.now()-inT<120?inT:performance.now())-17; /* the browser stamps the press with the moment the finger or key actually went down: the needle is put back to exactly where it was drawn then (one frame of display earlier), not to a guess */let x=QT.sx;if(H.length){let a=H[0];for(const h of H){if(h[0]<=tp)a=h;else break;}const b=H[H.indexOf(a)+1];x=b&&b[0]>a[0]?a[1]+(b[1]-a[1])*clamp((tp-a[0])/(b[0]-a[0]),0,1):a[1];}
@@ -4535,7 +4536,7 @@ canvas.addEventListener('pointerup',padEnd);canvas.addEventListener('pointercanc
 canvas.addEventListener('contextmenu',e=>e.preventDefault());
 addEventListener('keydown',e=>{keys[e.code]=true;if(e.repeat)return;if(infoHold&&PD.tutI>=0&&!$('ptut').hidden){if(e.code==='Escape')pdTut(99);else if(e.code==='Enter'||e.code==='Space')pdTut(PD.tutI+1);e.preventDefault();return;}if(infoHold&&(e.code==='Enter'||e.code==='Space'||e.code==='Escape')){podxClose();e.preventDefault();return;}if(S.state==='pask'&&!paused&&PD.askGo){if(e.code==='Enter'||e.code==='Space'||e.code==='KeyP'){PD.askGo(true);e.preventDefault();return;}if(e.code==='KeyS'||e.code==='Escape'){PD.askGo(false);e.preventDefault();return;}}if(S.state==='pduel'&&!paused){if(e.code==='ShiftLeft'||e.code==='ShiftRight'||e.code==='KeyJ'){$('pdjuice').dispatchEvent(new PointerEvent('pointerdown',{bubbles:true}));return;}if(e.code==='KeyD'){pdDrill();return;}if(e.code==='Space'||e.code==='Enter'){pdTap();e.preventDefault();return;}const k={Digit1:0,Digit2:1,Digit3:2,Digit4:3,Digit5:4,Digit6:5,Digit7:6,Digit8:7,Digit9:8}[e.code];if(k!==undefined){pdPick(k);return;}}
   if(S.goK&&(e.code==='KeyG'||e.code==='Enter')){goTap();e.preventDefault();return;}if(S.goK&&(e.code==='KeyN'||e.code==='Escape')){goStay();e.preventDefault();return;}if(e.code==='KeyT'&&stealKind()){stealGo();e.preventDefault();return;}
-  if(CQ.on&&(e.code==='Space'||e.code==='Enter'||e.code.startsWith('Arrow'))){cqKey();e.preventDefault();return;}
+  if(CQ.on&&CQ.f===flight&&S.state==='flight'&&(e.code==='Space'||e.code==='Enter'||e.code.startsWith('Arrow'))){cqKey();e.preventDefault();return;}
   if(S.state==='qte'){const d={ArrowUp:'U',ArrowDown:'D',ArrowLeft:'L',ArrowRight:'R',KeyW:'U',KeyS:'D',KeyA:'L',KeyD:'R'}[e.code]||((QT.mash||QT.stop)&&e.code==='Space'?'U':'');if(d){qteKey(d);e.preventDefault();}return;}
   if(e.code==='Space'||e.code==='KeyZ'||e.code==='KeyJ'){doSwing('contact');e.preventDefault();}
   else if(e.code==='KeyX'||e.code==='KeyK'){doSwing('power');}
@@ -5845,7 +5846,8 @@ let fpsOn=false,fN=0,fT=0,fMax=0,fWork=0;
 {const set=on=>{fpsOn=on;$('fps').hidden=!on;$('fpsbtn').textContent='SHOW SPEED: '+(on?'ON':'OFF');$('fps1').textContent='Show speed: '+(on?'on':'off')+' — tap to change';try{localStorage.setItem('mm_fps',on?'1':'0');}catch(e){}};let on0=false;try{on0=localStorage.getItem('mm_fps')==='1';}catch(e){}set(on0);$('fpsbtn').addEventListener('click',()=>set(!fpsOn));$('fps1').addEventListener('click',()=>set(!fpsOn));} /* the speed read-out can be switched on before the game starts, and it is remembered */
 function fpsTick(ms,work){fN++;fT+=ms;fWork+=work;if(ms>fMax)fMax=ms;if(fT<500)return;
   $('fps').textContent=Math.round(fN*1000/fT)+' fps · worst '+Math.round(fMax)+' ms · work '+(fWork/fN).toFixed(1)+' ms · Q'+qLvl+(DRS.cap?' · capped':'')+' · '+Math.round(DRS.k*100)+'%'+(PD.on?' · P'+MX.pitCur+(MX.pitVar&&MX.pitVar[14]?' ready':' none')+(MX.pitErr&&MX.pitErr[14]?' ERR '+MX.pitErr[14]:''):'')+' · '+renderer.domElement.width+'×'+renderer.domElement.height;fN=0;fT=0;fMax=0;fWork=0;}
-function frame(t){
+function frame(t){try{frame0(t);}catch(e){try{console.warn('frame',e);(window.__ferr=window.__ferr||[]).push(String(e&&e.stack||e).slice(0,300));}catch(x){}requestAnimationFrame(frame);}} /* one bad frame never stops the game: the loop always comes back */
+function frame0(t){
   const w0=performance.now();
   const rawMs=t-last;
   const rdt=Math.min(.05,(t-last)/1000);last=t;
@@ -5887,7 +5889,7 @@ function shTick(){if(!(SHQ&&rim.castShadow))return;const st=S.state,wide=!(st===
   pad.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();if(e.pointerType==='touch')return;qteKey(dir(e.clientX,e.clientY));});}
 let qteTouch=false;
 // In the one-button showdowns (mash, needle) the whole screen is the button: a touch or click anywhere counts, the instant it lands.
-{const one=()=>(CQ.on||(S.state==='qte'&&QT.ph==='input'&&(QT.stop||QT.mash)))&&!paused;
+{const one=()=>((CQ.on&&CQ.f===flight&&S.state==='flight'&&!infoHold)||(S.state==='qte'&&QT.ph==='input'&&(QT.stop||QT.mash)))&&!paused;
   document.addEventListener('touchstart',e=>{if(!one()||e.target.closest('#pausebtn,#mutebtn'))return;e.preventDefault();e.stopPropagation();qteTouch=true;for(const t of e.changedTouches){if(one())qteKey('U');}},{capture:true,passive:false});
   document.addEventListener('mousedown',e=>{if(!one()||e.target.closest('#pausebtn,#mutebtn,#qmash'))return;e.preventDefault();e.stopPropagation();qteTouch=false;qteKey('U');},{capture:true});}
 {const q=$('qmash');q.addEventListener('touchstart',e=>{e.preventDefault();e.stopPropagation();for(const t of e.changedTouches)qteKey('U');},{passive:false});q.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();if(e.pointerType==='touch')return;qteKey('U');});}
