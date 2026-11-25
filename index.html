@@ -1029,7 +1029,7 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 841</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 842</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -3332,7 +3332,7 @@ function stickHint(){
   const live=!S.stk&&!touchLast&&S.inning===1&&S.outs===0&&S.bi===0&&S.balls+S.strikes===0&&(S.state==='ready'||S.state==='windup'||S.state==='pitch');
   if(live!==hintOn){hintOn=live;$('apad').classList.toggle('hint',live);}}
 // Celebrating on second: he shouts, in big letters over his head. Two lines per celebration, the second one about the runs he drove in if any.
-const SHOUT_A=["LET'S GO!!","LET'S GOOO!","YEAH!!","HEATING UP!","YOU'RE SEEING IT!","YOU'RE TEEING OFF!"],SHOUT_B=['TWO BAGS!','KEEP IT ROLLING!','TWO BAGGER!'],SHOUT_H=['PIMPED IT!','PIMPED IT!',"STUNT ON 'EM!","STUNT ON 'EM!",'SEE YA!','WENT YARD!','BIG FLY!','TATER!','GOT ALL OF IT!','NO DOUBTER!','TOUCH \'EM ALL!','ABSOLUTE TANK!','GONE FOREVER!','DINGER!','ADIOS PELOTA!','PLAKATA!','BARRELED!','SAYONARA!','HASTA LA VISTA!','SMELL YA!','GET OFF ME, BALL!','NUKED!','SMELL YA, BALL!','YOU WENT YA YA!','YEETED!'];
+const SHOUT_A=["LET'S GO!!","LET'S GOOO!","YEAH!!","HEATING UP!","YOU'RE SEEING IT!","YOU'RE TEEING OFF!"],SHOUT_B=['TWO BAGS!','KEEP IT ROLLING!','TWO BAGGER!'],SHOUT_H=['PIMPED IT!','PIMPED IT!',"STUNT ON 'EM!","STUNT ON 'EM!","FLEX ON 'EM!","FLEX ON 'EM!",'SEE YA!','WENT YARD!','BIG FLY!','TATER!','GOT ALL OF IT!','NO DOUBTER!','TOUCH \'EM ALL!','ABSOLUTE TANK!','GONE FOREVER!','DINGER!','ADIOS PELOTA!','PLAKATA!','BARRELED!','SAYONARA!','HASTA LA VISTA!','SMELL YA!','GET OFF ME, BALL!','NUKED!','SMELL YA, BALL!','YOU WENT YA YA!','YEETED!','GO, BALL!','GET OUT, BALL!'];
 let shoutI=-1,shoutLast='';const _sh=new V3();
 function shoutTick(){
   const el=$('shout');
@@ -3352,7 +3352,7 @@ function shoutTick(){
   else if(i&&D2.rbi)t='+'+D2.rbi+' RBI!';else do{t=pool[(Math.random()*pool.length)|0];}while(t===shoutLast);
   if(t==='TWO BAGS!'&&D2.base===3)t='THREE BAGS!';
   shoutLast=t;el.textContent=t;el.classList.toggle('b',!!i);el.classList.remove('go');void el.offsetWidth;el.classList.add('go');buzz([20,30,40]);}
-const HOT_CALLS=["YOU'RE COOKING!","YOU'RE GOING OFF!","YOU'RE ON ONE!","YOU'RE RAKING!","YOU'RE GOING HAM!","YOU'RE UNSTOPPABLE!","YOU'RE UNCONSCIOUS!"];function oppoHR(){try{const P=flight&&flight.tr&&flight.tr.pts,q=P&&P[P.length-1];if(!q)return false;return Math.atan2(q.x,-q.z)*180/Math.PI*(MX.lefty?-1:1)>9;}catch(e){return false;}} /* a homer that left the park the other way */let hotLast='';function hotCall(){const L=HOT_CALLS.filter(c=>c!==hotLast);return hotLast=L[(Math.random()*L.length)|0];} /* three hits in a row and counting: one of these, never the same one twice running */
+const HOT_CALLS=["YOU'RE COOKING!","YOU'RE GOING OFF!","YOU'RE ON ONE!","YOU'RE RAKING!","YOU'RE GOING HAM!","YOU'RE UNSTOPPABLE!","YOU'RE UNCONSCIOUS!","HIT PARADE!","RAMPAGE!","YOU'RE ON A TEAR!"];function oppoHR(){try{const P=flight&&flight.tr&&flight.tr.pts,q=P&&P[P.length-1];if(!q)return false;return Math.atan2(q.x,-q.z)*180/Math.PI*(MX.lefty?-1:1)>9;}catch(e){return false;}} /* a homer that left the park the other way */let hotLast='';function hotCall(){const L=HOT_CALLS.filter(c=>c!==hotLast);return hotLast=L[(Math.random()*L.length)|0];} /* three hits in a row and counting: one of these, never the same one twice running */
 function tutClose(){$('hud').classList.remove('tut7');if(tutDemo){tutDemo=false;setTimeout(hud,0);}$('hud').classList.remove('tut5');if(tutWas5){tutWas5=false;$('tj').classList.remove('dn');setTimeout(hud,0);}reticle.visible=true;$('hud').classList.remove('tut1','tut4');$('apad').classList.remove('drag');retP.visible=true;retCfill.visible=false;padKnob.style.transform='';padKnob.style.transition='';$('hud').classList.remove('tut2');$('tut').hidden=true;tutHold=false;tapBlock=performance.now()+400;swing=null;if(tutFirst){tutFirst=false;S.t=now-readyDur+1.7;}}
 function jtutNeed(){if(tutOff||jtutSeen||window.__mmManual&&!window.__mmTut)return false;jtutSeen=true;tutFirst=true;tutShow('j');try{localStorage.setItem('mm_jtut','1');}catch(e){}return true;}
 let otutSeen=!MOB;try{if(!TUT_EVERY_LAUNCH&&localStorage.getItem('mm_otut')==='1')otutSeen=true;}catch(e){}
