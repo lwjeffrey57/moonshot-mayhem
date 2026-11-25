@@ -1029,7 +1029,7 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 791</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 792</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -3667,8 +3667,8 @@ function brawlTick(el){const B=BRW;
     if(q.att==='b')B.p=d;else B.b=d;
     SND.mitt();tone('sine',120,45,.2,.7);noise(.1,'lowpass',500,90,.7);buzz(last?[60,40,120]:[40]);B.hits=(B.hits||0)+1;shake=Math.max(shake,(.3+.17*B.hits)*FX);rumble=Math.max(rumble,.7+.4*B.hits);flash(last?.6:.25); /* every blow hits harder than the one before */burst(fxS,_p.set(0,1.35,BR_Z-.6),last?26:12,4,.45,[1,.9,.5],2,1);
     {const e=$('shout'),ws=last?(B.win?['MURKED HIM!']:['LIGHTS OUT!','GOOD NIGHT!','DOWN HE GOES!']):['POW!','WHAM!','BAM!','OOF!','CRACK!'];e.textContent=ws[(Math.random()*ws.length)|0];brawlShoutPos(e);e.classList.toggle('b',q.att==='p');e.classList.remove('go');void e.offsetWidth;e.classList.add('go');}
-    if(q.att==='b')crowdPump(last?1:.6);else if(!roarG)boo(.6);if(last){B.ko=true;rumble=1;}}
-  if(el>=B.f1+1.1&&B.ko&&!B.taunt){B.taunt=true;const w={n:'p_fist',t:now,loop:true};if(B.win)B.b=w;else B.p=w;}
+    if(q.att==='b')crowdPump(last?1:.6);else if(!roarG)boo(.6);if(last){B.ko=true;B.koT=now;rumble=1;}}
+  if(B.ko&&now-B.koT>=.38&&!B.taunt){ /* THE WINNER GOES STRAIGHT INTO HIS CELEBRATION off the last blow: never back to his fighting stance first */B.taunt=true;const w={n:'p_fist',t:now,loop:true};if(B.win)B.b=w;else B.p=w;}
   if(el>=B.dur){B.taunt=false;const k=B.win?1:Math.random()<.6?-1:0;hbpEnd(k,B.win?'WON THE BRAWL!':'LOST THE BRAWL');}}
 function hbpStart(){S.hbpKip=Math.random()<.45;badge('wore');S.state='hbp';S.t=now;S.hbpN=(S.hbpN||0)+1;S.hbpF=false;S.hbpR=false;S.hbpWill=undefined;ball.visible=false;ballShadow.visible=false;pring.visible=false;swing=null;
   // a ball off the body, not off leather: a dull, dead thump with a short slap on the front of it, then the air going out of him (no mitt pop)
