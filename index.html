@@ -1029,7 +1029,7 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 759</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 760</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -3472,7 +3472,7 @@ function runSnap(R){const o={},d=R.fig;RUN_KEYS.forEach(k=>o[k]=R[k]);o.dm={hipW
 function runWear(R,k){const b=R.bods&&R.bods[k];if(!b)return false;for(const j in R.bods){const on=+j===k;R.bods[j].obj.traverse(m=>{if(m.isMesh)m.visible=on;});}
   RUN_KEYS.forEach(q=>R[q]=b[q]);const d=R.fig,m=b.dm;d.hipW=m.hipW;d.hipDrop=m.hipDrop;d.yOff=m.yOff;d.L1=m.L1;d.L2=m.L2;d.kneeL.position.y=d.kneeR.position.y=m.k;d.footL.position.y=d.footR.position.y=m.f;d.elL.position.y=d.elR.position.y=m.e;d.shL.position.copy(m.sl);d.shR.position.copy(m.sr);
   R.bk=k;R.mode=null;return true;}
-function runBuild(R,k,obj,skin){if(R.bods[k])return;const cur=R.bk,T2={fig:R.fig};dressRunner(T2,obj,skin);R.bods[k]=runSnap(T2);runWear(R,cur);} /* dressed on a stand-in, so the man himself is not disturbed if he is on base right now */
+function runBuild(R,k,obj,skin){hev('run'+k);if(R.bods[k])return;const cur=R.bk,T2={fig:R.fig};dressRunner(T2,obj,skin);R.bods[k]=runSnap(T2);runWear(R,cur);} /* dressed on a stand-in, so the man himself is not disturbed if he is on base right now */
 function runnerWear(R){R.spd=curBatter().spd||1; /* he carries his own speed round the bases with him */const want=curBatter().body||0;if(want&&R.bods&&!R.bods[want]&&MX.batVar&&MX.batVar[want]){try{const v=MX.batVar[want];runBuild(R,want,v.make(RUN_CLIPS),v.skin());}catch(e){console.warn('runner body on demand failed',e);}} /* his body is here but this runner has not been fitted with it yet: fit it now, so the man going to first is the man who was at the plate (never a stand-in) */const k=R.bods&&R.bods[want]?want:(MX.bcur||0);if(R.bk!==k&&!runWear(R,k))runWear(R,0);} /* always the body of the man who is actually batting (after a hit-by-pitch or a brawl the model at the plate may not be his) /* the man leaving the box wears the hitter's body (the house body if his isn't ready) */
 function dressRunner(R,obj,skin){
     setupFielder(R,obj,skin,true);
@@ -3485,7 +3485,7 @@ function dressRunner(R,obj,skin){
       R.jogAct=R.mixer.clipAction(jc);R.jogDur=jc.duration;}
 }
 // The hitter's own body. Each one is measured for the swing once and kept; a new hitter stepping in while the box is empty just switches rigs.
-function batSwap(k){const r=MX.brigs&&MX.brigs[k],o=MX.clip;if(!r||k===MX.bcur)return;scene.remove(MX.obj);MX.obj=r.obj;MX.clip=r.clip;MX.D=r.D;MX.helmet=r.helmet;scene.add(MX.obj);MX.bcur=k;
+function batSwap(k){hev('swap'+k);const r=MX.brigs&&MX.brigs[k],o=MX.clip;if(!r||k===MX.bcur)return;scene.remove(MX.obj);MX.obj=r.obj;MX.clip=r.clip;MX.D=r.D;MX.helmet=r.helmet;scene.add(MX.obj);MX.bcur=k;
   const C=MX.clip;C.bi=o.bi;C.swap=o.swap;C.mode='idle';C.h=0;C.sk=0;C.t=0;}
 function setupRunners(make,skins,cj){
   RUN.pose=pose({y:.88,lean:.22,hL:[-.3,0,.3],kL:.5,hR:[-.3,0,-.3],kR:.5,sL:[-.2,0,.25],eL:-.5,sR:[-.2,0,-.25],eR:-.5}); // a short lead: knees bent, hands loose
@@ -3808,8 +3808,8 @@ function glbMesh(buf){const dv=new DataView(buf),jl=dv.getUint32(12,true),J=JSON
     return a.componentType===5126?new Float32Array(buf.slice(o,o+n*4)):a.componentType===5125?new Uint32Array(buf.slice(o,o+n*4)):new Uint16Array(buf.slice(o,o+n*2));};
   const P=J.meshes[0].primitives[0],g=new T.BufferGeometry();g.setAttribute('position',new T.BufferAttribute(acc(P.attributes.POSITION),3));if(P.attributes.TEXCOORD_0!==undefined)g.setAttribute('uv',new T.BufferAttribute(acc(P.attributes.TEXCOORD_0),2));if(P.indices!==undefined)g.setIndex(new T.BufferAttribute(acc(P.indices),1));
   const im=J.images&&J.images[0],iv=im&&J.bufferViews[im.bufferView],blob=im?new Blob([new Uint8Array(buf,bo+(iv.byteOffset||0),iv.byteLength)],{type:im.mimeType||'image/jpeg'}):null;return {g,blob};}
-function glbLoad(url,cb,tries=0){fetch(url).then(r=>{if(!r.ok)throw 0;return r.text();}).then(t=>{const bin=atob(t.trim()),u8=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u8[i]=bin.charCodeAt(i);const b=u8.buffer; /* (stored as base64 text, like the player models) */const M=glbMesh(b),tx=new T.Texture();tx.flipY=false;tx.anisotropy=ANISO;gq(tx);const mat=new T.MeshBasicMaterial({map:tx,color:0xd8dbe6,side:T.DoubleSide});
-  if(M.blob){const img=new Image();img.onload=()=>{tx.image=img;tx.needsUpdate=true;cb(M.g,mat);};img.src=URL.createObjectURL(M.blob);}else cb(M.g,mat);}).catch(()=>{if(tries<4)setTimeout(()=>glbLoad(url,cb,tries+1),2500*(tries+1));});}
+function glbLoad(url,cb,tries=0){fetch(url).then(r=>{if(!r.ok)throw 0;return r.text();}).then(t=>safeMoment(25000).then(()=>t)).then(t=>{hev('prop:'+url); /* PROPS WAIT THEIR TURN: each one is unpacked at a quiet moment, in the same queue as the player bodies, never the instant its download lands */const bin=atob(t.trim()),u8=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u8[i]=bin.charCodeAt(i);const b=u8.buffer; /* (stored as base64 text, like the player models) */const M=glbMesh(b),tx=new T.Texture();tx.flipY=false;tx.anisotropy=ANISO;gq(tx);const mat=new T.MeshBasicMaterial({map:tx,color:0xd8dbe6,side:T.DoubleSide});
+  if(M.blob){const img=new Image();img.onload=()=>{safeMoment(25000).then(()=>{hev('propadd:'+url);tx.image=img;tx.needsUpdate=true;cb(M.g,mat);});};img.src=URL.createObjectURL(M.blob);}else cb(M.g,mat);}).catch(()=>{if(tries<4)setTimeout(()=>glbLoad(url,cb,tries+1),2500*(tries+1));});}
 let propsDone=false;const VB={};
 {const phi=-36*DEG,q=pol(fenceR(phi)+40,phi,0);Object.assign(VB,{x:q.x,y:27,z:q.z,s:50,c:document.createElement('canvas'),who:''});VB.c.width=512;VB.c.height=418;VB.tex=new T.CanvasTexture(VB.c);} // the second board, out in left: the man at the plate
 function vbDraw(force){if(!VB.g)return;const kr=PD.on&&S.state==='pduel',b=kr?KBAT[PD.k]:S.bi>=0?curBatter():null,F=b&&MUGS[b.name],key=(b?b.name:'')+(F&&F.c?'+':'');if(!force&&key===VB.who)return;VB.who=key;
@@ -4985,7 +4985,7 @@ function pitcherModel(force){if(!MX.pitVar||!MX.pit||!MX.pitLoad)return;const bi
   if(rigs[tgt]){scene.remove(old.obj);MX.pit=rigs[tgt];scene.add(MX.pit.obj);MX.pitCur=tgt;return;}
   const v=MX.pitVar[tgt];try{setupPitcher(v.make(),v.skin);MX.pitCur=tgt;rigs[tgt]=MX.pit;scene.remove(old.obj);}
   catch(e){console.warn('pitcher swap failed',e);(MX.pitErr=MX.pitErr||{})[tgt]='swap '+String(e&&e.message||e).slice(0,60);MX.pit=old;if(!old.obj.parent)scene.add(old.obj);}}
-function setupPitcher(obj,custom){
+function setupPitcher(obj,custom){hev('pit');
   const {sk,B,D}=prepModel(obj,pitT,custom),clip=obj.animations&&obj.animations.find(c=>c.duration>.5);if(!clip)return;
   clip.tracks=clip.tracks.filter(t=>/quaternion$/.test(t.name)||/Hips\.position$/.test(t.name));
   paintAtlas({name:'MAC',num:99,skin:0xc98f62},Object.assign({},AWAY,{glove:'#c98f62',stripe:'#0e7c86'}),pitC,pitT,'#f0f0ec');
@@ -5059,7 +5059,7 @@ function updatePlateCrew(){
     if(c.ua){const e=(now-c.uT)*1.15,t=e>=0&&e<c.ud-.04?e:0;if(t!==c._ut){c._ut=t;c.ua.time=t;c.um.update(0);}} /* (only touched when the frame actually changes: standing still costs nothing) */
     else{const P=lerpPose(c.up,c.up,0,tmpPose);P.y+=Math.sin(now*1.7)*.008;applyPose(c.uf.fig,P);retargetFig(c.uf.fig,c.uf.rt);}}
 }
-function setupFielder(f,obj,custom,noGlove){
+function setupFielder(f,obj,custom,noGlove){hev('fld');
   const d=f.fig,{s,B,D,K}=prepModel(obj,pitT,custom);d.root.add(obj);
   f.rt=fitDriver(d,B,D,s,K);f.obj=obj;f.catching=false;
   if(!noGlove){const gl=mkGlove('fielder');gl.position.set(0,1,0);B('LeftHand').add(gl);f.glL=gl;}
@@ -5105,7 +5105,7 @@ function setupFielder(f,obj,custom,noGlove){
   f.mode='pose';
   showChunky(d,false,obj);
 }
-function setupModel(obj,custom){
+function setupModel(obj,custom){hev('bat');
   const d=batter,{s,sk,B,D,K}=prepModel(obj,atlasT,custom);MX.D=D;
   const clip=obj.animations&&obj.animations.find(c=>c.duration>.5);
   if(clip)setupClip(obj,clip,B,sk);else{
@@ -5142,13 +5142,13 @@ function safeMoment(maxMs=20000,first=false){return new Promise(res=>{HEAVY.q[fi
 // again (four attempts, backing off), and the body the game is actually waiting for can be moved to the head of the line.
 const DLQ={q:[],n:0,max:3,fail:0,retry:0};
 function dlPump(){while(DLQ.n<DLQ.max&&DLQ.q.length){const j=DLQ.q.shift();DLQ.n++;
-    fetch(j.url).then(r=>r.ok?r.text():Promise.reject(new Error('HTTP '+r.status))).then(b64=>{DLQ.n--;dlPump();const bin=atob(b64.trim()),buf=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)buf[i]=bin.charCodeAt(i);j.res(buf.buffer);}) // models ship as base64 text
+    fetch(j.url).then(r=>r.ok?r.text():Promise.reject(new Error('HTTP '+r.status))).then(b64=>{hev('b64:'+String(j.url).slice(0,10));DLQ.n--;dlPump();const bin=atob(b64.trim()),buf=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)buf[i]=bin.charCodeAt(i);j.res(buf.buffer);}) // models ship as base64 text
       .catch(e=>{DLQ.n--;if(++j.tries<4){DLQ.retry++;setTimeout(()=>{DLQ.q.unshift(j);dlPump();},700*j.tries);}else{DLQ.fail++;j.rej(e);}dlPump();});}}
 function dlBoost(url){const i=DLQ.q.findIndex(j=>j.url===url);if(i>0)DLQ.q.unshift(DLQ.q.splice(i,1)[0]);}
 const loadBuf=url=>new Promise((res,rej)=>{DLQ.q.push({url,res,rej,tries:0});dlPump();});
 // bat.txt: a modelled bat that replaces the code-built one. Re-oriented so the knob sits at the hands and the barrel runs up +Y.
 if(T.FBXLoader)loadBuf('bat.txt').then(buf=>{
-  const o=new T.FBXLoader().parse(buf,'');let src=null;o.updateMatrixWorld(true);o.traverse(n=>{if(n.isMesh&&!src)src=n;});if(!src)return;
+  const o=(hev('fbx'),new T.FBXLoader()).parse(buf,'');let src=null;o.updateMatrixWorld(true);o.traverse(n=>{if(n.isMesh&&!src)src=n;});if(!src)return;
   const g=src.geometry.clone().applyMatrix4(src.matrixWorld);g.computeBoundingBox();
   const sz=g.boundingBox.getSize(new V3()),c=g.boundingBox.getCenter(new V3()),ks=['x','y','z'],ax=ks.reduce((a,k)=>sz[k]>sz[a]?k:a,'x'),[o1,o2]=ks.filter(k=>k!==ax);
   const P=g.attributes.position,v=new V3();let rLo=0,nLo=0,rHi=0,nHi=0;
@@ -5181,7 +5181,7 @@ let clipsP=null;
 // exists, instead of the first time it is drawn (which on a phone was a 200-700 ms freeze in the middle of play, often between pitches)
 const GPUQ=[];GPUQ.next=0;function gq(t){GPUQ.push(t);return t;}
 function gpuTick(){if(!GPUQ.length||now<GPUQ.next)return;const st=S.state;if(st==='pitch'||st==='windup'||(st==='flight'&&flight&&now-flight.t0<1.2)||(PD.on&&PD.ph>=1&&PD.ph<=3)||st==='qte')return; /* never while a pitch or a swing is in the air */
-  const t=GPUQ.shift();try{const im=t.image;if(im&&(im.width||im.naturalWidth)&&!t.__gw){t.__gw=1;renderer.initTexture(t);}else if(!im||!(im.width||im.naturalWidth)){if((t.__gr=(t.__gr||0)+1)<20)GPUQ.push(t);}}catch(e){}GPUQ.next=now+.12;}
+  const t=GPUQ.shift();try{const im=t.image;if(im&&(im.width||im.naturalWidth)&&!t.__gw){t.__gw=1;hev('tex');renderer.initTexture(t);}else if(!im||!(im.width||im.naturalWidth)){if((t.__gr=(t.__gr||0)+1)<20)GPUQ.push(t);}}catch(e){}GPUQ.next=now+.12;}
 function makeSkins(im){ // a textured character: its own colour, normal, specular and glow maps; the away team gets its red armour recoloured teal
   const [d,n,sp,g]=im,w=d.naturalWidth,h=d.naturalHeight,cv=document.createElement('canvas');cv.width=w;cv.height=h;
   const cx=cv.getContext('2d');cx.drawImage(d,0,0);const src=cx.getImageData(0,0,w,h),px=src.data;
@@ -5230,7 +5230,7 @@ function loadPlayers(kind){ // body file = character mesh; clips.json = motion-c
   const defP=cfg.def?Promise.all([loadBuf(cfg.def.body),...Object.keys(cfg.def.tex).map(k=>Promise.all(cfg.def.tex[k].map(loadImg)))]).catch(()=>null):Promise.resolve(null);
   Promise.all([loadBuf(cfg.body).then(b=>(loadStep(),b)),clipsP,imgs,own]).then(r=>Promise.race([defP,new Promise(res=>setTimeout(()=>res(null),3500))]).then(df=>r.concat([df]))).then(([bb,cj0,im,oc,df])=>{const cj=Object.assign({},cj0,oc||{});
     if(my!==MX.token)return;                                   // switched again while loading
-    const base=new T.FBXLoader().parse(bb,'');
+    const base=(hev('fbx'),new T.FBXLoader()).parse(bb,'');
     // Every clip made on this body is stored as its joints' own angles. Another body's joints rest at different angles and its hips sit at a
     // different height, so a clip is converted for it once: each joint turns by the same amount from ITS OWN rest pose, and the hips ride at its own height.
     const restOf=o=>{const R={};let sm=0;o.traverse(n=>{if(n.isSkinnedMesh)sm++;});if(!sm)return R;o.updateMatrixWorld(true); /* measured exactly as the file was read, before anything has moved a joint: that IS its rest pose */
@@ -5250,9 +5250,9 @@ function loadPlayers(kind){ // body file = character mesh; clips.json = motion-c
     const bubbleG=new T.SphereGeometry(17.5,20,14),collarG=new T.TorusGeometry(9.2,1.7,8,22);
     const helmet=o=>{let h=null;o.traverse(b=>{if(b.isBone&&/Head$/.test(b.name)&&!/HeadTop/.test(b.name))h=b;});if(!h)return;
       const a=new T.Mesh(bubbleG,rimM),b=new T.Mesh(bubbleG,glass),c=new T.Mesh(collarG,collarM);a.userData.helm=b.userData.helm=c.userData.helm=true;a.position.y=b.position.y=9;a.renderOrder=3;b.renderOrder=4;c.rotation.x=PI/2;c.position.set(0,-4,1);h.add(a,b,c);};
-    const make=names=>{const o=canClone?T.SkeletonUtils.clone(base):new T.FBXLoader().parse(bb,'');o.animations=names.map(n=>mkClip(cj[n],n));return o;}; /* (no bubble helmet on this body any more: his own head and armour are the look) */
+    const make=names=>{const o=canClone?T.SkeletonUtils.clone(base):(hev('fbx'),new T.FBXLoader()).parse(bb,'');o.animations=names.map(n=>mkClip(cj[n],n));return o;}; /* (no bubble helmet on this body any more: his own head and armour are the look) */
     let makeD=make,defSkin=skins&&skins.away;
-    if(df&&canClone)try{const dbase=new T.FBXLoader().parse(df[0],''),tx=i=>{const t=new T.Texture(i);t.needsUpdate=true;t.anisotropy=ANISO;return gq(t);},geos=new Map();
+    if(df&&canClone)try{const dbase=(hev('fbx'),new T.FBXLoader()).parse(df[0],''),tx=i=>{const t=new T.Texture(i);t.needsUpdate=true;t.anisotropy=ANISO;return gq(t);},geos=new Map();
       const dkeys=Object.keys(cfg.def.tex),dmats={};dkeys.forEach((k,i)=>{const o={map:tx(df[1+i][0]),color:0xffffff,emissive:0x1c1c22,specular:0x333340,shininess:26,skinning:true};if(df[1+i][1])o.normalMap=tx(df[1+i][1]);dmats[k]=new T.MeshPhongMaterial(o);});
       defSkin={mat:dmats[dkeys[0]],mats:dmats,hide:cfg.def.hide,
         trim:g=>{let o=geos.get(g.uuid);if(!o){o=weld(g);o.userData.lite=liteGeo(o,LOD_CELL);geos.set(g.uuid,o);}return o;}}; // shared full and low-detail meshes, as for the hitters
@@ -5268,7 +5268,7 @@ function loadPlayers(kind){ // body file = character mesh; clips.json = motion-c
     // Bodies are fetched only when a pitcher who wears one is due (the man on the mound, and the next arm in the bullpen), never all at once.
     const pitP={};MX.pitLoad=want=>{const v=cfg.pit&&canClone&&cfg.pit[want-1];if(!v||want<1)return null;if(pitP[want])return pitP[want];const keys=Object.keys(v.tex);
       return pitP[want]=Promise.all([loadBuf(v.body),...keys.map(k=>Promise.all(v.tex[k].map(loadImg)))]).then(r=>safeMoment(want===14?600:20000,want===14).then(()=>r)).then(r=>{if(my!==MX.token)return;
-        const PH=matchMedia('(pointer:coarse)').matches,vb=new T.FBXLoader().parse(r[0],''),tx=i=>{let im=i;if(PH&&i.width>512){const c=document.createElement('canvas');c.width=c.height=512;c.getContext('2d').drawImage(i,0,0,512,512);im=c;} /* phones: half-size textures, no bump map, so nine extra bodies fit in memory */const t=new T.Texture(im);t.needsUpdate=true;t.anisotropy=ANISO;return gq(t);},mats={},geos=new Map();
+        const PH=matchMedia('(pointer:coarse)').matches,vb=(hev('fbx'),new T.FBXLoader()).parse(r[0],''),tx=i=>{let im=i;if(PH&&i.width>512){const c=document.createElement('canvas');c.width=c.height=512;c.getContext('2d').drawImage(i,0,0,512,512);im=c;} /* phones: half-size textures, no bump map, so nine extra bodies fit in memory */const t=new T.Texture(im);t.needsUpdate=true;t.anisotropy=ANISO;return gq(t);},mats={},geos=new Map();
         keys.forEach((k,i)=>{const o={map:tx(r[1+i][0]),color:0xffffff,emissive:0x1c1c22,specular:0x333340,shininess:26,skinning:true};if(r[1+i][1]&&!PH)o.normalMap=tx(r[1+i][1]);mats[k]=new T.MeshPhongMaterial(o);});
         let vclips=null;MX.pitVar[want]={makeN:names=>{const o=T.SkeletonUtils.clone(vb);o.animations=fitClips(o,names.filter(n=>cj[n]));return o;},make:()=>{const o=T.SkeletonUtils.clone(vb);o.animations=vclips=vclips||fitClips(o,pitNames);return o;},
           skin:{mat:mats[keys[0]],mats,hide:v.hide,trim:g=>{let o=geos.get(g.uuid);if(!o){o=weld(g);o.userData.lite=liteGeo(o,LOD_CELL);geos.set(g.uuid,o);}return o;}}};
@@ -5288,7 +5288,7 @@ function loadPlayers(kind){ // body file = character mesh; clips.json = motion-c
     MX.batVar=[];MX.brigs=null;MX.bcur=0;MX.bshown=undefined;
     const batLoad=k=>{const v=cfg.bat&&canClone&&cfg.bat[k-1];if(!v)return null;if(batP[k])return batP[k];const keys=Object.keys(v.tex);
       return batP[k]=Promise.all([loadBuf(v.body),...keys.map(q=>Promise.all(v.tex[q].map(loadImg)))]).then(r=>{const hot=(PD.on&&k>=10)||k===PD.needBody;return safeMoment(hot?600:20000,hot).then(()=>r);}).then(r=>{if(my!==MX.token)return;MX.dlT=MX.dlT||{};MX.dlT['b'+k]=Math.round(performance.now()/100)/10;
-        const vb=new T.FBXLoader().parse(r[0],''),tx=i=>{const t=new T.Texture(i);t.needsUpdate=true;t.anisotropy=ANISO;return gq(t);},mats={},geos=new Map();
+        const vb=(hev('fbx'),new T.FBXLoader()).parse(r[0],''),tx=i=>{const t=new T.Texture(i);t.needsUpdate=true;t.anisotropy=ANISO;return gq(t);},mats={},geos=new Map();
         keys.forEach((q,i)=>{const o={map:tx(r[1+i][0]),color:v.col||0xffffff,emissive:v.col?0x0c0c10:0x1c1c22,specular:0x333340,shininess:26,skinning:true};if(r[1+i][1])o.normalMap=tx(r[1+i][1]);mats[q]=new T.MeshPhongMaterial(o);});
         MX.batVar[k]={make:names=>{const o=T.SkeletonUtils.clone(vb);o.animations=fitClips(o,names.filter(n=>cj[n]));return o;},
           skin:()=>{const m2={};keys.forEach(q=>m2[q]=mats[q].clone());return {mat:m2[keys[0]],mats:m2,hide:v.hide,topY:refRest.HeadTop_End?refRest.HeadTop_End.y:0,trim:g=>{let o=geos.get(g.uuid);if(!o){o=weld(g);o.userData.lite=liteGeo(o,LOD_CELL);geos.set(g.uuid,o);}return o;}};}}; /* every wearer gets his own copy of the materials: the hitter fades in and out, the runners must not */
@@ -5311,7 +5311,7 @@ function loadPlayers(kind){ // body file = character mesh; clips.json = motion-c
     const umpP=cfg.ump&&canClone?Promise.all([loadBuf(cfg.ump.body),...Object.keys(cfg.ump.tex).map(k=>loadImg(cfg.ump.tex[k]).then(i=>[k,i]))]).catch(()=>null):Promise.resolve(null);
     if(skins&&cj.catch)Promise.race([umpP,new Promise(res=>setTimeout(()=>res(null),4500))]).then(um=>{if(my!==MX.token)return;
       let makeU=make,umpSkin=skins.ump;
-      if(um)try{const ub=new T.FBXLoader().parse(um[0],''),geos=new Map(),mats={};
+      if(um)try{const ub=(hev('fbx'),new T.FBXLoader()).parse(um[0],''),geos=new Map(),mats={};
         um.slice(1).forEach(([k,img])=>{const t=gq(new T.Texture(img));t.needsUpdate=true;t.anisotropy=ANISO;mats[k]=new T.MeshPhongMaterial({map:t,color:0x9aa0ad,specular:0x222222,shininess:16,skinning:true});});
         mats.Eye_MAT=mats.Body_MAT;
         umpSkin={mat:mats.Body_MAT,mats,hide:/Eye_Spec|Brows/,trim:g=>{let o=geos.get(g.uuid);if(!o){o=weld(g);o.userData.lite=liteGeo(o,LOD_CELL);geos.set(g.uuid,o);}return o;}};
@@ -5829,10 +5829,11 @@ function perfAB(ms){if(!MOB||PAB2.lock>=0)return;const pn=performance.now();if(!
   if(PAB2.n[0]>2200&&PAB2.n[1]>2200&&PAB2.n[2]>2200){const a=PAB2.slow[0]/PAB2.n[0],b=PAB2.slow[1]/PAB2.n[1];if(PAB2.arm===2)perfHud(false);PAB2.lock=b<a*.7?1:0;window.__shLite=PAB2.lock===1;try{localStorage.setItem('mm_shl2',PAB2.lock?'lite':'full');}catch(e){}}}
 function perfTick(ms,work){try{if(perfCtx())perfAB(ms);}catch(e){}if(PLAG.ch){if(ms>34&&PLAG.allN>0){PLAG.slowN++;PLAG.slowLag+=PLAG.lag;if(PLAG.lag>8)PLAG.slowBusy++;}PLAG.t=performance.now();try{PLAG.ch.port2.postMessage(0);}catch(e){}}if(window.__mmManual&&!DBG.perf)return;if(ms>1000||ms<=0)return; /* (a frame that long is the tab coming back, not the game) */const c=perfCtx();
   if(S.state==='over'&&PERF.st!=='over')perfFlush();PERF.st=S.state;if(!c)return;if(!PERF.t0)PERF.t0=performance.now();if(performance.now()-PERF.t0<3000)return; /* the first seconds are loading, not play */
+  if(S.state!==PERF.stC){PERF.stL=PERF.stC;PERF.stC=S.state;PERF.stT=performance.now();}
   PERF.n++;PERF.ms+=ms;PERF.hist[ms<12?0:ms<18?1:ms<25?2:ms<34?3:ms<50?4:ms<80?5:ms<150?6:7]++;
   const o=PERF.ctx[c]||(PERF.ctx[c]={n:0,ms:0,wk:0,s25:0,s50:0,mx:0,calls:0,tris:0,sm:0,k:0});o.n++;o.ms+=ms;o.wk+=work;if(ms>25)o.s25++;if(ms>50)o.s50++;if(ms>o.mx)o.mx=ms;
   let calls=0,tris=0;if(ms>40||o.n%30===0){try{calls=renderer.info.render.calls|0;tris=renderer.info.render.triangles|0;}catch(x){}o.calls+=calls;o.tris+=tris;o.k+=DRS.k;o.sm++;}
-  if(ms>40){const H=PERF.hit;if(H.length<16||ms>H[H.length-1].ms){H.push({ms:Math.round(ms),wk:Math.round(work),c,at:Math.round((performance.now()-PERF.t0)/1000),calls,tris,q:qLvl,k:+DRS.k.toFixed(2),w:renderer.domElement.width,fw:fireworks.length});H.sort((a,b)=>b.ms-a.ms);if(H.length>16)H.length=16;}}
+  if(ms>40){const H=PERF.hit;if(H.length<16||ms>H[H.length-1].ms){H.push({ms:Math.round(ms),wk:Math.round(work),c,at:Math.round((performance.now()-PERF.t0)/1000),calls,tris,q:qLvl,k:+DRS.k.toFixed(2),w:renderer.domElement.width,fw:fireworks.length,ev:(()=>{const pn=performance.now();return HEV.filter(e=>pn-e[1]<1600).map(e=>e[0]+'@'+Math.round(pn-e[1])).join(' ').slice(0,90);})(),st:(PERF.stL||'')+'>'+S.state+'@'+Math.round(performance.now()-(PERF.stT||0))});H.sort((a,b)=>b.ms-a.ms);if(H.length>16)H.length=16;}}
   const pn=performance.now();if(pn-PERF.last>45000&&PERF.n>600){PERF.last=pn;perfFlush();}}
 function perfReport(){const tot=PERF.ms||1,ctx=Object.keys(PERF.ctx).map(k=>{const o=PERF.ctx[k],sm=o.sm||1;return {c:k,sec:Math.round(o.ms/1000),share:+(o.ms/tot).toFixed(3),fps:+(1000*o.n/o.ms).toFixed(1),workMs:+(o.wk/o.n).toFixed(1),slow25:+(o.s25/o.n).toFixed(3),slow50:+(o.s50/o.n).toFixed(3),worstMs:Math.round(o.mx),calls:Math.round(o.calls/sm),tris:Math.round(o.tris/sm),res:+(o.k/sm).toFixed(2)};}).sort((a,b)=>b.sec-a.sec).slice(0,28);
   const h=PERF.hist,n=PERF.n||1;let bld='';try{bld=$('bld').textContent;}catch(x){}
@@ -5898,6 +5899,7 @@ let qteTouch=false;
 $('shbtn').addEventListener('click',()=>{SHQ=!SHQ;if(SHQ&&!rim.castShadow)rim.castShadow=true;try{localStorage.setItem('mm_shadows',SHQ?'1':'0');}catch(e){}shApply();});
 shApply();
 resize();hud();
+const HEV=[];function hev(n){try{HEV.push([n,performance.now()]);if(HEV.length>14)HEV.shift();}catch(e){}} /* what the game was loading or building lately: written into the performance report beside every long frame */
 const DBG={corn:false,dtag:false,dadv:false,beat:false,tko:false,dive:'',hbp:false,pcut:false,fl:'',rob:false,pc:false,staunt:false,pod:false,trail:false,orbit:false,sat:false,drill:false,brawl:false,qte:false,mash:false,slide:false,pn:'',laser:false,lamp:false,mw:false,rev:false,stop:false,aerial:false,pdef:false,dbl:false,cam:false,admire:'',trip:false,fist:false,pop:false,loser:false}; // test hook: pin the camera to CAM_HOME/CAM_LOOK
 window.__ret=()=>reticle.position;window.__fl=()=>fielders;window.__VB=VB;window.__glbMesh=glbMesh;window.__gpuq=GPUQ;window.__dugs=DUGS;window.__rk=ROCKET;window.__reticle=reticle;window.__tut=m=>tutShow(m);window.__cq={CQ,key:()=>cqKey()};window.__rocket=()=>{ROCKET.t=now;};window.__lk=LOCKFX;window.__pd={q:pdQ,tut:pdTut,drill:pdDrill,tap:pdTap,pick:pdPick,PD,start:pdStart};window.__lockfx=(x,z)=>{Object.assign(LOCKFX,{t:now,x,z,hr:true,pend:false,name:'R. RAZOR',fired:false});};window.__fly=()=>{FLY.t=now;};window.__jt=juiceTap;window.__sb=scoreboard;window.__sbd=()=>sbDraw(true);window.__sync=syncRunners;window.__lr=()=>landRing.visible+' at '+landRing.position.x.toFixed(0)+','+landRing.position.z.toFixed(0)+' scale '+landRing.scale.x.toFixed(1)+' geo '+landRing.geometry.type+' rot '+landRing.rotation.x.toFixed(2)+' op '+landRing.material.opacity.toFixed(2)+' par '+(landRing.parent&&landRing.parent.type)+' scr '+(()=>{const v=landRing.position.clone().project(camera);return v.x.toFixed(2)+','+v.y.toFixed(2)+','+v.z.toFixed(3);})()+' y '+landRing.position.y;window.__pop=pop;window.__bdg=id=>{delete bdgGot[id];if(S.bdgGame)delete S.bdgGame[id];badge(id);pop('GONE!','512 FT · +1 RUN','hot',true);};window.__lu=LINEUP;window.__bp=k=>BULLPEN[k];window.__mm={pitcherModel,crowdFx,setE:v=>{crowdE=v;crowdShow=v;},GLOVE,renderer,scene,LODM,camera,zapStart,acState:()=>AC?(zoneLP?"lp="+Math.round(zoneLP.frequency.value)+" ":"")+AC.state+" t="+AC.currentTime.toFixed(1)+" real="+crowdReal+" roar="+(roarG?roarG.gain.value.toFixed(2)+(roarTop?"T":""):"off")+" bed="+crowdGain.gain.value.toFixed(2):"none",roar,roarOff,boo,cheer,crowdRise,crowdDrop,S,aim,MX,DBG,landRingOn:()=>landRing.visible,hud,tutAnim,draw:()=>draw(),endGame,TROT,SFX,RUN,ballPos:()=>ball.position,ballVisible:()=>ball.visible,fielders,toReady,CAM_HOME,CAM_LOOK,now:()=>now,simulate,judge,get pitch(){return pitch;},get flight(){return flight;},lastSwing:()=>{const t=swing&&swing.type;swing=null;return t;},lastSwingTurbo:()=>!!(swing&&swing.turbo),doSwing,newGame,V3,
   sim:(dt)=>{hitstop=0;now+=dt;step(dt);},
