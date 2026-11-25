@@ -1026,7 +1026,7 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 743</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 744</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -1515,6 +1515,33 @@ function pdAdvance(nb,walk){let runs=0;const b=PD.bases;
 // THE STRIKEOUT CALL, like the hitting calls: picked for how he went down, never the same one twice running
 const KCALL={look:['FROZE HIM!','GRAB SOME PINE!','CAUGHT LOOKING!','SIT DOWN!','LOCKED HIM UP!'],swing:['BY YOU!','GOODNIGHT!','PUNCHED OUT!','SIT DOWN!','SAT HIM DOWN!','FANNED HIM!'],gas:['BLEW HIS DOORS OFF!','BY YOU!','PURE GAS!','CHEESE!'],ugly:['BUCKLED HIM!','MADE HIM DANCE!','BROKE HIS ANKLES!','FILTHY!'],paint:['PAINTED!','FROZE HIM!','ON THE BLACK!']};let kcLast='';
 function pdKCall(R){let L;const fb=PD.pt&&/FASTBALL|METEOR|RISER/.test(PD.pt.P.n);if(!R.swing)L=R.e>.8?KCALL.paint:KCALL.look;else if(R.ugly)L=KCALL.ugly;else if(R.jz||(fb&&PD.grade===2))L=KCALL.gas;else L=KCALL.swing;let c=L[(Math.random()*L.length)|0];if(c===kcLast)c=L[(L.indexOf(c)+1)%L.length];kcLast=c;return c;}
+// MAKE THE PLAY: while you pitch, a ball that is right on the edge of being caught (a diving catch, a home run that can be taken back at the wall,
+// a screamer right at an infielder, a foul fly just out of reach) sometimes stops the action in slow motion and hands it to you: win the
+// showdown and he makes the play, lose it and it gets by him. Never on routine outs, and only now and then, so it is never expected.
+const CQ={on:false};
+function cqSetup(tr,play,v){if(!PD.on||!qteParts())return null;if(!(DBG.cq||Math.random()<.45))return null;const J=(k,val)=>{const o=DBG[k];DBG[k]=val;let r=null;try{r=judge(tr,{spd:1});}catch(e){}DBG[k]=o;return r;};let win=null,lose=null,kind='';
+  try{if(play.type==='out'&&play.dive&&!play.dive.miss){const L=J('dive','miss');if(L&&L.type!=='out'){win=play;lose=L;kind='DIVE FOR IT!';}}
+    else if(play.type==='out'&&play.rob){const L=J('norob',true);if(L&&L.type==='hr'){win=play;lose=L;kind='GO GET IT!';}}
+    else if(play.type==='out'&&play.label==='LINE OUT'&&play.f&&!play.f.of&&v>=36){win=play;lose={type:'hit',bases:1,endT:play.endT+.35,f:play.f,p:play.p,infield:true,tag:'TOO HOT TO HANDLE'};kind='SNAG IT!';}
+    else if(play.type==='hit'&&!play.grd&&(play.bases||1)<=2){const W=J('dive','catch');if(W&&W.type==='out'&&W.dive&&!W.dive.miss){win=W;lose=play;kind='DIVE FOR IT!';}}
+    else if(play.type==='foul'&&play.f&&tr.land&&tr.land.z<11){const f=play.f,L=tr.land,d=Math.hypot(f.home.x-L.x,f.home.z-L.z),r=f.reach+f.speed*Math.max(0,L.t-f.react);if(d>r&&d<=r+8&&L.t>1.4){win={type:'out',label:'FOUL OUT',endT:L.t,f,p:{x:L.x,y:1,z:L.z,t:L.t},air:true};lose=play;kind='GO GET IT!';}}}catch(e){return null;}
+  if(!win||!lose)return null;win.cq=kind;const t=(win.dive&&win.dive.t)||(win.p&&win.p.t)||win.endT;return {win,lose,kind,t:Math.max(.35,t-.55),st:0};}
+function cqStart(f){const c=f.cq;c.st=1;CQ.on=true;{const e=$('bdg');if(e.classList.contains('go')){e.classList.remove('go');if(bdgCur&&!bdgCur.re){bdgCur.re=1;bdgCur.old=1;bdgQ.unshift(bdgCur);}bdgCur=null;}bdgBusy=Math.max(bdgBusy,performance.now()+4500);}$('pop').className='';$('tim').className=''; /* the showdown has the screen to itself: plates and calls wait until it is over */CQ.f=f;CQ.t0=now;const stop=Math.random()<.6;Object.assign(CQ,{stop,fill:0,lt:now,lim:stop?3.2:2.6,sx:Math.random()<.5?0:1,sv:rand(1,1.3)});CQ.sd=CQ.sx?-1:1;
+  if(stop){const gw=.18,g0=rand(.08,.92-gw);CQ.sg=[g0,gw];let o0=0;for(let i=0;i<30;i++){o0=rand(.04,.95-.05);if(o0>g0+gw+.08||o0+.05<g0-.08)break;}CQ.so=[o0,.05];}
+  $('qtt').textContent=c.kind;const P=v=>(v*100).toFixed(2)+'%';
+  $('qtr').innerHTML=stop?'<div id="qsw"><div id="qmw" class="st"><s id="qsg" style="left:'+P(CQ.sg[0])+';width:'+P(CQ.sg[1])+'"></s><s id="qso" style="left:'+P(CQ.so[0])+';width:'+P(CQ.so[1])+'"></s><u id="qsn"></u></div><em id="qsl">STOP IT ON GREEN</em></div>':'<div id="qmw"><em id="qmf"></em><span>'+(MOB?'TAP! TAP! TAP!':'MASH SPACE!')+'</span></div>';
+  $('qte').hidden=false;$('hud').classList.add('qon','qm');buzz([30,30,60]);tone('triangle',520,880,.15,.35);crowdRise(.7,2.5,true);}
+function cqEnd(ok){const f=CQ.f,c=f.cq;CQ.on=false;c.st=2;$('hud').classList.remove('qon','qm');setTimeout(()=>{if(!CQ.on)$('qte').hidden=true;},300);
+  if(ok){buzz([20,30,60]);tone('triangle',660,990,.12,.3);timing('MADE THE PLAY!','#39ff6a',3);}
+  else{buzz([40,30,40]);tone('sawtooth',150,80,.12,.3);const pl=c.lose;if(c.win.f)pl.from=c.win.f.fig.root.position.clone();pl.tS=now-f.t0;f.play=pl;timing(pl.type==='hr'?'OVER HIS GLOVE!':pl.type==='foul'?'JUST OUT OF REACH':'GOT BY HIM!','#ff8a2e',3);}}
+function cqTick(dt){const f=flight;if(!f||!f.cq)return;const c=f.cq;if(c.st===0&&now-f.t0>=c.t)cqStart(f);if(!CQ.on||CQ.f!==f)return;
+  f.t0+=dt*.94; /* the play hangs in slow motion while you make it */
+  const e=now-CQ.t0,left=1-e/CQ.lim;$('qtb').style.transform='scaleX('+Math.max(0,left).toFixed(3)+')';$('qtb').classList.toggle('low',left<.35);
+  if(CQ.stop){CQ.sx+=CQ.sd*CQ.sv*dt;if(CQ.sx>=1){CQ.sx=1;CQ.sd=-1;CQ.sv*=1.1;}else if(CQ.sx<=0){CQ.sx=0;CQ.sd=1;CQ.sv*=1.1;}const n=$('qsn');if(n){if(!CQ.sw)CQ.sw=n.parentNode.clientWidth||300;n.style.transform='translateX('+(CQ.sx*CQ.sw).toFixed(1)+'px)';}}
+  else{CQ.fill=Math.max(0,CQ.fill-.12*dt);const m=$('qmf');if(m)m.style.transform='scaleX('+Math.min(1,CQ.fill).toFixed(3)+')';}
+  if(left<=0)cqEnd(false);}
+function cqKey(){if(!CQ.on)return;if(CQ.stop){const x=CQ.sx,ins=z=>x>=z[0]-.015&&x<=z[0]+z[1]+.015,gold=ins(CQ.so),ok=gold||ins(CQ.sg);const n=$('qsn');if(n)n.className=gold?'au':ok?'ok':'no';if(gold&&!S.over)S.juice=Math.min(1,S.juice+.25);cqEnd(ok);return;}
+  CQ.fill+=1/13;buzz(10);tone('triangle',380+520*Math.min(1,CQ.fill),420+560*Math.min(1,CQ.fill),.06,.5);const m=$('qmf');if(m)m.style.transform='scaleX('+Math.min(1,CQ.fill).toFixed(3)+')';if(CQ.fill>=1)cqEnd(true);}
 function pdResolve(){const R=PD.res,h=KBAT[PD.k];PD.abP=(PD.abP||0)+1;ball.visible=false;ballShadow.visible=false;PD.last=PD.lastI;
   const next=()=>{PD.ph=0;pdUI();},over=()=>{PD.n++;PD.k=(PD.k+1)%KBAT.length;if(PD.n>=3||PD.outs>=3)pdEnd();else pdHitter();};
   if(R.hbp){PD.drillOn=false;const r=pdAdvance(1,true);PD.hbpT=now;S.hbpKip=Math.random()<.45;
@@ -1526,8 +1553,8 @@ function pdResolve(){const R=PD.res,h=KBAT[PD.k];PD.abP=(PD.abP||0)+1;ball.visib
     pdUI();hud();return;}
   if(R.kind==='foul'){ // A FOUL BALL IS SHOWN: it comes off the bat and is followed far enough to see it land foul, then it is back to the mound
     try{let tr=null;for(let i=0;i<6&&!(tr&&tr.foul);i++){const sd=Math.random()<.5?-1:1,ph=sd*rand(56,82)*DEG,la=rand(6,44)*DEG,v=rand(22,36);tr=simulate(new V3(PD.pt.tx,PD.pt.ty,0),new V3(Math.sin(ph)*Math.cos(la),Math.sin(la),-Math.cos(ph)*Math.cos(la)).multiplyScalar(v),{side:sd*3,lift:0},{});}
-      if(tr&&tr.foul){const play=judge(tr,{spd:1});if(play.type==='foul'){play.endT=Math.min(play.endT,2.6);if(play.f)play.from=play.f.fig.root.position.clone();try{SND.crack(.4,false);}catch(e){}
-        flight={tr,play,t0:now,q:.3,pw:false,tb:false,jp:false,pod:false,fp:false,od:false,v:30,done:false,called:false,pd:true,trailC:[.5,.5,.55]};PD.ph=6;PD.ringT=0;try{$('pdring').style.display='none';}catch(e){}S.state='flight';S.t=now;ball.visible=true;ballShadow.visible=true;$('pd').style.visibility='hidden';if(PD.mark)PD.mark.visible=false;if(PD.kz)PD.kz.visible=false;return;}}}catch(e){}
+      if(tr&&tr.foul){let play=judge(tr,{spd:1});if(play.type==='foul'){const cq=cqSetup(tr,play,30);if(cq)play=cq.win;else play.endT=Math.min(play.endT,2.6);if(play.f)play.from=play.f.fig.root.position.clone();try{SND.crack(.4,false);}catch(e){}
+        flight={cq,tr,play,t0:now,q:.3,pw:false,tb:false,jp:false,pod:false,fp:false,od:false,v:30,done:false,called:false,pd:true,trailC:[.5,.5,.55]};PD.ph=6;PD.ringT=0;try{$('pdring').style.display='none';}catch(e){}S.state='flight';S.t=now;ball.visible=true;ballShadow.visible=true;$('pd').style.visibility='hidden';if(PD.mark)PD.mark.visible=false;if(PD.kz)PD.kz.visible=false;return;}}}catch(e){}
     if(PD.strikes<2)PD.strikes++;SND.crack&&SND.crack(.4);timing('FOULED OFF','#f2f5ff',2);PD.after=next;pdUI();return;}
   // PUT IN PLAY: from here it is the real game. The ball is launched off his bat with the same physics as any batted ball, the fielders go
   // and get it (or do not) by the same rules, and the same cameras follow it. How hard and how squarely he hit it comes from the pitch.
@@ -1536,8 +1563,8 @@ function pdResolve(){const R=PD.res,h=KBAT[PD.k];PD.abP=(PD.abP||0)+1;ball.visib
   // HE CAN TAKE YOU DEEP THE WAY YOU TAKE HIM DEEP: a ball he squares up (a hung pitch most of all) now and then becomes a tape-measure shot, out of the park and onto the Moon
   let v1=v,la1=DBG.pdgb?-6:la,fo={};if(DBG.pdmon||(qq>.68&&Math.random()<(g===0?.5:R.hz>0?.34:.2))){const k=Math.random();la1=rand(24,34);v1=Math.max(v,44)*(1.14+.2*k);fo={g:.8-.2*k};}
   const p0=new V3(pt.tx,pt.ty,0),v0=new V3(Math.sin(phi*DEG)*Math.cos(la1*DEG),Math.sin(la1*DEG),-Math.cos(phi*DEG)*Math.cos(la1*DEG)).multiplyScalar(v1),tr=simulate(p0,v0,{side:phi/40*3.2,lift:clamp(gs()*2,-2,2)},fo);
-  const play=judge(tr,{spd:1});if(play.f)play.from=play.f.fig.root.position.clone();try{SND.crack(qq,qq>.6);}catch(e){}
-  flight={tr,play,t0:now,q:qq,pw:qq>.6,tb:false,jp:false,pod:false,fp:false,od:false,v,done:false,called:false,pd:true,trailC:qq>.75?[1,.85,.25]:[.5,.5,.55]};
+  let play=judge(tr,{spd:1});const cq=cqSetup(tr,play,v);if(cq)play=cq.win;if(play.f)play.from=play.f.fig.root.position.clone();try{SND.crack(qq,qq>.6);}catch(e){}
+  flight={cq,tr,play,t0:now,q:qq,pw:qq>.6,tb:false,jp:false,pod:false,fp:false,od:false,v,done:false,called:false,pd:true,trailC:qq>.75?[1,.85,.25]:[.5,.5,.55]};
   if(play.type==='hr'){const ft=play.dist*3.281,lastP=tr.pts[tr.pts.length-1];flight.dShow=true;flight.dFt=ft;flight.dEnd=tr.outD||Math.hypot(lastP.x,lastP.z);if(ft>=385)flight.trailCam=true;if(tr.outT)play.endT=Math.min(play.endT,tr.outT+.75);} /* the long ones are followed from behind the ball with the distance running up, just like yours */
   PD.ph=6;PD.ringT=0;try{$('pdring').style.display='none';}catch(e){}S.state='flight';S.t=now;ball.visible=true;ballShadow.visible=true;$('pd').style.visibility='hidden';if(PD.mark)PD.mark.visible=false;if(PD.kz)PD.kz.visible=false;
   crowdRise(play.type==='hr'?.45:.3,Math.min(play.endT,6),false);} /* a Kraken puts it in play: the park reacts, but well short of what it does for a Comet (no boos for contact) */
@@ -1553,8 +1580,8 @@ function pdFinish(f,pl){if(f._res){f.t0=now-pl.endT;if(f.thr){if(!f.thr.done&&no
   const next=()=>{PD.ph=0;pdUI();},over=()=>{PD.n++;PD.k=(PD.k+1)%KBAT.length;if(PD.n>=3||PD.outs>=3)pdEnd();else pdHitter();};
   if(pl.type==='foul'){if(PD.strikes<2)PD.strikes++;timing('FOULED OFF'+(PD.res&&PD.res.tim?' · '+PD.res.tim.replace('WAY ','')+' ON IT':''),'#f2f5ff',2);PD.after=next;pdUI();return;}
   if(pl.type==='out'){PD.outs++;const dp=!!pl.dp&&PD.bases[0]&&PD.outs<3;if(dp){PD.outs++;PD.bases[0]=0;}
-    {const call=()=>{if(pl.label==='GROUND OUT')SND.ump(false);if(camped(pl))badge('corn');pop(dp?'DOUBLE PLAY!':pl.dive?'WHAT A CATCH!':pl.rob?'ROBBED HIM!':camped(pl)?'CAN OF CORN!':'OUT!',pl.label+' · '+h.name+' IS RETIRED','cool');cheer(.5,2.5);};if(pl.label==='GROUND OUT'&&pl.f&&pl.f.thrAct&&pl.f!==fielders[0]){f.thr={t0:now+.05,to:new V3(BASES[1][0],1.2,BASES[1][1]),next:null,full:true,call};}else call();}
-    if(pl.dive||pl.rob||dp){roar(.8,.3);badge('web');}SND.mitt();PD.after=over;
+    {const call=()=>{if(pl.label==='GROUND OUT')SND.ump(false);if(camped(pl))badge('corn');pop(dp?'DOUBLE PLAY!':pl.dive?'WHAT A CATCH!':pl.rob?'ROBBED HIM!':pl.cq?(pl.label==='FOUL OUT'?'WHAT A GRAB!':'SNARED IT!'):camped(pl)?'CAN OF CORN!':'OUT!',pl.label+' · '+h.name+' IS RETIRED','cool');cheer(.5,2.5);};if(pl.label==='GROUND OUT'&&pl.f&&pl.f.thrAct&&pl.f!==fielders[0]){f.thr={t0:now+.05,to:new V3(BASES[1][0],1.2,BASES[1][1]),next:null,full:true,call};}else call();}
+    if(pl.dive||pl.rob||dp||pl.cq){roar(.8,.3);badge('web');}SND.mitt();PD.after=over;
     /* TAGGING UP: a deep fly with a man on third and fewer than three out, and he tags and goes. The player makes the throw home (the first chance each game, then a bit under half the time) */
     try{if(pl.air&&!dp&&pl.f&&pl.f.of&&PD.bases[2]&&PD.outs<3&&Math.hypot(pl.p.x,pl.p.z)>65&&qteParts()&&!DBG.nodq&&(DBG.dtag||(PLAY_NEWEST_FIRST&&!S.dtG)||Math.random()<.45)){S.dtG=true;PD.after=()=>{PD.qAfter=over;PD.hideBat=false;try{qteStart('dtag3',true);}catch(e){PD.hideBat=true;over();}};}}catch(e){}
     pdUI();hud();return;}
@@ -3277,7 +3304,7 @@ function timeBar(x,pw,jt,perfect,sk=1,rocket=false){const e=$('tbar');e.classNam
   let mx=clamp(x/SPAN,-1,1)*50;const miss=Math.abs(mx)>used;
   {const tw=$('tmk').parentNode.clientWidth||150,gap=1700/tw;if(perfect)mx=0;else if(Math.abs(mx)<gap)mx=(x<0?-1:1)*gap;} // at least 17 px of daylight between the two marks /* the picture never contradicts the verdict: a PERFECT sits exactly on the target, and anything else is drawn visibly clear of it */
  $('tmk').style.left=(50+mx)+'%';{const mc=miss?'#ff4d2e':'#39ff6a'; /* the target is white; your swing is green (red if it missed the window) */$('tmk').style.background=mc;$('tmk').style.setProperty('--mc',mc);}$('tmk').classList.toggle('pf',!!rocket);void e.offsetWidth;e.className='go'+(S.over&&S.overOn&&!miss?' odz':'');try{timPlace(true);}catch(x){}} /* odz: Overdrive contact, the window you hit it in burns blue */
-function timing(t,c,l){const e=$('tim');e.className='';e.textContent=t;e.style.color=c;e.dataset.l=l||2;e.dataset.pd=PD.on&&S.state==='pduel'?1:0;e.dataset.rk=$('tmk').classList.contains('pf')?1:0;void e.offsetWidth;e.className='go';try{timPlace(true);}catch(x){}}
+function timing(t,c,l){if(typeof CQ!=='undefined'&&CQ.on)return;const e=$('tim');e.className='';e.textContent=t;e.style.color=c;e.dataset.l=l||2;e.dataset.pd=PD.on&&S.state==='pduel'?1:0;e.dataset.rk=$('tmk').classList.contains('pf')?1:0;void e.offsetWidth;e.className='go';try{timPlace(true);}catch(x){}}
 function flash(a){const e=$('flash');e.style.transition='none';e.style.opacity=a*FX;void e.offsetWidth;e.style.transition='opacity .35s';e.style.opacity=0;}
 // OVERDRIVE: fill the Juice meter all the way and it is charged. The meter burns and reads OVERDRIVE READY and the JUICE button becomes the
 // OVERDRIVE button, but nothing is spent until the player taps it. Tapped, every swing of that at-bat is a free Juice swing; when the at-bat
@@ -3687,7 +3714,7 @@ function qteShow(){if(!MOB&&!QT.fk){QT.fk=1;grabKeys();}const M=QT.M,e=$('qte');
   if(QT.mash){if(!$('qmf')){$('qtr').innerHTML='<div id="qmw"><em id="qmf"></em><span>'+(MOB?'TAP! TAP! TAP!':'MASH SPACE!')+'</span></div>';}$('hud').classList.add('qm');$('qmf').style.transform='scaleX('+Math.min(1,QT.fill).toFixed(3)+')';e.hidden=false;$('hud').classList.add('qon');return;} // the other kind: no code, just hammer the arrows until the bar is full
  {const r=$('qtr');if(r.children.length!==QT.code.length||r.firstChild.tagName!=='I')r.innerHTML=QT.code.map(c=>`<i data-d="${c}">${{U:'⬆️',D:'⬇️',L:'⬅️',R:'➡️'}[c]}</i>`).join('');for(let i=0;i<QT.code.length;i++){const c=i<QT.i?'ok':i===QT.i?'cur':'';if(r.children[i].className!==c)r.children[i].className=c;}}e.hidden=false;$('hud').classList.add('qon');}
 const QPB={};
-function qteKey(d){if(S.state!=='qte'||QT.ph!=='input')return;
+function qteKey(d){if(CQ.on){cqKey();return;}if(S.state!=='qte'||QT.ph!=='input')return;
   {const b=QPB[d]||(QPB[d]=document.querySelector('#qpad [data-d='+d+']')),good=QT.mash||d===QT.code[QT.i];if(b){b.className=good?'hit':'miss';clearTimeout(b._t);b._t=setTimeout(()=>{b.className='';},150);}}
   if(QT.stop){ // JUDGED WHERE YOU SAW IT: by the time a tap arrives the needle has moved on (the screen is a frame or two behind, and a finger takes time to land). The press is scored against where the needle was that long ago, and the needle is put back there so the picture agrees.
     const H=QT.hist||[],tp=(inT&&performance.now()-inT<120?inT:performance.now())-17; /* the browser stamps the press with the moment the finger or key actually went down: the needle is put back to exactly where it was drawn then (one frame of display earlier), not to a guess */let x=QT.sx;if(H.length){let a=H[0];for(const h of H){if(h[0]<=tp)a=h;else break;}const b=H[H.indexOf(a)+1];x=b&&b[0]>a[0]?a[1]+(b[1]-a[1])*clamp((tp-a[0])/(b[0]-a[0]),0,1):a[1];}
@@ -3979,7 +4006,7 @@ function judge0(tr,bt){const spd=bt&&bt.spd||1; // batter's speed: 0.85 (plodder
     // a ball that only just clears can be brought back: an outfielder who can get to that spot on the wall in time sometimes goes up and takes it away
     if(!tr.tag&&!tr.eyeT&&tr.hrY-WALL_H<1.5){const w=tr.pts[Math.min(tr.pts.length-1,Math.round(tr.hrT*120))];let c=null,bd=1e9;
       for(const o of fielders){if(!o.of)continue;const d=Math.hypot(o.home.x-w.x,o.home.z-w.z);if(d<bd){bd=d;c=o;}}
-      if(c&&tr.hrT>=HANG_CATCH&&bd<=10+c.speed*1.6*tr.hrT&&(DBG.rob||Math.random()<.3)){const wr=Math.hypot(w.x,w.z),k=(wr-1.6)/wr; // he makes the catch standing in front of the wall, not in it
+      if(c&&!DBG.norob&&tr.hrT>=HANG_CATCH&&bd<=10+c.speed*1.6*tr.hrT&&(DBG.rob||Math.random()<.3)){const wr=Math.hypot(w.x,w.z),k=(wr-1.6)/wr; // he makes the catch standing in front of the wall, not in it
         return {type:'out',label:'ROBBED AT THE WALL',endT:tr.hrT,f:c,p:{x:w.x*k,y:w.y,z:w.z*k,t:tr.hrT},air:true,rob:true,dist:tr.dist};}}
     return {type:'hr',endT:tr.endT,dist:tr.dist,tag:tr.tag||''};}
   if(tr.grd&&!tr.foul){ // ground-rule double: the nearest outfielder still goes after it until it hops the wall
@@ -4488,6 +4515,7 @@ canvas.addEventListener('pointerup',padEnd);canvas.addEventListener('pointercanc
 canvas.addEventListener('contextmenu',e=>e.preventDefault());
 addEventListener('keydown',e=>{keys[e.code]=true;if(e.repeat)return;if(infoHold&&PD.tutI>=0&&!$('ptut').hidden){if(e.code==='Escape')pdTut(99);else if(e.code==='Enter'||e.code==='Space')pdTut(PD.tutI+1);e.preventDefault();return;}if(infoHold&&(e.code==='Enter'||e.code==='Space'||e.code==='Escape')){podxClose();e.preventDefault();return;}if(S.state==='pask'&&!paused&&PD.askGo){if(e.code==='Enter'||e.code==='Space'||e.code==='KeyP'){PD.askGo(true);e.preventDefault();return;}if(e.code==='KeyS'||e.code==='Escape'){PD.askGo(false);e.preventDefault();return;}}if(S.state==='pduel'&&!paused){if(e.code==='ShiftLeft'||e.code==='ShiftRight'||e.code==='KeyJ'){$('pdjuice').dispatchEvent(new PointerEvent('pointerdown',{bubbles:true}));return;}if(e.code==='KeyD'){pdDrill();return;}if(e.code==='Space'||e.code==='Enter'){pdTap();e.preventDefault();return;}const k={Digit1:0,Digit2:1,Digit3:2,Digit4:3,Digit5:4,Digit6:5,Digit7:6,Digit8:7,Digit9:8}[e.code];if(k!==undefined){pdPick(k);return;}}
   if(S.goK&&(e.code==='KeyG'||e.code==='Enter')){goTap();e.preventDefault();return;}if(S.goK&&(e.code==='KeyN'||e.code==='Escape')){goStay();e.preventDefault();return;}
+  if(CQ.on&&(e.code==='Space'||e.code==='Enter'||e.code.startsWith('Arrow'))){cqKey();e.preventDefault();return;}
   if(S.state==='qte'){const d={ArrowUp:'U',ArrowDown:'D',ArrowLeft:'L',ArrowRight:'R',KeyW:'U',KeyS:'D',KeyA:'L',KeyD:'R'}[e.code]||((QT.mash||QT.stop)&&e.code==='Space'?'U':'');if(d){qteKey(d);e.preventDefault();}return;}
   if(e.code==='Space'||e.code==='KeyZ'||e.code==='KeyJ'){doSwing('contact');e.preventDefault();}
   else if(e.code==='KeyX'||e.code==='KeyK'){doSwing('power');}
@@ -5479,7 +5507,7 @@ function trail(o,c,far,hot,pat){
   lp.copy(p);
 }
 
-function step(dt){
+function step(dt){if(CQ.on||(flight&&flight.cq&&flight.cq.st===0&&flight.pd))try{cqTick(dt);}catch(e){CQ.on=false;}
   overCheck();if(hudLater)hud(); // checked every frame, so the bar and the button switch the instant the meter fills
   {const hide=MOB&&!(S.state==='ready'||S.state==='windup'||S.state==='pitch');if(hide!==ctlHidden){ctlHidden=hide;$('hud').classList.toggle('noctl',hide);if(!hide&&jPend)hud();}} // the stick and buttons are only on screen while there is a pitch to hit
   landRing.visible=false;
@@ -5836,7 +5864,7 @@ function shTick(){if(!(SHQ&&rim.castShadow))return;const st=S.state,wide=!(st===
   pad.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();if(e.pointerType==='touch')return;qteKey(dir(e.clientX,e.clientY));});}
 let qteTouch=false;
 // In the one-button showdowns (mash, needle) the whole screen is the button: a touch or click anywhere counts, the instant it lands.
-{const one=()=>S.state==='qte'&&QT.ph==='input'&&(QT.stop||QT.mash)&&!paused;
+{const one=()=>(CQ.on||(S.state==='qte'&&QT.ph==='input'&&(QT.stop||QT.mash)))&&!paused;
   document.addEventListener('touchstart',e=>{if(!one()||e.target.closest('#pausebtn,#mutebtn'))return;e.preventDefault();e.stopPropagation();qteTouch=true;for(const t of e.changedTouches){if(one())qteKey('U');}},{capture:true,passive:false});
   document.addEventListener('mousedown',e=>{if(!one()||e.target.closest('#pausebtn,#mutebtn,#qmash'))return;e.preventDefault();e.stopPropagation();qteTouch=false;qteKey('U');},{capture:true});}
 {const q=$('qmash');q.addEventListener('touchstart',e=>{e.preventDefault();e.stopPropagation();for(const t of e.changedTouches)qteKey('U');},{passive:false});q.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();if(e.pointerType==='touch')return;qteKey('U');});}
@@ -5845,7 +5873,7 @@ $('shbtn').addEventListener('click',()=>{SHQ=!SHQ;if(SHQ&&!rim.castShadow)rim.ca
 shApply();
 resize();hud();
 const DBG={corn:false,dtag:false,dadv:false,beat:false,tko:false,dive:'',hbp:false,pcut:false,fl:'',rob:false,pc:false,staunt:false,pod:false,trail:false,orbit:false,sat:false,drill:false,brawl:false,qte:false,mash:false,slide:false,pn:'',laser:false,lamp:false,mw:false,rev:false,stop:false,aerial:false,pdef:false,dbl:false,cam:false,admire:'',trip:false,fist:false,pop:false,loser:false}; // test hook: pin the camera to CAM_HOME/CAM_LOOK
-window.__ret=()=>reticle.position;window.__fl=()=>fielders;window.__VB=VB;window.__glbMesh=glbMesh;window.__gpuq=GPUQ;window.__rocket=()=>{ROCKET.t=now;};window.__lk=LOCKFX;window.__pd={q:pdQ,tut:pdTut,drill:pdDrill,tap:pdTap,pick:pdPick,PD,start:pdStart};window.__lockfx=(x,z)=>{Object.assign(LOCKFX,{t:now,x,z,hr:true,pend:false,name:'R. RAZOR',fired:false});};window.__fly=()=>{FLY.t=now;};window.__jt=juiceTap;window.__sb=scoreboard;window.__sbd=()=>sbDraw(true);window.__sync=syncRunners;window.__lr=()=>landRing.visible+' at '+landRing.position.x.toFixed(0)+','+landRing.position.z.toFixed(0)+' scale '+landRing.scale.x.toFixed(1)+' geo '+landRing.geometry.type+' rot '+landRing.rotation.x.toFixed(2)+' op '+landRing.material.opacity.toFixed(2)+' par '+(landRing.parent&&landRing.parent.type)+' scr '+(()=>{const v=landRing.position.clone().project(camera);return v.x.toFixed(2)+','+v.y.toFixed(2)+','+v.z.toFixed(3);})()+' y '+landRing.position.y;window.__pop=pop;window.__bdg=id=>{delete bdgGot[id];if(S.bdgGame)delete S.bdgGame[id];badge(id);pop('GONE!','512 FT · +1 RUN','hot',true);};window.__lu=LINEUP;window.__bp=k=>BULLPEN[k];window.__mm={pitcherModel,crowdFx,setE:v=>{crowdE=v;crowdShow=v;},GLOVE,renderer,scene,LODM,camera,zapStart,acState:()=>AC?(zoneLP?"lp="+Math.round(zoneLP.frequency.value)+" ":"")+AC.state+" t="+AC.currentTime.toFixed(1)+" real="+crowdReal+" roar="+(roarG?roarG.gain.value.toFixed(2)+(roarTop?"T":""):"off")+" bed="+crowdGain.gain.value.toFixed(2):"none",roar,roarOff,boo,cheer,crowdRise,crowdDrop,S,aim,MX,DBG,landRingOn:()=>landRing.visible,hud,tutAnim,draw:()=>draw(),endGame,TROT,SFX,RUN,ballPos:()=>ball.position,ballVisible:()=>ball.visible,fielders,toReady,CAM_HOME,CAM_LOOK,now:()=>now,simulate,judge,get pitch(){return pitch;},get flight(){return flight;},lastSwing:()=>{const t=swing&&swing.type;swing=null;return t;},lastSwingTurbo:()=>!!(swing&&swing.turbo),doSwing,newGame,V3,
+window.__ret=()=>reticle.position;window.__fl=()=>fielders;window.__VB=VB;window.__glbMesh=glbMesh;window.__gpuq=GPUQ;window.__cq={CQ,key:()=>cqKey()};window.__rocket=()=>{ROCKET.t=now;};window.__lk=LOCKFX;window.__pd={q:pdQ,tut:pdTut,drill:pdDrill,tap:pdTap,pick:pdPick,PD,start:pdStart};window.__lockfx=(x,z)=>{Object.assign(LOCKFX,{t:now,x,z,hr:true,pend:false,name:'R. RAZOR',fired:false});};window.__fly=()=>{FLY.t=now;};window.__jt=juiceTap;window.__sb=scoreboard;window.__sbd=()=>sbDraw(true);window.__sync=syncRunners;window.__lr=()=>landRing.visible+' at '+landRing.position.x.toFixed(0)+','+landRing.position.z.toFixed(0)+' scale '+landRing.scale.x.toFixed(1)+' geo '+landRing.geometry.type+' rot '+landRing.rotation.x.toFixed(2)+' op '+landRing.material.opacity.toFixed(2)+' par '+(landRing.parent&&landRing.parent.type)+' scr '+(()=>{const v=landRing.position.clone().project(camera);return v.x.toFixed(2)+','+v.y.toFixed(2)+','+v.z.toFixed(3);})()+' y '+landRing.position.y;window.__pop=pop;window.__bdg=id=>{delete bdgGot[id];if(S.bdgGame)delete S.bdgGame[id];badge(id);pop('GONE!','512 FT · +1 RUN','hot',true);};window.__lu=LINEUP;window.__bp=k=>BULLPEN[k];window.__mm={pitcherModel,crowdFx,setE:v=>{crowdE=v;crowdShow=v;},GLOVE,renderer,scene,LODM,camera,zapStart,acState:()=>AC?(zoneLP?"lp="+Math.round(zoneLP.frequency.value)+" ":"")+AC.state+" t="+AC.currentTime.toFixed(1)+" real="+crowdReal+" roar="+(roarG?roarG.gain.value.toFixed(2)+(roarTop?"T":""):"off")+" bed="+crowdGain.gain.value.toFixed(2):"none",roar,roarOff,boo,cheer,crowdRise,crowdDrop,S,aim,MX,DBG,landRingOn:()=>landRing.visible,hud,tutAnim,draw:()=>draw(),endGame,TROT,SFX,RUN,ballPos:()=>ball.position,ballVisible:()=>ball.visible,fielders,toReady,CAM_HOME,CAM_LOOK,now:()=>now,simulate,judge,get pitch(){return pitch;},get flight(){return flight;},lastSwing:()=>{const t=swing&&swing.type;swing=null;return t;},lastSwingTurbo:()=>!!(swing&&swing.turbo),doSwing,newGame,V3,
   sim:(dt)=>{hitstop=0;now+=dt;step(dt);},
   step:(n,dt=1/60)=>{for(let i=0;i<n;i++){if(hitstop>0)hitstop=0;now+=dt;step(dt);}updateCamera(dt);draw();}};
 if(!window.__mmManual)requestAnimationFrame(frame);
