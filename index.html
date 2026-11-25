@@ -295,6 +295,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
 #shout{position:absolute;left:50%;top:30%;z-index:6;pointer-events:none;white-space:nowrap;width:max-content; /* (its box is as wide as its lettering: without this the box stopped at the screen edge, the words spilled out of it to the right, and 'centred' put them right of centre) */opacity:0;font-family:var(--display);font-style:italic;font-size:clamp(34px,9vw,84px);line-height:1;color:var(--volt);-webkit-text-stroke:2px #000;text-shadow:0 4px 0 #000,0 0 22px rgba(255,229,59,.55);transform:translate(-50%,-100%) rotate(-6deg)}
 #shout.go{animation:shoutIn 1.5s cubic-bezier(.2,1.4,.4,1) forwards}
 #shout.b{color:#3ad6ff;text-shadow:0 4px 0 #000,0 0 22px rgba(58,214,255,.6);transform:translate(-50%,-100%) rotate(5deg)}
+#shout.lk{z-index:61}#shout.go.lk{animation:shoutLk .45s cubic-bezier(.2,1.4,.4,1) forwards;color:#7fe6ff;text-shadow:0 clamp(4px,.6vw,6px) 0 #05060f,0 0 26px rgba(58,214,255,.75);transform:translate(-50%,-100%) rotate(-4deg)}@keyframes shoutLk{0%{opacity:0;scale:.3}55%{opacity:1;scale:1.25}100%{opacity:1;scale:1}} /* LOCKED IN! over his head: Overdrive blue, and it stays up for as long as he is burning */
 @keyframes shoutIn{0%{opacity:0;scale:.3}14%{opacity:1;scale:1.3}26%{scale:1}82%{opacity:1;scale:1.04}100%{opacity:0;scale:1.12}}
 #pop .t{font-family:var(--display);font-size:clamp(36px,8.6vw,96px);line-height:.95;font-style:italic;letter-spacing:.01em;
   color:var(--volt);-webkit-text-stroke:2px #000;text-shadow:0 5px 0 #000,0 0 40px rgba(255,229,59,.55);text-wrap:balance}
@@ -1029,7 +1030,7 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 844</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 845</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -1670,7 +1671,7 @@ function draw(){try{gpuTick();}catch(e){}if(VB.g&&now>(VB.nt||0)){VB.nt=now+.5;t
   // or on whatever base he ended up on) the flame is held at full height and follows his body every frame; when the routine ends it dies down.
   {const L=LOCKFX,st=S.state;if(L.cel&&L.hr&&now<L.t&&st!=='celebrate'&&st!=='trot'&&st!=='celly2'&&st!=='flight'){L.cel=false;L.t=-99;L.fired=true;if(L.a)L.a.visible=L.b.visible=L.c.visible=false;timing('🔥 '+L.name+' IS LOCKED IN!','#58d6ff',4);} /* if his celebration is over before the fire has gone up, there is no fire: it is never lit over an empty box or the next man */if(L.cel&&now>=L.t){const on=st==='celebrate'||(st==='trot'&&TROT.cele)||st==='celly2';
       if(on){try{if(MX.clip&&MX.clip.hips&&MX.obj.visible){MX.clip.hips.getWorldPosition(_a);L.x=_a.x;L.z=_a.z;}}catch(e){}if(now-L.t>.5)L.t=now-.5;L.celSeen=true;}
-      else if(L.celSeen||now-L.t>.6){L.cel=false;if(L.celSeen&&L.hr){try{pop('LOCKED IN!',L.name+' · OVERDRIVE UNTIL AN OUT','');}catch(e){}}if(L.celSeen){L.t=-99;if(L.a){L.a.visible=L.b.visible=L.c.visible=false;}}L.celSeen=false;}}} /* when his routine ends the flame is gone at once: it was dying down for another second and a half where he had been standing, over the next man's walk-up */
+      else if(L.celSeen||now-L.t>.6){L.cel=false;if(L.celSeen&&L.hr&&!L.sh){try{pop('LOCKED IN!',L.name+' · OVERDRIVE UNTIL AN OUT','');}catch(e){}}if(L.celSeen){L.t=-99;if(L.a){L.a.visible=L.b.visible=L.c.visible=false;}}L.celSeen=false;}}} /* when his routine ends the flame is gone at once: it was dying down for another second and a half where he had been standing, over the next man's walk-up */
   {const L=LOCKFX,st=S.state,cel=st==='celebrate'||(st==='trot'&&TROT.cele),live=st==='result'||st==='flight'||st==='trot'||st==='celebrate'||st==='celly2'||st==='qte';
     // on a base hit it waits for any send to be settled first: never before or during the quick time event, always after it, on the base he ends up on
     if(L.wait){if(st==='qte'){if(QT.ph==='out'&&now-QT.t1>1.2){L.wait=false;const mine=QT.kind==='stretch2'||QT.kind==='stretch3';if(mine&&!QT.ok){L.t=-99;timing('🔥 '+L.name+' IS LOCKED IN!','#58d6ff',4);}else{if(mine){L.x=QT.bx;L.z=QT.bz;}L.t=now;L.cel=true;}}}
@@ -3335,22 +3336,29 @@ function stickHint(){
 // Celebrating on second: he shouts, in big letters over his head. Two lines per celebration, the second one about the runs he drove in if any.
 const SHOUT_A=["LET'S GO!!","LET'S GOOO!","YEAH!!","HEATING UP!","YOU'RE SEEING IT!","YOU'RE TEEING OFF!"],SHOUT_B=['TWO BAGS!','KEEP IT ROLLING!','TWO BAGGER!'],SHOUT_H=['PIMPED IT!','PIMPED IT!',"STUNT ON 'EM!","STUNT ON 'EM!","FLEX ON 'EM!","FLEX ON 'EM!",'SEE YA!','WENT YARD!','BIG FLY!','TATER!','GOT ALL OF IT!','NO DOUBTER!','TOUCH \'EM ALL!','ABSOLUTE TANK!','GONE FOREVER!','DINGER!','ADIOS PELOTA!','PLAKATA!','BARRELED!','SAYONARA!','HASTA LA VISTA!','SMELL YA!','GET OFF ME, BALL!','NUKED!','SMELL YA, BALL!','YOU WENT YA YA!','YEETED!','GO, BALL!','GET OUT, BALL!'];
 let shoutI=-1,shoutLast='';const _sh=new V3();
+function shoutLk(el,x,y,z){ /* LOCKED IN! OVER HIS HEAD: the one call while he burns, wherever he is doing it (second, third or the plate). It sits clear above him, never across his face. */
+  if(shoutI!==9){shoutI=9;LOCKFX.sh=true;shoutLast='LOCKED IN!';el.textContent='LOCKED IN!';el.classList.remove('b','go');el.classList.add('lk');void el.offsetWidth;el.classList.add('go');buzz([20,30,40]);try{$('pop').classList.remove('go');}catch(e){}} /* (whatever call was still on screen makes way for it) */
+  const w=canvas.clientWidth||innerWidth,h=canvas.clientHeight||innerHeight;_sh.set(x,y,z).project(camera);const hy=(-_sh.y*.5+.5)*h,ew=el.offsetWidth*1.08,sx=(_sh.x*.5+.5)*w;
+  el.style.left=MOB||ew>=w-16?'50%':clamp(sx,ew/2+8,w-ew/2-8).toFixed(0)+'px';el.style.top=Math.max(el.offsetHeight+(MOB?96:92),hy).toFixed(0)+'px';}
 function shoutTick(){
-  const el=$('shout');
+  const el=$('shout'),LK=LOCKFX;
+  if(shoutI===9&&!(LK.cel||LK.wait||LK.pend)){shoutI=-1;el.classList.remove('go','b','lk');}
+  if(S.state==='celebrate'&&LK.hr&&LK.plate&&LK.cel&&now>=LK.t-.05){let y=2.55;try{if(MX.clip&&MX.clip.hips){MX.clip.hips.getWorldPosition(_a);y=Math.max(2.45,_a.y+1.5);}}catch(e){}shoutLk(el,LK.x,y,LK.z);return;}
+  if(S.state==='trot'&&TROT.R&&TROT.cut&&LK.hr&&(LK.pend||LK.cel)){let x,z,y=2.55;if(TROT.cele&&LK.cel&&LK.x!==undefined&&now>=LK.t){x=LK.x;z=LK.z;}else{TROT.R.fig.root.getWorldPosition(_sh);x=_sh.x;z=_sh.z;}shoutLk(el,x,y,z);return;}
+  if(S.state==='celly2'&&!LK.hr&&(LK.wait||LK.cel)){let x=BASES[D2.base][0],z=BASES[D2.base][1];if(LK.cel&&LK.celSeen){x=LK.x;z=LK.z;}shoutLk(el,x,2.55,z);return;}
   if(S.state==='trot'&&TROT.R&&TROT.cut){ // at the plate after a homer: he lets everybody know
-    if(shoutI===-1){shoutI=0;const rbi=flight&&flight.rbi||0;let t;if(rbi>=4)t='GRAND SALAMI!';else if(shoutLast!=='OPPO TACO!'&&oppoHR()&&Math.random()<.85)t='OPPO TACO!';else if(S.streak>=3&&!HOT_CALLS.includes(shoutLast)&&Math.random()<.5)t=hotCall();else do{t=SHOUT_H[(Math.random()*SHOUT_H.length)|0];}while(t===shoutLast||(t==='PIMPED IT!'&&flight&&flight.pimp));
+    if(shoutI===-1){shoutI=0;el.classList.remove('lk');const rbi=flight&&flight.rbi||0;let t;if(rbi>=4)t='GRAND SALAMI!';else if(shoutLast!=='OPPO TACO!'&&oppoHR()&&Math.random()<.85)t='OPPO TACO!';else if(S.streak>=3&&!HOT_CALLS.includes(shoutLast)&&Math.random()<.5)t=hotCall();else do{t=SHOUT_H[(Math.random()*SHOUT_H.length)|0];}while(t===shoutLast||(t==='PIMPED IT!'&&flight&&flight.pimp));
       shoutLast=t;el.textContent=t;el.classList.remove('b','go');void el.offsetWidth;el.classList.add('go');buzz([20,30,40]);}
     TROT.R.fig.root.getWorldPosition(_sh);_sh.y=2.35;_sh.project(camera);const w=canvas.clientWidth||innerWidth,h=canvas.clientHeight||innerHeight;
     {const ew=el.offsetWidth*1.08,x=(_sh.x*.5+.5)*w;el.style.left=MOB||ew>=w-16?'50%':clamp(x,ew/2+8,w-ew/2-8).toFixed(0)+'px';} /* over his head, but never hanging off the edge of the screen: on a phone the lettering is nearly the full width, so it sits centred */el.style.top=Math.max(MOB?250:120,(-_sh.y*.5+.5)*h).toFixed(0)+'px';return;}
-  if(S.state!=='celly2'){if(shoutI!==-1){shoutI=-1;el.classList.remove('go','b');}return;}
+  if(S.state!=='celly2'){if(shoutI!==-1){shoutI=-1;el.classList.remove('go','b','lk');}return;}
   const e=now-S.t,i=e<.2?-1:e<Math.max(1.5,D2.dur*.5)?0:1;
   _sh.set(BASES[D2.base][0],2.3,BASES[D2.base][1]).project(camera);
   const w=canvas.clientWidth||innerWidth,h=canvas.clientHeight||innerHeight;
   {const ew=el.offsetWidth*1.08,x=(_sh.x*.5+.5)*w;el.style.left=MOB||ew>=w-16?'50%':clamp(x,ew/2+8,w-ew/2-8).toFixed(0)+'px';} /* over his head, but never hanging off the edge of the screen: on a phone the lettering is nearly the full width, so it sits centred */el.style.top=Math.max(MOB?250:120,(-_sh.y*.5+.5)*h).toFixed(0)+'px';
   if(i===shoutI||i<0)return;
   shoutI=i;let t;const pool=i?SHOUT_B:SHOUT_A;
-  if(!i&&!LOCKFX.hr&&(LOCKFX.wait||LOCKFX.cel))t='LOCKED IN!'; /* the call over his head is the news itself */
-  else if(!i&&S.streak>=3&&!HOT_CALLS.includes(shoutLast))t=hotCall(); /* on a run of hits, and showing off on the bag */
+  el.classList.remove('lk');if(!i&&S.streak>=3&&!HOT_CALLS.includes(shoutLast))t=hotCall(); /* on a run of hits, and showing off on the bag */
   else if(i&&D2.rbi)t='+'+D2.rbi+' RBI!';else do{t=pool[(Math.random()*pool.length)|0];}while(t===shoutLast);
   if(t==='TWO BAGS!'&&D2.base===3)t='THREE BAGS!';
   shoutLast=t;el.textContent=t;el.classList.toggle('b',!!i);el.classList.remove('go');void el.offsetWidth;el.classList.add('go');buzz([20,30,40]);}
@@ -4421,7 +4429,7 @@ function finishPlay(){revOff();if(PD.on&&flight&&flight.pd){pdFinish(flight,flig
       if(ds.length){S.kOut={t:now+1.25,bi:S.bi,clip:ds[(Math.random()*ds.length)|0],taunt:null,rob:true};afterPA(1.25+DEFEAT+.35);return; /* (the next hitter is not brought in until the reaction is completely over) */}}
     afterPA(dp?2.7:f.thr?2.1:1.5);return;}
   badge('hit');if(S.streak>=4)badge('heater');if(false)setTimeout(()=>{const e=$('shout');if(S.state==='result'||S.state==='flight'){e.textContent='ON A HEATER!';e.style.left='50%';e.style.top=(MOB?'30%':'24%');e.classList.remove('b','go');void e.offsetWidth;e.classList.add('go');}},700);
-  {const q=curBatter();if(q.gs){q.gs.h++;if(pl.type==='hr')q.gs.hr++;}q.hs=(q.hs||0)+1;if(q.hs>=2&&!q.lock){q.lock=true;const hr=pl.type==='hr',B=hr?[0,0]:BASES[clamp(pl.bases||1,1,3)];Object.assign(LOCKFX,{t:1e9,t0:now+1.25,x:B[0],z:B[1],hr,pend:hr,wait:!hr,name:bdn(q),fired:false});if(!hr)setTimeout(()=>{if(S.state==='result'&&!S.goK&&!S.next)readyDur=Math.max(readyDur,3.4);},0);}} /* LOCKED IN is announced where he stands: on the base he just took, or at the plate when the hit was a homer */ /* LOCKED IN: two hits in a row by the same man */S.hits++;S.streak++;S.bestStreak=Math.max(S.bestStreak,S.streak);if(!f.tb)S.juice=Math.min(1,S.juice+(pl.type==='hr'?.5:.25));else if(pl.type==='hr'&&!S.over)S.juice=Math.min(1,S.juice+.25); /* a homer on a Juice swing gives one bar back */ // every hit is worth one quarter; // a Juice hit doesn't refill the bar it just spent
+  {const q=curBatter();if(q.gs){q.gs.h++;if(pl.type==='hr')q.gs.hr++;}q.hs=(q.hs||0)+1;if(q.hs>=2&&!q.lock){q.lock=true;const hr=pl.type==='hr',B=hr?[0,0]:BASES[clamp(pl.bases||1,1,3)];Object.assign(LOCKFX,{t:1e9,t0:now+1.25,x:B[0],z:B[1],hr,pend:hr,wait:!hr,name:bdn(q),fired:false,sh:false});if(!hr)setTimeout(()=>{if(S.state==='result'&&!S.goK&&!S.next)readyDur=Math.max(readyDur,3.4);},0);}} /* LOCKED IN is announced where he stands: on the base he just took, or at the plate when the hit was a homer */ /* LOCKED IN: two hits in a row by the same man */S.hits++;S.streak++;S.bestStreak=Math.max(S.bestStreak,S.streak);if(!f.tb)S.juice=Math.min(1,S.juice+(pl.type==='hr'?.5:.25));else if(pl.type==='hr'&&!S.over)S.juice=Math.min(1,S.juice+.25); /* a homer on a Juice swing gives one bar back */ // every hit is worth one quarter; // a Juice hit doesn't refill the bar it just spent
   if(pl.type==='hr'){
     {const ft0=Math.round(pl.dist*3.281);hrFeetAdd(ft0);badge('hr');if(ft0>=450)badge('hr450');if(ft0>=500)badge('hr500');if(f.od)badge('odhr');if(f.jp)badge('juicehr');if(f.pod){badge('aura');badge('duel');}if(f.fp)badge('ambush');if(S.bases.filter(Boolean).length===3)badge('slam');
       S.b2b=S.lastHRbi===S.bi-1;if(S.b2b)badge('b2b');S.lastHRbi=S.bi;if(S.hrs>=4)badge('five');if(f.ufo)badge('ufo');else if(f.sat)badge('sat');else if(f.lamp)badge('lamp');else if(f.rev)badge('rev');else if(f.orbit)badge('earth');else if(f.sbHit)badge('board');else if(f.tr.eyeT)badge('eye');}
