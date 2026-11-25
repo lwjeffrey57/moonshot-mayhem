@@ -1029,7 +1029,7 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 766</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 767</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -3833,6 +3833,10 @@ function propsLoad(){if(propsDone)return;propsDone=true;
   glbLoad('rocket.txt',(g,mat)=>{const G=ROCKET.G,R=ROCKET.g;if(!G||!R)return;const NV=1726*3,S=104,ix=g.index.array; /* THE TRIPO ROCKET: its triangles are stored vehicle-first, so the ship is one mesh (it still lifts off) and the pad and gantry another (they stay) */
     const part=(a,b)=>{const q=new T.BufferGeometry();q.setAttribute('position',g.attributes.position);if(g.attributes.uv)q.setAttribute('uv',g.attributes.uv);q.setIndex(new T.BufferAttribute(ix.slice(a,b),1));const m=new T.Mesh(q,mat);m.scale.setScalar(S);m.position.set(.03*S,0,-.05*S);m.frustumCulled=false;return m;};
     mat.fog=false;mat.color.setHex(0xffffff);G.children.filter(c=>c!==R).forEach(c=>G.remove(c));R.children.filter(c=>!c.isSprite).forEach(c=>R.remove(c));R.add(part(0,NV));G.add(part(NV,ix.length));});
+  glbLoad('sat.txt',(g,mat)=>{mat.fog=false;mat.color.setHex(0xffffff);const ix=g.index.array,pa=g.attributes.position.array,B=[[],[],[]],S=62; /* THE TRIPO SATELLITE, cut in three where the wings meet the bus, so it still comes apart when a ball goes through it */
+    for(let i=0;i<ix.length;i+=3){const cx=(pa[ix[i]*3]+pa[ix[i+1]*3]+pa[ix[i+2]*3])/3;B[cx<-.17?1:cx>.17?2:0].push(ix[i],ix[i+1],ix[i+2]);}
+    SAT.parts.forEach(P=>SAT.g.remove(P.m));SAT.parts=[];SAT.tripo=1;[0,-.34,.34].forEach((cx,k)=>{const q=new T.BufferGeometry();q.setAttribute('position',g.attributes.position);if(g.attributes.uv)q.setAttribute('uv',g.attributes.uv);q.setIndex(new T.BufferAttribute(new ix.constructor(B[k]),1));
+      const m=new T.Mesh(q,mat),W=new T.Group();m.frustumCulled=false;m.scale.setScalar(S);m.position.set(-cx*S,-.26*S,0);W.add(m);W.position.set(cx*S,0,0);SAT.g.add(W);SAT.parts.push({m:W,home:W.position.clone(),v:new V3(),w:new V3()});});});
   glbLoad('dugout.txt',(g,mat)=>{mat.color.setHex(0xffffff);DUGS.forEach(D=>{D.old.forEach(m=>scene.remove(m));const m=new T.Mesh(g,mat);m.scale.set(24,8.6,8);m.position.copy(D.c).addScaledVector(D.n,1.75);m.rotation.y=D.ry+(DBG.dugR||0);scene.add(m);D.m=m;});}); /* the Tripo dugout, one behind each line, in place of the three plain boxes */
   glbLoad('dish.txt',(g,mat)=>{mat.color.setHex(0xffffff);mat.fog=false;[[262,9,46],[290,-44,54],[250,53,40]].forEach(q=>{const p=pol(q[0],q[1]*DEG,0),m=new T.Mesh(g,mat);m.scale.setScalar(q[2]);m.position.copy(p);m.rotation.y=Math.atan2(-p.x,-p.z);scene.add(m);});}); /* Tripo radar dishes out beyond the fence, turned toward the park */
   glbLoad('lander.txt',(g,mat)=>{const G=APO.G;if(!G||!APO.nL)return;mat.color.setHex(0xffffff);mat.fog=false;G.children.slice(0,APO.nL).forEach(c=>G.remove(c));APO.nL=0;const m=new T.Mesh(g,mat);m.scale.setScalar(9.5);G.add(m);}); /* the Tripo lander at the Apollo site (flag, work-lights and beacon stay) */
@@ -4390,7 +4394,7 @@ const SAT={g:new T.Group(),parts:[],t:0};
   add(new T.CylinderGeometry(.25,.25,9,5),mb(0xcfd6e6),0,-8,-3);
   {const b=add(new T.SphereGeometry(.9,8,6),mb(0xff3b3b),0,-12.6,-3);}
   SAT.g.scale.setScalar(1.5);SAT.g.visible=false;scene.add(SAT.g);}
-function satPlace(at,yaw){SAT.g.visible=true;SAT.g.position.copy(at);SAT.g.rotation.set(.35,yaw+.6,.25);SAT.t=now;SAT.parts.forEach(P=>{P.m.position.copy(P.home);P.m.rotation.set(P.m===SAT.parts[3].m?PI:0,0,0);P.v.set(0,0,0);P.w.set(0,0,0);});}
+function satPlace(at,yaw){SAT.g.visible=true;SAT.g.position.copy(at);SAT.g.rotation.set(.35,yaw+.6,.25);SAT.t=now;SAT.parts.forEach(P=>{P.m.position.copy(P.home);P.m.rotation.set(SAT.parts[3]&&P.m===SAT.parts[3].m&&!SAT.tripo?PI:0,0,0);P.v.set(0,0,0);P.w.set(0,0,0);});}
 function satBreak(){SAT.parts.forEach((P,i)=>{P.v.copy(P.home).normalize().multiplyScalar(rand(8,16)).add(_v.set(rand(-5,5),rand(-3,6),rand(-5,5)));if(!i)P.v.set(rand(-3,3),rand(-2,2),-14);P.w.set(rand(-3,3),rand(-3,3),rand(-3,3));});}
 function satTick(){if(!SAT.g.visible)return;if(!(flight&&flight.sat)){SAT.g.visible=false;return;}const dt=Math.min(.05,now-SAT.t);SAT.t=now;
   if(flight.satHit)SAT.parts.forEach(P=>{P.m.position.addScaledVector(P.v,dt);P.m.rotation.x+=P.w.x*dt;P.m.rotation.y+=P.w.y*dt;P.m.rotation.z+=P.w.z*dt;});
