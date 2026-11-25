@@ -1029,7 +1029,7 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 773</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 774</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -2224,8 +2224,8 @@ gl_FragColor=vec4(col,1.0);
       for(let i=0;i<600;i++){g.fillStyle=`rgba(${Math.random()<.5?'0,0,0':'255,255,255'},${rand(.03,.1)})`;g.fillRect(rand(0,w),rand(0,h),rand(2,14),rand(1,4));}
       const rm=g.createLinearGradient(0,0,0,16);rm.addColorStop(0,'rgba(255,255,255,.55)');rm.addColorStop(1,'rgba(255,255,255,0)');g.fillStyle=rm;g.fillRect(0,0,w,16);
       const ft=g.createLinearGradient(0,h*.7,0,h);ft.addColorStop(0,'rgba(255,200,130,0)');ft.addColorStop(1,'rgba(255,200,130,.16)');g.fillStyle=ft;g.fillRect(0,h*.7,w,h*.3);},[1,1]);rock.anisotropy=ANISO;
-    [[640,120,235,1,0x8c8c96],[420,70,190,2.3,0xdcdce4]].forEach(([R0,h0,h1,ph,tint])=>{const A=[],B=[];
-      for(let i=0;i<=180;i++){const an=i/180*PI*2,n=fb(an*3+ph),r=R0+n*40;A.push(new V3(r*Math.sin(an),-3,-r*Math.cos(an)));B.push(new V3(r*Math.sin(an),h0+(h1-h0)*clamp(.5+n*.9+.25*Math.sin(an*23+ph),0,1),-r*Math.cos(an)));}
+    [[640,120,235,1,0x8c8c96,22,210],[420,70,190,2.3,0xdcdce4,30,105]].forEach(([R0,h0,h1,ph,tint,fin,bout])=>{const A=[],B=[],C=[]; /* THE RANGES HAVE A BACK: each was a single upright sheet, which showed as a paper cut-out from above. Now the face leans back from its foot to the crest and a second slope falls away behind it, so from the air it is a ridge with two sides. Two extra strips of triangles in all. */
+      for(let i=0;i<=180;i++){const an=i/180*PI*2,n=fb(an*3+ph),r=R0+n*40;A.push(new V3((r-fin)*Math.sin(an),-3,-(r-fin)*Math.cos(an)));C.push(new V3((r+bout)*Math.sin(an),-3,-(r+bout)*Math.cos(an)));B.push(new V3(r*Math.sin(an),h0+(h1-h0)*clamp(.5+n*.9+.25*Math.sin(an*23+ph),0,1),-r*Math.cos(an)));}
       // MTN_MOON: the ranges wear the same lunar surface as the field (the same photographed maps, lit from the same side), brighter at the
       // crest and falling to shadow at the foot. Set it to false for the plain painted hills.
       const MTN_MOON=true,c=new T.Color(tint),mm=MTN_MOON?new T.ShaderMaterial({side:T.DoubleSide,uniforms:{mD:groundMat.uniforms.mD,mN:groundMat.uniforms.mN,mK:groundMat.uniforms.mK,rk:{value:rock},tint:{value:new V3(c.r,c.g,c.b)},sc:{value:new T.Vector2(R0>500?2.4:3.2,R0>500?1.5:1.1)}},
@@ -2237,7 +2237,7 @@ vec3 N=normalize(vec3(tn.x*1.9,tn.y*1.9,tn.z));float d1=max(dot(N,normalize(vec3
 vec3 l3=(vec3(0.30,0.32,0.38)+vec3(1.0,0.95,0.86)*d1*1.25)/1.1;
 vec3 moon=min(vec3(0.5,0.5,0.53)*mix(vec3(1.0),ta,0.85)*l3*mix(1.3,0.5,smoothstep(0.0,1.0,vU.y)),vec3(0.93));
 vec3 old=texture2D(rk,vU).rgb;gl_FragColor=vec4(mix(old,moon,mK)*tint,1.0);}`}):new T.MeshBasicMaterial({map:rock,color:tint,side:T.DoubleSide,fog:false});
-      scene.add(new T.Mesh(ribbon(B,A,.004),mm));});
+      scene.add(new T.Mesh(ribbon(B,A,.004),mm));scene.add(new T.Mesh(ribbon(B,C,.004),mm));});
     const reg=tex(512,512,(g,w,h)=>{g.fillStyle='#77777e';g.fillRect(0,0,w,h);for(let i=0;i<5000;i++){g.fillStyle=`rgba(${Math.random()<.5?'0,0,0':'255,255,255'},${rand(.02,.09)})`;g.fillRect(rand(0,w),rand(0,h),rand(1,5),rand(1,5));}
       for(let i=0;i<34;i++){const x=rand(20,w-20),y=rand(20,h-20),r=rand(5,26);g.fillStyle='rgba(20,20,26,.35)';g.beginPath();g.ellipse(x,y,r,r*.6,0,0,PI*2);g.fill();g.strokeStyle='rgba(235,235,240,.5)';g.lineWidth=1.6;g.beginPath();g.ellipse(x,y+1,r,r*.6,0,.1,PI-.1);g.stroke();}},[9,9]);
     const gnd=new T.Mesh(new T.CircleGeometry(1150,48),new T.MeshBasicMaterial({map:reg,fog:false}));gnd.rotation.x=-PI/2;gnd.position.y=-45; /* well below the field's own ground sheet: from the blimp the two were close enough to flicker through each other in bands */scene.add(gnd);
