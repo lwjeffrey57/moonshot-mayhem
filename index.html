@@ -1029,7 +1029,7 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 757</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 758</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -1183,7 +1183,7 @@ let markEl=null,markK=-1;function markDom(){if(!markEl){markEl=document.createEl
   if(markK!==markI){markK=markI; /* the ORIGINAL marker shapes and proportions (thin cross, small dot, small ring), just drawn sharp */
     markEl.innerHTML='<svg viewBox="-50 -50 100 100" width="100%" height="100%" style="overflow:visible;display:block">'+(markI===1?'<circle r="50" fill="rgba(0,0,0,.7)"/><circle r="35" fill="#fff"/>':markI===2?'<path d="M-50 0H50M0 -50V50" stroke="rgba(0,0,0,.7)" stroke-width="21" fill="none"/><path d="M-44 0H44M0 -44V44" stroke="#fff" stroke-width="9.5" fill="none"/>':'<circle r="37.5" stroke="rgba(0,0,0,.7)" stroke-width="25" fill="none"/><circle r="37.5" stroke="#fff" stroke-width="13" fill="none"/>')+'</svg>';}
   const W=canvas.clientWidth||innerWidth,H=canvas.clientHeight||innerHeight;_s0.set(reticle.position.x,reticle.position.y,0).project(camera);const x=(_s0.x*.5+.5)*W,y=(-_s0.y*.5+.5)*H;
-  _s0.set(reticle.position.x+.05,reticle.position.y,0).project(camera);const px=Math.max(markI===1?8:15,Math.abs((_s0.x*.5+.5)*W-x)*2*(markI===1?.4:markI===2?.75:.68)); /* the same size in the park as before: cross 7.5 cm, dot 4 cm, ring 7 cm */ /* about ten centimetres across in the park, never under 18 px */
+  _s0.set(reticle.position.x+.05,reticle.position.y,0).project(camera);const px=Math.max(markI===1?8:15,Math.abs((_s0.x*.5+.5)*W-x)*2*(markI===1?.4:markI===2?.75:.68)*DIFF[diffI].mid); /* the same size in the park as before: cross 7.5 cm, dot 4 cm, ring 7 cm */ /* about ten centimetres across in the park, never under 18 px */
   markEl.style.display='block';markEl.style.width=markEl.style.height=px.toFixed(1)+'px';markEl.style.transform='translate('+(x-px/2).toFixed(1)+'px,'+(y-px/2).toFixed(1)+'px)';}
 // THE TAPE MEASURE: on the camera that rides behind a home run, the distance runs up live in big numbers just above the ball.
 let dftEl=null,dftOn=false,dftV=-1;function dftDom(){const on=!!(flight&&!flight.done&&flight.play.type==='hr'&&flight.trailCam&&!flight.orbit&&flight.dShow&&now-flight.t0>.3&&ball.visible&&!paused);
@@ -3273,7 +3273,7 @@ function stickHint(){
   const live=!S.stk&&!touchLast&&S.inning===1&&S.outs===0&&S.bi===0&&S.balls+S.strikes===0&&(S.state==='ready'||S.state==='windup'||S.state==='pitch');
   if(live!==hintOn){hintOn=live;$('apad').classList.toggle('hint',live);}}
 // Celebrating on second: he shouts, in big letters over his head. Two lines per celebration, the second one about the runs he drove in if any.
-const SHOUT_A=["LET'S GO!!","LET'S GOOO!","YEAH!!","HEATING UP!","YOU'RE SEEING IT!","YOU'RE TEEING OFF!"],SHOUT_B=['TWO BAGS!','KEEP IT ROLLING!','TWO BAGGER!'],SHOUT_H=['PIMPED IT!','PIMPED IT!',"STUNT ON 'EM!","STUNT ON 'EM!",'SEE YA!','WENT YARD!','BIG FLY!','TATER!','GOT ALL OF IT!','NO DOUBTER!','TOUCH \'EM ALL!','ABSOLUTE TANK!','GONE FOREVER!','DINGER!','ADIOS PELOTA!','PLAKATA!','BARRELED!','SAYONARA!','HASTA LA VISTA!'];
+const SHOUT_A=["LET'S GO!!","LET'S GOOO!","YEAH!!","HEATING UP!","YOU'RE SEEING IT!","YOU'RE TEEING OFF!"],SHOUT_B=['TWO BAGS!','KEEP IT ROLLING!','TWO BAGGER!'],SHOUT_H=['PIMPED IT!','PIMPED IT!',"STUNT ON 'EM!","STUNT ON 'EM!",'SEE YA!','WENT YARD!','BIG FLY!','TATER!','GOT ALL OF IT!','NO DOUBTER!','TOUCH \'EM ALL!','ABSOLUTE TANK!','GONE FOREVER!','DINGER!','ADIOS PELOTA!','PLAKATA!','BARRELED!','SAYONARA!','HASTA LA VISTA!','SMELL YA!'];
 let shoutI=-1,shoutLast='';const _sh=new V3();
 function shoutTick(){
   const el=$('shout');
@@ -3896,7 +3896,8 @@ function payHeat(){if(pitch&&pitch.P.sp&&!pitch.paid){pitch.paid=true;if(!S.pOve
 let gamesPlayed=0;try{gamesPlayed=+localStorage.getItem('mm_games')||0;}catch(e){}
 // DIFFICULTY (a setting, first pass). PRO is the game as it has always been. ROOKIE: bigger rings, a wider timing window and slower pitches.
 // ALL-STAR: smaller rings, a tighter window and more velocity. (More to come: how often he throws Juice, how often he goes into Overdrive, the defence.)
-const DIFF=[{n:'ROOKIE',ring:1.18,dur:1.1},{n:'PRO',ring:1,dur:1},{n:'ALL-STAR',ring:.85,dur:.93}];let diffI=1;try{const v=localStorage.getItem('mm_diff');if(v!==null)diffI=clamp(+v|0,0,2);}catch(e){}
+const DIFF=[{n:'ROOKIE',ring:1.18,dur:1.1,mid:1.35},{n:'PRO',ring:1,dur:1,mid:1},{n:'ALL-STAR',ring:.85,dur:.93,mid:.7}]; /* mid: THE CROSSHAIR IS 'MIDDLE-MIDDLE'. The harder the game, the smaller it is drawn, the closer to dead centre the barrel has to be to count as squared up, and the tighter the timing has to be to count as perfect */
+const SQR=()=>.3*DIFF[diffI].mid,PFT=()=>.22*DIFF[diffI].mid;let diffI=1;try{const v=localStorage.getItem('mm_diff');if(v!==null)diffI=clamp(+v|0,0,2);}catch(e){}
 let ringsOff=false;try{ringsOff=localStorage.getItem('mm_rings')==='0';}catch(e){}
 function optLabels(){const set=(id,t)=>{const e=document.getElementById(id);if(e)e.textContent=t;};set('diff1','Difficulty: '+DIFF[diffI].n.toLowerCase());set('diff2','DIFFICULTY: '+DIFF[diffI].n);set('ring1','Bat rings: '+(ringsOff?'hidden':'shown'));set('ring2','BAT RINGS: '+(ringsOff?'HIDDEN':'SHOWN'));}
 const easyAB=()=>S.bi===0&&S.inning===1&&gamesPlayed<=3;
@@ -4104,16 +4105,16 @@ function tryContact(){flight_pop=false;if(pitch.hbp){swing.done=true;swing.miss=
   const d=Math.hypot(aim.x-pitch.tx,aim.y-pitch.ty);
   // where the barrel was relative to the ball, in sweet-spot radii: u>0 = swung under it, e>0 = ball out toward the end of the bat
   const cu=(pitch.ty-aim.y)/R,ce=(pitch.tx-aim.x)/R*(MX.lefty?-1:1),cr=Math.hypot(cu,ce);
-  const onT=Math.abs(n)<.22,side=onT?(cr<.7?'GOOD WOOD':'CUED IT'):n<0?'OFF THE END':'JAMMED'; // jammed means late and off the end means early, so the words always agree with the timing
-  let where=cr<.3?'SQUARED UP':Math.abs(cu)>=Math.abs(ce)?(onT&&cr<.7?(cu>0?'BACKSPUN IT':'TOPSPUN IT'):(cu>0?'GOT UNDER IT':'TOPPED IT')):side;
-  timeBar(n*(pw?.85/1.2:1)*JT*SK,pw,JT,Math.abs(n)<.22,SK);
+  const onT=Math.abs(n)<PFT(),side=onT?(cr<.7?'GOOD WOOD':'CUED IT'):n<0?'OFF THE END':'JAMMED'; // jammed means late and off the end means early, so the words always agree with the timing
+  let where=cr<SQR()?'SQUARED UP':Math.abs(cu)>=Math.abs(ce)?(onT&&cr<.7?(cu>0?'BACKSPUN IT':'TOPSPUN IT'):(cu>0?'GOT UNDER IT':'TOPPED IT')):side;
+  timeBar(n*(pw?.85/1.2:1)*JT*SK,pw,JT,Math.abs(n)<PFT(),SK);
   if(Math.abs(n)>1.4||d>R*1.3){swing.miss=true;
     if(d>R)ringEcho={t:now,x:aim.x,y:aim.y,bx:pitch.tx,by:pitch.ty,pw}; // freeze the ring and mark where the ball was: it has to be inside
     timing(Math.abs(n)>1.4?(n<0?'WAY EARLY':'WAY LATE'):'BALL OUTSIDE THE '+(pw?'RED CORE':'GREEN RING'),pw?'#ff8a70':'#7dffa0');return;}
   const tipped=d>R;
   const qT=Math.max(0,1-.75*Math.pow(Math.abs(n),1.6)),qA=tipped?.15:1-.6*(d/R)*(d/R);let q=qT*qA*(1-.8*chase);
-  $('tmk').classList.toggle('pf',Math.abs(n)<.22&&cr<.3&&chase<=.3&&q>.8);
-  {const k=Math.min(1,1/Math.max(1e-6,cr)),dx=(pitch.tx-aim.x)/R*k,dy=cu*k,m=$('tcb').firstChild;$('tcb').hidden=false;m.style.left=(50-dx*42)+'%';m.style.top=(50+dy*42)+'%';m.className=cr<.3?'sq':'';} // where the barrel met the ball: under it, on top of it, off the end, in on the hands // the rocket is for perfect-perfect only: on time, squared up, and smoked
+  $('tmk').classList.toggle('pf',Math.abs(n)<PFT()&&cr<SQR()&&chase<=.3&&q>.8);
+  {const k=Math.min(1,1/Math.max(1e-6,cr)),dx=(pitch.tx-aim.x)/R*k,dy=cu*k,m=$('tcb').firstChild;$('tcb').hidden=false;m.style.left=(50-dx*42)+'%';m.style.top=(50+dy*42)+'%';m.className=cr<SQR()?'sq':'';} // where the barrel met the ball: under it, on top of it, off the end, in on the hands // the rocket is for perfect-perfect only: on time, squared up, and smoked
  
   const gs=()=>(Math.random()+Math.random()+Math.random()-1.5)/1.5; // bell-ish, ±1
   // launch: where the barrel met the ball, pitch height, and how square it was
@@ -4186,13 +4187,13 @@ function tryContact(){flight_pop=false;if(pitch.hbp){swing.done=true;swing.miss=
   const col=flight.od?[.3,.7,1]:tb?[1,.5,.15]:[1,.9,.5];
   burst(fxS,p0,Math.round(14+60*q),4+9*q,.5,col,6,1);
   const mph=Math.round(v*2.237*1.02);
-  const lab=Math.abs(n)<.22?'ON TIME':n<0?(n<-.7?'EARLY':'A HAIR EARLY'):(n>.7?'LATE':'A HAIR LATE');
+  const lab=Math.abs(n)<PFT()?'ON TIME':n<0?(n<-.7?'EARLY':'A HAIR EARLY'):(n>.7?'LATE':'A HAIR LATE');
   {const lvl=tipped||chase>.3||q<.35?1:q<.6?2:q<.85?3:4;
     $('hq').textContent=flight_pop?'POPPED UP':chase>.3?'CHASED':tipped?'TIPPED':['','WEAK','OKAY','SOLID','BARRELED'][lvl];if(MOB)$('hq').textContent+=' · '+mph+' MPH';$('hq').className='q q'+lvl;flight.lvl=lvl;if(lvl===4)buzz(35);
     {const L=tr.land,far=L?Math.hypot(L.x,L.z):0,lastP=tr.pts[tr.pts.length-1]; // distance ticks up on anything driven in the air
       flight.dShow=tr.hr||(far*3.281>=250&&la>10);flight.dFt=tr.hr?play.dist*3.281:far*3.281;flight.dEnd=tr.hr?(tr.outD||Math.hypot(lastP.x,lastP.z)):far; /* (the counter reaches its number where the ball first comes down, not where it stops rolling) */$('hdr').hidden=!flight.dShow;$('hds').textContent='0 FT';}
     $('hev').textContent=mph+' MPH';$('hla').textContent=Math.round(la)+'°';
-    {const g=Math.abs(n)<.22,t=$('htm');t.textContent=lab;t.className=g?'gd':Math.abs(n)>.7?'bd':'';const c=$('hct');c.textContent=chase>.3?'CHASED':where;c.className=cr<.3&&chase<=.3&&!pu?'gd':cr>.7||chase>.3?'bd':'';
+    {const g=Math.abs(n)<PFT(),t=$('htm');t.textContent=lab;t.className=g?'gd':Math.abs(n)>.7?'bd':'';const c=$('hct');c.textContent=chase>.3?'CHASED':where;c.className=cr<SQR()&&chase<=.3&&!pu?'gd':cr>.7||chase>.3?'bd':'';
       // picture of it: the ball against the barrel, red dot = the sweet spot
       const bx=clamp((aim.x-pitch.tx)/R,-1.4,1.4)*13,by=clamp((aim.y-pitch.ty)/R,-1.4,1.4)*13,cy=23-by;$('hbat').setAttribute('y',cy-5);$('hdot').setAttribute('cy',cy);$('hdot').setAttribute('cx',86+bx);$('hbat').setAttribute('x',20+bx);}
     $('hitinfo').hidden=false;}
@@ -4200,9 +4201,9 @@ function tryContact(){flight_pop=false;if(pitch.hbp){swing.done=true;swing.miss=
   const lhB=!!curBatter().lh,turn=!tom&&q>.68&&v>=40&&la>6&&play.type!=='foul'&&pitch.tx*(lhB?1:-1)>.1&&phi*(lhB?1:-1)>14; /* an inside pitch pulled hard: he TURNED ON it */
   // THE BEST THING ABOUT THE SWING IS THE CALLOUT. When he tomahawked it, turned on it, or was perfect on a ball he crushed or hit out, that
   // word goes up as the big call (in place of a random CRUSHED!/SMOKED!), and the read-out at the foot of the screen keeps the plain detail.
-  const perfC=Math.abs(n)<.22&&cr<.3&&chase<=.3,featC=tom?'TOMAHAWKED!':turn?'TURNED ON!':perfC?'PERFECT!':'',promo=featC&&play.type!=='foul'&&(featC!=='PERFECT!'||play.type==='hr'||(q>.82&&pw))?featC:'';
-  timing(promo?lab+' · '+where:tom?'TOMAHAWKED!':turn?'TURNED ON!':Math.abs(n)<.22&&cr<.3&&chase<=.3&&!pu?'PERFECT!':chase>.3?'CHASED!':lab+' · '+where, // PERFECT is reserved for on time AND squared up
-    promo?(perfC?'#ffe53b':'#f2f5ff'):tom||turn?'#ff8a2e':chase>.3?'#ff4d2e':Math.abs(n)<.22&&cr<.3?'#ffe53b':flight.lvl===1?'#9aa3c7':'#f2f5ff',flight.lvl); // timing, then where the barrel met it
+  const perfC=Math.abs(n)<PFT()&&cr<SQR()&&chase<=.3,featC=tom?'TOMAHAWKED!':turn?'TURNED ON!':perfC?'PERFECT!':'',promo=featC&&play.type!=='foul'&&(featC!=='PERFECT!'||play.type==='hr'||(q>.82&&pw))?featC:'';
+  timing(promo?lab+' · '+where:tom?'TOMAHAWKED!':turn?'TURNED ON!':Math.abs(n)<PFT()&&cr<SQR()&&chase<=.3&&!pu?'PERFECT!':chase>.3?'CHASED!':lab+' · '+where, // PERFECT is reserved for on time AND squared up
+    promo?(perfC?'#ffe53b':'#f2f5ff'):tom||turn?'#ff8a2e':chase>.3?'#ff4d2e':Math.abs(n)<PFT()&&cr<SQR()?'#ffe53b':flight.lvl===1?'#9aa3c7':'#f2f5ff',flight.lvl); // timing, then where the barrel met it
   // No-doubters: sometimes stay on the hitter instead of the ball. 'admire' = he holds his finish, watches it and drops the bat;
   // 'show' = the same, then his own walk-up routine as a celebration. Decided here because we already know where the ball lands.
   {const la0=Math.atan2(v0.y,Math.hypot(v0.x,v0.z))/DEG;if(la0<14&&play.type!=='hr'&&play.type!=='foul'){$('tbar').classList.add('qk');$('tim').classList.add('qk');}}
