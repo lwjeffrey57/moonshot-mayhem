@@ -1029,7 +1029,7 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 798</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 799</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -3842,8 +3842,6 @@ const pcWalk=()=>S.state==='pchange'&&S.pcW&&now-S.t<S.pcW; // the outgoing pitc
 // Starting before the player models have arrived left an empty batter's box and skipped the first walk-up, so Play Ball waits for them.
 function startGame(){
   if(MX.loading){if(!MX.pendingStart){MX.pendingStart=true;$('start').textContent='LOADING PLAYERS…';setTimeout(()=>{if(MX.pendingStart)playersDone();},90000);}return;}
-  /* THE REST OF THE ROSTER IS STILL BEING BUILT: hold on the title for a few seconds (seven at most) so those freezes happen here and not in the first innings */
-  try{if(MX.gate){return;}if(MX.prepBusy&&MX.prepBusy()){MX.gate=performance.now();const B=$('start');B.textContent='LOADING PLAYERS…';const t=()=>{if(S.state!=='title'){MX.gate=0;return;}let busy=false;try{busy=MX.prepBusy();}catch(e){}if(!busy||performance.now()-MX.gate>7000){MX.gate=0;B.textContent='PLAY BALL';newGame();}else setTimeout(t,150);};setTimeout(t,150);return;}}catch(e){MX.gate=0;}
   newGame();
 }
 // loading bar on the title screen: one step per file fetched, the last for building the hitter
@@ -3897,7 +3895,10 @@ let warmed=false;function warmUp(){if(warmed)return;if(S.state!=='title'&&S.stat
   try{if(!REV.g)revBuild();}catch(e){}try{if(!LAS.beams.length)laserBuild();}catch(e){}
   try{renderer.compile(scene,camera);}catch(e){}
   try{if(renderer.initTexture)scene.traverse(o=>{const m=o.material;if(m&&!Array.isArray(m))['map','normalMap','emissiveMap','specularMap'].forEach(k=>{const t=m[k];if(t&&t.image&&(t.image.width||t.image.videoWidth)&&!t.__w){t.__w=1;try{renderer.initTexture(t);}catch(e){}}});});}catch(e){}}
-function playersDone(){setTimeout(warmUp,1800);setTimeout(propsLoad,2500);MX.loading=false;loadStep(1);if(MX.pendingStart){MX.pendingStart=false;$('start').textContent='PLAY BALL';$('start').classList.remove('ldg');newGame();}}
+function playersDone(){if(MX.pdW){MX.pdT=-1e9;return;} /* (called again while it is waiting: the long-stop timer. Let it through now) */MX.pdW=true;MX.pdT=performance.now();setTimeout(warmUp,1800);setTimeout(propsLoad,2500);MX.loading=false;
+  // ONE LOADING SCREEN: the rocket stays up until the whole roster and the park are built (ten seconds at the very most), and only then does PLAY BALL appear. No second wait after pressing it.
+  const fin=()=>{MX.pdW=false;loadStep(1);if(MX.pendingStart){MX.pendingStart=false;$('start').textContent='PLAY BALL';$('start').classList.remove('ldg');newGame();}};
+  const w=()=>{const e=performance.now()-MX.pdT;let busy=true;try{busy=e<3200||!MX.prepBusy||MX.prepBusy();}catch(x){busy=false;}if(!busy||e>10000||S.state!=='title'){fin();return;}try{const p=Math.min(99,88+e/10000*11),b=$('ldbar');if(b){b.firstElementChild.style.width=p+'%';$('ldtxt').textContent='LOADING PLAYERS '+Math.round(p)+'%';}}catch(x){}setTimeout(w,150);};w();}
 // ── A goal for every game, set from how this player has been doing, and a grade when the ninth out is made.
 let STATS={g:0,runs:0,hits:0,hrs:0,longest:0};try{STATS=Object.assign(STATS,JSON.parse(localStorage.getItem('mm_stats')||'{}'));}catch(e){}
 function pickGoal(){const g=STATS.g,avg=k=>g?STATS[k]/g:0,plural=(n,w)=>n+' '+w+(n===1?'':'S');
