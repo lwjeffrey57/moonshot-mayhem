@@ -1017,7 +1017,7 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 714</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 715</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -4003,7 +4003,7 @@ function tryContact(){flight_pop=false;if(pitch.hbp){swing.done=true;swing.miss=
   // where the barrel was relative to the ball, in sweet-spot radii: u>0 = swung under it, e>0 = ball out toward the end of the bat
   const cu=(pitch.ty-aim.y)/R,ce=(pitch.tx-aim.x)/R*(MX.lefty?-1:1),cr=Math.hypot(cu,ce);
   const onT=Math.abs(n)<.22,side=onT?(cr<.7?'GOOD WOOD':'CUED IT'):n<0?'OFF THE END':'JAMMED'; // jammed means late and off the end means early, so the words always agree with the timing
-  const where=cr<.3?'SQUARED UP':Math.abs(cu)>=Math.abs(ce)?(onT&&cr<.7?(cu>0?'BACKSPUN IT':'TOPSPUN IT'):(cu>0?'GOT UNDER IT':'TOPPED IT')):side;
+  let where=cr<.3?'SQUARED UP':Math.abs(cu)>=Math.abs(ce)?(onT&&cr<.7?(cu>0?'BACKSPUN IT':'TOPSPUN IT'):(cu>0?'GOT UNDER IT':'TOPPED IT')):side;
   timeBar(n*(pw?.85/1.2:1)*JT*SK,pw,JT,Math.abs(n)<.22,SK);
   if(Math.abs(n)>1.4||d>R*1.3){swing.miss=true;
     if(d>R)ringEcho={t:now,x:aim.x,y:aim.y,bx:pitch.tx,by:pitch.ty,pw}; // freeze the ring and mark where the ball was: it has to be inside
@@ -4035,6 +4035,7 @@ function tryContact(){flight_pop=false;if(pitch.hbp){swing.done=true;swing.miss=
   // that carries to the wall and bangs off it) instead of a fly ball that would have cleared an ordinary fence.
   if(!kind&&!flight_pop&&q>.5&&phi<-24&&phi>-46&&la>9&&la<36&&v>=34&&Math.random()<.7){la=rand(16,23);v=clamp(v,rand(40,43),45);phi=Math.min(phi,-28.5);}
   const tsp=!kind&&!flight_pop&&where==='TOPSPUN IT'&&q>.5&&chase<=.3;if(tsp)la=clamp(Math.max(la,rand(9,15)),9,18);
+  const pu=flight_pop||la>=50;if(pu&&where==='SQUARED UP'){where='GOT UNDER IT';try{$('tcb').firstChild.className='';$('tmk').classList.remove('pf');}catch(e){}} // a pop-up was never squared up: he got under it
   // backspin and topspin follow where the barrel met the ball: under it = backspin that carries, on top = topspin that dives
   const lift=tsp?rand(-7.5,-5.2):kind==='BLOOP'||kind==='CHOPPER'||flight_pop?rand(-1,1):clamp(cu,-1.2,1.2)*1.9+rand(-1.9,1.7)+(la>18?.3:0);
   if(tsp)kind='TOPSPIN SINKER';
@@ -4089,7 +4090,7 @@ function tryContact(){flight_pop=false;if(pitch.hbp){swing.done=true;swing.miss=
     {const L=tr.land,far=L?Math.hypot(L.x,L.z):0,lastP=tr.pts[tr.pts.length-1]; // distance ticks up on anything driven in the air
       flight.dShow=tr.hr||(far*3.281>=250&&la>10);flight.dFt=tr.hr?play.dist*3.281:far*3.281;flight.dEnd=tr.hr?(tr.outD||Math.hypot(lastP.x,lastP.z)):far; /* (the counter reaches its number where the ball first comes down, not where it stops rolling) */$('hdr').hidden=!flight.dShow;$('hds').textContent='0 FT';}
     $('hev').textContent=mph+' MPH';$('hla').textContent=Math.round(la)+'°';
-    {const g=Math.abs(n)<.22,t=$('htm');t.textContent=lab;t.className=g?'gd':Math.abs(n)>.7?'bd':'';const c=$('hct');c.textContent=chase>.3?'CHASED':where;c.className=cr<.3&&chase<=.3?'gd':cr>.7||chase>.3?'bd':'';
+    {const g=Math.abs(n)<.22,t=$('htm');t.textContent=lab;t.className=g?'gd':Math.abs(n)>.7?'bd':'';const c=$('hct');c.textContent=chase>.3?'CHASED':where;c.className=cr<.3&&chase<=.3&&!pu?'gd':cr>.7||chase>.3?'bd':'';
       // picture of it: the ball against the barrel, red dot = the sweet spot
       const bx=clamp((aim.x-pitch.tx)/R,-1.4,1.4)*13,by=clamp((aim.y-pitch.ty)/R,-1.4,1.4)*13,cy=23-by;$('hbat').setAttribute('y',cy-5);$('hdot').setAttribute('cy',cy);$('hdot').setAttribute('cx',86+bx);$('hbat').setAttribute('x',20+bx);}
     $('hitinfo').hidden=false;}
@@ -4098,7 +4099,7 @@ function tryContact(){flight_pop=false;if(pitch.hbp){swing.done=true;swing.miss=
   // THE BEST THING ABOUT THE SWING IS THE CALLOUT. When he tomahawked it, turned on it, or was perfect on a ball he crushed or hit out, that
   // word goes up as the big call (in place of a random CRUSHED!/SMOKED!), and the read-out at the foot of the screen keeps the plain detail.
   const perfC=Math.abs(n)<.22&&cr<.3&&chase<=.3,featC=tom?'TOMAHAWKED!':turn?'TURNED ON!':perfC?'PERFECT!':'',promo=featC&&play.type!=='foul'&&(featC!=='PERFECT!'||play.type==='hr'||(q>.82&&pw))?featC:'';
-  timing(promo?lab+' · '+where:tom?'TOMAHAWKED!':turn?'TURNED ON!':Math.abs(n)<.22&&cr<.3&&chase<=.3?'PERFECT!':chase>.3?'CHASED!':lab+' · '+where, // PERFECT is reserved for on time AND squared up
+  timing(promo?lab+' · '+where:tom?'TOMAHAWKED!':turn?'TURNED ON!':Math.abs(n)<.22&&cr<.3&&chase<=.3&&!pu?'PERFECT!':chase>.3?'CHASED!':lab+' · '+where, // PERFECT is reserved for on time AND squared up
     promo?(perfC?'#ffe53b':'#f2f5ff'):tom||turn?'#ff8a2e':chase>.3?'#ff4d2e':Math.abs(n)<.22&&cr<.3?'#ffe53b':flight.lvl===1?'#9aa3c7':'#f2f5ff',flight.lvl); // timing, then where the barrel met it
   // No-doubters: sometimes stay on the hitter instead of the ball. 'admire' = he holds his finish, watches it and drops the bat;
   // 'show' = the same, then his own walk-up routine as a celebration. Decided here because we already know where the ball lands.
