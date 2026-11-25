@@ -296,6 +296,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
 #shout.go{animation:shoutIn 1.5s cubic-bezier(.2,1.4,.4,1) forwards}
 #shout.b{color:#3ad6ff;text-shadow:0 4px 0 #000,0 0 22px rgba(58,214,255,.6);transform:translate(-50%,-100%) rotate(5deg)}
 #shout.lk{z-index:61}#shout.go.lk{animation:shoutLk .45s cubic-bezier(.2,1.4,.4,1) forwards;color:#7fe6ff;text-shadow:0 clamp(4px,.6vw,6px) 0 #05060f,0 0 26px rgba(58,214,255,.75);transform:translate(-50%,-100%) rotate(-4deg)}@keyframes shoutLk{0%{opacity:0;scale:.3}55%{opacity:1;scale:1.25}100%{opacity:1;scale:1}} /* LOCKED IN! over his head: Overdrive blue, and it stays up for as long as he is burning */
+#hopc{position:absolute;left:50%;top:40%;z-index:6;pointer-events:none;white-space:nowrap;opacity:0;font-family:var(--display);font-style:italic;font-size:clamp(20px,5.2vw,34px);line-height:1;letter-spacing:.02em;color:#ffe53b;-webkit-text-stroke:clamp(4px,.8vw,6px) #05060f;paint-order:stroke fill;text-shadow:0 3px 0 #05060f,0 0 14px rgba(255,229,59,.5);transform:translate(-50%,-100%) rotate(-5deg)}#hopc.go{animation:hopIn 1.25s cubic-bezier(.2,1.4,.4,1) forwards}@keyframes hopIn{0%{opacity:0;scale:.3}14%{opacity:1;scale:1.25}28%{scale:1}80%{opacity:1}100%{opacity:0;scale:1.06}} /* MOON HOP!: a small call that rides just above the ball for a moment when it takes the bad hop */
 @keyframes shoutIn{0%{opacity:0;scale:.3}14%{opacity:1;scale:1.3}26%{scale:1}82%{opacity:1;scale:1.04}100%{opacity:0;scale:1.12}}
 #pop .t{font-family:var(--display);font-size:clamp(36px,8.6vw,96px);line-height:.95;font-style:italic;letter-spacing:.01em;
   color:var(--volt);-webkit-text-stroke:2px #000;text-shadow:0 5px 0 #000,0 0 40px rgba(255,229,59,.55);text-wrap:balance}
@@ -967,7 +968,7 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
       <div class="tz jz"><b>YOUR JUICE IS FULL</b>Tap JUICE, then swing for a monster hit<small>Each Juice swing burns one quarter of the meter.</small></div>
     </div>
     <div id="pop"><div class="t"></div><div class="s"></div></div>
-    <div id="shout" aria-hidden="true"></div>
+    <div id="shout" aria-hidden="true"></div><div id="hopc" aria-hidden="true">MOON HOP!</div>
     <div id="tags" aria-hidden="true"></div>
     <div id="surge" aria-hidden="true"></div>
     <div id="tim"></div>
@@ -1030,7 +1031,7 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 845</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 846</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -1116,7 +1117,7 @@ function packGroups(geo){try{if(!geo||geo.index||!geo.groups||geo.groups.length<
   Object.keys(geo.attributes).forEach(nm=>{if(geo.attributes[nm].count===n)geo.setAttribute(nm,re(geo.attributes[nm]));});
   if(geo.morphAttributes)Object.keys(geo.morphAttributes).forEach(nm=>{geo.morphAttributes[nm]=geo.morphAttributes[nm].map(a=>a.count===n?re(a):a);});
   geo.clearGroups();NG.forEach(g=>geo.addGroup(g.start,g.count,g.materialIndex));}catch(e){}}
-function fbxParse(buf,path){hev('fbx');const o=new T.FBXLoader().parse(buf,path||'');try{o.traverse(n=>{if(n.isMesh&&n.geometry)packGroups(n.geometry);});}catch(e){}return o;}
+function fbxParse(buf,path,lab){hev('fbx'+(lab?':'+lab:''));const o=new T.FBXLoader().parse(buf,path||'');try{o.traverse(n=>{if(n.isMesh&&n.geometry)packGroups(n.geometry);});}catch(e){}return o;}
 function weld(geo){
   const A=geo.attributes,names=Object.keys(A),n=A.position.count,map=new Map(),idx=new Uint32Array(n),src=[],q={position:1e3,normal:1e2,uv:1e4,skinIndex:1,skinWeight:1e3};
   for(let i=0;i<n;i++){let k='';
@@ -1336,6 +1337,7 @@ function pdSvg(){const sv=$('pdsvg');if(!sv||!PD.on)return;const hold=PD.ph>=2&&
     let vx=P.brk[0],vy=P.brk[1];const L=Math.hypot(vx,vy)||1,fast=/FASTBALL|METEOR|RISER/.test(P.n);if(L<.12){vx=0;vy=1;}else{vx/=L;vy/=L;}if(P.n==='CHANGEUP'){vx=-.5;vy=.87;} /* a changeup is thrown with backspin tilted to the arm side, like a two-seamer: it sinks because it is slow, not because it has topspin */const a=Math.atan2(-vx,vy)/DEG,pnS=performance.now()/1000,off=(PD.smPh=((PD.smPh||0)+Math.min(.1,pnS-(PD.smT||pnS))*(fast?170:105))%30);PD.smT=pnS; /* the roll carries on from where it was when the pitch is changed: it used to jump to a new place in its turn (each pitch spins at its own rate), which read as a hitch */
     sm.setAttribute('transform','translate('+cx.toFixed(1)+','+cy.toFixed(1)+') rotate('+a.toFixed(1)+') scale('+(R/10).toFixed(3)+') translate(0,'+off.toFixed(2)+')');}}
 function pdArcOff(){try{$('pdsvg').style.display='none';}catch(e){}if(PD.arc)PD.arc.visible=PD.arcDots.visible=false;}
+let pdWhT=0;addEventListener('wheel',e=>{try{if(S.state!=='pduel'||paused||infoHold||PD.ph!==0||PD.gt||!e.deltaY)return;const t=performance.now();if(t-pdWhT<110)return;pdWhT=t;const n=pdList().length;pdPick(((PD.pk|0)+(e.deltaY>0?1:-1)+n)%n);pdUI();}catch(x){}},{passive:true}); /* ON A PC THE MOUSE WHEEL STEPS ROUND THE PITCHES: one notch, one pitch (a free-spinning wheel or a trackpad is held to about nine steps a second) */
 function pdPick(i){if(PD.ph!==0)return;if(PD.gt)return;try{const b=$('pdbtns').children[i];if(b){b.classList.remove('tap');void b.offsetWidth;b.classList.add('tap');setTimeout(()=>b.classList.remove('tap'),240);}}catch(e){} /* pressed like a button on a gamepad: it keeps its own colour */if(PD.odForce){buzz(8);return;} /* (the first Overdrive has to be switched on before anything else) */PD.pk=i;PD.sel=true;pdGoHome();try{pdBtns();pdCur();}catch(e){}[...$('pdbtns').children].forEach((b,k)=>b.classList.toggle('on',k===i));buzz(10);}
 const pdMph=q=>{try{return pitchMph(PITCHES[q.i].dur*(1.2-.26*q.v/100));}catch(e){return '';}}; /* the speed it leaves his hand at, the same way the hitters' radar reads it */
 /* EACH PITCH KEY IS A BASEBALL, its seams rolling the way that pitch spins (the same rule as the ball in the target): down toward you for a fastball, up and away for a curve, across for a slider. The roll is a plain CSS animation, so it costs next to nothing. */
@@ -4050,7 +4052,7 @@ const G=9.8,DRAG=.0042;
 // The line is fair. A ball counts as fair if any part of it touches the chalk: half the line's width plus the ball's radius,
 // measured across to x, and a little grace because the ball is drawn larger than life at distance.
 const LINE_TOL=.3;
-function simulate(p0,v0,spin,opt){spin=spin||{side:0,lift:0};opt=opt||{};const GG=G*(opt.g||1);let tag='',hrY=0,poleT=0,nb=0; // opt.chop: first bounce is a big one; opt.g: a low-gravity pocket; tag: anything unusual that happened to it
+function simulate(p0,v0,spin,opt){spin=spin||{side:0,lift:0};opt=opt||{};const GG=G*(opt.g||1);let tag='',hrY=0,poleT=0,nb=0,hopT=0; // opt.chop: first bounce is a big one; opt.g: a low-gravity pocket; tag: anything unusual that happened to it
   const p=p0.clone(),v=v0.clone(),pts=[];let t=0,land=null,hr=false,hrT=0,wall=false,wallT=0,foul=false,dist=0,grd=false,eyeT=0,seatT=0,outT=0,outD=0,foulT,bagPast=false,foulOver=false;const dt=1/120;
   while(t<(outT?outT+7:hr?14:9)){
     const sp=v.length();v.multiplyScalar(1-DRAG*sp*dt);
@@ -4094,7 +4096,7 @@ function simulate(p0,v0,spin,opt){spin=spin||{side:0,lift:0};opt=opt||{};const G
     else if(p.y<=0){
       if(!land){land={x:p.x,z:p.z,t};if(Math.abs(p.x)>.216-p.z+LINE_TOL)foul=true;} // fair or foul is settled by where it first lands, measured from the chalked lines
       p.y=0;if(v.y<-1.6){const big=opt.chop&&!nb;nb++;v.y*=big?-.45:-.42;v.x*=big?.84:.8;v.z*=big?.84:.8;
-        if(!big&&!tag&&!foul&&nb<=3&&Math.hypot(v.x,v.z)>8&&Math.random()<.011){const a=(Math.random()<.5?-1:1)*rand(.25,.55),cs=Math.cos(a),sn=Math.sin(a),x=v.x;v.x=x*cs-v.z*sn;v.z=x*sn+v.z*cs;v.y*=1.6;tag='MOON HOP!';}} // now and then it takes a wicked hop
+        if(!big&&!tag&&!foul&&nb<=3&&Math.hypot(v.x,v.z)>8&&(DBG.hop||Math.random()<.011)){const a=(Math.random()<.5?-1:1)*rand(.25,.55),cs=Math.cos(a),sn=Math.sin(a),x=v.x;v.x=x*cs-v.z*sn;v.z=x*sn+v.z*cs;v.y*=1.6;tag='MOON HOP!';hopT=t;}} // now and then it takes a wicked hop
       else{v.y=0;const h=Math.hypot(v.x,v.z);if(h<.6){pts.push({x:p.x,y:0,z:p.z,t});break;}const k=Math.max(0,h-5.5*dt)/h;v.x*=k;v.z*=k;}
     }
     if(land&&!tag&&!foul&&p.y<.3){for(const B of [[19.4,-19.4],[0,-38.8],[-19.4,-19.4]])if(Math.hypot(p.x-B[0],p.z-B[1])<.36){ // kicks off the bag
@@ -4106,7 +4108,7 @@ function simulate(p0,v0,spin,opt){spin=spin||{side:0,lift:0};opt=opt||{};const G
   }
   if(outD)dist=outD;else if(hr&&!eyeT){const q=p.clone(),w=v.clone();let n=0;while(q.y>0&&n++<2000){const sp=w.length();w.multiplyScalar(1-DRAG*sp*dt);w.y-=G*dt;q.addScaledVector(w,dt);}dist=Math.hypot(q.x,q.z);}
   let cove=false;if(hr&&seatT){const L=pts[pts.length-1],pL=Math.atan2(L.x,-L.z),dL=Math.hypot(L.x,L.z)-fenceR(pL);cove=pL>COVE_A0&&pL<COVE_A1&&dL>ARC_W&&L.y<1.6;}
-  return {pts,land,hr,hrT,hrY,poleT,tag,wall,wallT,foul,foulT,dist,grd,eyeT,seatT,outT,outD,cove,endT:t};
+  return {pts,land,hr,hrT,hrY,poleT,tag,hopT,wall,wallT,foul,foulT,dist,grd,eyeT,seatT,outT,outD,cove,endT:t};
 }
 const hangK=t=>1+.55*clamp((t-3.2)/1.4,0,1); // how much more ground an outfielder covers on a ball that hangs: nothing extra on liners (under 3.2 s in the air), up to 55% more on a towering fly
 const HANG_CATCH=4.2; // seconds in the air before an outfielder is allowed to make a play at the wall
@@ -5274,7 +5276,7 @@ function dlBoost(url){const i=DLQ.q.findIndex(j=>j.url===url);if(i>0)DLQ.q.unshi
 const loadBuf=url=>new Promise((res,rej)=>{DLQ.q.push({url,res,rej,tries:0});dlPump();});
 // bat.txt: a modelled bat that replaces the code-built one. Re-oriented so the knob sits at the hands and the barrel runs up +Y.
 if(T.FBXLoader)loadBuf('bat.txt').then(buf=>{
-  const o=fbxParse(buf,'');let src=null;o.updateMatrixWorld(true);o.traverse(n=>{if(n.isMesh&&!src)src=n;});if(!src)return;
+  const o=fbxParse(buf,'','bat');let src=null;o.updateMatrixWorld(true);o.traverse(n=>{if(n.isMesh&&!src)src=n;});if(!src)return;
   const g=src.geometry.clone().applyMatrix4(src.matrixWorld);g.computeBoundingBox();
   const sz=g.boundingBox.getSize(new V3()),c=g.boundingBox.getCenter(new V3()),ks=['x','y','z'],ax=ks.reduce((a,k)=>sz[k]>sz[a]?k:a,'x'),[o1,o2]=ks.filter(k=>k!==ax);
   const P=g.attributes.position,v=new V3();let rLo=0,nLo=0,rHi=0,nHi=0;
@@ -5356,7 +5358,7 @@ function loadPlayers(kind){ // body file = character mesh; clips.json = motion-c
   const defP=cfg.def?Promise.all([loadBuf(cfg.def.body),...Object.keys(cfg.def.tex).map(k=>Promise.all(cfg.def.tex[k].map(loadImg)))]).catch(()=>null):Promise.resolve(null);
   Promise.all([loadBuf(cfg.body).then(b=>(loadStep(),b)),clipsP,imgs,own]).then(r=>Promise.race([defP,new Promise(res=>setTimeout(()=>res(null),3500))]).then(df=>r.concat([df]))).then(([bb,cj0,im,oc,df])=>{const cj=Object.assign({},cj0,oc||{});
     if(my!==MX.token)return;                                   // switched again while loading
-    const base=fbxParse(bb,'');
+    const base=fbxParse(bb,'','base');
     // Every clip made on this body is stored as its joints' own angles. Another body's joints rest at different angles and its hips sit at a
     // different height, so a clip is converted for it once: each joint turns by the same amount from ITS OWN rest pose, and the hips ride at its own height.
     const restOf=o=>{const R={};let sm=0;o.traverse(n=>{if(n.isSkinnedMesh)sm++;});if(!sm)return R;o.updateMatrixWorld(true); /* measured exactly as the file was read, before anything has moved a joint: that IS its rest pose */
@@ -5376,9 +5378,9 @@ function loadPlayers(kind){ // body file = character mesh; clips.json = motion-c
     const bubbleG=new T.SphereGeometry(17.5,20,14),collarG=new T.TorusGeometry(9.2,1.7,8,22);
     const helmet=o=>{let h=null;o.traverse(b=>{if(b.isBone&&/Head$/.test(b.name)&&!/HeadTop/.test(b.name))h=b;});if(!h)return;
       const a=new T.Mesh(bubbleG,rimM),b=new T.Mesh(bubbleG,glass),c=new T.Mesh(collarG,collarM);a.userData.helm=b.userData.helm=c.userData.helm=true;a.position.y=b.position.y=9;a.renderOrder=3;b.renderOrder=4;c.rotation.x=PI/2;c.position.set(0,-4,1);h.add(a,b,c);};
-    const make=names=>{const o=canClone?T.SkeletonUtils.clone(base):fbxParse(bb,'');o.animations=names.map(n=>mkClip(cj[n],n));return o;}; /* (no bubble helmet on this body any more: his own head and armour are the look) */
+    const make=names=>{const o=canClone?T.SkeletonUtils.clone(base):fbxParse(bb,'','copy');o.animations=names.map(n=>mkClip(cj[n],n));return o;}; /* (no bubble helmet on this body any more: his own head and armour are the look) */
     let makeD=make,defSkin=skins&&skins.away;
-    if(df&&canClone)try{const dbase=fbxParse(df[0],''),tx=i=>{const t=new T.Texture(i);t.needsUpdate=true;t.anisotropy=ANISO;return gq(t);},geos=new Map();
+    if(df&&canClone)try{const dbase=fbxParse(df[0],'','def'),tx=i=>{const t=new T.Texture(i);t.needsUpdate=true;t.anisotropy=ANISO;return gq(t);},geos=new Map();
       const dkeys=Object.keys(cfg.def.tex),dmats={};dkeys.forEach((k,i)=>{const o={map:tx(df[1+i][0]),color:0xffffff,emissive:0x1c1c22,specular:0x333340,shininess:26,skinning:true};if(df[1+i][1])o.normalMap=tx(df[1+i][1]);dmats[k]=new T.MeshPhongMaterial(o);});
       defSkin={mat:dmats[dkeys[0]],mats:dmats,hide:cfg.def.hide,
         trim:g=>{let o=geos.get(g.uuid);if(!o){o=weld(g);o.userData.lite=liteGeo(o,LOD_CELL);geos.set(g.uuid,o);}return o;}}; // shared full and low-detail meshes, as for the hitters
@@ -5394,7 +5396,7 @@ function loadPlayers(kind){ // body file = character mesh; clips.json = motion-c
     // Bodies are fetched only when a pitcher who wears one is due (the man on the mound, and the next arm in the bullpen), never all at once.
     const pitP={};MX.pitLoad=want=>{const v=cfg.pit&&canClone&&cfg.pit[want-1];if(!v||want<1)return null;if(pitP[want])return pitP[want];const keys=Object.keys(v.tex);
       return pitP[want]=Promise.all([loadBuf(v.body),...keys.map(k=>Promise.all(v.tex[k].map(loadImg)))]).then(r=>safeMoment(want===14?600:20000,want===14).then(()=>r)).then(r=>{if(my!==MX.token)return;
-        const PH=matchMedia('(pointer:coarse)').matches,vb=fbxParse(r[0],''),tx=i=>{let im=i;if(PH&&i.width>512){const c=document.createElement('canvas');c.width=c.height=512;c.getContext('2d').drawImage(i,0,0,512,512);im=c;} /* phones: half-size textures, no bump map, so nine extra bodies fit in memory */const t=new T.Texture(im);t.needsUpdate=true;t.anisotropy=ANISO;return gq(t);},mats={},geos=new Map();
+        const PH=matchMedia('(pointer:coarse)').matches,vb=fbxParse(r[0],'','pit'+want+''),tx=i=>{let im=i;if(PH&&i.width>512){const c=document.createElement('canvas');c.width=c.height=512;c.getContext('2d').drawImage(i,0,0,512,512);im=c;} /* phones: half-size textures, no bump map, so nine extra bodies fit in memory */const t=new T.Texture(im);t.needsUpdate=true;t.anisotropy=ANISO;return gq(t);},mats={},geos=new Map();
         keys.forEach((k,i)=>{const o={map:tx(r[1+i][0]),color:0xffffff,emissive:0x1c1c22,specular:0x333340,shininess:26,skinning:true};if(r[1+i][1]&&!PH)o.normalMap=tx(r[1+i][1]);mats[k]=new T.MeshPhongMaterial(o);});
         let vclips=null;MX.pitVar[want]={makeN:names=>{const o=T.SkeletonUtils.clone(vb);o.animations=fitClips(o,names.filter(n=>cj[n]));return o;},make:()=>{const o=T.SkeletonUtils.clone(vb);o.animations=vclips=vclips||fitClips(o,pitNames);return o;},
           skin:{mat:mats[keys[0]],mats,hide:v.hide,trim:g=>{let o=geos.get(g.uuid);if(!o){o=weld(g);o.userData.lite=liteGeo(o,LOD_CELL);geos.set(g.uuid,o);}return o;}}};
@@ -5414,7 +5416,7 @@ function loadPlayers(kind){ // body file = character mesh; clips.json = motion-c
     MX.batVar=[];MX.brigs=null;MX.bcur=0;MX.bshown=undefined;
     const batLoad=k=>{const v=cfg.bat&&canClone&&cfg.bat[k-1];if(!v)return null;if(batP[k])return batP[k];const keys=Object.keys(v.tex);
       return batP[k]=Promise.all([loadBuf(v.body),...keys.map(q=>Promise.all(v.tex[q].map(loadImg)))]).then(r=>{const hot=(PD.on&&k>=10)||k===PD.needBody;return safeMoment(hot?600:20000,hot).then(()=>r);}).then(r=>{if(my!==MX.token)return;MX.dlT=MX.dlT||{};MX.dlT['b'+k]=Math.round(performance.now()/100)/10;
-        const vb=fbxParse(r[0],''),tx=i=>{const t=new T.Texture(i);t.needsUpdate=true;t.anisotropy=ANISO;return gq(t);},mats={},geos=new Map();
+        const vb=fbxParse(r[0],'','b'+k+''),tx=i=>{const t=new T.Texture(i);t.needsUpdate=true;t.anisotropy=ANISO;return gq(t);},mats={},geos=new Map();
         keys.forEach((q,i)=>{const o={map:tx(r[1+i][0]),color:v.col||0xffffff,emissive:v.col?0x0c0c10:0x1c1c22,specular:0x333340,shininess:26,skinning:true};if(r[1+i][1])o.normalMap=tx(r[1+i][1]);mats[q]=new T.MeshPhongMaterial(o);});
         MX.batVar[k]={make:names=>{const o=T.SkeletonUtils.clone(vb);o.animations=fitClips(o,names.filter(n=>cj[n]));return o;},
           skin:()=>{const m2={};keys.forEach(q=>m2[q]=mats[q].clone());return {mat:m2[keys[0]],mats:m2,hide:v.hide,topY:refRest.HeadTop_End?refRest.HeadTop_End.y:0,trim:g=>{let o=geos.get(g.uuid);if(!o){o=weld(g);o.userData.lite=liteGeo(o,LOD_CELL);geos.set(g.uuid,o);}return o;}};}}; /* every wearer gets his own copy of the materials: the hitter fades in and out, the runners must not */
@@ -5442,7 +5444,7 @@ function loadPlayers(kind){ // body file = character mesh; clips.json = motion-c
     const umpP=cfg.ump&&canClone?Promise.all([loadBuf(cfg.ump.body),...Object.keys(cfg.ump.tex).map(k=>loadImg(cfg.ump.tex[k]).then(i=>[k,i]))]).catch(()=>null):Promise.resolve(null);
     if(skins&&cj.catch)Promise.race([umpP,new Promise(res=>setTimeout(()=>res(null),4500))]).then(um=>{if(my!==MX.token)return;
       let makeU=make,umpSkin=skins.ump;
-      if(um)try{const ub=fbxParse(um[0],''),geos=new Map(),mats={};
+      if(um)try{const ub=fbxParse(um[0],'','ump'),geos=new Map(),mats={};
         um.slice(1).forEach(([k,img])=>{const t=gq(new T.Texture(img));t.needsUpdate=true;t.anisotropy=ANISO;mats[k]=new T.MeshPhongMaterial({map:t,color:0x9aa0ad,specular:0x222222,shininess:16,skinning:true});});
         mats.Eye_MAT=mats.Body_MAT;
         umpSkin={mat:mats.Body_MAT,mats,hide:/Eye_Spec|Brows/,trim:g=>{let o=geos.get(g.uuid);if(!o){o=weld(g);o.userData.lite=liteGeo(o,LOD_CELL);geos.set(g.uuid,o);}return o;}};
@@ -5754,6 +5756,8 @@ function step(dt){try{stealUI();stealTick();}catch(e){}if(!PD.on){const hc=$('hu
     if(tr.seatT&&!flight.orbit&&tf>=tr.seatT){ball.visible=false;if(!flight.seated){flight.seated=true;if(tr.cove){let n=1;try{n=(+localStorage.getItem('mm_cove')||0)+1;localStorage.setItem('mm_cove',n);}catch(e){}burst(fxL,ball.position,70,11,1.1,[1,.18,.05],7,6);burst(fxL,ball.position,30,5,.8,[1,.9,.4],5,3);SND.zap();buzz([30,30,90]);badge('cove');if(COVE.paint)COVE.paint(n);COVE.hit=now;} /* into the reservoir: a geyser of coolant, and the count goes up */else burst(fxL,ball.position,12,4,.5,[.95,.95,1],4,1);}} /* swallowed by the crowd: somebody up there has a souvenir */
     if(tr.eyeT&&!flight.orbit&&!flight.eyeHit&&tf>=tr.eyeT){flight.eyeHit=true;if(flight.play.type==='hr'&&!flight.noEye){badge('eye');pop("OFF THE BATTER'S EYE!",'','hot');}if(!flight.noEye)zapStart(ball.position,false);burst(fxL,ball.position,26,9,.7,[.6,.85,1],7,1);SND.mitt();tone('sine',120,50,.25,.5);} // thud off the batter's eye
     if(tr.land&&!flight.orbit&&!flight.landed&&tf>=tr.land.t){flight.landed=true;if(flight.play.type==='hit')roar(.75,.3); /* it drops in: the cheer starts now, not when the fielder finally gets to it */_p.set(tr.land.x,.05,tr.land.z);burst(fxL,_p,10,3,.5,[.75,.6,.42],4,2);} // dust where it comes down, so fair or foul is clear
+    if(tr.hopT&&!flight.orbit&&tf>=tr.hopT&&tf<tr.hopT+1.3&&!(flight.play.endT<tr.hopT)){const el=$('hopc');if(!flight.hopd){flight.hopd=true;el.classList.remove('go');void el.offsetWidth;el.classList.add('go');buzz(12);}
+      _sh.copy(ball.position).project(camera);if(_sh.z<1){const w=canvas.clientWidth||innerWidth,h=canvas.clientHeight||innerHeight,ew=el.offsetWidth*.6+8;el.style.left=clamp((_sh.x*.5+.5)*w,ew,w-ew).toFixed(0)+'px';el.style.top=clamp((-_sh.y*.5+.5)*h-22,MOB?210:110,h-120).toFixed(0)+'px';}} /* MOON HOP!: rides just above the ball for a moment */
     const dc=camera.position.distanceTo(ball.position);ball.scale.setScalar(Math.max(1,dc*.05));
 
     ballShadow.visible=!flight.orbit;ballShadow.position.set(p.x,.03,p.z);ballShadow.scale.setScalar(.2+Math.min(1.2,p.y*.03));
