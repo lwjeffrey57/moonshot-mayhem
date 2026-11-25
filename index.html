@@ -1029,7 +1029,7 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 785</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 786</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -1642,7 +1642,7 @@ function draw(){try{gpuTick();}catch(e){}if(VB.g&&now>(VB.nt||0)){VB.nt=now+.5;t
   // after a hit. It belongs to that shot only: the moment the game moves on (next hitter, walk-up, a pitch) every trace of it is gone.
   // THE LOCKED-IN FIRE BURNS FOR THE WHOLE CELEBRATION AND GOES WHERE HE GOES. While his celebration is playing (at the plate after a homer,
   // or on whatever base he ended up on) the flame is held at full height and follows his body every frame; when the routine ends it dies down.
-  {const L=LOCKFX,st=S.state;if(L.cel&&now>=L.t){const on=st==='celebrate'||(st==='trot'&&TROT.cele)||st==='celly2';
+  {const L=LOCKFX,st=S.state;if(L.cel&&L.hr&&now<L.t&&st!=='celebrate'&&st!=='trot'&&st!=='celly2'&&st!=='flight'){L.cel=false;L.t=-99;L.fired=true;if(L.a)L.a.visible=L.b.visible=L.c.visible=false;timing('🔥 '+L.name+' IS LOCKED IN!','#58d6ff',4);} /* if his celebration is over before the fire has gone up, there is no fire: it is never lit over an empty box or the next man */if(L.cel&&now>=L.t){const on=st==='celebrate'||(st==='trot'&&TROT.cele)||st==='celly2';
       if(on){try{if(MX.clip&&MX.clip.hips&&MX.obj.visible){MX.clip.hips.getWorldPosition(_a);L.x=_a.x;L.z=_a.z;}}catch(e){}if(now-L.t>.5)L.t=now-.5;L.celSeen=true;}
       else if(L.celSeen||now-L.t>.6){L.cel=false;if(L.celSeen&&L.hr){try{pop('LOCKED IN!',L.name+' · OVERDRIVE UNTIL AN OUT','');}catch(e){}}if(L.celSeen){L.t=-99;if(L.a){L.a.visible=L.b.visible=L.c.visible=false;}}L.celSeen=false;}}} /* when his routine ends the flame is gone at once: it was dying down for another second and a half where he had been standing, over the next man's walk-up */
   {const L=LOCKFX,st=S.state,cel=st==='celebrate'||(st==='trot'&&TROT.cele),live=st==='result'||st==='flight'||st==='trot'||st==='celebrate'||st==='celly2'||st==='qte';
@@ -1650,7 +1650,7 @@ function draw(){try{gpuTick();}catch(e){}if(VB.g&&now>(VB.nt||0)){VB.nt=now+.5;t
     if(L.wait){if(st==='qte'){if(QT.ph==='out'&&now-QT.t1>1.2){L.wait=false;const mine=QT.kind==='stretch2'||QT.kind==='stretch3';if(mine&&!QT.ok){L.t=-99;timing('🔥 '+L.name+' IS LOCKED IN!','#58d6ff',4);}else{if(mine){L.x=QT.bx;L.z=QT.bz;}L.t=now;L.cel=true;}}}
       else if(st==='result'&&!S.goK&&!S.next&&now>=L.t0){L.wait=false;L.t=now;L.cel=true;}
       else if(!live){L.wait=false;L.t=-99;timing('🔥 '+L.name+' IS LOCKED IN!','#58d6ff',4);}}
-    if(L.pend&&cel){L.pend=false;L.plate=st==='celebrate';L.t=now+(L.plate?1.3:.2);L.cel=true;if(L.plate)readyDur=Math.max(readyDur,3.6);if(MX.clip&&MX.clip.hips){MX.clip.hips.getWorldPosition(_a);L.x=_a.x;L.z=_a.z;}} /* a homer with no trot: the picture was on the ball and the fireworks while he caught fire unseen. Now it cuts back to him at the plate for it, a beat after the ball is gone */
+    if(L.pend&&cel){L.pend=false;L.plate=st==='celebrate';L.clip='';L.t=now+(L.plate?.7:.2);L.cel=true;if(L.plate)readyDur=Math.max(readyDur,4.2);if(MX.clip&&MX.clip.hips){MX.clip.hips.getWorldPosition(_a);L.x=_a.x;L.z=_a.z;}} /* a homer with no trot: the picture was on the ball and the fireworks while he caught fire unseen. Now it cuts back to him at the plate for it, a beat after the ball is gone */
     else if(L.pend&&!live){L.pend=false;L.t=-99;timing('🔥 '+L.name+' IS LOCKED IN!','#58d6ff',4);} /* the celebration was skipped: no fire, just the word */
     if(!live&&now-L.t<2){L.t=-99;if(L.a)L.a.visible=L.b.visible=L.c.visible=false;}}
   eruptTick(LOCKFX,[0x3aa8ff,0xcff4ff,0x58d6ff],[.4,.85,1],L=>{flash(.3);shake=Math.max(shake,.35*FX);buzz([30,30,30,30,160]);try{SND.zap();tone('sawtooth',90,520,.5,.4);tone('triangle',520,1040,.35,.3,.12);}catch(x){}crowdPump(1);if(!L.hr)pop('LOCKED IN!',L.name+' · OVERDRIVE UNTIL AN OUT',''); /* (after a homer the call waits until his celebration and the fire are over: see below) */
@@ -4906,6 +4906,9 @@ function updateClip(dt){
   else if(S.state==='qte'&&QT.b){const Bq=QT.b,st=C.intros.b_stance;let ci=C.intros[Bq.n]||st,te=(now-Bq.t)*(Bq.rate||1),loop=!!Bq.loop;if(!loop&&!Bq.hold&&te>ci.dur-.05){ci=st;loop=true;}
     ci.a.time=Bq.freeze!==undefined?Bq.freeze:loop?te%ci.dur:Math.min(ci.dur-.01,Math.max(0,te));ci.a.setEffectiveWeight(1);base=0;o.rotation.y=QT.rry+(Bq.rot||0);o.position.x=QT.rx;o.position.z=QT.rz;o.position.y=0;}
   else if(o.position.y)o.position.y=0;
+  if(S.state==='celebrate'&&LOCKFX.hr&&LOCKFX.plate&&LOCKFX.cel&&C.bi===S.bi){ // GETTING LOCKED IN at the plate: he is never just standing there with a fire on him, he celebrates in it
+    if(!LOCKFX.clip||!C.intros[LOCKFX.clip]){const o=['c_fist','w_flair','w_bboy','w_lift','p_fist','d_flex'].filter(k=>C.intros[k]&&!C.intros[k].loop);LOCKFX.clip=o[0]||'';LOCKFX.clipT=now;}
+    const ci=C.intros[LOCKFX.clip];if(ci){const e=now-LOCKFX.clipT;ci.a.time=Math.min(ci.dur-.01,Math.max(0,e));ci.a.setEffectiveWeight(1);base=0;try{batterOpacity(1);}catch(x){}}}
   if(S.state==='trot'&&TROT.cele&&C.intros[TROT.clip]){const ci=C.intros[TROT.clip],e=now-S.t-TROT.celT; // he has touched home: his celebration, on the plate
     ci.a.time=ci.loop?e%ci.dur:Math.min(ci.dur-.01,Math.max(0,e));ci.a.setEffectiveWeight(1);base=0;}
   if(flight&&flight.admire&&!flight.done&&C.bi===S.bi){if(flight.cel===undefined){flight.cel=C.intros.c_fist&&DBG.fist?'c_fist': /* the fist-pump is no longer used in the box after a no-doubter: he holds the finish and flips the bat */flight.admire==='show'&&!flight.trot?(c=>c==='w_boxing'?'':c)(celClip(WALK.by[curBatter().name])):''; /* never the shadow-boxing routine here: no punching in the box after a no-doubter */ // a single fist pump straight out of the swing, or his routine
