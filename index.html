@@ -1029,7 +1029,7 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 820</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 821</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -5388,7 +5388,7 @@ function loadPlayers(kind){ // body file = character mesh; clips.json = motion-c
         keys.forEach((q,i)=>{const o={map:tx(r[1+i][0]),color:v.col||0xffffff,emissive:v.col?0x0c0c10:0x1c1c22,specular:0x333340,shininess:26,skinning:true};if(r[1+i][1])o.normalMap=tx(r[1+i][1]);mats[q]=new T.MeshPhongMaterial(o);});
         MX.batVar[k]={make:names=>{const o=T.SkeletonUtils.clone(vb);o.animations=fitClips(o,names.filter(n=>cj[n]));return o;},
           skin:()=>{const m2={};keys.forEach(q=>m2[q]=mats[q].clone());return {mat:m2[keys[0]],mats:m2,hide:v.hide,topY:refRest.HeadTop_End?refRest.HeadTop_End.y:0,trim:g=>{let o=geos.get(g.uuid);if(!o){o=weld(g);o.userData.lite=liteGeo(o,LOD_CELL);geos.set(g.uuid,o);}return o;}};}}; /* every wearer gets his own copy of the materials: the hitter fades in and out, the runners must not */
-        jobs.push(['bat',k]);RUN.list.forEach((R,i)=>jobs.push(['run',k,i]));}).catch(e=>{console.warn('hitter body '+v.body+' not loaded',e);batP[k]=null;(MX.batErr=MX.batErr||{})[k]=String(e&&e.message||e).slice(0,60);});};
+        jobs.push(['bat',k]);if(k<10)RUN.list.forEach((R,i)=>jobs.push(['run',k,i]));}) /* (the six Krakens never run the bases as these runner figures, so no runner suits are cut for them: 24 fewer builds, which were still being worked through, a freeze at a time, during the first innings) */.catch(e=>{console.warn('hitter body '+v.body+' not loaded',e);batP[k]=null;(MX.batErr=MX.batErr||{})[k]=String(e&&e.message||e).slice(0,60);});};
     const batRig=k=>{if(!MX.clip||!MX.obj||!MX.batVar[k])return;if(!MX.brigs)MX.brigs={[MX.bcur]:{obj:MX.obj,clip:MX.clip,D:MX.D,helmet:MX.helmet}};if(MX.brigs[k])return;
       const cur={obj:MX.obj,clip:MX.clip,D:MX.D,helmet:MX.helmet},bv=bat.visible,v=MX.batVar[k];MX.dlRef=(MX.brigs[0]||cur).clip.dl;
       try{setupModel(v.make(batNames),v.skin());MX.brigs[k]={obj:MX.obj,clip:MX.clip,D:MX.D,helmet:MX.helmet};scene.remove(MX.obj);}catch(e){console.warn('hitter rig failed',e);if(MX.obj&&MX.obj!==cur.obj)scene.remove(MX.obj);}
