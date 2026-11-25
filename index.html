@@ -1026,7 +1026,7 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 733</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 734</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -1284,11 +1284,11 @@ function pdArc(){if(!PD.on)return;const N=28;if(!PD.arc){const g=new T.BufferGeo
     PD.arcDots=new T.Points(g,new T.PointsMaterial({size:5,sizeAttenuation:false,vertexColors:true,transparent:true,opacity:.95,depthTest:false,fog:false}));PD.arcDots.renderOrder=27;PD.arcDots.frustumCulled=false;scene.add(PD.arcDots);PD.arcP={rel:new V3(),brk:new V3()};}
   const show=PD.ph===0||PD.ph===1;PD.arc.visible=PD.arcDots.visible=show;if(!show)return;
   const Q=pdQ(),P=PITCHES[Q.i],pt=PD.arcP,c=P.col||[1,.9,.25],pos=PD.arc.geometry.attributes.position,col=PD.arc.geometry.attributes.color,bk=(.62+.6*Q.b/100)*PDBRK*(((!!PD.jz&&S.juice>=.245)||(S.over&&S.overOn))?1.3:1)*pdBm();
-  pt.P=P;pt.tx=PD.tx;pt.ty=PD.ty;pt.arc=P.arc;pt.brk.set(P.brk[0]*bk,P.brk[1]*bk,0);pt.sd=1;pt.ph=[0,0,0];try{MX.pit.hand.getWorldPosition(pt.rel);}catch(e){pt.rel.set(0,1.9,-17.2);}if(pt.rel.z>-10)pt.rel.set(0,1.9,-17.2);
+  pt.P=P;pt.k=(P.k||2.5)*PDK;pt.tx=PD.tx;pt.ty=PD.ty;pt.arc=P.arc;pt.brk.set(P.brk[0]*bk,P.brk[1]*bk,0);pt.sd=1;pt.ph=[0,0,0];try{MX.pit.hand.getWorldPosition(pt.rel);}catch(e){pt.rel.set(0,1.9,-17.2);}if(pt.rel.z>-10)pt.rel.set(0,1.9,-17.2);
   for(let i=0;i<N;i++){const u=i/(N-1);pitchPos(pt,u,_s0);pos.setXYZ(i,_s0.x,_s0.y,_s0.z);const k=.25+.75*u;col.setXYZ(i,c[0]*k,c[1]*k,c[2]*k);} /* faint at the hand, bright at the plate, in the pitch's own colour */
   pos.needsUpdate=true;col.needsUpdate=true;PD.arc.material.visible=false;PD.arcDots.material.visible=false;pdSvg();} /* (the path and the target are drawn as crisp vector lines over the picture now, at the screen's full resolution: this is where the eyes live) */
 const PCI_BALL=true; // the aiming cursor is just the spinning ball (no rings round it); the timing ring only appears once PITCH is pressed
-const PDBRK=1.25; /* seen from behind the mound through a long lens a real break looks like nothing: every pitch you throw moves half as much again, and the preview shows exactly that */
+const PDBRK=1.5,PDK=1.4; /* (PDK: the break comes later and harder on your own pitches: straight for longer, then gone) */ /* seen from behind the mound through a long lens a real break looks like nothing: every pitch you throw moves half as much again, and the preview shows exactly that */
 function pdSvg(){const sv=$('pdsvg');if(!sv||!PD.on)return;const hold=PD.ph>=2&&PD.ph<=4&&now<(PD.ringT||0),show=(PD.ph===0||PD.ph===1||hold)&&S.state==='pduel';sv.style.display=show?'':'none';if(!show||!PD.arcP||!PD.arcP.P)return;
   {const pv=PD.ph<=1?'':'none';$('pdpb').style.display=pv;$('pdpp').style.display=pv;} /* (the path only while aiming and timing) */
   const h=$('hud').getBoundingClientRect(),W=h.width,H=h.height,pt=PD.arcP,P=pt.P,c=P.col,N=40;let str='';
@@ -1388,7 +1388,7 @@ function pdStart(done){pdDom();try{$('hud').classList.toggle('pdw',PW&&!MOB);}ca
 /* EVERY PITCH HAS ITS OWN HOME IN THE ZONE: where it naturally ends up if the stick is left alone. The curve sits low, the slider low and away, the change down and in, the heater up. Pick a different pitch and the target jumps to that pitch's spot, so it never looks like the same ball down the middle. The stick aims from there, and lets go back to there. */
 function pdHomeXY(){const zw=ZONE.x1-ZONE.x0,zh=ZONE.y1-ZONE.y0,cx=(ZONE.x0+ZONE.x1)/2,cy=(ZONE.y0+ZONE.y1)/2;if(!PW)return [cx,cy];let P=null;try{P=PITCHES[pdQ().i];}catch(e){}if(!P)return [cx,cy];const fb=P.n==='FASTBALL'||P.n==='METEOR'||P.n==='RISER';return [cx+clamp(P.brk[0]*.3,-zw*.3,zw*.3),cy+(fb?zh*.22:clamp(P.brk[1]*.32,-zh*.3,zh*.3))];}
 /* LEAN ON THE BREAK: push the stick the way a breaking pitch already moves (down for the curve, across for the slider) and it breaks more, up to 70% more at full push. The red line shows it bending deeper as you pull. A fastball is not changed. */
-function pdBm(){try{const P=PITCHES[pdQ().i],L=Math.hypot(P.brk[0],P.brk[1]);if(L<.2)return 1;const h=pdHomeXY(),zw=ZONE.x1-ZONE.x0,zh=(ZONE.y1-ZONE.y0)*.893,d=((PD.tx-h[0])/zw*P.brk[0]+(PD.ty-h[1])/zh*P.brk[1])/L;return 1+.7*clamp(d,0,1);}catch(e){return 1;}}
+function pdBm(){try{const P=PITCHES[pdQ().i],L=Math.hypot(P.brk[0],P.brk[1]);if(L<.2)return 1;const h=pdHomeXY(),zw=ZONE.x1-ZONE.x0,zh=(ZONE.y1-ZONE.y0)*.893,d=((PD.tx-h[0])/zw*P.brk[0]+(PD.ty-h[1])/zh*P.brk[1])/L;return 1+1.1*clamp(d,0,1);}catch(e){return 1;}}
 function pdGoHome(){if(PD.ph!==0||PD.holding)return;const h=pdHomeXY();PD._hm=(PD._hm||0)+1;PD.tx=h[0];PD.ty=h[1];try{pdCur();}catch(e){}}
 function pdHold(kx,ky){if(PD.ph!==0||(PD.gt&&PD.gt<2))return;PD._hm=(PD._hm||0)+1;const zw=ZONE.x1-ZONE.x0,zh=ZONE.y1-ZONE.y0,hm=pdHomeXY(),cx=hm[0],cy=hm[1];PD.tx=clamp(cx-kx/58*zw,ZONE.x0-zw*.5,ZONE.x1+zw*.5);PD.ty=clamp(cy-ky/58*zh*.893,ZONE.y0-zh*.393,ZONE.y1+zh*.393);pdCur();}
 function pdHome(){if(PD.ph!==0||!MOB)return;const hm=pdHomeXY(),cx=hm[0],cy=hm[1],id=PD._hm=(PD._hm||0)+1,go=()=>{if(PD._hm!==id||PD.ph!==0||S.state!=='pduel')return;PD.tx+=(cx-PD.tx)*.5;PD.ty+=(cy-PD.ty)*.5;if(Math.abs(PD.tx-cx)+Math.abs(PD.ty-cy)>.004)requestAnimationFrame(go);else{PD.tx=cx;PD.ty=cy;}pdCur();};go();} /* let go and the target springs back to the middle with the stick's cap, the way the batting ring does */
@@ -1426,16 +1426,16 @@ function pdThrow(dt){pdArcOff();const a=Math.abs(dt),W=pdWin(),g=a<W?2:a<W+.07?1
   const Q=pdQ(),od=(S.over&&S.overOn),jz=od||(!!PD.jz&&S.juice>=.245),tired=Math.max(0,.45-S.pStam)/.45; /* 0 fresh, 1 gassed */
   if(jz&&!od){S.juice=Math.max(0,S.juice-.25);}if(od)PD.odUsed=true;PD.jzOn=jz;if(jz&&!od){PD.pk=0;PD.sel=true;}PD.jz=false; /* (your pitch stays picked for the next one; a Juice pitch has to be chosen again) */S.pStam=Math.max(0,S.pStam-(.03+.00018*Q.v+(jz?.03:0))*(1.35-NOVA.stam/200));
   PD.lastI=Q.i;const P=PITCHES[Q.i],er=(g===2?.012:g===1?.075:.2)*(1.55-Q.c/100)*(1+tired*.9)*(jz?.75:1),an=rand(0,6.283),r=er*Math.sqrt(Math.random());let tx=PD.tx+Math.cos(an)*r,ty=PD.ty+Math.sin(an)*r*1.15;
-  if(g===0){const k=rand(.35,.75);tx=lerp(tx,0,k);ty=lerp(ty,.86,k);} /* a bad release leaves it up and over the middle */
-  const bk=(g>=1?1:.7)*(.62+.6*Q.b/100)*PDBRK*(jz?1.3:1)*(1-tired*.25)*pdBm(),sp=(PD.style?1.1-.14*PD.pw:1)*(g===2?.97:1)*(1.2-.26*Q.v/100)*(1+tired*.1)*(jz?.9:1);PD.perf=g===2?(PD.perf||0)+1:0;if(PD.perf===3)badge('dialed');if(PD.perf===5)badge('machine');
-  PD.pt={P,tx,ty,dur:P.dur*sp*.8, /* the same speeds the player faces when he bats */brk:new V3(P.brk[0]*bk,P.brk[1]*bk,0),arc:P.arc,rel:new V3(0,1.9,-17.2),t0:0,lh:false,sd:1,ph:[0,0,0]}; /* (same side and same phases as the preview: the pitch goes down the path that was drawn) */
+  PD.meat=false;if(g===0){PD.meat=Math.random()<.72;if(PD.meat){tx=rand(-.05,.05);ty=rand(.8,.92);}else{const k=rand(.35,.75);tx=lerp(tx,0,k);ty=lerp(ty,.86,k);}} /* A BAD RELEASE IS PUNISHED: most of the time it is a MEATBALL, flat and right down the middle; otherwise it still drifts up and over the plate */
+  const bk=(g>=1?1:PD.meat?.3:.7)*(.62+.6*Q.b/100)*PDBRK*(jz?1.3:1)*(1-tired*.25)*pdBm(),sp=(PD.style?1.1-.14*PD.pw:1)*(g===2?.97:1)*(1.2-.26*Q.v/100)*(1+tired*.1)*(jz?.9:1);PD.perf=g===2?(PD.perf||0)+1:0;if(PD.perf===3)badge('dialed');if(PD.perf===5)badge('machine');
+  PD.pt={P,k:(P.k||2.5)*PDK,tx,ty,dur:P.dur*sp*(PD.meat?1.06:1)*.8, /* the same speeds the player faces when he bats */brk:new V3(P.brk[0]*bk,P.brk[1]*bk,0),arc:P.arc,rel:new V3(0,1.9,-17.2),t0:0,lh:false,sd:1,ph:[0,0,0]}; /* (same side and same phases as the preview: the pitch goes down the path that was drawn) */
   if(g===2){ // A PERFECT RELEASE PAYS OFF: the ring bursts gold, the screen kicks, a rising chord, the crowd reacts, and the pitch leaves a gold streak
     flash(.2);shake=Math.max(shake,.16*FX);buzz([15,20,15,20,90]);cheer(.35,1.6);
     if(PD.mark){PD.mark.material.color.setHex(0xffffff);setTimeout(()=>{if(PD.mark)PD.mark.material.color.setHex(0xffe53b);},260);}pop('PERFECT!','PAINTED RELEASE','sharp');}
   PD.relQ=g===2?'PERFECT':g===1?'GOOD':dt<0?'EARLY':'LATE'; /* (shown on the location marker when the pitch gets there) */
   {const r=$('pdring');PD.ringK=PD.style?0:PD.tapK||0;PD.ringLate=dt>0;PD.ringT=now+6;r.classList.remove('rq0','rq1','rq2');r.classList.add('rq'+g);r.style.opacity='';r.style.borderColor='';} /* THE RING STAYS WHERE YOU STOPPED IT: frozen at the size it was when you tapped (still big = early), green for perfect, white for good, red for way off */
   if(jz){flash(.12);buzz([15,25,15,25,70]);} /* a Juice pitch is felt as well as seen (on phones that can vibrate) */
-  timing(g===2?'PERFECT RELEASE!':g===1?'GOOD RELEASE':dt<0?'TOO EARLY · HUNG IT':'TOO LATE · HUNG IT',g===2?'#ffe53b':g===1?'#f2f5ff':'#ff4d2e',g===2?4:2);buzz(g===2?[20,30,60]:20);if(g===0)tone('sine',200,120,.14,.3);pdUI();}
+  timing(g===2?'PERFECT RELEASE!':g===1?'GOOD RELEASE':PD.meat?'MEATBALL! · '+(dt<0?'TOO EARLY':'TOO LATE'):dt<0?'TOO EARLY · HUNG IT':'TOO LATE · HUNG IT',g===2?'#ffe53b':g===1?'#f2f5ff':'#ff4d2e',g===2?4:2);buzz(g===2?[20,30,60]:20);if(g===0)tone('sine',200,120,.14,.3);pdUI();}
 function pdPitFix(){if(!PD.on||!MX.pit||!MX.pit.obj)return;const ok=MX.pitCur===14,pn=performance.now();if(!PD._p0)PD._p0=pn;
   MX.pit.obj.visible=ok||PD.ph!==-1; /* nothing makes the player wait: if his own body is not in yet when the first pitch is due, the stand-in takes the mound until it is */ /* YOUR pitcher is the Comets' own man. While his body is still arriving the mound is left empty for a moment rather than show the stand-in; if he is not there after two and a half seconds the stand-in pitches, because a pitcher nobody can see is worse */
   if(!ok&&(PD._pn|0)<8&&pn-(PD._pl||0)>1500){PD._pl=pn;PD._pn=(PD._pn|0)+1;try{pitcherModel(14);const pr=MX.pitLoad&&MX.pitLoad(14);if(pr&&pr.then)pr.then(()=>{if(PD.on)try{pitcherModel(14);}catch(e){}});}catch(e){}}}
@@ -1481,11 +1481,12 @@ function pdDecide(){if(PD.drillOn){PD.sw=false;PD.res={swing:false,hbp:true,e:2}
   const near=clamp(1-(e-1)/.8,0,1),nasty=(.34+(brk?.28*Q.b/75:0)+(g===2?.1:0)+(jz?.1:0)+tun*.18)*(1-h.eye*.45);
   const oh2=PD.strikes===2&&PD.balls===0; /* 0-2: he is protecting, and a nasty one just off the plate gets him */
   let pS=inZ?.7+(PD.strikes===2?.2:0)-(e>.8?.12:0)+tun*.06:near*nasty*(oh2?1.3:1)+(oh2?.08*near+.03:0)+clamp(.5-(e-1)*1.5,0,.5)*(1-h.eye*.55)*.4+(PD.strikes===2?.12:0)+rat*.08-(PD.balls===3?.1:0);
+  if(PD.meat&&!PD.drillOn)pS=.95; /* a meatball: he is all over it */
   const R={swing:Math.random()<clamp(pS,0,.97),inZ,e};PD.sw=false;
-  if(R.swing){let pC=h.con*(inZ?.95:.52)-.2*Math.min(e,1.3)*(inZ?1:1.4)-(brk?.07*Q.b/75:.06*(Q.v-75)/20)+(same?.08:0)-(spdCh?.07:0)-(g===2?.09:0)+(g===0?.14:0)+hz*.11-(jz?.15:0)-rat*.11-tun*.16-sharp;pC=clamp(pC,.08,.95);
+  if(R.swing){let pC=h.con*(inZ?.95:.52)-.2*Math.min(e,1.3)*(inZ?1:1.4)-(brk?.07*Q.b/75:.06*(Q.v-75)/20)+(same?.08:0)-(spdCh?.07:0)-(g===2?.09:0)+(g===0?.14:0)+hz*.11-(jz?.15:0)-rat*.11-tun*.16-sharp+(PD.meat?.3:0);pC=clamp(pC,.08,.95);
     {const slow=brk&&!/METEOR|RISER/.test(Q.n),early=Math.random()<(slow?.82:.16)+(spdCh?(slow?.1:-.08):0);R.tim=(spdCh&&Math.random()<.6?'WAY ':'')+(early?'EARLY':'LATE');R.timE=early;} /* how his swing was timed: out in front of the slow stuff, behind the heat, and fooled worst when the speed has just changed */
     if(Math.random()>pC)R.kind='whiff';else if(Math.random()<.3+(e>.75?.16:0))R.kind='foul';
-    else{R.kind='play';const gf=g===2?.7:g===1?1:1.5,soft=1-.5*Math.min(e,1.2),r=Math.random(),hr=.085*h.pow*soft*gf*(pt.ty>.95&&PD.pk===0?.8:1)*(hz>0?1.6:hz<0?.5:1)*(jz?.6:1),xb=hr+.1*soft*gf,sg=xb+.24*h.con*(.7+.3*soft)*Math.sqrt(gf);
+    else{R.kind='play';const gf=g===2?.7:g===1?1:PD.meat?2.4:1.5,soft=1-.5*Math.min(e,1.2),r=Math.random(),hr=.085*h.pow*soft*gf*(pt.ty>.95&&PD.pk===0?.8:1)*(hz>0?1.6:hz<0?.5:1)*(jz?.6:1),xb=hr+.1*soft*gf,sg=xb+.24*h.con*(.7+.3*soft)*Math.sqrt(gf);
       R.out=r<hr?'hr':r<xb?'2b':r<sg?'1b':'out';R.q=r<xb?.9:.4;}}
   R.hz=hz;R.jz=jz;R.tun=tun;R.sharp=sharp;if(R.kind==='whiff'&&sharp>.12)R.ugly=['BUCKLED HIM!','FOOLED HIM!','MISSED BY A FOOT!','NASTY!'][(Math.random()*4)|0];PD.res=R;}
 function pdAdvance(nb,walk){let runs=0;const b=PD.bases;
@@ -3858,7 +3859,7 @@ function choosePitch(){
 }
 function pitchPos(pt,u,out){
   const P=pt.P;if(P.warp&&u<1)u=clamp(P.warp(u),0,1); // a stop, or a change of speed, in the look of the flight only
-  const k=pt.P.k||2.5,e=Math.pow(Math.min(u,1),k)+Math.max(0,u-1)*k;
+  const k=pt.k||pt.P.k||2.5,e=Math.pow(Math.min(u,1),k)+Math.max(0,u-1)*k;
   out.x=lerp(pt.rel.x,pt.tx-pt.brk.x,u)+pt.brk.x*e;
   out.y=lerp(pt.rel.y,pt.ty-pt.brk.y,u)+pt.brk.y*e+pt.arc*4*u*(1-u);
   out.z=u<=1?lerp(pt.rel.z,0,u):-pt.rel.z*(u-1)*.28; // past the plate the ball is drawn barely moving on (about a foot, not four): a swing that is late but still inside the timing window meets it at the plate, never visibly behind it. Timing itself is untouched.
