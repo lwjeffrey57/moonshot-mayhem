@@ -1029,7 +1029,7 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 804</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 806</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -4250,7 +4250,7 @@ function tryContact(){flight_pop=false;if(pitch.hbp){swing.done=true;swing.miss=
     // ...or it finds a light tower
     if(lampH){const ph=Math.atan2(dx,-dz)/DEG;let bi=0,bd=1e9;TOWERS.forEach((t,i)=>{const e=Math.abs(t.d-ph);if(e<bd){bd=e;bi=i;}});const T1=TOWERS[bi].p;flight.lamp=bi+1;
       flight.orbP[1].set(lerp(p0.x,T1.x,.3),lerp(p0.y,T1.y,.4),lerp(p0.z,T1.z,.3));flight.orbP[2].set(lerp(p0.x,T1.x,.7),lerp(p0.y,T1.y,.86),lerp(p0.z,T1.z,.7)); /* a line shot: it leaves the bat on a rope and is still climbing when it smashes into the lights, never dropping onto them */flight.orbP[3]=T1.clone();}}
-  pitch.hit=true;pring.visible=false;decoy.visible=false;if(S.stealArm){S.stealArm='';try{stealUI(true);timing('HIT AND RUN!','#4fe06c',2);}catch(e){}} /* HE WAS GOING AND THE BATTER PUT IT IN PLAY: the steal is off, it is a hit and run, and he advances with the ball like any runner. (The call used to stay armed, GOING! still on the screen, and fire on the next hitter's first pitch.) */S.state='flight';payHeat();$('mph').textContent=pitchMph(pitch.dur);$('plast').textContent=pitch.P.n+' · '+pitchMph(pitch.dur)+' MPH';$('pitchinfo').classList.add('on'),$('plast').classList.add('on');renderRep(pitch.P);
+  pitch.hit=true;pring.visible=false;decoy.visible=false;if(S.stealArm){S.hnr=S.stealArm;S.hnrBi=S.bi;S.stealArm='';try{stealUI(true);timing('HIT AND RUN!','#4fe06c',2);}catch(e){}} /* HE WAS GOING AND THE BATTER PUT IT IN PLAY: the steal is off, it is a hit and run, and he advances with the ball like any runner. (The call used to stay armed, GOING! still on the screen, and fire on the next hitter's first pitch.) */S.state='flight';payHeat();$('mph').textContent=pitchMph(pitch.dur);$('plast').textContent=pitch.P.n+' · '+pitchMph(pitch.dur)+' MPH';$('pitchinfo').classList.add('on'),$('plast').classList.add('on');renderRep(pitch.P);
   if(tb)juiceArmed=false;
   // ── the payoff
   hitstop=(.045+.14*q*(pw?1:.6)+(tb?.06:0))*(REDUCE?.5:1);
@@ -4376,11 +4376,13 @@ function finishPlay(){revOff();if(PD.on&&flight&&flight.pd){pdFinish(flight,flig
   if(pl.type==='out'&&pl.label==='GROUND OUT'&&!pl.dp&&pl.f&&!pl.f.of&&!S.bases[0]&&!S.bases[1]&&!S.bases[2]&&qteParts()&&(DBG.beat||((S.qteN||0)<4&&Math.random()<.3))){ // a routine grounder with the bases empty: now and then it is a race
     const sp=clamp(curBatter().spd||1,.75,1.2),deep=clamp((Math.hypot(pl.p.x,pl.p.z)-24)/16,0,1);S.goD=clamp((1.3-.35*deep)/Math.pow(sp,1.3),.7,1.45); /* a slow roller or a ball in the hole is the long throw: easier to beat */
     SND.mitt();crowdRise(.6,1.5,true);S.state='result';S.t=now;readyDur=.9;S.next=()=>qteStart('beat1');hud();return;}
-  if(pl.type==='out'){const dp=!!pl.dp&&S.bases[0]&&S.outs<2,qdp=dp&&pl.label==='GROUND OUT'&&qteOK();{const q=curBatter();q.hs=0;q.lock=false;}recordOut();
+  const hnr=S.hnr&&S.hnrBi===S.bi?S.hnr:'';S.hnr=''; /* HIT AND RUN: he was off with the pitch, so on a grounder there is no play on him. The throw goes to first for the one out and he takes his base: never forced at second, never doubled up. */
+  if(pl.type==='out'){const dp=!!pl.dp&&S.bases[0]&&S.outs<2&&!hnr,qdp=dp&&pl.label==='GROUND OUT'&&qteOK();{const q=curBatter();q.hs=0;q.lock=false;}recordOut();
     if(dp&&!qdp){recordOut();S.bases[0]=0;} // the man on first is forced at second, then the relay gets the hitter
+    let hnrUp=false;if(hnr&&pl.label==='GROUND OUT'&&S.outs<3){if(hnr==='steal2'&&S.bases[0]&&!S.bases[1]){S.bases[0]=0;S.bases[1]=1;hnrUp=true;}else if(hnr==='steal3'&&S.bases[1]&&!S.bases[2]){S.bases[1]=0;S.bases[2]=1;hnrUp=true;}if(hnrUp){try{RUN.list.forEach(R=>{const from=hnr==='steal2'?1:2;if(R.active&&Math.round(R.target)===from){R.target=from+1;R.jog=false;}});}catch(e){}}}
     const B=(i)=>new V3(BASES[i][0],1.2,BASES[i][1]);
     if(pl.label==='GROUND OUT'&&pl.f&&pl.f.thrAct&&(dp||pl.f!==fielders[0]))f.thr={t0:now+.05,to:dp?B(2):B(1),next:dp&&!qdp?B(1):null,full:true}; // the first baseman takes his own grounders to the bag: no throw to nobody
-    {const call=()=>{if(pl.label==='GROUND OUT'||dp)SND.ump(false);pop(dp?'DOUBLE PLAY!':pl.dive?'WHAT A CATCH!':pl.air&&f.q>.7?'ROBBED!':camped(pl)?'CAN OF CORN!':'OUT!',dp?'TWO FOR ONE':pl.label,'cool')};
+    {const call=()=>{if(pl.label==='GROUND OUT'||dp)SND.ump(false);pop(dp?'DOUBLE PLAY!':pl.dive?'WHAT A CATCH!':pl.air&&f.q>.7?'ROBBED!':camped(pl)?'CAN OF CORN!':'OUT!',dp?'TWO FOR ONE':pl.label+(hnrUp?' · RUNNER MOVES UP':''),'cool')};
       if(qdp){}else if(f.thr&&f.thr.full)f.thr.call=call;else call();} // on a grounder nothing is called until the throw gets there
     SND.mitt();if(f.thr&&f.thr.full)f.thr.q=f.q; /* a grounder isn't an out until the throw beats him: the crowd stays up through the throw and reacts when it lands */
     else{roarOff(1.5);const lq=pl.label==='LINE OUT'?Math.max(f.q,.6):f.q; /* a liner that gets snared always draws a real reaction, wherever it is caught */
@@ -4562,7 +4564,8 @@ function doSwing(type){
   if(S.state==='pchange'){if(pcWalk()){S.t=now-S.pcW;return;} /* first tap skips the walk-off, the second skips the new arm */S.t=now-PCH-(S.pcW||0);return;}
   if(S.state==='walkup'){if(now-S.t<.35)return; /* a walk-up cannot be skipped in its first third of a second (it was a second and a half, which felt like the tap was being ignored): a thumb already resting on the buttons was skipping them before they were ever seen */S.t=Math.min(S.t,now-WALK.dur);return;} // skip the intro
   if(flight&&flight.admire&&!flight.done){flight.A=Math.min(flight.A,now-flight.t0);return;} // cut to the ball
-  if(flight&&flight.trailCam&&!flight.done&&S.state==='flight'&&flight.play&&flight.play.type==='hr'){const tf=now-flight.t0;if(tf>1){if(flight.apollo&&!flight.apoDone){flight.apoDone=true;try{badge('eagle');}catch(e){}}flight.play.endT=Math.min(flight.play.endT,tf+.05);}return;} /* a tap cuts the chase camera short (nothing on screen says so: it is there for the player who has seen enough) */
+  if(flight&&!flight.done&&!flight.pd&&S.state==='flight'&&flight.play&&flight.play.type==='hr'){const tf=now-flight.t0;if(tf>.45){ /* ANY homer, any camera (the chase, the orbit shots, the saucer): a tap ends it there and then */if(flight.apollo&&!flight.apoDone){flight.apoDone=true;try{badge('eagle');}catch(e){}}flight.play.endT=Math.min(flight.play.endT,tf+.05);}return;} /* a tap cuts the chase camera short (nothing on screen says so: it is there for the player who has seen enough) */
+  if(S.state==='celebrate'){if(now-S.t>.25)S.t=now-readyDur;return;} /* (and the celebration at the plate) */
   if(swing)return;
   // between pitches the buttons still swing the bat: a practice cut, no cost, so the first tap always teaches what the button does
   if(S.state==='ready'||(S.state==='windup'&&now-windupT0<=.55)){swing={t0:now,type,turbo:false,done:false,miss:false,practice:true};SND.whoosh();return;}
@@ -4646,7 +4649,7 @@ function cornerTap(x,y){
   for(const id of ['pausebtn','mutebtn']){const b=$(id);if(b.hidden)continue;const r=b.getBoundingClientRect();if(r.width&&x>=r.left-6&&x<=r.right+6&&y>=r.top-6&&y<=r.bottom+6)return false;} // PAUSE and SOUND always work, even mid-cutscene; a tap anywhere else skips
   if(performance.now()<tapBlock)return true;
   if(S.state==='walkup'){doSwing('contact');return true;}
-  if(S.state==='trot'||S.state==='celly2'||S.state==='hbp'||S.state==='brawl'||S.state==='hbprun'||S.state==='pod'||S.state==='pdef'||S.state==='pchange'||(flight&&flight.admire&&!flight.done&&S.state==='flight')||(flight&&flight.trailCam&&!flight.done&&S.state==='flight'&&flight.play&&flight.play.type==='hr')){doSwing('contact');return true;} // with the buttons away, a touch anywhere skips the cutscene
+  if(S.state==='trot'||S.state==='celly2'||S.state==='hbp'||S.state==='brawl'||S.state==='hbprun'||S.state==='pod'||S.state==='pdef'||S.state==='pchange'||(flight&&flight.admire&&!flight.done&&S.state==='flight')||S.state==='celebrate'||(flight&&!flight.done&&!flight.pd&&S.state==='flight'&&flight.play&&flight.play.type==='hr'&&now-flight.t0>.45)){doSwing('contact');return true;} // with the buttons away, a touch anywhere skips the cutscene
   if(ctlHidden)return false; // during a walk-up nothing is a button: a touch anywhere on the screen skips it, and that is all it does
   const c=id=>{const r=$(id).getBoundingClientRect();return {x:r.left+r.width/2,y:r.top+r.height/2,r:r.width/2,l:r.left,t:r.top};},d=o=>Math.hypot(x-o.x,y-o.y);
   const J=c('tj'),C=c('tc'),P=c('tp');if(!C.r)return false;
