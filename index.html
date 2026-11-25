@@ -1029,7 +1029,7 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 758</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 759</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -1292,7 +1292,7 @@ function pdArc(){if(!PD.on)return;const N=28;if(!PD.arc){const g=new T.BufferGeo
   for(let i=0;i<N;i++){const u=i/(N-1);pitchPos(pt,u,_s0);pos.setXYZ(i,_s0.x,_s0.y,_s0.z);const k=.25+.75*u;col.setXYZ(i,c[0]*k,c[1]*k,c[2]*k);} /* faint at the hand, bright at the plate, in the pitch's own colour */
   pos.needsUpdate=true;col.needsUpdate=true;PD.arc.material.visible=false;PD.arcDots.material.visible=false;pdSvg();} /* (the path and the target are drawn as crisp vector lines over the picture now, at the screen's full resolution: this is where the eyes live) */
 const PCI_BALL=true; // the aiming cursor is just the spinning ball (no rings round it); the timing ring only appears once PITCH is pressed
-const PDBRK=1.5,PDK=1.4,PDSHAPE={FASTBALL:{bx:1,by:1,arc:0,k:1}} /* the fastball line runs straight and flat: no hump */; /* YOUR CURVEBALL: more depth (it drops further), more angle (it sweeps across as it falls, 1-to-7 rather than straight down) and more hump out of the hand */
+const PDBRK=1.5,PDK=1.4,PDSHAPE={FASTBALL:{bx:1,by:1,arc:0,k:1},CURVEBALL:{bx:.8333,by:.8333,arc:1,k:.7143}} /* the curveball is EXACTLY the original: the original break size (1.25, not 1.5) and the original break timing (no late-break factor) */ /* the fastball line runs straight and flat: no hump */; /* YOUR CURVEBALL: more depth (it drops further), more angle (it sweeps across as it falls, 1-to-7 rather than straight down) and more hump out of the hand */
 const pdSh=P=>PDSHAPE[P.n]||{bx:1,by:1,arc:1,k:1};
 // THE BREAK STARTS FROM THE ZONE: however far a breaking ball is buried, its line is drawn (and thrown) from a point at the top / edge of the zone,
 // so a curve dragged into the dirt falls the whole height of the zone and out of it late, instead of aiming at the sky. Leaning harder makes it sharper.
@@ -1403,7 +1403,7 @@ function pdStart(done){pdDom();if(!S.pdJG){PD.introT=now+2.7;PD.introS=false; /*
 /* EVERY PITCH HAS ITS OWN HOME IN THE ZONE: where it naturally ends up if the stick is left alone. The curve sits low, the slider low and away, the change down and in, the heater up. Pick a different pitch and the target jumps to that pitch's spot, so it never looks like the same ball down the middle. The stick aims from there, and lets go back to there. */
 function pdHomeXY(){const zw=ZONE.x1-ZONE.x0,zh=ZONE.y1-ZONE.y0,cx=(ZONE.x0+ZONE.x1)/2,cy=(ZONE.y0+ZONE.y1)/2;if(!PW)return [cx,cy];let P=null;try{P=PITCHES[pdQ().i];}catch(e){}if(!P)return [cx,cy];const fb=P.n==='FASTBALL'||P.n==='METEOR'||P.n==='RISER';return [cx+clamp(P.brk[0]*.3,-zw*.3,zw*.3),cy+(fb?zh*.22:clamp(P.brk[1]*.32,-zh*.3,zh*.3))];}
 /* LEAN ON THE BREAK: push the stick the way a breaking pitch already moves (down for the curve, across for the slider) and it breaks more, up to 70% more at full push. The red line shows it bending deeper as you pull. A fastball is not changed. */
-function pdBm(){try{const P=PITCHES[pdQ().i],L=Math.hypot(P.brk[0],P.brk[1]);if(L<.2)return 1;const h=pdHomeXY(),zw=ZONE.x1-ZONE.x0,zh=(ZONE.y1-ZONE.y0)*.893,d=((PD.tx-h[0])/zw*P.brk[0]+(PD.ty-h[1])/zh*P.brk[1])/L;return 1+1.1*clamp(d,0,1);}catch(e){return 1;}}
+function pdBm(){try{const P=PITCHES[pdQ().i],L=Math.hypot(P.brk[0],P.brk[1]);if(L<.2)return 1;const h=pdHomeXY(),zw=ZONE.x1-ZONE.x0,zh=(ZONE.y1-ZONE.y0)*.893,d=((PD.tx-h[0])/zw*P.brk[0]+(PD.ty-h[1])/zh*P.brk[1])/L;return 1+(P.n==='CURVEBALL'?.7:1.1)*clamp(d,0,1);}catch(e){return 1;}}
 function pdGoHome(){if(PD.ph!==0||PD.holding)return;const h=pdHomeXY();PD._hm=(PD._hm||0)+1;PD.tx=h[0];PD.ty=h[1];try{pdCur();}catch(e){}}
 function pdHold(kx,ky){if(PD.ph!==0||(PD.gt&&PD.gt<2))return;PD._hm=(PD._hm||0)+1;const zw=ZONE.x1-ZONE.x0,zh=ZONE.y1-ZONE.y0,hm=pdHomeXY(),cx=hm[0],cy=hm[1];PD.tx=clamp(cx-kx/58*zw,ZONE.x0-zw*.5,ZONE.x1+zw*.5);PD.ty=clamp(cy-ky/58*zh*.893,ZONE.y0-zh*.393,ZONE.y1+zh*.393);pdCur();}
 function pdHome(){if(PD.ph!==0||!MOB)return;const hm=pdHomeXY(),cx=hm[0],cy=hm[1],id=PD._hm=(PD._hm||0)+1,go=()=>{if(PD._hm!==id||PD.ph!==0||S.state!=='pduel')return;PD.tx+=(cx-PD.tx)*.5;PD.ty+=(cy-PD.ty)*.5;if(Math.abs(PD.tx-cx)+Math.abs(PD.ty-cy)>.004)requestAnimationFrame(go);else{PD.tx=cx;PD.ty=cy;}pdCur();};go();} /* let go and the target springs back to the middle with the stick's cap, the way the batting ring does */
