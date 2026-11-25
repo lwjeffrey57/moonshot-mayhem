@@ -1017,7 +1017,7 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 712</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 713</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -3711,7 +3711,7 @@ function glbMesh(buf){const dv=new DataView(buf),jl=dv.getUint32(12,true),J=JSON
     return a.componentType===5126?new Float32Array(buf.slice(o,o+n*4)):a.componentType===5125?new Uint32Array(buf.slice(o,o+n*4)):new Uint16Array(buf.slice(o,o+n*2));};
   const P=J.meshes[0].primitives[0],g=new T.BufferGeometry();g.setAttribute('position',new T.BufferAttribute(acc(P.attributes.POSITION),3));if(P.attributes.TEXCOORD_0!==undefined)g.setAttribute('uv',new T.BufferAttribute(acc(P.attributes.TEXCOORD_0),2));if(P.indices!==undefined)g.setIndex(new T.BufferAttribute(acc(P.indices),1));
   const im=J.images&&J.images[0],iv=im&&J.bufferViews[im.bufferView],blob=im?new Blob([new Uint8Array(buf,bo+(iv.byteOffset||0),iv.byteLength)],{type:im.mimeType||'image/jpeg'}):null;return {g,blob};}
-function glbLoad(url,cb,tries=0){fetch(url).then(r=>{if(!r.ok)throw 0;return r.arrayBuffer();}).then(b=>{const M=glbMesh(b),tx=new T.Texture();tx.flipY=false;tx.anisotropy=ANISO;const mat=new T.MeshBasicMaterial({map:tx,color:0xd8dbe6,side:T.DoubleSide});
+function glbLoad(url,cb,tries=0){fetch(url).then(r=>{if(!r.ok)throw 0;return r.text();}).then(t=>{const bin=atob(t.trim()),u8=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u8[i]=bin.charCodeAt(i);const b=u8.buffer; /* (stored as base64 text, like the player models) */const M=glbMesh(b),tx=new T.Texture();tx.flipY=false;tx.anisotropy=ANISO;const mat=new T.MeshBasicMaterial({map:tx,color:0xd8dbe6,side:T.DoubleSide});
   if(M.blob){const img=new Image();img.onload=()=>{tx.image=img;tx.needsUpdate=true;cb(M.g,mat);};img.src=URL.createObjectURL(M.blob);}else cb(M.g,mat);}).catch(()=>{if(tries<4)setTimeout(()=>glbLoad(url,cb,tries+1),2500*(tries+1));});}
 let propsDone=false;const VB={};
 {const phi=-36*DEG,q=pol(fenceR(phi)+40,phi,0);Object.assign(VB,{x:q.x,y:27,z:q.z,s:50,c:document.createElement('canvas'),who:''});VB.c.width=512;VB.c.height=418;VB.tex=new T.CanvasTexture(VB.c);} // the second board, out in left: the man at the plate
@@ -3725,8 +3725,8 @@ function vbDraw(force){if(!VB.g)return;const kr=PD.on&&S.state==='pduel',b=kr?KB
   if(!kr&&b.gs){g.font='400 26px "Russo One",Arial Black,Arial';g.fillStyle='#ffe53b';g.fillText('TODAY '+b.gs.h+'-'+Math.max(0,b.gs.ab-(S.state==='walkup'?1:0))+(b.gs.hr?' · '+b.gs.hr+' HR':''),w/2,h-50);}
   VB.tex.needsUpdate=true;}
 function propsLoad(){if(propsDone)return;propsDone=true;
-  glbLoad('tower.glb',(g,mat)=>{TWG.forEach(T0=>{T0.children.filter(c=>c.userData.old).forEach(c=>{T0.remove(c);});const m=new T.Mesh(g,mat);m.scale.setScalar(96);T0.add(m);});}); /* the head of the Tripo tower sits right behind the bank of lamps, which stays (it is what goes dark on a LIGHTS OUT homer) */
-  glbLoad('vboard.glb',(g,mat)=>{const s=VB.s,G=new T.Group(),m=new T.Mesh(g,mat);m.scale.setScalar(s);G.add(m);
+  glbLoad('tower.txt',(g,mat)=>{TWG.forEach(T0=>{T0.children.filter(c=>c.userData.old).forEach(c=>{T0.remove(c);});const m=new T.Mesh(g,mat);m.scale.setScalar(96);T0.add(m);});}); /* the head of the Tripo tower sits right behind the bank of lamps, which stays (it is what goes dark on a LIGHTS OUT homer) */
+  glbLoad('vboard.txt',(g,mat)=>{const s=VB.s,G=new T.Group(),m=new T.Mesh(g,mat);m.scale.setScalar(s);G.add(m);
     let zf=0;const P=g.attributes.position.array;for(let i=0;i<P.length;i+=3)if(Math.abs(P[i])<.2&&P[i+1]>.22&&P[i+1]<.52)zf=Math.max(zf,P[i+2]); /* where the face of the screen is */
     const scr=new T.Mesh(new T.PlaneGeometry(.475*s,.3875*s),new T.MeshBasicMaterial({map:VB.tex,fog:false}));scr.position.set(0,.369*s,zf*s+.15);G.add(scr);
     G.position.set(VB.x,VB.y,VB.z);G.rotation.y=Math.atan2(-VB.x,-VB.z);scene.add(G);VB.g=G;vbDraw(true);});}
