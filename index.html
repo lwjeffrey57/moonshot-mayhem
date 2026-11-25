@@ -1017,7 +1017,7 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 716</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 717</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -1494,7 +1494,7 @@ function pdResolve(){const R=PD.res,h=KBAT[PD.k];ball.visible=false;ballShadow.v
   flight={tr,play,t0:now,q:qq,pw:qq>.6,tb:false,jp:false,pod:false,fp:false,od:false,v,done:false,called:false,pd:true,trailC:qq>.75?[1,.85,.25]:[.5,.5,.55]};
   if(play.type==='hr'){const ft=play.dist*3.281,lastP=tr.pts[tr.pts.length-1];flight.dShow=true;flight.dFt=ft;flight.dEnd=tr.outD||Math.hypot(lastP.x,lastP.z);if(ft>=385)flight.trailCam=true;if(tr.outT)play.endT=Math.min(play.endT,tr.outT+.75);} /* the long ones are followed from behind the ball with the distance running up, just like yours */
   PD.ph=6;S.state='flight';S.t=now;ball.visible=true;ballShadow.visible=true;$('pd').style.visibility='hidden';if(PD.mark)PD.mark.visible=false;if(PD.kz)PD.kz.visible=false;
-  if(play.type==='hr'||(play.type==='hit'&&play.bases>=2))boo(.5);else crowdRise(.5,Math.min(play.endT,6),false);}
+  crowdRise(play.type==='hr'?.45:.3,Math.min(play.endT,6),false);} /* a Kraken puts it in play: the park reacts, but well short of what it does for a Comet (no boos for contact) */
 // A ball the player's defence has dealt with (or not): the result goes on the Krakens' side of the ledger, and it is back to the mound.
 // THE CALL IS MADE OUT IN THE FIELD, WHERE THE PLAY WAS. The result goes up while the camera is still on the fielder; it holds there for a
 // second and a half, the callout is taken down, and only then does the picture go back to the mound for the next man. The call is never
@@ -1512,7 +1512,7 @@ function pdFinish(f,pl){if(f._res){f.t0=now-pl.endT;if(f.thr){if(!f.thr.done&&no
     /* TAGGING UP: a deep fly with a man on third and fewer than three out, and he tags and goes. The player makes the throw home (the first chance each game, then a bit under half the time) */
     try{if(pl.air&&!dp&&pl.f&&pl.f.of&&PD.bases[2]&&PD.outs<3&&Math.hypot(pl.p.x,pl.p.z)>65&&qteParts()&&!DBG.nodq&&(DBG.dtag||(PLAY_NEWEST_FIRST&&!S.dtG)||Math.random()<.45)){S.dtG=true;PD.after=()=>{PD.qAfter=over;PD.hideBat=false;try{qteStart('dtag3',true);}catch(e){PD.hideBat=true;over();}};}}catch(e){}
     pdUI();hud();return;}
-  const nb=pl.type==='hr'?4:(pl.bases||1),r=pdAdvance(nb,false);pop(pl.type==='hr'?(pl.dist*3.281>=600?'TOOK YOU TO THE MOON':pl.dist*3.281>=470?'TOOK YOU DEEP':'KRAKENS GO DEEP'):['BASE HIT','DOUBLE','TRIPLE'][nb-1],h.name+(pl.type==='hr'?' · '+Math.round(pl.dist*3.281)+' FT':'')+(r?' · KRAKENS +'+r:'')+(pl.tag?' · '+pl.tag:''),'hot',pl.type==='hr');boo(r?.6:.3);if(pl.type==='hr'){flash(.25);shake=Math.max(shake,.2*FX);}
+  const nb=pl.type==='hr'?4:(pl.bases||1),r=pdAdvance(nb,false);pop(pl.type==='hr'?(pl.dist*3.281>=600?'TOOK YOU TO THE MOON':pl.dist*3.281>=470?'TOOK YOU DEEP':'KRAKENS GO DEEP'):['BASE HIT','DOUBLE','TRIPLE'][nb-1],h.name+(pl.type==='hr'?' · '+Math.round(pl.dist*3.281)+' FT':'')+(r?' · KRAKENS +'+r:'')+(pl.tag?' · '+pl.tag:''),'hot',pl.type==='hr');cheer(pl.type==='hr'?.3:r?.24:.18,1.4);if(pl.type==='hr'){flash(.25);shake=Math.max(shake,.2*FX);}
   PD.after=over;
   // HE GETS GREEDY: on a single or a double with the next base open, the Kraken sometimes tries to stretch it, and the player gets the play at the bag (the first chance each game always, then about two in five)
   // THE PLAY AT THE PLATE: a run that came in on a single or a double is sometimes a close one, and the player gets the tag (once a game at the first chance, then about one in three). Win it and the run comes off the board.
