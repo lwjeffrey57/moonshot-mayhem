@@ -1017,7 +1017,7 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 710</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 711</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -1394,7 +1394,7 @@ function pdHitter(){const h=KBAT[PD.k];PD._si=0;PD.jUsedAB=false;PD._fs=0;PD.nee
       $('wrat').innerHTML='<span>'+(MOB?'PWR':'POWER')+' '+gb(h.pow)+'</span><span>'+(MOB?'CON':'CONTACT')+' '+gb(h.con)+'</span><span>EYE '+gb(.8+.4*h.eye)+'</span>';
       $('wspot').textContent='BATTING '+['1ST','2ND','3RD','4TH','5TH','6TH'][PD.k%KBAT.length]+' · KEPLER KRAKENS';$('walk').classList.remove('lockd');$('wskip').textContent=MOB?'TAP TO SKIP':'ANY KEY TO SKIP';try{faceShow(h);}catch(e){}
       PD.wkPend=!!(PD.needBody&&MX.bcur!==PD.needBody); /* his body is not in yet: the picture stays on the mound, and cuts to his walk-up (card and all) the moment he is there to walk. No empty shot, no pop-in. */
-      $('walk').hidden=PD.wkPend;$('hud').classList.add('wk');if(PD.kz)PD.kz.visible=false;if(!PD.wkPend)boo(.35);}}catch(e){}
+      $('walk').hidden=PD.wkPend;$('hud').classList.add('wk');if(PD.kz)PD.kz.visible=false;crowdHush(.7);if(!PD.wkPend)setTimeout(()=>{if(PD.wk)boo(.3);},700);}}catch(e){}
   pdUI();}
 function pdTap(){if(S.state!=='pduel'||paused)return;if(PD.gt)return;PD.drillArm=false;if(PD.ph===0&&(!pdSel()||PD.odForce)){buzz(8);return;}
   if(PD.ph===0){PD.ph=1;PD.t=now;PD.wuT=now; /* the wind-up starts on this tap, not after the release: the pitcher answers the thumb at once */PD.mph=0;PD.pw=1;buzz(15);tone('triangle',520,620,.06,.2);pdUI();return;}
@@ -2900,7 +2900,11 @@ function roarOff(fade=3.6){ // a crowd comes down in a long tail, quick at first
 function sfxSlice(name,vol,rate,off,dur){const b=SFX[name];if(!AC||!b)return false;
   const t=AC.currentTime,src=AC.createBufferSource(),g=AC.createGain();src.buffer=b;src.playbackRate.value=rate;off=Math.min(off,Math.max(0,b.duration-dur*rate-.05));
   g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol,t+.12);g.gain.setValueAtTime(vol,t+Math.max(.15,dur-.7));g.gain.linearRampToValueAtTime(0,t+dur);
-  src.connect(g);g.connect(master);src.start(t,off,dur*rate+.05);return true;}
+  src.connect(g);g.connect(master);src.start(t,off,dur*rate+.05);if(/cheer|pop_|boo/.test(name)){CSL.push({g,src,end:t+dur});if(CSL.length>12)CSL.shift();}return true;}
+const CSL=[]; // the crowd reactions still sounding, so they can be brought down together
+function crowdHush(fade=.6){if(!AC)return;const t=AC.currentTime;try{roarOff(fade);}catch(e){}
+  CSL.forEach(c=>{if(c.end<=t)return;try{c.g.gain.cancelScheduledValues(t);c.g.gain.setValueAtTime(c.g.gain.value,t);c.g.gain.setTargetAtTime(0,t,fade/3);c.src.stop(t+fade*1.5);}catch(e){}});CSL.length=0;
+  if(crowdReal){const b=crowdGain.gain;b.cancelScheduledValues(t);b.setValueAtTime(b.value,t);b.setTargetAtTime(crowdBase*.8,t,fade/2);crowdCool=t+3;crowdNext=t+4;cheerBusy=0;}} /* a new hitter walking up: whatever the last play set off dies down under him */
 // the crowd never sits still: the bed swells and settles on its own, with the odd whoop, between everything else
 let cheerBusy=0,crowdNext=0,crowdSt='';
 // The crowd follows the action. Before the pitch it holds its breath; a ball in play gets a rising 'ohh' that lasts while it is in the air;
