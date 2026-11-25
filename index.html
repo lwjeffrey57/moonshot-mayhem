@@ -1026,7 +1026,7 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 746</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 747</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -1288,18 +1288,18 @@ function pdArc(){if(!PD.on)return;const N=28;if(!PD.arc){const g=new T.BufferGeo
   for(let i=0;i<N;i++){const u=i/(N-1);pitchPos(pt,u,_s0);pos.setXYZ(i,_s0.x,_s0.y,_s0.z);const k=.25+.75*u;col.setXYZ(i,c[0]*k,c[1]*k,c[2]*k);} /* faint at the hand, bright at the plate, in the pitch's own colour */
   pos.needsUpdate=true;col.needsUpdate=true;PD.arc.material.visible=false;PD.arcDots.material.visible=false;pdSvg();} /* (the path and the target are drawn as crisp vector lines over the picture now, at the screen's full resolution: this is where the eyes live) */
 const PCI_BALL=true; // the aiming cursor is just the spinning ball (no rings round it); the timing ring only appears once PITCH is pressed
-const PDBRK=1.5,PDK=1.4,PDSHAPE={CURVEBALL:{bx:1.6,by:.42,arc:.5,k:2}}; /* YOUR CURVEBALL: more depth (it drops further), more angle (it sweeps across as it falls, 1-to-7 rather than straight down) and more hump out of the hand */
+const PDBRK=1.5,PDK=1.4,PDSHAPE={}; /* YOUR CURVEBALL: more depth (it drops further), more angle (it sweeps across as it falls, 1-to-7 rather than straight down) and more hump out of the hand */
 const pdSh=P=>PDSHAPE[P.n]||{bx:1,by:1,arc:1,k:1};
 // THE BREAK STARTS FROM THE ZONE: however far a breaking ball is buried, its line is drawn (and thrown) from a point at the top / edge of the zone,
 // so a curve dragged into the dirt falls the whole height of the zone and out of it late, instead of aiming at the sky. Leaning harder makes it sharper.
-function pdApex(pt){const bk=pt.brk;if(Math.hypot(bk.x,bk.y)<.15)return;const ay=pt.ty-bk.y,ax=pt.tx-bk.x,Y1=ZONE.y1+.1,X0=ZONE.x0-.12,X1=ZONE.x1+.12;
+function pdApex(pt){const bk=pt.brk;if(Math.hypot(bk.x,bk.y)<.15||pt.P.n==='CURVEBALL')return; /* (the curveball keeps its original big arc) */const ay=pt.ty-bk.y,ax=pt.tx-bk.x,Y1=ZONE.y1+.1,X0=ZONE.x0-.12,X1=ZONE.x1+.12;
   if(ay>Y1)bk.y=pt.ty-Y1;if(ax<X0)bk.x=pt.tx-X0;else if(ax>X1)bk.x=pt.tx-X1;const bm=pdBm();pt.k*=1+.35*clamp(bm-1,0,1.1);} /* (PDK: the break comes later and harder on your own pitches: straight for longer, then gone) */ /* seen from behind the mound through a long lens a real break looks like nothing: every pitch you throw moves half as much again, and the preview shows exactly that */
 function pdSvg(){const sv=$('pdsvg');if(!sv||!PD.on)return;const hold=PD.ph>=2&&PD.ph<=4&&now<(PD.ringT||0),show=(PD.ph===0||PD.ph===1||hold)&&S.state==='pduel';sv.style.display=show?'':'none';if(!show||!PD.arcP||!PD.arcP.P)return;
   {const pv=PD.ph<=1?'':'none';$('pdpb').style.display=pv;$('pdpp').style.display=pv;$('pdgh').style.display=pv;} /* (the path only while aiming and timing) */
   const h=$('hud').getBoundingClientRect(),W=h.width,H=h.height,pt=PD.arcP,P=pt.P,c=P.col,N=40;let str='';
   let topY=-1e9;if(PD.gt){_s0.set(0,ZONE.y1+.14,0).project(camera);topY=(-_s0.y*.5+.5)*H+4;} /* (in the guide the line is kept inside the strike-zone window, clear of the caption above it) */
   const bkx=pt.brk.x,bky=pt.brk.y;
-  if(Math.hypot(bkx,bky)>.15){ // A BREAKING BALL IS DRAWN THE WAY THE BROADCAST TRACKERS DRAW IT: it climbs out over the top of the zone, crests, then falls off the table into the spot (the bigger the break, the higher the crest and the steeper the drop)
+  if(Math.hypot(bkx,bky)>.15&&P.n!=='CURVEBALL'){ // A BREAKING BALL IS DRAWN THE WAY THE BROADCAST TRACKERS DRAW IT: it climbs out over the top of the zone, crests, then falls off the table into the spot (the bigger the break, the higher the crest and the steeper the drop)
     const E={x:pt.tx,y:pt.ty,z:0},Ay=Math.min(Math.max(pt.ty-bky*.85,pt.ty+.12),ZONE.y1+.3),A={x:pt.tx-bkx*.9,y:Ay,z:-1.6},S0={x:A.x-(E.x-A.x)*.45,y:A.y-.05-Math.abs(bky)*.08,z:-5};
     const Q=(p0,c,p1,t)=>{const m=1-t;return {x:m*m*p0.x+2*m*t*c.x+t*t*p1.x,y:m*m*p0.y+2*m*t*c.y+t*t*p1.y,z:m*m*p0.z+2*m*t*c.z+t*t*p1.z};};
     const c1={x:(S0.x+A.x)/2,y:A.y+.03,z:(S0.z+A.z)/2},c2={x:A.x+(E.x-A.x)*.35,y:A.y+.02,z:(A.z+E.z)/2};
@@ -1491,15 +1491,19 @@ function pdDecide(){if(PD.drillOn){PD.sw=false;PD.res={swing:false,hbp:true,e:2}
   const bm=brk?pdBm():1,edge=clamp(1-Math.abs(e-1.05)/.45,0,1),sharp=brk?(.06+.14*clamp((bm-1)/.5,0,1.4))*(Q.b/75)*(.4+.6*edge)*(g===0?.3:1):0;
   const near=clamp(1-(e-1)/.8,0,1),nasty=(.34+(brk?.28*Q.b/75:0)+(g===2?.1:0)+(jz?.1:0)+tun*.18)*(1-h.eye*.45);
   const oh2=PD.strikes===2&&PD.balls===0; /* 0-2: he is protecting, and a nasty one just off the plate gets him */
-  let pS=inZ?.7+(PD.strikes===2?.2:0)-(e>.8?.12:0)+tun*.06:near*nasty*(oh2?1.3:1)+(oh2?.08*near+.03:0)+clamp(.5-(e-1)*1.5,0,.5)*(1-h.eye*.55)*.4+(PD.strikes===2?.12:0)+rat*.08-(PD.balls===3?.1:0);
+  // HE SEES IT COMING: the same pitch in the same spot again and again and the hitters start sitting on it (the memory runs across the game,
+  // fading pitch by pitch): he swings at it if it is a strike, lays off it if it is not, and squares it up when he swings
+  const H=PD.hist||(PD.hist=[]);let rep=0;H.forEach((q,k)=>{if(q.i===Q.i&&Math.hypot(q.x-pt.tx,q.y-pt.ty)<.17)rep+=Math.pow(.8,H.length-1-k);});H.push({i:Q.i,x:pt.tx,y:pt.ty});if(H.length>10)H.shift();rep=Math.min(2.2,rep);PD.rep=rep;
+  if(rep>=1.2&&!PD.drillOn){PD.repN=(PD.repN||0)+1;setTimeout(()=>{if(PD.on)timing("HE'S SITTING ON IT · MIX IT UP",'#ff8a2e',3);},450);}
+  let pS=inZ?.7+(PD.strikes===2?.2:0)+.1*rep-(e>.8?.12:0)+tun*.06:near*nasty*(oh2?1.3:1)+(oh2?.08*near+.03:0)+clamp(.5-(e-1)*1.5,0,.5)*(1-h.eye*.55)*.4+(PD.strikes===2?.12:0)+rat*.08-(PD.balls===3?.1:0)-(inZ?0:.24*rep);
   if(PD.meat&&!PD.drillOn)pS=.95; /* a meatball: he is all over it */
   const R={swing:Math.random()<clamp(pS,0,.97),inZ,e};PD.sw=false;
-  if(R.swing){let pC=h.con*(inZ?.95:.52)-.2*Math.min(e,1.3)*(inZ?1:1.4)-(brk?.07*Q.b/75:.06*(Q.v-75)/20)+(same?.08:0)-(spdCh?.07:0)-(g===2?.09:0)+(g===0?.14:0)+hz*.11-(jz?.15:0)-rat*.11-tun*.16-sharp+(PD.meat?.3:0);pC=clamp(pC,.08,.95);
+  if(R.swing){let pC=h.con*(inZ?.95:.52)-.2*Math.min(e,1.3)*(inZ?1:1.4)-(brk?.07*Q.b/75:.06*(Q.v-75)/20)+(same?.08:0)-(spdCh?.07:0)-(g===2?.09:0)+(g===0?.14:0)+hz*.11-(jz?.15:0)-rat*.11-tun*.16-sharp*Math.max(0,1-.45*PD.rep)+(PD.meat?.3:0)+.16*PD.rep;pC=clamp(pC,.08,.95);
     {const slow=brk&&!/METEOR|RISER/.test(Q.n),early=Math.random()<(slow?.82:.16)+(spdCh?(slow?.1:-.08):0);R.tim=(spdCh&&Math.random()<.6?'WAY ':'')+(early?'EARLY':'LATE');R.timE=early;} /* how his swing was timed: out in front of the slow stuff, behind the heat, and fooled worst when the speed has just changed */
     if(Math.random()>pC)R.kind='whiff';else if(Math.random()<.3+(e>.75?.16:0))R.kind='foul';
-    else{R.kind='play';const gf=g===2?.7:g===1?1:PD.meat?2.4:1.5,soft=1-.5*Math.min(e,1.2),r=Math.random(),hr=.085*h.pow*soft*gf*(pt.ty>.95&&PD.pk===0?.8:1)*(hz>0?1.6:hz<0?.5:1)*(jz?.6:1),xb=hr+.1*soft*gf,sg=xb+.24*h.con*(.7+.3*soft)*Math.sqrt(gf);
+    else{R.kind='play';const gf=(g===2?.7:g===1?1:PD.meat?2.4:1.5)*(1+.4*PD.rep),soft=1-.5*Math.min(e,1.2),r=Math.random(),hr=.085*h.pow*soft*gf*(pt.ty>.95&&PD.pk===0?.8:1)*(hz>0?1.6:hz<0?.5:1)*(jz?.6:1),xb=hr+.1*soft*gf,sg=xb+.24*h.con*(.7+.3*soft)*Math.sqrt(gf);
       R.out=r<hr?'hr':r<xb?'2b':r<sg?'1b':'out';R.q=r<xb?.9:.4;}}
-  R.hz=hz;R.jz=jz;R.tun=tun;R.sharp=sharp;if(R.kind==='whiff'&&sharp>.12)R.ugly=['BUCKLED HIM!','FOOLED HIM!','MISSED BY A FOOT!','NASTY!'][(Math.random()*4)|0];PD.res=R;}
+  R.hz=hz;R.jz=jz;R.tun=tun;R.sharp=sharp;if(R.kind==='whiff'&&sharp*Math.max(0,1-.45*PD.rep)>.12)R.ugly=['BUCKLED HIM!','FOOLED HIM!','MISSED BY A FOOT!','NASTY!'][(Math.random()*4)|0];PD.res=R;}
 function pdAdvance(nb,walk){let runs=0;const b=PD.bases;
   if(walk){if(b[0]){if(b[1]){if(b[2])runs++;b[2]=1;}b[1]=1;}b[0]=1;}
   else if(nb>=4){runs=1+b[0]+b[1]+b[2];b[0]=b[1]=b[2]=0;}
@@ -3824,7 +3828,7 @@ function gameRating(){const G=S.goal,pts=S.runs*10+S.hits*4+S.hrs*8+(S.longest>=
   const T=[[0,'D','BENCH WARMER'],[20,'C','ROOKIE'],[45,'B','EVERYDAY STARTER'],[75,'A','ALL-STAR'],[110,'S','MOONSHOT LEGEND']];let i=0;T.forEach((t,j)=>{if(pts>=t[0])i=j;});
   return {pts,stars:i+1,grade:T[i][1],title:T[i][2],next:T[i+1]?T[i+1][0]-pts:0,nextTitle:T[i+1]?T[i+1][2]:''};}
 function newGame(){LINEUP.forEach(b=>{if(b.base)Object.assign(b,b.base);b.hb=0;}); /* stat changes from getting hit last only for the game */gamesPlayed++;try{localStorage.setItem('mm_games',gamesPlayed);}catch(e){}
-  S.wuBi=-9;S.pStam=1;S.ptBi=null;S.apoG=false;S.dqG=false;S.dpG=false;S.dtG=false;S.daG=false;S.pdJG=false;S.pdJ0=undefined;PD.tutDone=false;PD.k=0;LINEUP.forEach(q=>{q.gs={ab:0,h:0,hr:0};q.hs=0;q.lock=false;q.sp=false;});S.lockG=null;Object.assign(S,{inning:1,outs:0,balls:0,strikes:0,runs:0,bases:[0,0,0],hits:0,hrs:0,longest:0,streak:0,bestStreak:0,juice:.75 /* three bars: a hit in the very first at-bat fills the fourth and unlocks Overdrive */,heat:.2,over:false,stk:false,opp:0,bi:-1,pitches:0,seen:{},kOut:null});S.podN=0;S.podBi=-9;S.goal=null; /* per-game goals are switched off for now: pickGoal() is still here to bring them back */S.ks=0;S.d2=0;S.cardBi=-1;S.pChanges=0;S.pRuns0=0;S.pc3=false;S.pcPending=false;S.lastHRbi=-9;S.bdgGame={};S.pStart=gamesPlayed%BULLPEN.length;S.pName=BULLPEN[S.pStart];setTimeout(pitcherModel,0); /* a different starter each game, so left-handers start some of them */$('pcap').textContent='PITCHER';S.sTaunt=null;S.stLast=false;jPend=false;S.orbN=0;S.odUses=0;S.brawled=false;S.qteN=0;S.goK=null;S.retalBi=-9;S.forceHbpBi=-9;S.walkoff=false;S.duel=false;$('hud').classList.remove('duel');S.pdLast=false;S.pOver=false;S.podPending=false;S.jSaid=false;S.overOn=false;S.spSeen=false;lastWalk='';
+  S.wuBi=-9;S.pStam=1;S.ptBi=null;S.apoG=false;S.dqG=false;S.dpG=false;S.dtG=false;S.daG=false;S.pdJG=false;PD.hist=[];S.pdJ0=undefined;PD.tutDone=false;PD.k=0;LINEUP.forEach(q=>{q.gs={ab:0,h:0,hr:0};q.hs=0;q.lock=false;q.sp=false;});S.lockG=null;Object.assign(S,{inning:1,outs:0,balls:0,strikes:0,runs:0,bases:[0,0,0],hits:0,hrs:0,longest:0,streak:0,bestStreak:0,juice:.75 /* three bars: a hit in the very first at-bat fills the fourth and unlocks Overdrive */,heat:.2,over:false,stk:false,opp:0,bi:-1,pitches:0,seen:{},kOut:null});S.podN=0;S.podBi=-9;S.goal=null; /* per-game goals are switched off for now: pickGoal() is still here to bring them back */S.ks=0;S.d2=0;S.cardBi=-1;S.pChanges=0;S.pRuns0=0;S.pc3=false;S.pcPending=false;S.lastHRbi=-9;S.bdgGame={};S.pStart=gamesPlayed%BULLPEN.length;S.pName=BULLPEN[S.pStart];setTimeout(pitcherModel,0); /* a different starter each game, so left-handers start some of them */$('pcap').textContent='PITCHER';S.sTaunt=null;S.stLast=false;jPend=false;S.orbN=0;S.odUses=0;S.brawled=false;S.qteN=0;S.goK=null;S.retalBi=-9;S.forceHbpBi=-9;S.walkoff=false;S.duel=false;$('hud').classList.remove('duel');S.pdLast=false;S.pOver=false;S.podPending=false;S.jSaid=false;S.overOn=false;S.spSeen=false;lastWalk='';
   $('title').hidden=true;$('over').hidden=true;$('pausebtn').hidden=false;$('mutebtn').hidden=false;setBatter();renderRep();scoreboard('PLAY BALL','INNING 1');S.opp=0;toReady(2);pop('PLAY BALL!','MOONSHOT MAYHEM','logo');hud();SND.playball();cheer(.14,1.5);}
 
 // ───────────────────────── pitching
