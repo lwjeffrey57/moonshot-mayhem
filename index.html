@@ -1029,7 +1029,7 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 764</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 765</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -1771,6 +1771,7 @@ const APO={r:334,phi:-.13,ok:false,wob:-9,flag:null};
   put(new T.CylinderGeometry(1.45,1.8,1.9,8),M(0xd4d8e0),0,4,0);put(new T.BoxGeometry(1.7,1.2,1),M(0xb4bac4),0,4.05,1.45);put(new T.BoxGeometry(.5,.42,.06),B(0x0c1420),-.45,4.3,1.97);put(new T.BoxGeometry(.5,.42,.06),B(0x0c1420),.45,4.3,1.97);put(new T.BoxGeometry(.7,.8,.06),B(0x23262e),0,3.4,1.97); /* ascent stage, cabin face, windows, hatch */
   put(new T.CylinderGeometry(.5,.5,.45,10),M(0xc8ccd4),0,5.15,0);{const d=put(new T.CylinderGeometry(.7,.08,.3,12),M(0xf2f2f4),1.5,5.6,-.3);d.rotation.z=-.7;rod(new V3(1,4.9,-.2),new V3(1.5,5.5,-.3),.04,B(0xcccccc));}
   for(const sx of [-1,1]){put(new T.BoxGeometry(.3,.3,.3),B(0x8a8e98),sx*1.9,4.3,0);rod(new V3(sx*.22,2.9,2.1),new V3(sx*.22,.4,3.6),.035,B(0xd8d8dc));}
+  APO.nL=G.children.length; /* (everything added so far is the lander itself: the Tripo model takes its place when it arrives) */
   rod(new V3(5.4,0,2.2),new V3(5.4,3.6,2.2),.05,B(0xf2f2f2));rod(new V3(5.4,3.55,2.2),new V3(7.3,3.55,2.2),.03,B(0xf2f2f2));
   {const ft=tex(128,80,g=>{for(let i=0;i<13;i++){g.fillStyle=i%2?'#f4f4f4':'#c8102e';g.fillRect(0,i*80/13,128,80/13+1);}g.fillStyle='#1b2a6b';g.fillRect(0,0,54,43);g.fillStyle='#fff';for(let y=0;y<5;y++)for(let x=0;x<6;x++){g.beginPath();g.arc(6+x*8.4,5+y*8.2,1.5,0,7);g.fill();}}),
       f=new T.Mesh(new T.PlaneGeometry(1.9,1.2),new T.MeshBasicMaterial({map:ft,side:T.DoubleSide,fog:false}));f.geometry.translate(.95,0,0);f.position.set(5.4,2.95,2.2);G.add(f);APO.flag=f;}
@@ -3834,6 +3835,7 @@ function propsLoad(){if(propsDone)return;propsDone=true;
     mat.fog=false;mat.color.setHex(0xffffff);G.children.filter(c=>c!==R).forEach(c=>G.remove(c));R.children.filter(c=>!c.isSprite).forEach(c=>R.remove(c));R.add(part(0,NV));G.add(part(NV,ix.length));});
   glbLoad('dugout.txt',(g,mat)=>{mat.color.setHex(0xffffff);DUGS.forEach(D=>{D.old.forEach(m=>scene.remove(m));const m=new T.Mesh(g,mat);m.scale.set(24,8.6,8);m.position.copy(D.c).addScaledVector(D.n,1.75);m.rotation.y=D.ry+(DBG.dugR||0);scene.add(m);D.m=m;});}); /* the Tripo dugout, one behind each line, in place of the three plain boxes */
   glbLoad('dish.txt',(g,mat)=>{mat.color.setHex(0xffffff);mat.fog=false;[[262,9,46],[290,-44,54],[250,53,40]].forEach(q=>{const p=pol(q[0],q[1]*DEG,0),m=new T.Mesh(g,mat);m.scale.setScalar(q[2]);m.position.copy(p);m.rotation.y=Math.atan2(-p.x,-p.z);scene.add(m);});}); /* Tripo radar dishes out beyond the fence, turned toward the park */
+  glbLoad('lander.txt',(g,mat)=>{const G=APO.G;if(!G||!APO.nL)return;mat.color.setHex(0xffffff);mat.fog=false;G.children.slice(0,APO.nL).forEach(c=>G.remove(c));APO.nL=0;const m=new T.Mesh(g,mat);m.scale.setScalar(9.5);G.add(m);}); /* the Tripo lander at the Apollo site (flag, work-lights and beacon stay) */
   glbLoad('vboard.txt',(g,mat)=>{const s=VB.s,G=new T.Group(),m=new T.Mesh(g,mat);m.scale.setScalar(s);G.add(m);
     let zf=0;const P=g.attributes.position.array;for(let i=0;i<P.length;i+=3)if(Math.abs(P[i])<.2&&P[i+1]>.22&&P[i+1]<.52)zf=Math.max(zf,P[i+2]); /* where the face of the screen is */
     const scr=new T.Mesh(new T.PlaneGeometry(.475*s,.3875*s),new T.MeshBasicMaterial({map:VB.tex,fog:false}));scr.position.set(0,.369*s,zf*s+.15);G.add(scr);
@@ -5758,7 +5760,7 @@ function updateCamera(rdt){
   else if(flight&&flight.offPd&&flight.play.type==='hit'&&MX.pit&&MX.pit.taunts.p_dying&&now-flight.t0-flight.tr.offP>.06&&now-flight.t0-flight.tr.offP<2.6&&(S.state==='flight'||S.state==='result')&&!S.goK){ // the pitcher who wore the comebacker: cut to the mound from the plate side, low
     pcutT=now;pcutH.set(0,2.3,-18.4);camPos.set(1.5,1.1,-14.2);camLook.set(0,.75,-18.4);}
   else if(pcWalk()&&MX.pit){pcutT=now;const o=MX.pit.obj.position;pcutH.set(o.x,2.3,o.z);camPos.set(o.x-3.1,1.15,o.z+2.2);camLook.set(o.x,1.15,o.z);} // walking toward the camera, which backs away with him
-  else if(pitCut()>=0||trotPit()||S.state==='pdef'||S.state==='pchange'||S.state==='pod'){pcutT=now;pcutH.set(0,2.3,-18.4);camPos.set(1.3,1.25,-15.4);camLook.set(0,1.25,-18.4);}
+  else if(pitCut()>=0||trotPit()||S.state==='pdef'||S.state==='pchange'||S.state==='pod'){pcutT=now;if(S.state==='pod'){pcutH.set(0,3.3,-18.4);camPos.set(1.9,1.35,-12.9);camLook.set(0,1.7,-18.4);} /* his Overdrive: the shot sits further back and looks a little higher, so the call has clear sky above his head */else{pcutH.set(0,2.3,-18.4);camPos.set(1.3,1.25,-15.4);camLook.set(0,1.25,-18.4);}}
   else if(S.state==='trot'&&TROT.R){camPos.copy(TROT.cam);TROT.R.fig.root.getWorldPosition(_a);camLook.set(_a.x,TROT.cut&&TROT.clip!=='p_loser'?1.15:1.3,_a.z);}
   else if((S.state==='walkup'||wkPD())&&MX.clip){ // from the pitcher's side, across the plate: his front three-quarter, with the stands behind him
     const e=clamp((now-S.t)/WALK.dur,0,1);MX.clip.hips.getWorldPosition(_a);const sd=_a.x<0?1:-1;
