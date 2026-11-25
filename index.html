@@ -1029,7 +1029,7 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 839</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 840</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -4158,8 +4158,8 @@ function judge0(tr,bt){const spd=bt&&bt.spd||1; // batter's speed: 0.85 (plodder
       if(d<=c.reach+c.speed*hang*Math.max(0,q.t-c.react)){
         // now and then a rocket eats an infielder up: it is on him too fast, goes off him and he goes down. Rare, so it keeps its charm,
         // except in Overdrive: a liner hit right at an infielder by a hitter in Overdrive always goes through him.
-        if(!c.isP&&!c.of&&c.dieAct&&!tr.offF&&!tr.offP&&(odH||(q.t<=1.7&&q.y>.15&&q.y<=2.0&&(DBG.drill||Math.random()<.6)))){tr.offF={t:q.t,f:c};continue;} /* OVERDRIVE: no infielder ever handles one. Liner or grounder, the first man it reaches wears it and goes down */
-        if(odH&&c.of&&c.dieAct&&!tr.offF&&!tr.offP&&q.y>.25&&q.t<=3.4&&d<=c.reach+2.2){tr.offF={t:q.t,f:c};continue;} /* OVERDRIVE LINERS FLATTEN OUTFIELDERS TOO: a line drive hit right at one (he barely has to move for it) goes off him and he goes down */
+        if(!c.isP&&!c.of&&c.dieAct&&!tr.offF&&!tr.offP&&(odH||(q.t<=1.7&&q.y>.15&&q.y<=2.0&&(DBG.drill||Math.random()<.6)&&d<=c.reach+3.2))){tr.offF={t:q.t,f:c,px:q.x,pz:q.z};continue;} /* OVERDRIVE: no infielder ever handles one. Liner or grounder, the first man it reaches wears it and goes down */
+        if(odH&&c.of&&c.dieAct&&!tr.offF&&!tr.offP&&q.y>.25&&q.t<=3.4&&d<=c.reach+2.2){tr.offF={t:q.t,f:c,px:q.x,pz:q.z};continue;} /* OVERDRIVE LINERS FLATTEN OUTFIELDERS TOO: a line drive hit right at one (he barely has to move for it) goes off him and he goes down */
         if(tr.offF&&tr.offF.f===c)continue;
         f=c;p=q;break outer;}}} // the pitcher only handles what comes straight back at him
   if(!f){p=tr.pts[tr.pts.length-1];let bd=1e9;for(const c of fielders){const d=Math.hypot(c.home.x-p.x,c.home.z-p.z);if(d<bd){bd=d;f=c;}}p={x:p.x,y:0,z:p.z,t:p.t};}
@@ -5588,6 +5588,9 @@ function updateFielders(dt){
         else if(dT>=DV.end&&!D.up){D.up=true;r.position.x=D.ex;r.position.z=D.ez; // back on his feet where the dive left him
           if(D.miss){const bp={x:D.cx,z:D.cz};pl.from=new V3(D.ex,0,D.ez);pl.tS=tf;pl.tgt={x:bp.x,z:bp.z,face:Math.atan2(-bp.x,-bp.z),lead:0};} // up, and after the ball wherever it has rolled to
           else{pl.from=new V3(D.ex,0,D.ez);pl.tS=tf;pl.tgt={x:D.ex,z:D.ez,face:D.yaw,lead:0};}}}}
+    }else if(flight&&flight.tr.offF&&flight.tr.offF.f===f&&flight.play.type==='hit'&&flight.tr.offF.px!==undefined){ /* THE MAN WHO IS ABOUT TO WEAR ONE GETS IN FRONT OF IT FIRST: he breaks from where he was playing to the spot the ball crosses, so it really does hit him (he used to stand at his position and fall over while the ball went by yards away) */
+      const O=flight.tr.offF;if(tf<O.t){const u=clamp((tf-Math.min(f.react,O.t*.4))/Math.max(.05,O.t-Math.min(f.react,O.t*.4)),0,1),mv=Math.hypot(O.px-f.home.x,O.pz-f.home.z);r.position.x=lerp(f.home.x,O.px,u);r.position.z=lerp(f.home.z,O.pz,u);
+        if(mv>.6&&u>0&&u<.92){r.rotation.y=Math.atan2(O.px-f.home.x,O.pz-f.home.z);f.ph+=dt*13;applyPose(f.fig,runPose(f.ph));running=true;}else{r.rotation.y=Math.atan2(-r.position.x,-r.position.z);idle=true;if(!f.rdyAct)applyPose(f.fig,POSE.fReady);}}
     }else if(flight&&!flight.play.f&&f.of&&flight.play.type==='hr'){ // watch it leave
       applyPose(f.fig,POSE.pSet);r.rotation.y=Math.atan2(ball.position.x-r.position.x,ball.position.z-r.position.z);
     }else if(flight&&flight.play.f&&flight.play.f!==f&&!flight.play.f.of&&!flight.play.air&&f===fielders[0]){
