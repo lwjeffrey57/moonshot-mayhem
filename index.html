@@ -1029,7 +1029,7 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 842</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 843</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -4899,7 +4899,7 @@ function setupClip(obj,clip,B,sk){
     const loop=c.duration<2.5,ref=hipsAt(c,loop?[0,1,2,3,4,5,6,7].map(k=>k/8*c.duration):[c.duration-.02]);
     const a=mixer.clipAction(c);a.play();a.setEffectiveWeight(0);C.intros[c.name]={a,dur:c.duration,loop,off:{x:home.x-ref.x,z:home.z-ref.z},loc:{x:-(ref.x-obj.position.x),z:-(ref.z-obj.position.z)}};}); // loc: where the routine sits relative to the model's own origin
 }
-const WHIFF_HOLD=1.9; // seconds of the swing-and-miss clip shown after the miss before he resets
+const WHIFF_CUT=window.__wc||[.45,.25],WHIFF_HOLD=window.__wh||1.05; /* THE MISS STOPS AT THE FOLLOW-THROUGH: the clip's stagger and extra steps afterwards are never reached; he finishes the swing, holds it a beat and comes back to his stance */ // // seconds of the swing-and-miss clip shown after the miss before he resets
 function batterOpacity(k){const set=m=>{if(m){m.transparent=k<1;m.opacity=k;}};
   if(MX.obj)MX.obj.traverse(n=>{if(n.userData.helm){n.visible=k>.5;return;}if(n.isMesh)[].concat(n.material).forEach(set);});set(bat.userData.wood);} // the glass helmet has its own shared material: just hide it when he fades
 function updateClip(dt){
@@ -4926,7 +4926,7 @@ function updateClip(dt){
     else if(C.sw.miss&&C.strike){C.mode='whiff';C.ws=C.sw.t0+SW_T;}                 // missed: hand over to the swing-and-miss clip
     else{C.t=Math.min(C.tE,C.tC+(ts-SW_T)*1.1);want=C.t<C.tE-.001||(flight&&flight.admire&&!flight.done&&now-flight.t0<flight.A+.4)?1:0;rate=.7;if(!want&&C.h<.01)C.mode='idle';} // follow-through done → flow back to the stance
   }
-  if(C.mode==='whiff'){const u=now-C.ws;C.st=Math.min(C.sDur-.01,C.tCs+u*1.1);skT=1;want=1;rate=.5; // play the miss and the first beat of the reaction, then ease back to the stance
+  if(C.mode==='whiff'){const u=now-C.ws;{const x=u*1.1,a=WHIFF_CUT[0],b=WHIFF_CUT[1];C.st=Math.min(C.sDur-.01,C.tCs+(x<a?x:a+b*(1-Math.exp(-(x-a)/b))));}skT=1;want=1;rate=.5; // play the miss and the first beat of the reaction, then ease back to the stance
     if(C.sk>.98)C.t=0;
     if(u>=WHIFF_HOLD||(incoming&&u>.6))C.mode='idle';}
   else if(C.mode==='idle'){
