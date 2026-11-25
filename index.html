@@ -1017,7 +1017,7 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 702</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 703</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -1474,8 +1474,8 @@ function pdResolve(){const R=PD.res,h=KBAT[PD.k];ball.visible=false;ballShadow.v
     SND.mitt();flash(.3);shake=Math.max(shake,.3*FX);buzz([40,40,120]);boo(.8);badge('plunk');pop('PLUNKED HIM!',h.name+' TAKES HIS BASE'+(r?' · KRAKENS +'+r:'')+' · NEXT BATTER RATTLED','hot',true);
     PD.t=now+2.6;PD.after=()=>{PD.hbpT=0;PD.rattle=true;PD.n++;PD.k=(PD.k+1)%KBAT.length;if(PD.n>=3||PD.outs>=3)pdEnd();else{pdHitter();PD.rattle=true;}};pdUI();hud();return;}
   if(!R.swing||R.kind==='whiff'){const strike=R.swing||R.inZ;
-    if(strike){PD.strikes++;SND.mitt();try{if(MX.crew)MX.crew.uT=now+.12;}catch(e){}if(PD.strikes>=3){PD.outs++;PD.ks=(PD.ks||0)+1;badge('pk');if(!R.swing&&R.e>.75)badge('paint');if(R.jz)badge('gas');if(PD.ks>=3)badge('kside');if(!S.over)S.juice=Math.min(1,S.juice+.25); /* a strikeout is worth a bar of Juice */pop('STRUCK HIM OUT!',h.name+(R.swing?' GOES DOWN SWINGING':' CAUGHT LOOKING'),'cool',true);cheer(.6,3);roar(.7,.3);buzz([30,40,90]);PD.after=over;try{const ts=MX.pit?Object.keys(MX.pit.taunts).filter(k=>!/sadwalk|dying|loser/.test(k)&&k!==PD.lastCel):[];if(ts.length){const c=ts[(Math.random()*ts.length)|0];PD.lastCel=c;S.sTaunt={t:now+.3,clip:c,dur:2.3};PD.t=now+1.5;}}catch(e){}}else{timing(R.swing?'SWING AND A MISS · STRIKE '+PD.strikes:'CALLED STRIKE '+PD.strikes+(R.e>.8?' · PAINTED':''),'#58d6ff',3);cheer(.2,1.5);PD.after=next;}}
-    else{PD.balls++;SND.mitt();if(PD.balls>=4){const r=pdAdvance(1,true);pop('WALK',h.name+' TAKES HIS BASE'+(r?' · KRAKENS +'+r:''),'hot');boo(.4);PD.after=over;}else{timing('BALL '+PD.balls+(R.e<1.25?' · JUST MISSED':''),'#9aa3c7',2);PD.after=next;}}
+    if(strike){PD.strikes++;SND.mitt();{const n=PD.strikes;setTimeout(()=>SND.call(false,n),R.swing?60:240);}try{if(MX.crew)MX.crew.uT=now+.12;}catch(e){}if(PD.strikes>=3){PD.outs++;PD.ks=(PD.ks||0)+1;badge('pk');if(!R.swing&&R.e>.75)badge('paint');if(R.jz)badge('gas');if(PD.ks>=3)badge('kside');if(!S.over)S.juice=Math.min(1,S.juice+.25); /* a strikeout is worth a bar of Juice */pop('STRUCK HIM OUT!',h.name+(R.swing?' GOES DOWN SWINGING':' CAUGHT LOOKING'),'cool',true);cheer(.6,3);roar(.7,.3);buzz([30,40,90]);PD.after=over;try{const ts=MX.pit?Object.keys(MX.pit.taunts).filter(k=>!/sadwalk|dying|loser/.test(k)&&k!==PD.lastCel):[];if(ts.length){const c=ts[(Math.random()*ts.length)|0];PD.lastCel=c;S.sTaunt={t:now+.3,clip:c,dur:2.3};PD.t=now+1.5;}}catch(e){}}else{timing(R.swing?'SWING AND A MISS · STRIKE '+PD.strikes:'CALLED STRIKE '+PD.strikes+(R.e>.8?' · PAINTED':''),'#58d6ff',3);cheer(.2,1.5);PD.after=next;}}
+    else{PD.balls++;SND.mitt();{const n=PD.balls;setTimeout(()=>SND.call(true,n),200);}if(PD.balls>=4){const r=pdAdvance(1,true);pop('WALK',h.name+' TAKES HIS BASE'+(r?' · KRAKENS +'+r:''),'hot');boo(.4);PD.after=over;}else{timing('BALL '+PD.balls+(R.e<1.25?' · JUST MISSED':''),'#9aa3c7',2);PD.after=next;}}
     pdUI();hud();return;}
   if(R.kind==='foul'){ // A FOUL BALL IS SHOWN: it comes off the bat and is followed far enough to see it land foul, then it is back to the mound
     try{let tr=null;for(let i=0;i<6&&!(tr&&tr.foul);i++){const sd=Math.random()<.5?-1:1,ph=sd*rand(56,82)*DEG,la=rand(6,44)*DEG,v=rand(22,36);tr=simulate(new V3(PD.pt.tx,PD.pt.ty,0),new V3(Math.sin(ph)*Math.cos(la),Math.sin(la),-Math.cos(ph)*Math.cos(la)).multiplyScalar(v),{side:sd*3,lift:0},{});}
@@ -1506,7 +1506,7 @@ function pdFinish(f,pl){if(f._res){f.t0=now-pl.endT;if(f.thr){if(!f.thr.done&&no
   const next=()=>{PD.ph=0;pdUI();},over=()=>{PD.n++;PD.k=(PD.k+1)%KBAT.length;if(PD.n>=3||PD.outs>=3)pdEnd();else pdHitter();};
   if(pl.type==='foul'){if(PD.strikes<2)PD.strikes++;timing('FOULED OFF'+(PD.res&&PD.res.tim?' · '+PD.res.tim.replace('WAY ','')+' ON IT':''),'#f2f5ff',2);PD.after=next;pdUI();return;}
   if(pl.type==='out'){PD.outs++;const dp=!!pl.dp&&PD.bases[0]&&PD.outs<3;if(dp){PD.outs++;PD.bases[0]=0;}
-    {const call=()=>{pop(dp?'DOUBLE PLAY!':pl.dive?'WHAT A CATCH!':pl.rob?'ROBBED HIM!':'OUT!',pl.label+' · '+h.name+' IS RETIRED','cool');cheer(.5,2.5);};if(pl.label==='GROUND OUT'&&pl.f&&pl.f.thrAct&&pl.f!==fielders[0]){f.thr={t0:now+.05,to:new V3(BASES[1][0],1.2,BASES[1][1]),next:null,full:true,call};}else call();}
+    {const call=()=>{if(pl.label==='GROUND OUT')SND.ump(false);pop(dp?'DOUBLE PLAY!':pl.dive?'WHAT A CATCH!':pl.rob?'ROBBED HIM!':'OUT!',pl.label+' · '+h.name+' IS RETIRED','cool');cheer(.5,2.5);};if(pl.label==='GROUND OUT'&&pl.f&&pl.f.thrAct&&pl.f!==fielders[0]){f.thr={t0:now+.05,to:new V3(BASES[1][0],1.2,BASES[1][1]),next:null,full:true,call};}else call();}
     if(pl.dive||pl.rob||dp){roar(.8,.3);badge('web');}SND.mitt();PD.after=over;pdUI();hud();return;}
   const nb=pl.type==='hr'?4:(pl.bases||1),r=pdAdvance(nb,false);pop(pl.type==='hr'?(pl.dist*3.281>=600?'TOOK YOU TO THE MOON':pl.dist*3.281>=470?'TOOK YOU DEEP':'KRAKENS GO DEEP'):['BASE HIT','DOUBLE','TRIPLE'][nb-1],h.name+(pl.type==='hr'?' · '+Math.round(pl.dist*3.281)+' FT':'')+(r?' · KRAKENS +'+r:'')+(pl.tag?' · '+pl.tag:''),'hot',pl.type==='hr');boo(r?.6:.3);if(pl.type==='hr'){flash(.25);shake=Math.max(shake,.2*FX);}
   PD.after=over;
@@ -2828,12 +2828,12 @@ const fireworks=[];
 // ───────────────────────── audio (all synthesized)
 let AC=null,master=null,crowdGain=null,noiseBuf=null,crowdBase=.018,crowdReal=false; // the hiss stand-in is kept very low: it is only ever heard if the crowd recording is late
 // Recorded sounds (sfx/*.mp3). Each one replaces a synthesized sound once it has loaded; if a file is missing the synth version plays.
-const SFX={},SFX_FILES=['bed','cheer','cheer_big','strike','ball','swing1','swing2','swing3','swing4','playball','ball2','ball3','ball4','strike2','out','catch2','crush','boo1','boo2','boo3','pop_max','foul','horn','clap1','clap2','org_charge','org_chord','org_post','org_clap','org_letsgo','org_neenaa','org_mariachi','org_lgo','org_rise','vendor'];
+const SFX={},SFX_FILES=['ump_strike','ump_ball','ump_k3','ump_out','ump_out2','ump_safe','ump_safe2','bed','cheer','cheer_big','strike','ball','swing1','swing2','swing3','swing4','playball','ball2','ball3','ball4','strike2','out','catch2','crush','boo1','boo2','boo3','pop_max','foul','horn','clap1','clap2','org_charge','org_chord','org_post','org_clap','org_letsgo','org_neenaa','org_mariachi','org_lgo','org_rise','vendor'];
 // The sound files start downloading the moment the page opens (three at a time, the ones the first seconds of a game need first), so they
 // are already here when PLAY BALL is tapped. Before, nothing was fetched until that tap, and with the player models also downloading the
 // game started on its stand-in synth sounds: hiss for a crowd, a jingle instead of the umpire.
 const SFX_RAW={};
-{const order=['playball','bed','catch2','swing1','swing2','swing3','swing4','strike','ball','cheer','cheer_big','strike2','ball2','ball3','ball4','out','crush','boo1','boo2','boo3','pop_max'].concat(SFX_FILES.filter(n=>/^org_/.test(n)));
+{const order=['playball','ump_strike','ump_ball','ump_k3','bed','catch2','swing1','swing2','swing3','swing4','strike','ball','cheer','cheer_big','strike2','ball2','ball3','ball4','out','crush','boo1','boo2','boo3','pop_max'].concat(SFX_FILES.filter(n=>/^org_/.test(n)));
   let i=0;const next=()=>{if(i>=order.length)return;const n=order[i++];SFX_RAW[n]=fetch('sfx/'+n+'.mp3').then(r=>r.ok?r.arrayBuffer():Promise.reject());SFX_RAW[n].then(next,next);};
   next();next();next();}
 function loadSfx(noiseSrc){SFX_FILES.forEach(n=>(SFX_RAW[n]||(SFX_RAW[n]=fetch('sfx/'+n+'.mp3').then(r=>r.ok?r.arrayBuffer():Promise.reject()))).then(b=>new Promise((res,rej)=>AC.decodeAudioData(b.slice(0),res,rej))).then(buf=>{SFX[n]=buf;
@@ -3064,9 +3064,11 @@ const SND={
       if(AC&&crowdReal&&!roarG){const t=AC.currentTime,g=crowdGain.gain;g.cancelScheduledValues(t);g.setTargetAtTime(crowdBase*.4,t,.015);g.setTargetAtTime(crowdBase,t+.22,.25);}} // the crowd dips for a fifth of a second under the pop, so it stands on its own /* a pitch into the catcher's glove also gets a bright snap on top: the recorded pop is mostly low thud, which phone speakers and the crowd swallow */
     sfx('catch2',k==null?.34:lerp(1.05,1.2,k),k==null?rand(.95,1.05):lerp(.94,1.08,k));}, // recorded glove pop; pitches play it louder and brighter the faster they are
   call(hi,n){if(hi&&n>1&&sfx('ball'+Math.min(4,n),.95))return; // the umpire counts them: ball two, ball three, ball four
-    if(!hi&&n>=3&&sfx('out',.95))return; // strike three: the emphatic out call
-    if(!hi&&n===2&&sfx('strike2',.95))return;
+    if(!hi&&n>=3&&(sfx('ump_k3',1)||sfx('out',.95)))return; // strike three: STRIKE THREE, YOU'RE OUT!
+    if(hi&&sfx('ump_ball',1))return;
+    if(!hi&&sfx('ump_strike',1))return;
     sfx(hi?'ball':'strike',.9);},
+  ump(safe){const a=safe?['ump_safe','ump_safe2']:['ump_out','ump_out2'],k=a[(Math.random()*2)|0];if(!sfx(k,1))sfx(safe?k:'out',.95);}, // the call at the bag
   boom(){tone('sine',90,30,.6,.6);noise(.5,'bandpass',2400,5000,.18,.6,.05);},
   zap(){noise(.25,'highpass',2500,6000,.25,3);tone('sawtooth',1400,200,.2,.12);},
 };
@@ -3649,10 +3651,10 @@ function qteTick(){const Q=QT,d0=9.5,d1=2.6,pe=now-Q.tp;
     const left=1-(now-Q.t1)/Q.lim;$('qtb').style.transform='scaleX('+Math.max(0,left).toFixed(3)+')';$('qtb').classList.toggle('low',left<.35);if(left<=0)qteDone(false);}
   else{const e=now-Q.t1,d=Q.rv?lerp(lerp(d1,1.05,ease(clamp(e/.45,0,1))),.15,ease(clamp((e-.5)/.6,0,1))):lerp(d1,1.0,ease(clamp(e/.45,0,1)))+(Q.blow?1.9*(1-Math.pow(1-clamp((now-Q.blow)/.55,0,1),2)):0);Q.rx=Q.bx+Q.ux*d;Q.rz=Q.bz+Q.uz*d; /* a made kick carries him through the fielder and onto the bag, and no further */
     if(!Q.hit&&e>=.42){Q.hit=true;const M=Q.M;SND.mitt();tone('sine',120,45,.2,.7);shake=Math.max(shake,.55*FX);rumble=Math.max(rumble,1.3);flash(.5);burst(fxS,_p.set(Q.fx+Q.ux*.4,1.2,Q.fz+Q.uz*.4),22,4,.5,[1,.9,.5],2,1);
-      if(Q.rv&&M.def){Q.f={n:'p_dying',t:now-1.1,hold:true};Q.fx0=Q.fx;Q.fz0=Q.fz;Q.blow=now;Q.ball={t:now,x:Q.fx,z:Q.fz};rumble=1;crowdDrop();try{boo(.5);}catch(e){}M.no();pop(M.noT[0],M.noT[1],'hot',true);} /* on defence, beaten: he comes in hard, the fielder goes flying and he has the base */
-      else if(!Q.rv&&M.def){ball.visible=false;Q.b={n:'p_dying',t:now-1.1,hold:true};Q.blow=now;crowdPump(1);setTimeout(()=>sfx('out',.95),260);M.ok();try{badge('web');}catch(e){}if(!S.over)S.juice=Math.min(1,S.juice+(Q.gold?.5:.25));pop(M.okT[0],M.okT[1]+(S.over?'':' · +1 JUICE'),'cool',true);} /* on defence, won: the tag is on him and he is out */
-      else if(Q.ok){Q.f={n:'p_dying',t:now-1.1,hold:true};Q.fx0=Q.fx;Q.fz0=Q.fz;Q.blow=now;Q.ball={t:now,x:Q.fx,z:Q.fz};rumble=1;crowdPump(1);M.ok();badge('send');if(!S.over)S.juice=Math.min(1,S.juice+(Q.gold?.5:.25)); /* winning the showdown is worth a bar of Juice; gold on the needle is worth two */if(Q.gold)badge('jump');pop(M.okT[0],S.over?(Q.gold?'PERFECT JUMP':''):Q.gold?'PERFECT JUMP · +2 JUICE':'+1 JUICE','hot',true);} /* no Juice is promised when the meter is already full */
-      else{ball.visible=false;Q.b={n:'p_dying',t:now-1.1,hold:true};Q.blow=now;crowdDrop();setTimeout(()=>sfx('out',.95),260); /* the umpire's out call; there is no 'safe' recording yet */ /* tagged hard: he goes back off his feet the way the fielder does when the kick lands */M.no();pop(M.noT[0],M.noT[1],'cool',true);}
+      if(Q.rv&&M.def){Q.f={n:'p_dying',t:now-1.1,hold:true};Q.fx0=Q.fx;Q.fz0=Q.fz;Q.blow=now;Q.ball={t:now,x:Q.fx,z:Q.fz};rumble=1;crowdDrop();setTimeout(()=>SND.ump(true),260);try{boo(.5);}catch(e){}M.no();pop(M.noT[0],M.noT[1],'hot',true);} /* on defence, beaten: he comes in hard, the fielder goes flying and he has the base */
+      else if(!Q.rv&&M.def){ball.visible=false;Q.b={n:'p_dying',t:now-1.1,hold:true};Q.blow=now;crowdPump(1);setTimeout(()=>SND.ump(false),260);M.ok();try{badge('web');}catch(e){}if(!S.over)S.juice=Math.min(1,S.juice+(Q.gold?.5:.25));pop(M.okT[0],M.okT[1]+(S.over?'':' · +1 JUICE'),'cool',true);} /* on defence, won: the tag is on him and he is out */
+      else if(Q.ok){Q.f={n:'p_dying',t:now-1.1,hold:true};Q.fx0=Q.fx;Q.fz0=Q.fz;Q.blow=now;Q.ball={t:now,x:Q.fx,z:Q.fz};rumble=1;crowdPump(1);setTimeout(()=>SND.ump(true),260);M.ok();badge('send');if(!S.over)S.juice=Math.min(1,S.juice+(Q.gold?.5:.25)); /* winning the showdown is worth a bar of Juice; gold on the needle is worth two */if(Q.gold)badge('jump');pop(M.okT[0],S.over?(Q.gold?'PERFECT JUMP':''):Q.gold?'PERFECT JUMP · +2 JUICE':'+1 JUICE','hot',true);} /* no Juice is promised when the meter is already full */
+      else{ball.visible=false;Q.b={n:'p_dying',t:now-1.1,hold:true};Q.blow=now;crowdDrop();setTimeout(()=>SND.ump(false),260); /* the umpire's out call */ /* tagged hard: he goes back off his feet the way the fielder does when the kick lands */M.no();pop(M.noT[0],M.noT[1],'cool',true);}
       hud();}
     if(Q.rv&&Q.blow){const k=1-Math.pow(1-clamp((now-Q.blow)/.55,0,1),2);Q.fx=Q.fx0-Q.ux*1.8*k;Q.fz=Q.fz0-Q.uz*1.8*k;} // the kick sends him back off his feet, well clear of the bag
     if(Q.ball){const t=now-Q.ball.t;ball.visible=t<1.6;ball.scale.setScalar(1.6);ball.position.set(Q.ball.x-Q.ux*1.4*t+Q.nx*.9*t,1.1+4.2*t-4.9*t*t,Q.ball.z-Q.uz*1.4*t+Q.nz*.9*t);if(ball.position.y<.06)ball.position.y=.06;}
@@ -4154,7 +4156,7 @@ function finishPlay(){revOff();if(PD.on&&flight&&flight.pd){pdFinish(flight,flig
     if(dp&&!qdp){recordOut();S.bases[0]=0;} // the man on first is forced at second, then the relay gets the hitter
     const B=(i)=>new V3(BASES[i][0],1.2,BASES[i][1]);
     if(pl.label==='GROUND OUT'&&pl.f&&pl.f.thrAct&&(dp||pl.f!==fielders[0]))f.thr={t0:now+.05,to:dp?B(2):B(1),next:dp&&!qdp?B(1):null,full:true}; // the first baseman takes his own grounders to the bag: no throw to nobody
-    {const call=()=>pop(dp?'DOUBLE PLAY!':pl.dive?'WHAT A CATCH!':pl.air&&f.q>.7?'ROBBED!':'OUT!',dp?'TWO FOR ONE':pl.label,'cool');
+    {const call=()=>{if(pl.label==='GROUND OUT'||dp)SND.ump(false);pop(dp?'DOUBLE PLAY!':pl.dive?'WHAT A CATCH!':pl.air&&f.q>.7?'ROBBED!':'OUT!',dp?'TWO FOR ONE':pl.label,'cool')};
       if(qdp){}else if(f.thr&&f.thr.full)f.thr.call=call;else call();} // on a grounder nothing is called until the throw gets there
     SND.mitt();if(f.thr&&f.thr.full)f.thr.q=f.q; /* a grounder isn't an out until the throw beats him: the crowd stays up through the throw and reacts when it lands */
     else{roarOff(1.5);const lq=pl.label==='LINE OUT'?Math.max(f.q,.6):f.q; /* a liner that gets snared always draws a real reaction, wherever it is caught */
