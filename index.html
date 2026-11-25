@@ -1026,7 +1026,7 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 738</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 739</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -4751,7 +4751,7 @@ function updateClip(dt){
   else if(C.mode==='idle'){
     // THE TAKE. He does not just go limp the instant the ball is past him: he stays loaded and watches it into the mitt, and on a pitch
     // close enough to tempt him he starts his hands, checks the swing, and brings the bat back. Then he relaxes into his stance.
-    if(wasInc&&!incoming&&S.state!=='hbp'&&!(swing&&now-swing.t0<1.2)){C.takeT=now;let close=false;try{const P=PD.on?PD.pt:pitch;close=!!P&&P.tx>ZONE.x0-.24&&P.tx<ZONE.x1+.24&&P.ty>ZONE.y0-.24&&P.ty<ZONE.y1+.24;}catch(e){}const inZ=!!P&&P.tx>=ZONE.x0&&P.tx<=ZONE.x1&&P.ty>=ZONE.y0&&P.ty<=ZONE.y1;C.chk=close&&!inZ;} /* THE TAKE: a ball just off the plate gets the full take (hands start, he checks it and brings the bat back); a strike he lets go, or one way out of the zone, gets the freeze: it locked him up */
+    if(wasInc&&!incoming&&S.state!=='hbp'&&!(swing&&now-swing.t0<1.2)){C.takeT=now;let close=false;try{const P=PD.on?PD.pt:pitch;close=!!P&&P.tx>ZONE.x0-.24&&P.tx<ZONE.x1+.24&&P.ty>ZONE.y0-.24&&P.ty<ZONE.y1+.24&&!(P.tx>=ZONE.x0&&P.tx<=ZONE.x1&&P.ty>=ZONE.y0&&P.ty<=ZONE.y1);}catch(e){}C.chk=close;} /* THE TAKE: a ball just off the plate gets the full take (hands start, he checks it and brings the bat back); a strike he lets go, or one way out of the zone, gets the freeze: it locked him up */
     const tk=now-(C.takeT===undefined?-9:C.takeT),tkOn=!incoming&&tk<(C.chk?.66:.5)&&S.state!=='hbp';want=incoming||tkOn?1:0;
     if(incoming)C.t=Math.min(C.tL,C.t+dt*1.25);else if(tkOn)C.t=C.chk?C.tL+(C.tC-C.tL)*.5*Math.sin(Math.min(1,tk/.56)*PI):C.tL;else if(C.h<=.001){C.t=0;C.sk=0;}
     skT=C.sk>0&&!incoming&&C.h>.001?1:0;}
