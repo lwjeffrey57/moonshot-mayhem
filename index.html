@@ -230,6 +230,10 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
 /* on phones it sits on the left, where the aim thumb already is, like an 'advance the runner' control */
 #hud.mob #gobtn{left:max(14px,env(safe-area-inset-left,0px));bottom:max(190px,calc(env(safe-area-inset-bottom,0px) + 180px));transform:scale(.6);transform-origin:0 100%;padding:16px 20px;font-size:clamp(20px,5.8vw,28px)}
 #hud.mob #gobtn.on{animation:gobtnL .42s ease-in-out infinite alternate}
+#gostay{position:absolute;z-index:47;opacity:0;pointer-events:none;padding:14px 20px;font-family:var(--display);font-style:italic;font-size:clamp(18px,4.8vw,26px);letter-spacing:.03em;color:#fff;-webkit-text-stroke:5px #05060f;paint-order:stroke fill;text-shadow:0 3px 0 #05060f;background:linear-gradient(#ff7a6a,#d2261a);border:4px solid #000;border-radius:18px;box-shadow:0 6px 0 #000,0 0 0 4px rgba(255,255,255,.7);white-space:nowrap;touch-action:none;transition:opacity .15s}#gostay.on{opacity:1;pointer-events:auto}#gostay small{display:block;font-family:var(--hud);font-style:normal;font-size:9px;letter-spacing:.08em;color:#fff;font-weight:800;-webkit-text-stroke:3px #05060f;paint-order:stroke fill;text-shadow:none}#gostay small::after{content:'PRESS N'}#hud.mob #gostay small::after{content:'HOLD THE BAG'}body.paused #gostay{visibility:hidden}
+/* GO and NO, STAY side by side, centred as a pair (go on the left, stay on the right) */#gopair{position:absolute;left:50%;transform:translateX(-50%);bottom:max(34px,env(safe-area-inset-bottom,0px));display:flex;gap:14px;align-items:center;z-index:47;pointer-events:none}#hud #gopair #gobtn,#hud #gopair #gostay{position:relative;left:auto;right:auto;top:auto;bottom:auto}#hud #gopair #gobtn{transform:none;transform-origin:50% 50%}#hud #gopair #gobtn.on{animation:gobtnL .42s ease-in-out infinite alternate}
+#hud.mob #gopair{bottom:max(76px,calc(env(safe-area-inset-bottom,0px) + 62px));gap:10px}#hud.mob #gopair #gobtn{padding:14px 14px;font-size:clamp(17px,4.9vw,24px)}#hud.mob #gopair #gostay{padding:12px 14px}
+#hud.goq #touch,#hud.goq #apad{opacity:0;pointer-events:none;transition:opacity .15s} /* while the call is up, the swing controls step aside */
 @keyframes gobtnL{from{transform:scale(1)}to{transform:scale(1.08)}}
 #hud.mob #gobtn small::after{content:'ADVANCE THE RUNNER'}
 #gobtn[data-r=g]{box-shadow:0 6px 0 #000,0 0 0 4px #39ff6a}#gobtn[data-r=y]{box-shadow:0 6px 0 #000,0 0 0 4px #ffd23b}#gobtn[data-r=r]{box-shadow:0 6px 0 #000,0 0 0 4px #ff4d2e}
@@ -970,7 +974,7 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
     <div id="odh" aria-hidden="true"></div>
     <div id="orbc" aria-hidden="true"><b>YOU HIT IT INTO ORBIT!</b></div>
     <div id="bdg" aria-live="polite"><i></i><div><em>ACHIEVEMENT UNLOCKED</em><b></b><span></span></div></div>
-    <button id="gobtn" type="button">GO!<small></small><em id="goodds"></em></button>
+    <div id="gopair"><button id="gobtn" type="button">GO!<small></small><em id="goodds"></em></button><button id="gostay" type="button">NO, STAY<small></small></button></div>
     <div id="qte" hidden><b id="qtt"></b><div id="qtr"></div><div id="qtm"><i id="qtb"></i></div></div>
     <div id="qpad" aria-hidden="true"><button type="button" data-d="U">▲</button><button type="button" data-d="L">◀</button><button type="button" data-d="R">▶</button><button type="button" data-d="D">▼</button></div>
     <div id="podtag" aria-hidden="true">PITCHER<br>OVERDRIVE ACTIVE</div>
@@ -1019,7 +1023,7 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 721</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 722</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -3632,8 +3636,9 @@ function qteRisk(k,pl){const from={plate:3,adv3:2,stretch3:2,stretch2:1,tag3:2,t
   return clamp(D/Math.pow(sp,1.3),.55,1.6);}
 function goDiag(){const C=MX.clip,P=MX.pit,miss=[];if(!C)miss.push('batter');if(!P)miss.push('pitcher');if(!MX.on)miss.push('models');if(C)['q_flykick','run','p_dying','b_gut','b_stance'].forEach(n=>{if(!C.intros[n])miss.push('b:'+n);});if(P)['b_stance','b_jab','p_dying'].forEach(n=>{if(!P.taunts[n])miss.push('p:'+n);});GD.why=miss.join(', ');const e=$('godiag');if(e)e.textContent='ADVANCE BUTTON: offered '+GD.off+' of '+GD.hit+' chances · pressed '+GD.tap+(GD.why?' · BLOCKED BY: '+GD.why:'');}
 const GD={hit:0,off:0,tap:0,why:''};
-function goOffer(k,pl){GD.off++;S.goK=k;S.goD=qteRisk(k,pl);const b=$('gobtn');b.firstChild.nodeValue=GO_LABEL[k];b.dataset.r=S.goD<.85?'g':S.goD<1.15?'y':'r';b.querySelector('small').textContent='';{const pc=Math.round(clamp(92-(S.goD-.55)*59,25,92)/5)*5;b.dataset.r=pc>=70?'g':pc>=45?'y':'r';$('goodds').innerHTML='<b>'+pc+'%</b> SAFE · '+(pc>=70?'GOOD ODDS':pc>=45?'TOSS-UP':'LONG SHOT');} /* the odds under the button: a rough chance of beating the throw, from his speed, how deep the ball went and which bag */b.classList.remove('on');void b.offsetWidth;b.classList.add('on');readyDur=Math.max(readyDur,qteSeen?2.8:3.4);S.t=now;buzz(25);} /* up for a little over two seconds; a player who has never taken one gets the full three */
-function goHide(){if(S.goK){S.goK=null;}$('gobtn').classList.remove('on');}
+function goOffer(k,pl){GD.off++;S.goK=k;S.goD=qteRisk(k,pl);const b=$('gobtn');b.firstChild.nodeValue=GO_LABEL[k];b.dataset.r=S.goD<.85?'g':S.goD<1.15?'y':'r';b.querySelector('small').textContent='';{const pc=Math.round(clamp(92-(S.goD-.55)*59,25,92)/5)*5;b.dataset.r=pc>=70?'g':pc>=45?'y':'r';$('goodds').innerHTML='<b>'+pc+'%</b> SAFE · '+(pc>=70?'GOOD ODDS':pc>=45?'TOSS-UP':'LONG SHOT');} /* the odds under the button: a rough chance of beating the throw, from his speed, how deep the ball went and which bag */b.classList.remove('on');void b.offsetWidth;b.classList.add('on');{const st=$('gostay');st.classList.remove('on');void st.offsetWidth;st.classList.add('on');$('hud').classList.add('goq');}readyDur=Math.max(readyDur,qteSeen?2.8:3.4);S.t=now;buzz(25);} /* up for a little over two seconds; a player who has never taken one gets the full three */
+function goHide(){if(S.goK){S.goK=null;}$('gobtn').classList.remove('on');$('gostay').classList.remove('on');$('hud').classList.remove('goq');}
+function goStay(){if(!S.goK||S.state!=='result')return;goHide();S.t=Math.min(S.t,now-readyDur+.35);buzz(15);tone('triangle',520,390,.1,.25);} /* he holds up: the game moves straight on */
 function goTap(){if(!S.goK||S.state!=='result')return;GD.tap++;goDiag();const k=S.goK;goHide();S.next=()=>qteStart(k,true);S.t=now-readyDur+.2;buzz([20,30,60]);tone('triangle',660,990,.12,.3);}
 function qteStart(kind,noPA){QT.noPA=!!noPA;goHide();{const e=$('bdg');if(e.classList.contains('go')){e.classList.remove('go');if(bdgCur&&!bdgCur.re){bdgCur.re=1;bdgCur.old=1;bdgQ.unshift(bdgCur);}bdgCur=null;}} /* a plate that is up when the event starts is taken down and comes back afterwards */const D=QT.D=kind==='dp'?1:clamp(S.goD||1,.55,1.6);S.goD=0;const M=QTE_MOVES[kind],Bp=M.base?[BASES[M.base][0],BASES[M.base][1]]:[0,0],u=M.u;
   S.state='qte';S.t=now;S.qteN=(S.qteN||0)+1;Object.assign(QT,{ph:'heads',tp:now,kind,M,code:D<.85?M.code.slice(0,-2):M.code /* a good bet is a shorter code */,i:0,mash:!!M.mash||DBG.mash||(qteSeen&&Math.random()<.35),fill:0,lt:0,lim:(.38*(D<.85?M.code.length-2:M.code.length)+1.0)/Math.pow(D,.8)+(qteSeen?0:1.2), /* the clock: enough to punch the whole code in at a brisk pace with room for one slip, and no more */ok:false,bx:Bp[0],bz:Bp[1],ux:u[0],uz:u[1],ball:null,blow:0,fk:0});
@@ -4450,7 +4455,7 @@ const padKnob=$('apad').firstElementChild,aimHome=()=>{if(touchLast)return;aim.x
 canvas.addEventListener('pointerup',padEnd);canvas.addEventListener('pointercancel',padEnd);
 canvas.addEventListener('contextmenu',e=>e.preventDefault());
 addEventListener('keydown',e=>{keys[e.code]=true;if(e.repeat)return;if(infoHold&&PD.tutI>=0&&!$('ptut').hidden){if(e.code==='Escape')pdTut(99);else if(e.code==='Enter'||e.code==='Space')pdTut(PD.tutI+1);e.preventDefault();return;}if(infoHold&&(e.code==='Enter'||e.code==='Space'||e.code==='Escape')){podxClose();e.preventDefault();return;}if(S.state==='pask'&&!paused&&PD.askGo){if(e.code==='Enter'||e.code==='Space'||e.code==='KeyP'){PD.askGo(true);e.preventDefault();return;}if(e.code==='KeyS'||e.code==='Escape'){PD.askGo(false);e.preventDefault();return;}}if(S.state==='pduel'&&!paused){if(e.code==='ShiftLeft'||e.code==='ShiftRight'||e.code==='KeyJ'){$('pdjuice').dispatchEvent(new PointerEvent('pointerdown',{bubbles:true}));return;}if(e.code==='KeyD'){pdDrill();return;}if(e.code==='Space'||e.code==='Enter'){pdTap();e.preventDefault();return;}const k={Digit1:0,Digit2:1,Digit3:2,Digit4:3,Digit5:4,Digit6:5,Digit7:6,Digit8:7,Digit9:8}[e.code];if(k!==undefined){pdPick(k);return;}}
-  if(S.goK&&(e.code==='KeyG'||e.code==='Enter')){goTap();e.preventDefault();return;}
+  if(S.goK&&(e.code==='KeyG'||e.code==='Enter')){goTap();e.preventDefault();return;}if(S.goK&&(e.code==='KeyN'||e.code==='Escape')){goStay();e.preventDefault();return;}
   if(S.state==='qte'){const d={ArrowUp:'U',ArrowDown:'D',ArrowLeft:'L',ArrowRight:'R',KeyW:'U',KeyS:'D',KeyA:'L',KeyD:'R'}[e.code]||((QT.mash||QT.stop)&&e.code==='Space'?'U':'');if(d){qteKey(d);e.preventDefault();}return;}
   if(e.code==='Space'||e.code==='KeyZ'||e.code==='KeyJ'){doSwing('contact');e.preventDefault();}
   else if(e.code==='KeyX'||e.code==='KeyK'){doSwing('power');}
@@ -5798,7 +5803,7 @@ let qteTouch=false;
   document.addEventListener('touchstart',e=>{if(!one()||e.target.closest('#pausebtn,#mutebtn'))return;e.preventDefault();e.stopPropagation();qteTouch=true;for(const t of e.changedTouches){if(one())qteKey('U');}},{capture:true,passive:false});
   document.addEventListener('mousedown',e=>{if(!one()||e.target.closest('#pausebtn,#mutebtn,#qmash'))return;e.preventDefault();e.stopPropagation();qteTouch=false;qteKey('U');},{capture:true});}
 {const q=$('qmash');q.addEventListener('touchstart',e=>{e.preventDefault();e.stopPropagation();for(const t of e.changedTouches)qteKey('U');},{passive:false});q.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();if(e.pointerType==='touch')return;qteKey('U');});}
-{const g=$('gobtn'),go=e=>{e.preventDefault();e.stopPropagation();goTap();};g.addEventListener('pointerdown',go);}
+{const g=$('gobtn'),go=e=>{e.preventDefault();e.stopPropagation();goTap();};g.addEventListener('pointerdown',go);const st=$('gostay');st.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();goStay();});}
 $('shbtn').addEventListener('click',()=>{SHQ=!SHQ;if(SHQ&&!rim.castShadow)rim.castShadow=true;try{localStorage.setItem('mm_shadows',SHQ?'1':'0');}catch(e){}shApply();});
 shApply();
 resize();hud();
