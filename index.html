@@ -1029,7 +1029,7 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 761</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 762</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -4154,8 +4154,12 @@ function tryContact(){flight_pop=false;if(pitch.hbp){swing.done=true;swing.miss=
     if(DBG.tape==='far'||DBG.apollo||apoWant||(tb&&Math.random()<.3)){const k=DBG.tape==='far'?rand(.3,1):Math.random();v*=1.06+.225*k;fopt.g=.72-.225*k;la=clamp(la,24,34);kind='MOONSHOT';}}
   const spin={side:phi/40*3.2+gs()*4,lift};
   const p0=new V3(pitch.tx,pitch.ty,clamp(-dt*6,-.7,.3));
-  const v0=new V3(Math.sin(phi*DEG)*Math.cos(la*DEG),Math.sin(la*DEG),-Math.cos(phi*DEG)*Math.cos(la*DEG)).multiplyScalar(v);
+  let v0=new V3(Math.sin(phi*DEG)*Math.cos(la*DEG),Math.sin(la*DEG),-Math.cos(phi*DEG)*Math.cos(la*DEG)).multiplyScalar(v);
   let tr=simulate(p0,v0,spin,fopt);
+  // THE BIG SLICE: a ball squared up to the opposite field now and then leaves the bat nearer centre and bends hard toward the line (the same
+  // real flight physics, just far more sidespin), coming down about where the straight one would have. If it would slice foul, the straight one stands.
+  {const og=MX.lefty?-1:1,oppo=phi*og>9&&phi*og<34;if(oppo&&la>15&&q>.55&&!tr.foul&&!DBG.apollo&&kind!=='MOONSHOT'&&(DBG.slice||Math.random()<.4)){const E=rand(3.5,6),p2=phi-og*2.1*E,sp2={side:spin.side+og*E,lift:spin.lift},v2=new V3(Math.sin(p2*DEG)*Math.cos(la*DEG),Math.sin(la*DEG),-Math.cos(p2*DEG)*Math.cos(la*DEG)).multiplyScalar(v);
+    let t2=null;try{t2=simulate(p0,v2,sp2,fopt);}catch(e){}if(t2&&!t2.foul&&!!t2.hr===!!tr.hr){tr=t2;v0=v2;spin.side=sp2.side;phi=p2;}}}
   // THE EAGLE HAS LANDED: an Overdrive moonshot is sometimes dead on line for the old Apollo site. Its speed and direction are trimmed until it comes down right there.
   let apo=false;if(kind==='MOONSHOT'&&APO.ok&&(DBG.apollo||apoWant||(S.over&&S.overOn&&odLastK!=='apollo'&&Math.random()<.55))){const sv=v0.clone(),ss=spin.side;spin.side=0;let ph=APO.phi,sp=v0.length(),la1=la*DEG,hit=false;
     for(let it=0;it<18;it++){v0.set(Math.sin(ph)*Math.cos(la1),Math.sin(la1),-Math.cos(ph)*Math.cos(la1)).multiplyScalar(sp);tr=simulate(p0,v0,spin,fopt);if(!tr.outD){sp*=1.06;continue;}
@@ -5900,7 +5904,7 @@ $('shbtn').addEventListener('click',()=>{SHQ=!SHQ;if(SHQ&&!rim.castShadow)rim.ca
 shApply();
 resize();hud();
 const HEV=[];function hev(n){try{HEV.push([n,performance.now()]);if(HEV.length>14)HEV.shift();}catch(e){}} /* what the game was loading or building lately: written into the performance report beside every long frame */
-const DBG={corn:false,dtag:false,dadv:false,beat:false,tko:false,dive:'',hbp:false,pcut:false,fl:'',rob:false,pc:false,staunt:false,pod:false,trail:false,orbit:false,sat:false,drill:false,brawl:false,qte:false,mash:false,slide:false,pn:'',laser:false,lamp:false,mw:false,rev:false,stop:false,aerial:false,pdef:false,dbl:false,cam:false,admire:'',trip:false,fist:false,pop:false,loser:false}; // test hook: pin the camera to CAM_HOME/CAM_LOOK
+const DBG={slice:false,corn:false,dtag:false,dadv:false,beat:false,tko:false,dive:'',hbp:false,pcut:false,fl:'',rob:false,pc:false,staunt:false,pod:false,trail:false,orbit:false,sat:false,drill:false,brawl:false,qte:false,mash:false,slide:false,pn:'',laser:false,lamp:false,mw:false,rev:false,stop:false,aerial:false,pdef:false,dbl:false,cam:false,admire:'',trip:false,fist:false,pop:false,loser:false}; // test hook: pin the camera to CAM_HOME/CAM_LOOK
 window.__ret=()=>reticle.position;window.__fl=()=>fielders;window.__VB=VB;window.__glbMesh=glbMesh;window.__gpuq=GPUQ;window.__dugs=DUGS;window.__rk=ROCKET;window.__reticle=reticle;window.__tut=m=>tutShow(m);window.__cq={CQ,key:()=>cqKey()};window.__rocket=()=>{ROCKET.t=now;};window.__lk=LOCKFX;window.__pd={q:pdQ,tut:pdTut,drill:pdDrill,tap:pdTap,pick:pdPick,PD,start:pdStart};window.__lockfx=(x,z)=>{Object.assign(LOCKFX,{t:now,x,z,hr:true,pend:false,name:'R. RAZOR',fired:false});};window.__fly=()=>{FLY.t=now;};window.__jt=juiceTap;window.__sb=scoreboard;window.__sbd=()=>sbDraw(true);window.__sync=syncRunners;window.__lr=()=>landRing.visible+' at '+landRing.position.x.toFixed(0)+','+landRing.position.z.toFixed(0)+' scale '+landRing.scale.x.toFixed(1)+' geo '+landRing.geometry.type+' rot '+landRing.rotation.x.toFixed(2)+' op '+landRing.material.opacity.toFixed(2)+' par '+(landRing.parent&&landRing.parent.type)+' scr '+(()=>{const v=landRing.position.clone().project(camera);return v.x.toFixed(2)+','+v.y.toFixed(2)+','+v.z.toFixed(3);})()+' y '+landRing.position.y;window.__pop=pop;window.__bdg=id=>{delete bdgGot[id];if(S.bdgGame)delete S.bdgGame[id];badge(id);pop('GONE!','512 FT · +1 RUN','hot',true);};window.__lu=LINEUP;window.__bp=k=>BULLPEN[k];window.__mm={pitcherModel,crowdFx,setE:v=>{crowdE=v;crowdShow=v;},GLOVE,renderer,scene,LODM,camera,zapStart,acState:()=>AC?(zoneLP?"lp="+Math.round(zoneLP.frequency.value)+" ":"")+AC.state+" t="+AC.currentTime.toFixed(1)+" real="+crowdReal+" roar="+(roarG?roarG.gain.value.toFixed(2)+(roarTop?"T":""):"off")+" bed="+crowdGain.gain.value.toFixed(2):"none",roar,roarOff,boo,cheer,crowdRise,crowdDrop,S,aim,MX,DBG,landRingOn:()=>landRing.visible,hud,tutAnim,draw:()=>draw(),endGame,TROT,SFX,RUN,ballPos:()=>ball.position,ballVisible:()=>ball.visible,fielders,toReady,CAM_HOME,CAM_LOOK,now:()=>now,simulate,judge,get pitch(){return pitch;},get flight(){return flight;},lastSwing:()=>{const t=swing&&swing.type;swing=null;return t;},lastSwingTurbo:()=>!!(swing&&swing.turbo),doSwing,newGame,V3,
   sim:(dt)=>{hitstop=0;now+=dt;step(dt);},
   step:(n,dt=1/60)=>{for(let i=0;i<n;i++){if(hitstop>0)hitstop=0;now+=dt;step(dt);}updateCamera(dt);draw();}};
