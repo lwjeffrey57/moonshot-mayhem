@@ -1029,7 +1029,7 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 825</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 826</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -3760,7 +3760,7 @@ function stealTick(){const C=S.stealCut;if(!C)return;const e=now-C.t;if(e<0)retu
   if(C.R)C.R.fig.root.visible=false; /* once the picture is on the catcher the runner is out of it: the next time he is seen is the play at the bag */const u=clamp((e-.5)/.6,0,1);if(e>.5){ball.visible=true;ball.scale.setScalar(1.3);ball.position.set(lerp(0,C.bx,u),1.7+Math.sin(u*PI)*1.6,lerp(1.2,C.bz,u));}
   if(e>=1.12){S.stealCut=null;if(C.R){C.R.s=C.from;C.R.target=C.from;}ball.visible=false;ball.scale.setScalar(1);qteStart(C.k,true);}}
 function goHide(){if(S.goK){S.goK=null;}$('gobtn').classList.remove('on');$('gostay').classList.remove('on');$('hud').classList.remove('goq');}
-function goStay(){if(!S.goK||S.state!=='result')return;goHide();S.t=Math.min(S.t,now-readyDur+.35);buzz(15);tone('triangle',520,390,.1,.25);} /* he holds up: the game moves straight on */
+function goStay(){if(!S.goK||S.state!=='result')return;goHide();if(LOCKFX.wait&&!LOCKFX.hr){LOCKFX.t0=now;S.t=now;readyDur=2.3;buzz(15);return;} /* HE JUST GOT LOCKED IN: holding the runner does not skip it. The fire goes up on his base now, and then the game moves on. */S.t=Math.min(S.t,now-readyDur+.35);buzz(15);tone('triangle',520,390,.1,.25);} /* he holds up: the game moves straight on */
 function goTap(){if(!S.goK||S.state!=='result')return;GD.tap++;goDiag();const k=S.goK;goHide();S.next=()=>qteStart(k,true);S.t=now-readyDur+.2;buzz([20,30,60]);tone('triangle',660,990,.12,.3);}
 function qteStart(kind,noPA){QT.noPA=!!noPA;goHide();try{if(PD.on){$('pd').style.visibility='hidden';$('pdring').style.display='none';PD.ringT=0;}}catch(e){} /* (none of the pitching controls show during a play at the bag) */{const e=$('bdg');if(e.classList.contains('go')){e.classList.remove('go');if(bdgCur&&!bdgCur.re){bdgCur.re=1;bdgCur.old=1;bdgQ.unshift(bdgCur);}bdgCur=null;}} /* a plate that is up when the event starts is taken down and comes back afterwards */const D=QT.D=kind==='dp'?1:clamp(S.goD||1,.55,1.6);S.goD=0;const M=QTE_MOVES[kind];QT.nm=M.def&&M.name==='THROW HIM OUT!'&&Math.random()<.5?'TAG HIM OUT!':''; /* the plays at a bag are called either way, turn and turn about */const Bp=M.base?[BASES[M.base][0],BASES[M.base][1]]:[0,0],u=M.u;
   S.state='qte';S.t=now;S.qteN=(S.qteN||0)+1;QT.headT=/steal/.test(kind)?.02:1.15; /* a steal has already shown him breaking: straight to the play at the bag */Object.assign(QT,{ph:'heads',tp:now,kind,M,code:D<.85?M.code.slice(0,-2):M.code /* a good bet is a shorter code */,i:0,mash:!!M.mash||(!M.arrows&&(DBG.mash||(qteSeen&&Math.random()<.35))),fill:0,lt:0,lim:(.38*(D<.85?M.code.length-2:M.code.length)+1.0)/Math.pow(D,.8)+(qteSeen?0:1.2), /* the clock: enough to punch the whole code in at a brisk pace with room for one slip, and no more */ok:false,bx:Bp[0],bz:Bp[1],ux:u[0],uz:u[1],ball:null,blow:0,fk:0});
@@ -4568,7 +4568,7 @@ function doSwing(type){
   if(S.state==='walkup'){if(now-S.t<.35)return; /* a walk-up cannot be skipped in its first third of a second (it was a second and a half, which felt like the tap was being ignored): a thumb already resting on the buttons was skipping them before they were ever seen */S.t=Math.min(S.t,now-WALK.dur);return;} // skip the intro
   if(flight&&flight.admire&&!flight.done){flight.A=Math.min(flight.A,now-flight.t0);return;} // cut to the ball
   if(flight&&!flight.done&&!flight.pd&&S.state==='flight'&&flight.play&&flight.play.type==='hr'){const tf=now-flight.t0;if(tf>.45){ /* ANY homer, any camera (the chase, the orbit shots, the saucer): a tap ends it there and then */if(flight.apollo&&!flight.apoDone){flight.apoDone=true;try{badge('eagle');}catch(e){}}flight.play.endT=Math.min(flight.play.endT,tf+.05);}return;} /* a tap cuts the chase camera short (nothing on screen says so: it is there for the player who has seen enough) */
-  if(S.state==='celebrate'){if(now-S.t>.25)S.t=now-readyDur;return;} /* (and the celebration at the plate) */
+  if(S.state==='celebrate'){if(LOCKFX.hr&&(LOCKFX.pend||LOCKFX.cel)&&now-S.t<2.7)return; /* (his Locked In moment at the plate is short and is not skipped by the tap that cut the homer shot short) */if(now-S.t>.25)S.t=now-readyDur;return;} /* (and the celebration at the plate) */
   if(swing)return;
   // between pitches the buttons still swing the bat: a practice cut, no cost, so the first tap always teaches what the button does
   if(S.state==='ready'||(S.state==='windup'&&now-windupT0<=.55)){swing={t0:now,type,turbo:false,done:false,miss:false,practice:true};SND.whoosh();return;}
