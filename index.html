@@ -826,6 +826,15 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
 #tut.s2 .lc{animation:tutlB 4.4s linear infinite}#tut.s2 .lp{animation:tutlA 4.4s linear infinite}
 @keyframes tutlA{0%,9%{opacity:0}12%,44%{opacity:1}48%,100%{opacity:0}}@keyframes tutlB{0%,50%{opacity:0}54%,92%{opacity:1}95%,100%{opacity:0}}
 #hud.pdj #heat{visibility:hidden}
+/* JUICE PITCHES ARE ON FIRE, OVERDRIVE PITCHES BURN BLUE. Every Juice key flickers with flame; the picked one is still the biggest and brightest (its ring and a taller flame), and goes back to the ordinary flicker the moment another is picked. */
+@keyframes pjf{from{box-shadow:inset 0 0 0 2px #05060f,0 -3px 8px 2px rgba(255,150,30,.85),0 -9px 16px 4px rgba(255,70,10,.5)}to{box-shadow:inset 0 0 0 2px #05060f,0 -6px 12px 4px rgba(255,200,60,.95),0 -15px 24px 8px rgba(255,80,10,.7)}}
+@keyframes pjfS{from{box-shadow:inset 0 0 0 2px #05060f,0 0 0 3px #05060f,0 0 0 7px #ff8a1e,0 -8px 18px 8px rgba(255,120,20,.8)}to{box-shadow:inset 0 0 0 2px #05060f,0 0 0 3px #05060f,0 0 0 10px #ffd23b,0 -16px 34px 16px rgba(255,90,10,1)}}
+@keyframes pjb{from{box-shadow:inset 0 0 0 2px #05060f,0 -3px 8px 2px rgba(90,190,255,.85),0 -9px 16px 4px rgba(30,90,255,.5)}to{box-shadow:inset 0 0 0 2px #05060f,0 -6px 12px 4px rgba(170,230,255,.95),0 -15px 24px 8px rgba(40,110,255,.75)}}
+@keyframes pjbS{from{box-shadow:inset 0 0 0 2px #05060f,0 0 0 3px #05060f,0 0 0 7px #4fc3ff,0 -8px 18px 8px rgba(60,150,255,.8)}to{box-shadow:inset 0 0 0 2px #05060f,0 0 0 3px #05060f,0 0 0 10px #c8f0ff,0 -16px 34px 16px rgba(50,120,255,1)}}
+#pdbtns.jz button:not(.on){animation:pjf .38s ease-in-out infinite alternate}#pdbtns.jz button.on{animation:pjfS .38s ease-in-out infinite alternate}#pdbtns.jz.odf button:not(.on){animation-name:pjb}#pdbtns.jz.odf button.on{animation-name:pjbS}
+#hud:is(.mob,.pdw) #pd:not(.gtm) #pdbtns.jz button:not(.on){animation:pjf .38s ease-in-out infinite alternate!important;filter:saturate(.95) brightness(.88);opacity:.96}#hud:is(.mob,.pdw) #pd:not(.gtm) #pdbtns.jz button.on{animation:pjfS .38s ease-in-out infinite alternate!important}
+#hud:is(.mob,.pdw) #pd:not(.gtm) #pdbtns.jz.odf button:not(.on){animation-name:pjb!important}#hud:is(.mob,.pdw) #pd:not(.gtm) #pdbtns.jz.odf button.on{animation-name:pjbS!important}#hud:is(.mob,.pdw) #pd #pdbtns.jz.odf .ab{color:#6fb0ff}
+
 #hud.tut2 #apad{z-index:31;pointer-events:none}
 /* step 2: the two swing buttons stay lit under the dimming, each labelled with its part of the bat */
 #hud.tut2 #touch{z-index:31;pointer-events:none}#hud.tut2 #touch .jc{opacity:.15;animation:none}
@@ -1126,7 +1135,7 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
     </div>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 884</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 885</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -1398,7 +1407,7 @@ const JP=(n,T,v,c,b,od)=>({n,i:PITCHES.findIndex(q=>q.n===n),T,v,c,b,jz:true,od:
 const PAB={FASTBALL:'FB',CURVEBALL:'CB',SLIDER:'SL',CHANGEUP:'CH',METEOR:'MTR',RISER:'RSR','ZIG-ZAG':'ZIG',CORKSCREW:'CRK',BOOMERANG:'BMR',KNUCKLER:'KNK',SUPERNOVA:'NOVA','GHOST BALL':'GST','BLACK HOLE':'HOLE'};
 function pdList(){return (S.over&&S.overOn)?jpl():PD.jz&&S.juice>=.245?jpl().slice(0,4):PPITCH;} /* FOUR Juice pitches for a bar of Juice; the whole set is saved for pitcher Overdrive */
 function pdQ(){const L=pdList(),q=L[clamp(PD.pk|0,0,L.length-1)];if(PD3&&q&&!q._t3){q._t3=1;q.T*=PW_T;}return q;}
-function pdBtns(){const L=pdList(),B=$('pdbtns'),sig=L.map(q=>q.n).join();if(B._sig===sig){[...B.children].forEach((b,k)=>b.classList.toggle('on',k===PD.pk&&pdSel()));return;}B._sig=sig;B.innerHTML='';B.classList.toggle('jz',L!==PPITCH);if(PD.pk>=L.length)PD.pk=0;
+function pdBtns(){const L=pdList(),B=$('pdbtns');B.classList.toggle('odf',!!(S.over&&S.overOn));const sig=L.map(q=>q.n).join();if(B._sig===sig){[...B.children].forEach((b,k)=>b.classList.toggle('on',k===PD.pk&&pdSel()));return;}B._sig=sig;B.innerHTML='';B.classList.toggle('jz',L!==PPITCH);if(PD.pk>=L.length)PD.pk=0;
   L.forEach((q,i)=>{const b=document.createElement('button');b.type='button';b.innerHTML=pdBallSvg(q)+'<span class="ab">'+(PAB[q.n]||q.n.slice(0,3))+'<em>'+pdMph(q)+'</em></span><span class="fl">'+q.n+'<small><i>VELO<b>'+q.v+'</b></i><i>CTRL<b>'+q.c+'</b></i><i>BRK<b>'+q.b+'</b></i></small></span>';if(q.od)b.classList.add('odp');b.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();if(PD.ph===1){if(e!==pdEv)pdTap();return;}if(PD.ph!==0)return;pdPick(i);pdUI();});B.appendChild(b);}); /* on a phone a pitch button is also the throw button, the way CONTACT and POWER are the swing: tap the pitch to start it, tap again to release */
   if(PW){const jz=L!==PPITCH,n=L.length;B.classList.toggle('many',n>4);[...B.children].forEach((b,k)=>{const a=((n>4?k*21:36+k*42))*DEG,R=n>4?120:100; /* clear air between the dial and the keys, even when one is pressed, picked or pulsing */b.style.left=(112+Math.sin(a)*R)+'px';b.style.top=(112-Math.cos(a)*R)+'px';});} /* round the dial, clockwise from the top right */
   [...B.children].forEach((b,k)=>b.classList.toggle('on',k===PD.pk&&pdSel()));}
@@ -3622,7 +3631,7 @@ function gradeMod(v){const t=(v-.85)/.32,B=[0,.2,.36,.52,.72,.9,1.04],i=t>=.9?5:
    on: the perk has a real effect in the game today. The two marked soon are shown on the card but do nothing yet. */
 const PERKS={RAZOR:{n:'PROFESSIONAL HITTER',d:'With two strikes his contact ring is 15% bigger.',c:'With two strikes the ball comes off 5% softer.',on:1},
   VREL:{n:'LOW BALL HITTER',d:'Sweet spot 18% bigger on pitches in the bottom third.',c:'12% smaller on pitches in the top third.',on:1},
-  XENON:{n:'TABLE SETTER',d:'Takes the extra base on singles and steals for free.',c:'No home run bonus.',on:0},
+  XENON:{n:'BAD-BALL HITTER',d:'On pitches out of the zone his contact ring and power core are 22% bigger: he squares up balls other hitters cannot reach.',c:'Nothing on strikes.',on:1},
   BRICKHOUSE:{n:'LIGHT TOWER POWER',d:'Squared-up balls carry about 8% further.',c:'Cannot steal or stretch a hit (not enforced yet).',on:1},
   DRAAK:{n:'BAD INTENTIONS',d:'After he is hit by a pitch, his next swing is at Overdrive power.',c:'One swing only.',on:1},
   VANTA:{n:'OPPO TACO',d:'Balls hit the other way carry further.',c:'Pulled balls lose a little distance.',on:1},
@@ -4451,7 +4460,7 @@ function tryContact(){flight_pop=false;if(pitch.hbp){swing.done=true;swing.miss=
   const odOn=!!(S.over&&S.overOn),ez=(easyAB()?1.3:1)*DFX().ring,JT=odOn?1.85:tb?1.35:1,SK=pitch.P.sp?(odOn?.8:.52):1, /* Overdrive: the timing window is nearly twice as wide, and a Juice pitch takes much less of it away */win=.118*(pw?.85:1.2)*JT*ez*SK,n=dt/win;
   // chasing: how far outside the strike zone the pitch is (0 in the zone → 1 well off the plate)
   const offX=Math.max(ZONE.x0-pitch.tx,pitch.tx-ZONE.x1,0),offY=Math.max(ZONE.y0-pitch.ty,pitch.ty-ZONE.y1,0),chase=clamp(Math.hypot(offX,offY)/.16,0,1);
-  const R=.17*b.con*(pw?(tb?.8:.63):1.25)*(tb?(S.over&&S.overOn?(pw?1.85:1.55):1.2):1)*(1-.3*chase)*ez*(perkOn(b,'RAZOR')&&S.strikes===2?1.15:1)*(perkOn(b,'VREL')?(pitch.ty<.72?1.18:pitch.ty>.93?.88:1):1)*perk2(b).r; /* Overdrive: the power core is 85% bigger and the contact ring 55% (it used to be 85% too, and swallowed the whole strike zone); Juice alone is a fifth */ // the power core is 10% smaller without Juice; Juice gives the old size back, then its usual boost
+  const R=.17*b.con*(pw?(tb?.8:.63):1.25)*(tb?(S.over&&S.overOn?(pw?1.85:1.55):1.2):1)*(1-.3*chase)*ez*(perkOn(b,'RAZOR')&&S.strikes===2?1.15:1)*(perkOn(b,'VREL')?(pitch.ty<.72?1.18:pitch.ty>.93?.88:1):1)*perk2(b).r*(perkOn(b,'XENON')&&pitch&&!pitch.inZone?1.22:1); /* Overdrive: the power core is 85% bigger and the contact ring 55% (it used to be 85% too, and swallowed the whole strike zone); Juice alone is a fifth */ // the power core is 10% smaller without Juice; Juice gives the old size back, then its usual boost
   const d=Math.hypot(aim.x-pitch.tx,aim.y-pitch.ty);
   // where the barrel was relative to the ball, in sweet-spot radii: u>0 = swung under it, e>0 = ball out toward the end of the bat
   const cu=(pitch.ty-aim.y)/R,ce=(pitch.tx-aim.x)/R*(MX.lefty?-1:1),cr=Math.hypot(cu,ce);
