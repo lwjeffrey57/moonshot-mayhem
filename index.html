@@ -2079,7 +2079,7 @@ const glowTex=tex(64,64,(g)=>{const r=g.createRadialGradient(32,32,0,32,32,32);r
 const WALL_H=3.4,DUGS=[];
 // THE PORCH: from the left-field pole round to left-centre the wall is 30 feet high (9.1 m). A ball has to clear all of it to be a home
 // run; anything lower clangs off it and stays in play. THE COVE: a stretch of right field where the seats give way to an open lava vent.
-const BIG_H=11.6, /* 38 feet */BIG_PHI=-.48,BIG_I=7, /* (it ends at 27.5 degrees, a little short of the 379 marker) */ARC_H=8.6,ARC_W=19, /* THE ARCADE DECK: the top of the right-field wall is a deep standing-room deck (it was a seven-metre walkway). A ball that just clears the wall comes down among the fans on it; only a longer one carries the back rail into the lava. */wallH=phi=>phi<BIG_PHI?BIG_H:phi>.1765&&phi<=PI/4+.001?ARC_H:WALL_H,COVE_A0=.1745,COVE_A1=.7854,CV0=22,CV1=36,COVE={};
+const BIG_H=11.6, /* 38 feet */BIG_PHI=-.48,BIG_I=7, /* (it ends at 27.5 degrees, a little short of the 379 marker) */ARC_H=8.6,ARC_W=19,PAT_D=6.5,PAT_H=2.3, /* (the first PAT_D metres behind the wall are a short bank of seats climbing PAT_H; from there to the back rail it is an open patio) */ /* THE ARCADE DECK: the top of the right-field wall is a deep standing-room deck (it was a seven-metre walkway). A ball that just clears the wall comes down among the fans on it; only a longer one carries the back rail into the lava. */wallH=phi=>phi<BIG_PHI?BIG_H:phi>.1765&&phi<=PI/4+.001?ARC_H:WALL_H,COVE_A0=.1745,COVE_A1=.7854,CV0=22,CV1=36,COVE={};
 // THE PORCH: in left field the Porch also juts IN toward the plate by seven metres (a short porch, 302 ft down the line), with the seats
 // sitting right on top of it. It steps back out to the normal fence through an angled jog in left-centre.
 const PORCH=0,PORCH2=0, /* (the jutting porch was tried and taken out: left field is the plain tall Porch on the normal fence line. Set these to 7 and 15 to bring it back.) */fenceR=phi=>Math.abs(phi)<=PI/4?99+23*Math.cos(2*phi)-lerp(PORCH,PORCH2,clamp((phi+PI/4)/(BIG_PHI+PI/4),0,1))*clamp((BIG_PHI-phi)/.0436,0,1):99; /* the porch face runs nearly straight across left field (7 m in at the pole, 15 m in by left-centre) and then jogs sharply back out */
@@ -2386,18 +2386,28 @@ gl_FragColor=vec4(col,1.0);
     const hullA=basic({color:0x2a1410}),deck=tex(64,64,(g,w,h)=>{g.fillStyle='#8a8f9e';g.fillRect(0,0,w,h);g.strokeStyle='rgba(30,34,50,.5)';g.lineWidth=2;g.strokeRect(0,0,w,h);g.fillStyle='rgba(255,255,255,.12)';g.fillRect(2,2,w-4,10);},[1,1]);deck.repeat.set(1/2.4,3);
     scene.add(new T.Mesh(ribbon(A,B,1),basic({map:at})));scene.add(new T.Mesh(ribbon(B,B2,1),basic({map:deck})));
     /* the back of the porch is a finished wall too: the same brick and arches as the front (drawn the right way round), from the top terrace down to the lava */
-    {const at2=at.clone();at2.repeat.set(-1/L,1);at2.needsUpdate=true;COVE.at2=at2;scene.add(new T.Mesh(ribbon(C2,B2.map(q=>q.clone().setY(ARC_H+1.2)),1),basic({map:at2})));}
+    {const at2=at.clone();at2.repeat.set(-1/L,1);at2.needsUpdate=true;COVE.at2=at2;scene.add(new T.Mesh(ribbon(C2,B2.map(q=>q.clone().setY(ARC_H+PAT_H)),1),basic({map:at2})));}
     scene.add(new T.Mesh(ribbon([A[0].clone().setY(WALL_H),B[0]],[C2[0].clone().setY(WALL_H),B2[0]]),hullA));
-    const rail=new T.MeshBasicMaterial({color:0xe8ecff,side:T.DoubleSide,fog:false}),rl=(arr,up)=>{const Y=ARC_H+(up||0);scene.add(new T.Mesh(ribbon(arr.map(q=>q.clone().setY(Y+1.15)),arr.map(q=>q.clone().setY(Y+1.0))),rail));scene.add(new T.Mesh(ribbon(arr.map(q=>q.clone().setY(Y+.62)),arr.map(q=>q.clone().setY(Y+.54))),rail));arr.forEach(q=>{const m=new T.Mesh(new T.BoxGeometry(.12,1.1,.12),rail);m.position.copy(q).setY(Y+.55);scene.add(m);});};rl(B);rl(B2,1.2); /* (the back rail stands on the top terrace) */
-    /* STANDING ROOM ON THE PORCH: two low terraces step up toward the back, with a row of fans on each level (three rows where there was one strip at the rail),
-       and a couple of roofed bars at the back so it reads as somewhere people go. All flat panels and one small material: nothing here is expensive to draw. */
-    {const along=(o,y)=>{const a=[];for(let i=CV0;i<=CV1;i++){const phi=lerp(-PI/4,PI/4,i/N),r=fenceR(phi);a.push(pol(r+o,phi,y));}return a;},stepM=basic({color:0x3a2a26}),topM=basic({map:deck});
-      [[6.2,.6],[12.2,1.2]].forEach(([o,y])=>{scene.add(new T.Mesh(ribbon(along(o,ARC_H+y-.6),along(o,ARC_H+y)),stepM));scene.add(new T.Mesh(ribbon(along(o,ARC_H+y),along(ARC_W,ARC_H+y),1),topM));});
-      const cmat=basic({map:crowd,alphaTest:.05});[[1.5,0],[3.9,0],[7.4,.6],[10,.6],[13.4,1.2],[18.2,1.2]].forEach(([o,y],k)=>{const g=ribbon(along(o,ARC_H+y+.05),along(o,ARC_H+y+2.25),1),uv=g.attributes.uv;for(let j=0;j<uv.count;j++){uv.setY(j,uv.getY(j)*.2+.1);uv.setX(j,uv.getX(j)+k*.37);}scene.add(new T.Mesh(g,cmat));});
+    const rail=new T.MeshBasicMaterial({color:0xe8ecff,side:T.DoubleSide,fog:false}),rl=(arr,up)=>{const Y=ARC_H+(up||0);scene.add(new T.Mesh(ribbon(arr.map(q=>q.clone().setY(Y+1.15)),arr.map(q=>q.clone().setY(Y+1.0))),rail));scene.add(new T.Mesh(ribbon(arr.map(q=>q.clone().setY(Y+.62)),arr.map(q=>q.clone().setY(Y+.54))),rail));arr.forEach(q=>{const m=new T.Mesh(new T.BoxGeometry(.12,1.1,.12),rail);m.position.copy(q).setY(Y+.55);scene.add(m);});};rl(B);rl(B2,PAT_H); /* (the back rail stands on the top terrace) */
+    /* RIGHT FIELD, THE BALLPARK-BY-THE-BAY WAY: a few rows of seats right behind the wall, then an open PATIO out to the back rail over the lava.
+       A ball that reaches the patio BOUNCES on it, and a good hop carries the rail into the cove. Nobody on the patio is a flat cut-out (those look like
+       sheets of paper when a home-run camera goes over them): the seats are a raked bank like every other stand, and the people walking about are little
+       solid figures, all of them one mesh. */
+    {const along=(o,y)=>{const a=[];for(let i=CV0;i<=CV1;i++){const phi=lerp(-PI/4,PI/4,i/N),r=fenceR(phi);a.push(pol(r+o,phi,y));}return a;},PY=ARC_H+PAT_H;COVE.along=along;
+      scene.add(new T.Mesh(ribbon(along(PAT_D,PY),along(ARC_W,PY),1),basic({map:deck})));rl(along(PAT_D,0),PAT_H);
+      const P=[],Cc=[],box=(cx,cy,cz,w,h,d,ry,col)=>{const c=Math.cos(ry),sn=Math.sin(ry),V=(x,y,z)=>[cx+x*c+z*sn,cy+y,cz-x*sn+z*c],x=w/2,y=h/2,z=d/2,
+          F=[[[-x,y,-z],[-x,y,z],[x,y,z],[x,y,-z],1],[[-x,-y,z],[x,-y,z],[x,y,z],[-x,y,z],.82],[[x,-y,-z],[-x,-y,-z],[-x,y,-z],[x,y,-z],.7],[[x,-y,z],[x,-y,-z],[x,y,-z],[x,y,z],.6],[[-x,-y,-z],[-x,-y,z],[-x,y,z],[-x,y,-z],.6]];
+          F.forEach(f=>{[0,1,2,0,2,3].forEach(k=>{const q=V(...f[k]);P.push(q[0],q[1],q[2]);Cc.push(col[0]*f[4],col[1]*f[4],col[2]*f[4]);});});},
+        SH=[[.95,.32,.2],[.2,.5,.95],[.96,.8,.2],[.92,.92,.96],[.25,.75,.45],[1,.48,.12],[.6,.3,.85],[.1,.14,.4]],SK=[[.93,.74,.6],[.62,.42,.3],[.82,.6,.45],[.45,.3,.22]];
+      let sd=7;const rn=()=>{sd=(sd*16807)%2147483647;return sd/2147483647;};
+      for(let k=0;k<84;k++){const f=rn(),i=lerp(CV0+.3,CV1-.3,f),phi=lerp(-PI/4,PI/4,i/N),r=fenceR(phi),zone=rn(),o=zone<.34?ARC_W-rn()*1.3-.5:zone<.56?PAT_D+.6+rn()*1.1:PAT_D+2+rn()*(ARC_W-PAT_D-4),q=pol(r+o,phi,PY),ry=-phi+(zone<.34?PI:0)+(rn()-.5)*(zone<.56?.5:5),h=1.02+rn()*.22;
+        box(q.x,PY+h/2,q.z,.5,h,.3,ry,SH[(rn()*SH.length)|0]);box(q.x,PY+h+.16,q.z,.27,.27,.27,ry,SK[(rn()*SK.length)|0]);}
+      for(let k=0;k<9;k++){const i=lerp(CV0+.5,CV1-.5,(k+.5)/9),phi=lerp(-PI/4,PI/4,i/N),r=fenceR(phi),q=pol(r+PAT_D+4.2+(k%2)*3.4,phi,PY);box(q.x,PY+.52,q.z,.12,1.04,.12,0,[.85,.87,.95]);box(q.x,PY+1.07,q.z,.95,.07,.95,-phi,[.96,.5,.14]);} /* high-top tables */
+      {const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(P,3));g.setAttribute('color',new T.Float32BufferAttribute(Cc,3));scene.add(new T.Mesh(g,new T.MeshBasicMaterial({vertexColors:true})));}
       const roofM=new T.MeshBasicMaterial({color:0xff7a1e,fog:false}),barM=new T.MeshBasicMaterial({color:0x14183a,fog:false}),postM=new T.MeshBasicMaterial({color:0xe8ecff,fog:false}),lampM=new T.MeshBasicMaterial({color:0xffe9b0,fog:false});
-      [.27,.72].forEach(f=>{const i=lerp(CV0,CV1,f),phi=lerp(-PI/4,PI/4,i/N),r=fenceR(phi),c=pol(r+16.3,phi,ARC_H+1.2),G=new T.Group();G.position.copy(c);G.rotation.y=-phi;
+      [.27,.72].forEach(f=>{const i=lerp(CV0,CV1,f),phi=lerp(-PI/4,PI/4,i/N),r=fenceR(phi),c=pol(r+11.5,phi,PY),G=new T.Group();G.position.copy(c);G.rotation.y=-phi;
         const bx=(w,h,d,m,x,y,z)=>{const q=new T.Mesh(new T.BoxGeometry(w,h,d),m);q.position.set(x,y,z);G.add(q);};
-        bx(6.4,1.15,1.5,barM,0,.58,0);bx(6.6,.12,1.9,postM,0,1.2,0);bx(7.6,.28,3.6,roofM,0,3.2,0);bx(7.2,.1,3.2,lampM,0,3.03,0);[-3.4,3.4].forEach(x=>[-1.5,1.5].forEach(z=>bx(.16,3.1,.16,postM,x,1.55,z)));scene.add(G);});} /* the crowd on the porch */
+        bx(6.4,1.15,1.5,barM,0,.58,0);bx(6.6,.12,1.9,postM,0,1.2,0);bx(7.6,.28,3.6,roofM,0,3.2,0);bx(7.2,.1,3.2,lampM,0,3.03,0);[-3.4,3.4].forEach(x=>[-1.5,1.5].forEach(z=>bx(.16,3.1,.16,postM,x,1.55,z)));scene.add(G);});} /* the patio */
     // the bay
     const lq=tex(256,256,(g,w,h)=>{g.fillStyle='#e01c08';g.fillRect(0,0,w,h);
       for(let i=0;i<26;i++){const x=rand(0,w),y=rand(0,h),rr=rand(18,46);for(const ox of [-w,0,w])for(const oy of [-h,0,h]){const rg=g.createRadialGradient(x+ox,y+oy,0,x+ox,y+oy,rr);rg.addColorStop(0,'rgba(255,190,90,.85)');rg.addColorStop(.4,'rgba(255,80,20,.55)');rg.addColorStop(1,'rgba(230,30,8,0)');g.fillStyle=rg;g.fillRect(x+ox-rr,y+oy-rr,rr*2,rr*2);}}
@@ -2642,6 +2652,7 @@ vec3 old=texture2D(rk,vU).rgb;gl_FragColor=vec4(mix(old,moon,mK)*tint,1.0);}`}):
   [fans,fansW].forEach(t=>{t.wrapS=t.wrapT=T.RepeatWrapping;t.repeat.set(1/9.6,1.92);t.anisotropy=ANISO;});
   const fmW=basic({map:fansW}); /* (behind the plate the sections are the wedges themselves, with an aisle on every seam, so that picture has no aisles of its own) */
   const fm=basic({map:fans});EYE.fm=fm;EYE.fans=fans;
+  try{if(COVE.along){const ft=fans.clone();ft.repeat.set(1/9.6,.52);ft.needsUpdate=true;scene.add(new T.Mesh(ribbon(COVE.along(.55,ARC_H+.25),COVE.along(PAT_D,ARC_H+PAT_H),1),basic({map:ft})));scene.add(new T.Mesh(ribbon(COVE.along(-.09,ARC_H+.02),COVE.along(.55,ARC_H+.25)),basic({color:0x2a2f52})));}}catch(e){} /* the few rows of seats on top of the right-field wall: the same raked bank of fans as every other stand */
   // the backstop is an arc behind the plate (BK_A metres back at its deepest) that runs smoothly into the two foul-side walls
   const BK_A=17,BK_R=(26-BK_A)/(Math.SQRT2-1),BK_Z=BK_A-BK_R;
   // foul-side walls and stands
@@ -4497,7 +4508,7 @@ const G=9.8,DRAG=.0042;
 // measured across to x, and a little grace because the ball is drawn larger than life at distance.
 const LINE_TOL=.3;
 function simulate(p0,v0,spin,opt){spin=spin||{side:0,lift:0};opt=opt||{};const GG=G*(opt.g||1);let tag='',hrY=0,poleT=0,nb=0,hopT=0; // opt.chop: first bounce is a big one; opt.g: a low-gravity pocket; tag: anything unusual that happened to it
-  const p=p0.clone(),v=v0.clone(),pts=[];let t=0,land=null,hr=false,hrT=0,wall=false,wallT=0,foul=false,dist=0,grd=false,eyeT=0,seatT=0,seatB=0,outT=0,outD=0,foulT,bagPast=false,foulOver=false;const dt=1/120;
+  const p=p0.clone(),v=v0.clone(),pts=[];let t=0,land=null,hr=false,hrT=0,wall=false,wallT=0,foul=false,dist=0,grd=false,eyeT=0,seatT=0,seatB=0,patN=0,patOut=false,outT=0,outD=0,foulT,bagPast=false,foulOver=false;const dt=1/120;
   while(t<(outT?outT+7:hr?14:9)){
     const sp=v.length();v.multiplyScalar(1-DRAG*sp*dt);
     if(p.y>0||v.y>0)v.y-=GG*dt;
@@ -4528,9 +4539,10 @@ function simulate(p0,v0,spin,opt){spin=spin||{side:0,lift:0};opt=opt||{};const G
       if(d>1.3&&d<9&&p.y<hy){const nx=p.x/r,nz=p.z/r,n3x=-.897*nx,n3y=.443,n3z=-.897*nz,vn=v.x*n3x+v.y*n3y+v.z*n3z;
         if(vn<0){if(!eyeT){eyeT=t;const q=p.clone(),w=v.clone();let n=0;while(q.y>0&&n++<2000){const sp2=w.length();w.multiplyScalar(1-DRAG*sp2*dt);w.y-=G*dt;q.addScaledVector(w,dt);}dist=Math.hypot(q.x,q.z);} // distance is where it would have come down
           v.x-=1.62*vn*n3x;v.y-=1.62*vn*n3y;v.z-=1.62*vn*n3z;v.multiplyScalar(.8);p.y=hy+.03;}}} // comes off the panel up and back toward the field
-    if(seatB&&t-seatB>.85){pts.push({x:p.x,y:p.y,z:p.z,t});seatT=t;break;} /* (the hop is short: under a second, then it is somebody's souvenir) */
+    if(patN&&r-fr>ARC_W&&!patOut){if(p.y<ARC_H+PAT_H+1.1){const nx=p.x/r,nz=p.z/r,vr=v.x*nx+v.z*nz;if(vr>0){v.x-=1.45*vr*nx;v.z-=1.45*vr*nz;p.x-=nx*.3;p.z-=nz*.3;}}else patOut=true;} /* (the back rail) */
+    if(seatB&&!patN&&t-seatB>.85){pts.push({x:p.x,y:p.y,z:p.z,t});seatT=t;break;} /* (the hop is short: under a second, then it is somebody's souvenir) */
     if(hr||grd){const d=r-fr,deck=false; // it comes down among the fans: stopped at head height on the lower deck, or by the upper deck and its facade where there is one
-      const sy=phi>COVE_A0&&phi<COVE_A1?(d>ARC_W?.7:d>0?ARC_H+.9:0):d>34?0:d>1.5?WALL_H+.3+(d-1.5)*.667+.9:WALL_H+.2*Math.max(0,d)/1.5+.25; // beyond the back row there is nothing: it has left the ballpark and comes down on the Moon // the first metre and a half behind the wall is the ledge in front of row one: it stops there too
+      const inCv=phi>COVE_A0&&phi<COVE_A1,sy=inCv?(d>ARC_W?.7:d>PAT_D?ARC_H+PAT_H+.04:d>0?ARC_H+.25+Math.min(1,d/PAT_D)*(PAT_H-.25)+.9:0):d>34?0:d>1.5?WALL_H+.3+(d-1.5)*.667+.9:WALL_H+.2*Math.max(0,d)/1.5+.25; // beyond the back row there is nothing: it has left the ballpark and comes down on the Moon // the first metre and a half behind the wall is the ledge in front of row one: it stops there too
       if(p.y<=sy||d>300||(deck&&d>=30&&p.y>25&&p.y<=32+(d-30)*.667+.9)){
         // OUT OF THE STADIUM AND ONTO THE MOON: it is not swallowed up where it lands. It comes down on the regolith, bounces (long, lazy,
         // low-gravity bounces) and rolls to a stop, and that is where its flight ends.
@@ -4538,6 +4550,8 @@ function simulate(p0,v0,spin,opt){spin=spin||{side:0,lift:0};opt=opt||{};const G
           if(v.y<-1.4){v.y*=-.46;v.x*=.7;v.z*=.7;}else{v.y=0;const h=Math.hypot(v.x,v.z);if(h<.9){pts.push({x:p.x,y:0,z:p.z,t});break;}const k=Math.max(0,h-6.5*dt)/h;v.x*=k;v.z*=k;}
           pts.push({x:p.x,y:p.y,z:p.z,t});continue;}
         /* INTO THE SEATS, AND SEEN TO BE: it does not vanish the instant it reaches the crowd. It lands, kicks up off the seats (or the deck) in one short hop and THEN somebody has it. (Not the lava: that swallows it whole.) */
+        /* THE PATIO IS A FLOOR, NOT A CROWD: the ball bounces on it (up to four times). A hop that clears the back rail goes on down into the lava and is a cove shot; one that does not comes off the rail and dies on the deck. */
+        if(inCv&&d>PAT_D&&d<=ARC_W){if(!seatB)seatB=t;patN++;p.y=sy+.02;if(patN<=4&&Math.abs(v.y)>1.3){v.y=Math.abs(v.y)*.3;v.x*=.36;v.z*=.36;pts.push({x:p.x,y:p.y,z:p.z,t});continue;}pts.push({x:p.x,y:p.y,z:p.z,t});seatT=t;break;}
         if(!seatB&&sy>1.2&&d<=300){seatB=t;p.y=sy+.03;v.y=Math.min(6.5,Math.abs(v.y)*.36+2.4);v.x*=.16;v.z*=.16;pts.push({x:p.x,y:p.y,z:p.z,t});continue;}
         if(seatB&&t-seatB<.12){pts.push({x:p.x,y:p.y,z:p.z,t});continue;}
         pts.push({x:p.x,y:p.y,z:p.z,t});seatT=t;break;}}
