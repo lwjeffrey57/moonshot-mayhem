@@ -1212,7 +1212,7 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
     </div>
     <div id="ldbar" data-t="LOADING" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 925</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 926</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -1328,6 +1328,10 @@ const canvas=$('c');
 const renderer=new T.WebGLRenderer({canvas,antialias:true,powerPreference:'high-performance'});
 let composer=null,fxaa=null;
 const ANISO=renderer.capabilities.getMaxAnisotropy();
+/* THE REAL SCENERY, EVERY TIME: the Earth, the Moon's surface and ridges, and the sky each start as a painted stand-in and swap to the real picture when it arrives.
+   A download that failed used to leave the stand-in up for the whole session (only the Earth was tried again). Now every one is retried until it lands, and the
+   loading screen holds for them (they are small and come down alongside the players, so that normally adds nothing; it never waits more than SC_MAX for them). */
+const SC={need:0,got:0},SC_MAX=12000;function scLoad(url,ok,gate){if(gate!==false)SC.need++;let tries=0;const go=()=>new T.TextureLoader().load(url+(tries?'?r='+tries:''),t=>{if(gate!==false)SC.got++;try{ok(t);}catch(e){}},undefined,()=>{if(++tries<40)setTimeout(go,Math.min(1500*tries,8000));});go();}
 // Frame-rate savers for the character model, with nothing taken out of the game:
 // weld(): corners that are exactly identical become one shared vertex (same picture, about a quarter of the vertices to animate).
 // liteGeo(): a low-detail copy, used only while a player is small on screen or out of view; close-ups always get the full model.
@@ -2045,7 +2049,7 @@ const shBig=new T.Mesh(new T.PlaneGeometry(280,230),new T.ShadowMaterial({opacit
   // The real sky: a photograph of the whole Milky Way, all the way round (ESO / S. Brunier). It replaces the painted one when it arrives,
   // turned so the galaxy climbs out of the horizon and arcs over the outfield.
   /* fetched only once the players are in (or after eight seconds): at start-up it would be competing with them for the connection */
-  const skyGo=()=>new T.TextureLoader().load(SKW>2048?'sky.jpg':'sky_m.jpg',tx=>{tx.anisotropy=ANISO;m.material.map=tx;m.material.color.setScalar(.72); /* held under the glow threshold, so the bright heart of the galaxy doesn't flare like a floodlight */m.material.needsUpdate=true;m.rotation.set(SKY_ROT[0],SKY_ROT[1],SKY_ROT[2]);t.dispose();},undefined,()=>{});
+  const skyGo=()=>scLoad(SKW>2048?'sky.jpg':'sky_m.jpg',tx=>{tx.anisotropy=ANISO;m.material.map=tx;m.material.color.setScalar(.72); /* held under the glow threshold, so the bright heart of the galaxy doesn't flare like a floodlight */m.material.needsUpdate=true;m.rotation.set(SKY_ROT[0],SKY_ROT[1],SKY_ROT[2]);t.dispose();});
   {const t0=performance.now(),iv=setInterval(()=>{let rdy=false;try{rdy=!!(MX&&MX.ready);}catch(e){}if(rdy||performance.now()-t0>8000){clearInterval(iv);skyGo();}},400);}
   // The stars are real points of light, not paint on the backdrop: each is drawn at its own fixed size on screen, so they stay pin-sharp on any display.
   {const dot=tex(32,32,(g,w)=>{const r=g.createRadialGradient(w/2,w/2,0,w/2,w/2,w/2);r.addColorStop(0,'rgba(255,255,255,1)');r.addColorStop(.35,'rgba(255,255,255,.85)');r.addColorStop(1,'rgba(255,255,255,0)');g.fillStyle=r;g.fillRect(0,0,w,w);});
@@ -2066,7 +2070,7 @@ const shBig=new T.Mesh(new T.PlaneGeometry(280,230),new T.ShadowMaterial({opacit
     g.fillStyle='#fff';g.beginPath();g.ellipse(c,c-R*.95,R*.5,R*.12,0,0,PI*2);g.fill();g.beginPath();g.ellipse(c,c+R*.97,R*.45,R*.1,0,0,PI*2);g.fill();
     const sh=g.createRadialGradient(c-R*.55,c-R*.35,R*.5,c-R*.2,c-R*.1,R*1.5);sh.addColorStop(0,'rgba(0,0,10,0)');sh.addColorStop(.62,'rgba(0,0,10,.25)');sh.addColorStop(1,'rgba(0,0,10,.96)');g.fillStyle=sh;g.fillRect(0,0,w,h); // night side
     g.restore();});
-  {let tries=0;const go=()=>new T.TextureLoader().load('earth.png'+(tries?'?r='+tries:''),t=>{t.anisotropy=ANISO;earth.material.map=t;earth.material.needsUpdate=true;},undefined,()=>{if(++tries<40)setTimeout(go,Math.min(2500*tries,8000));});go();} /* tried again (up to five times) if the download fails: a dropped connection used to leave the painted stand-in Earth up for the whole session */ /* the real thing (the Apollo 17 'Blue Marble' photograph) replaces the painted Earth once it has loaded */
+  scLoad('earth.png',t=>{t.anisotropy=ANISO;earth.material.map=t;earth.material.needsUpdate=true;}); /* tried again (up to five times) if the download fails: a dropped connection used to leave the painted stand-in Earth up for the whole session */ /* the real thing (the Apollo 17 'Blue Marble' photograph) replaces the painted Earth once it has loaded */
   const earth=new T.Sprite(new T.SpriteMaterial({map:et,fog:false,transparent:true,depthWrite:false}));earth.position.set(150,372,-928);earth.scale.set(350,350,1);earth.renderOrder=-5;scene.add(earth);
 }
 
@@ -2239,7 +2243,7 @@ gl_FragColor=vec4(col,1.0);
   Object.assign(groundMat.uniforms,{});groundMat.uniforms.macro.value=macroT;groundMat.uniforms.maskT.value=maskT;groundMat.uniforms.gD.value=grassD;groundMat.uniforms.dD.value=dirtD;
   {const px=(r,g,b)=>{const t=new T.DataTexture(new Uint8Array([r,g,b,255]),1,1,T.RGBAFormat);t.needsUpdate=true;return t;};groundMat.uniforms.mD.value=px(125,125,125);groundMat.uniforms.mN.value=px(128,128,255);
     // the real moon-surface maps arrive a moment after the page: until both are in, the painted surface stands in
-    const L=new T.TextureLoader();let got=0;const done=()=>{if(++got===2)groundMat.uniforms.mK.value=1;},ld=(f,k)=>L.load(f,t=>{t.wrapS=t.wrapT=T.ClampToEdgeWrapping;t.anisotropy=ANISO;groundMat.uniforms[k].value=t;done();},undefined,()=>{});ld('moon_d.jpg','mD');ld('moon_n.jpg','mN');}
+    const L=new T.TextureLoader();let got=0;const done=()=>{if(++got===2)groundMat.uniforms.mK.value=1;},ld=(f,k)=>scLoad(f,t=>{t.wrapS=t.wrapT=T.ClampToEdgeWrapping;t.anisotropy=ANISO;groundMat.uniforms[k].value=t;done();});ld('moon_d.jpg','mD');ld('moon_n.jpg','mN');}
   const gp=new T.Mesh(new T.PlaneGeometry(900,900),groundMat);gp.rotation.x=-PI/2;gp.position.set(0,0,-150);scene.add(gp);
   // mound: a smooth dome using the same surface shader, with the pitching rubber on top
   {const md=new T.Mesh(new T.LatheGeometry([[.001,.25],[.8,.25],[1.45,.2],[2.1,.1],[2.74,.004]].map(q=>new T.Vector2(q[0],q[1])),28),groundMat);md.position.set(0,0,-18.4);scene.add(md);
@@ -4371,7 +4375,7 @@ const LOAD_MAX=24000; /* the loading screen stays up until every body is built, 
 function playersDone(){if(MX.pdW){MX.pdT=-1e9;return;} /* (called again while it is waiting: the long-stop timer. Let it through now) */MX.pdW=true;MX.pdT=performance.now();setTimeout(warmUp,1800);setTimeout(propsLoad,2500);MX.loading=false;
   // ONE LOADING SCREEN: the rocket stays up until the whole roster and the park are built (ten seconds at the very most), and only then does PLAY BALL appear. No second wait after pressing it.
   const fin=()=>{MX.pdW=false;loadStep(1);if(MX.pendingStart){MX.pendingStart=false;$('start').textContent='PLAY BALL';$('start').classList.remove('ldg');newGame();}};
-  const w=()=>{const e=performance.now()-MX.pdT;let busy=true;try{busy=e<3200||!MX.prepBusy||MX.prepBusy();}catch(x){busy=false;}if(!busy||e>LOAD_MAX||S.state!=='title'){fin();return;}try{const p=Math.min(99,88+e/LOAD_MAX*11),b=$('ldbar');if(b){b.firstElementChild.style.width=p+'%';$('ldbar').dataset.t='LOADING: '+Math.round(p)+'%';}}catch(x){}setTimeout(w,150);};w();}
+  const w=()=>{const e=performance.now()-MX.pdT;let busy=true;try{busy=e<3200||!MX.prepBusy||MX.prepBusy();}catch(x){busy=false;}if(!busy&&SC.got<SC.need&&e<SC_MAX)busy=true;if(!busy||e>LOAD_MAX||S.state!=='title'){fin();return;}try{const p=Math.min(99,88+e/LOAD_MAX*11),b=$('ldbar');if(b){b.firstElementChild.style.width=p+'%';$('ldbar').dataset.t='LOADING: '+Math.round(p)+'%';}}catch(x){}setTimeout(w,150);};w();}
 // ── A goal for every game, set from how this player has been doing, and a grade when the ninth out is made.
 let STATS={g:0,runs:0,hits:0,hrs:0,longest:0};try{STATS=Object.assign(STATS,JSON.parse(localStorage.getItem('mm_stats')||'{}'));}catch(e){}
 function pickGoal(){const g=STATS.g,avg=k=>g?STATS[k]/g:0,plural=(n,w)=>n+' '+w+(n===1?'':'S');
