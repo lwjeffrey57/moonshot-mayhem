@@ -323,7 +323,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
 .hemb{position:relative;width:min(58vw,250px,30vh);aspect-ratio:1/1.05;display:grid;place-items:center;clip-path:polygon(50% 0,100% 14%,100% 66%,50% 100%,0 66%,0 14%);background:linear-gradient(160deg,var(--c1,#ffe53b),var(--c2,#ff9a1e));filter:drop-shadow(0 5px 0 #000)}
 .hemb::before{content:'';position:absolute;inset:7px;clip-path:inherit;background:linear-gradient(#141a52,#070922)}.hemb>*{position:relative}.hemb span{font-size:min(24vw,104px,12.5vh);line-height:1;filter:drop-shadow(0 4px 0 rgba(0,0,0,.6))}.hemb svg{width:86%;height:auto}
 .hslide h3{margin:0;font:400 italic clamp(30px,10.5vw,46px)/.92 var(--display);color:#fff;text-align:center;-webkit-text-stroke:2px #000;paint-order:stroke fill;text-shadow:0 4px 0 #000;letter-spacing:.01em}
-.hplay{align-self:center;pointer-events:auto;cursor:pointer;margin-top:6px;padding:10px 54px 8px;font:400 italic clamp(26px,8vw,34px)/1 var(--display);color:#0b0a1a;background:linear-gradient(#ffe53b,#ff9a1e);border:3px solid #000;border-radius:12px;box-shadow:0 5px 0 #000;clip-path:polygon(7% 0,93% 0,100% 50%,93% 100%,7% 100%,0 50%)}.hplay:active{transform:translateY(2px)}.hplay.lock{background:#5a607e;color:#c9cfe8}
+.hplay{align-self:center;pointer-events:auto;cursor:pointer;margin-top:6px;padding:10px 54px 8px;font:400 italic clamp(26px,8vw,34px)/1 var(--display);color:#0b0a1a;background:linear-gradient(#ffe53b,#ff9a1e);border:3px solid #000;border-radius:12px;box-shadow:0 5px 0 #000;clip-path:polygon(7% 0,93% 0,100% 50%,93% 100%,7% 100%,0 50%)}.hplay:active{transform:translateY(2px)}.hplay.fire{clip-path:none;border-radius:16px;animation:hpfire .42s ease-in-out infinite alternate}@keyframes hpfire{from{box-shadow:0 5px 0 #000,0 -4px 12px 3px rgba(255,170,40,.9),0 -12px 24px 8px rgba(255,70,10,.55)}to{box-shadow:0 5px 0 #000,0 -8px 18px 7px rgba(255,220,80,1),0 -22px 38px 14px rgba(255,80,10,.8)}}.hplay.lock{background:#5a607e;color:#c9cfe8}
 .hcap{align-self:center;margin-top:8px;padding:5px 14px;border-radius:14px;background:#f2f5ff;color:#0b0a1a;font:800 11.5px/1.2 var(--hud);letter-spacing:.04em;text-align:center;max-width:92%}
 .hdots{display:flex;justify-content:center;gap:7px;margin:8px 0 8px;pointer-events:auto}.hdots i{width:9px;height:9px;border-radius:50%;background:rgba(242,245,255,.35);cursor:pointer}.hdots i.on{background:#58d6ff;box-shadow:0 0 8px #58d6ff}
 .htabs{display:flex;margin:0 -12px;padding-bottom:max(4px,env(safe-area-inset-bottom,0px));background:linear-gradient(#141a52,#070922);border-top:2px solid #2b3a9a;pointer-events:auto}
@@ -826,6 +826,7 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
 #tut.s2 .lc{animation:tutlB 4.4s linear infinite}#tut.s2 .lp{animation:tutlA 4.4s linear infinite}
 @keyframes tutlA{0%,9%{opacity:0}12%,44%{opacity:1}48%,100%{opacity:0}}@keyframes tutlB{0%,50%{opacity:0}54%,92%{opacity:1}95%,100%{opacity:0}}
 #hud.pdj #heat{visibility:hidden}
+#pmk{position:absolute;z-index:20;pointer-events:none;white-space:nowrap;font-family:var(--display);font-style:italic;color:#fff;-webkit-text-stroke:4px #05060f;paint-order:stroke fill;line-height:1}#pmk[hidden]{display:none}#pmk b{display:block;font-weight:400;font-size:clamp(18px,5vw,24px)}#pmk span{display:block;margin-top:2px;font-family:var(--hud);font-style:normal;font-weight:800;font-size:11px;letter-spacing:.1em;-webkit-text-stroke:3px #05060f;color:#ffe53b}
 /* JUICE PITCHES ARE ON FIRE, OVERDRIVE PITCHES BURN BLUE. Every Juice key flickers with flame; the picked one is still the biggest and brightest (its ring and a taller flame), and goes back to the ordinary flicker the moment another is picked. */
 @keyframes pjf{from{box-shadow:inset 0 0 0 2px #05060f,0 -3px 8px 2px rgba(255,150,30,.85),0 -9px 16px 4px rgba(255,70,10,.5)}to{box-shadow:inset 0 0 0 2px #05060f,0 -6px 12px 4px rgba(255,200,60,.95),0 -15px 24px 8px rgba(255,80,10,.7)}}
 @keyframes pjfS{from{box-shadow:inset 0 0 0 2px #05060f,0 0 0 3px #05060f,0 0 0 7px #ff8a1e,0 -8px 18px 8px rgba(255,120,20,.8)}to{box-shadow:inset 0 0 0 2px #05060f,0 0 0 3px #05060f,0 0 0 10px #ffd23b,0 -16px 34px 16px rgba(255,90,10,1)}}
@@ -986,7 +987,7 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
         <div class="cnt"><span id="count">0-0</span><span id="outs">O: 0</span></div>
       </div>
     </div>
-    <div id="pitchinfo"><b id="mph">--</b><span>MPH</span></div>
+    <div id="pmk" hidden></div><div id="pitchinfo"><b id="mph">--</b><span>MPH</span></div>
     <div id="meters">
       <div id="juice" class="meter"><div id="jbar" class="mbar"><div id="jfill" class="mfill"></div><span id="jtxt" class="mtxt">JUICE</span></div>
         <div class="mcap">BATTER</div></div>
@@ -1135,7 +1136,7 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
     </div>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 885</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 886</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -1585,7 +1586,7 @@ function pdStart(done){pdDom();if(!S.pdJG){PD.introT=now+2.7;PD.introS=false; /*
 /* EVERY PITCH HAS ITS OWN HOME IN THE ZONE: where it naturally ends up if the stick is left alone. The curve sits low, the slider low and away, the change down and in, the heater up. Pick a different pitch and the target jumps to that pitch's spot, so it never looks like the same ball down the middle. The stick aims from there, and lets go back to there. */
 function pdHomeXY(){const zw=ZONE.x1-ZONE.x0,zh=ZONE.y1-ZONE.y0,cx=(ZONE.x0+ZONE.x1)/2,cy=(ZONE.y0+ZONE.y1)/2;if(!PW)return [cx,cy];let P=null;try{P=PITCHES[pdQ().i];}catch(e){}if(!P)return [cx,cy];const fb=P.n==='FASTBALL'||P.n==='METEOR'||P.n==='RISER';return [cx+clamp(P.brk[0]*.3,-zw*.3,zw*.3),cy+(fb?zh*.22:clamp(P.brk[1]*.32,-zh*.3,zh*.3))];}
 /* LEAN ON THE BREAK: push the stick the way a breaking pitch already moves (down for the curve, across for the slider) and it breaks more, up to 70% more at full push. The red line shows it bending deeper as you pull. A fastball is not changed. */
-function pdBm(){try{const P=PITCHES[pdQ().i],L=Math.hypot(P.brk[0],P.brk[1]);if(L<.2)return 1;const h=pdHomeXY(),zw=ZONE.x1-ZONE.x0,zh=(ZONE.y1-ZONE.y0)*.893,d=((PD.tx-h[0])/zw*P.brk[0]+(PD.ty-h[1])/zh*P.brk[1])/L;return 1+(P.n==='CURVEBALL'?.7:1.1)*clamp(d,0,1);}catch(e){return 1;}}
+function pdBm(){try{const P=PITCHES[pdQ().i],L=Math.hypot(P.brk[0],P.brk[1]);if(L<.2)return 1;const h=pdHomeXY(),zw=ZONE.x1-ZONE.x0,zh=(ZONE.y1-ZONE.y0)*.893,d=((PD.tx-h[0])/zw*P.brk[0]+(PD.ty-h[1])/zh*P.brk[1])/L;return d>=0?1+(P.n==='CURVEBALL'?.7:1.1)*clamp(d,0,1):Math.max(.4,1+.6*Math.max(d,-1));}catch(e){return 1;}} /* AND THE OTHER WAY: pull against the break (up on a curve, back across on a slider) and it flattens out, down to 40% of its usual movement. The line on screen bends or straightens as you move. */
 function pdGoHome(){if(PD.ph!==0||PD.holding)return;const h=pdHomeXY();PD._hm=(PD._hm||0)+1;PD.tx=h[0];PD.ty=h[1];try{pdCur();}catch(e){}}
 function pdHold(kx,ky){if(PD.ph!==0||(PD.gt&&PD.gt<2))return;PD._hm=(PD._hm||0)+1;const zw=ZONE.x1-ZONE.x0,zh=ZONE.y1-ZONE.y0,hm=pdHomeXY(),cx=hm[0],cy=hm[1];PD.tx=clamp(cx-kx/58*zw,ZONE.x0-zw*.5,ZONE.x1+zw*.5);PD.ty=clamp(cy-ky/58*zh*.893,ZONE.y0-zh*.393,ZONE.y1+zh*.393);pdCur();}
 function pdHome(){if(PD.ph!==0||!MOB)return;const hm=pdHomeXY(),cx=hm[0],cy=hm[1],id=PD._hm=(PD._hm||0)+1,go=()=>{if(PD._hm!==id||PD.ph!==0||S.state!=='pduel')return;PD.tx+=(cx-PD.tx)*.5;PD.ty+=(cy-PD.ty)*.5;if(Math.abs(PD.tx-cx)+Math.abs(PD.ty-cy)>.004)requestAnimationFrame(go);else{PD.tx=cx;PD.ty=cy;}pdCur();};go();} /* let go and the target springs back to the middle with the stick's cap, the way the batting ring does */
@@ -3057,7 +3058,10 @@ const trackRing=new T.Mesh(new T.PlaneGeometry(2,2),new T.MeshBasicMaterial({map
   g.strokeStyle='#000';g.lineWidth=11;g.beginPath();g.arc(c,c,58,0,7);g.stroke();g.strokeStyle='#fff200';g.lineWidth=5.5;g.beginPath();g.arc(c,c,58,0,7);g.stroke();},[1,1]);t.anisotropy=ANISO;return t;})(),color:0xffffff,transparent:true,depthWrite:false,fog:false,side:T.DoubleSide,polygonOffset:true,polygonOffsetFactor:-6,polygonOffsetUnits:-12}));
 /* (the new look, the old logic: this marker IS the landing ring. It sits where the ball will come down and tightens as the ball drops.) */
 trackRing.rotation.x=-PI/2;trackRing.renderOrder=3;trackRing.visible=false;scene.add(trackRing);landRing.material.visible=false; /* the old ring still does the thinking; this one is what is drawn, in its place */
-const echoBall=new T.Mesh(new T.RingGeometry(.026,.04,20),overlayMat(0xffffff,1));echoBall.renderOrder=11;echoBall.visible=false;scene.add(echoBall);{const f=new T.Mesh(new T.CircleGeometry(.026,20),overlayMat(0xffffff,.55));f.renderOrder=11;echoBall.add(f);} // marks where the pitch was after a miss
+/* WHERE THE PITCH WAS: an actual baseball (white, red seams), a size up from the old dot, drawn where the ball crossed the plate. It shows after every pitch that is not put in play: a miss, a take, a called strike. */
+const echoBall=(()=>{const c=document.createElement('canvas');c.width=c.height=96;const g=c.getContext('2d');g.beginPath();g.arc(48,48,44,0,7);g.fillStyle='#fbfaf2';g.fill();g.lineWidth=5;g.strokeStyle='#05060f';g.stroke();g.strokeStyle='#e0262b';g.lineWidth=4;g.beginPath();g.arc(-8,48,40,-.85,.85);g.stroke();g.beginPath();g.arc(104,48,40,Math.PI-.85,Math.PI+.85);g.stroke();
+  g.lineWidth=2.5;for(let k=-3;k<=3;k++){const a=k*.25;let x=-8+Math.cos(a)*40,y=48+Math.sin(a)*40;g.beginPath();g.moveTo(x-5,y-3);g.lineTo(x+5,y+3);g.stroke();x=104-Math.cos(a)*40;g.beginPath();g.moveTo(x-5,y+3);g.lineTo(x+5,y-3);g.stroke();}
+  const tx=new T.CanvasTexture(c);const m=overlayMat(0xffffff,1);m.map=tx;m.transparent=true;m.needsUpdate=true;return new T.Mesh(new T.CircleGeometry(.052,24),m);})();echoBall.renderOrder=11;echoBall.visible=false;scene.add(echoBall); // marks where the pitch was after a miss
 const PT_R=.068;
 // Sharp outlines. The 3D picture is drawn below the screen's full resolution on phones, which softens thin lines; the strike zone and
 // the rings are where the eyes live, so their outlines are redrawn on top as vector shapes at the screen's native sharpness.
@@ -3604,6 +3608,7 @@ function hud(){podCls();sbDraw();overCheck();hudLater=false;if(S.cardBi>=0)cardS
   goalHud();
   $('tj').classList.toggle('on',juiceArmed);$('tp').classList.toggle('fire',!!(S.over&&S.overOn)||(!S.over&&juiceArmed&&S.juice>=.25)); // POWER only burns once Juice is armed or Overdrive has actually been switched on
 }
+let pmk=null;const PMK_T=1.7; /* THE READ-OUT AFTER A PITCH YOU DID NOT HIT: the baseball where it crossed, with its speed and what it was, right beside it */
 const ECHO_T=1.9; /* MY ZONE WAS HERE, THE BALL WAS THERE: after a miss the picture holds this long (it used to be gone in three quarters of a second), and the pitcher does not start his next windup until it has */
 let hudOver=false,hudBars=0,ringEcho=null,lastWalk='';
 // Flavour first: the first home run and the first strikeout of every game always get the full, ridiculous treatment
@@ -6008,7 +6013,7 @@ function step(dt){try{stealUI();stealTick();}catch(e){}if(!PD.on){const hc=$('hu
     if(S.state==='pitch'&&u>=1&&!pitch.called){pitch.called=true;
       payHeat();$('mph').textContent=pitchMph(pitch.dur);$('plast').textContent=pitch.P.n+' · '+pitchMph(pitch.dur)+' MPH';
       {const d=$('zdot');d.hidden=false;d.style.left=clamp(50+pitch.tx/.28*33,4,96)+'%';d.style.top=clamp(50-(pitch.ty-.825)/.325*33,4,96)+'%';d.className=pitch.inZone?'':'out';}$('pitchinfo').classList.add('on'),$('plast').classList.add('on');renderRep(pitch.P);}
-    if(S.state==='pitch'&&u>=1.07){ball.visible=false;ballShadow.visible=false;SND.mitt(clamp((.95-pitch.dur)/.45,0,1));
+    if(S.state==='pitch'&&u>=1.07){pmk={t:now,x:pitch.tx,y:pitch.ty,n:pitch.P.n,mph:pitchMph(pitch.dur)};ball.visible=false;ballShadow.visible=false;SND.mitt(clamp((.95-pitch.dur)/.45,0,1));
       _p.copy(ball.position);burst(fxS,_p,8,2,.3,[.8,.7,.5],3);
       if(S.mode&&S.mode.id==='derby'){if(swing)pop('WHIFF!','','plain');samePA(swing?1.3:.8);} /* THE DERBY HAS NO COUNT AND NO UMPIRE: a pitch you let go is nothing at all, a swing that misses is an out and nothing more is said */
       else if(swing){strike('swing');}
@@ -6095,6 +6100,9 @@ function step(dt){try{stealUI();stealTick();}catch(e){}if(!PD.on){const hc=$('hu
   if(ringEcho){const e=now-ringEcho.t;if(e>ECHO_T||S.state==='windup'||(S.state!=='pitch'&&S.state!=='result'&&S.state!=='ready'))ringEcho=null;
     else{showRet=true;reticle.position.set(ringEcho.x,ringEcho.y,0);retC.visible=!ringEcho.pw;retP.visible=ringEcho.pw;echoBall.visible=true;echoBall.position.set(ringEcho.bx,ringEcho.by,.001);}}
   retCfill.visible=!retP.visible;
+  {const e=$('pmk');if(pmk&&(now-pmk.t>PMK_T||S.state==='windup'||!(S.state==='pitch'||S.state==='result'||S.state==='ready')||PD.on))pmk=null;
+    if(pmk){echoBall.visible=true;echoBall.position.set(pmk.x,pmk.y,.002);if(e){_sh.set(pmk.x,pmk.y,0).project(camera);const w=canvas.clientWidth||innerWidth,h=canvas.clientHeight||innerHeight,sx=(_sh.x*.5+.5)*w,sy=(-_sh.y*.5+.5)*h,left=pmk.x>0;if(!isFinite(sx)||!isFinite(sy)||sy<60){e.hidden=true;e._k=0;}else if(e._k!==pmk.t){e._k=pmk.t;e.innerHTML='<b>'+pmk.mph+' MPH</b><span>'+pmk.n+'</span>';e.hidden=false;}e.style.left=clamp(sx+(left?-1:1)*(MOB?20:26),70,w-70)+'px';e.style.top=sy+'px';e.style.transform='translate('+(left?'-100%':'0')+',-50%)';e.style.textAlign=left?'right':'left';}}
+    else if(e&&!e.hidden)e.hidden=true;}
   if(ringsOff&&!ringEcho&&!tutStep){retC.visible=retP.visible=false;} /* a setting: play with only the centre marker. The zones still decide every swing, and the miss replay still shows them */
   if(tutHold&&tutStep===2){const ph=((performance.now()-tutT0)%TUT_LOOP)/TUT_LOOP,red=ph<.48;retP.visible=red;retC.visible=!red;retCfill.visible=!red;} /* STEP 2, RED FIRST: only the red POWER core travels to the ball (POWER button lit), then the green CONTACT circle appears around it (CONTACT button lit). The green ring is never the thing being dragged. */
   if(tutHold&&tutStep===3)showRet=false; /* the timing step of the guide shows only the timing circle, no bat ring or crosshair */
@@ -6390,7 +6398,7 @@ function hsBuild(){const H=$('hhero');if(H.childElementCount)return;H.innerHTML=
   $('hset').addEventListener('click',press('mset'));$('tset').addEventListener('click',press('mset'));$('htro').addEventListener('click',press('mtro'));$('ttro').addEventListener('click',press('mtro'));
   $('hday').addEventListener('click',press('mdaily'));$('hlv').addEventListener('click',press('mplayer'));$('tprof').addEventListener('click',press('mplayer'));$('tsquad').addEventListener('click',press('msquad'));$('thome').addEventListener('click',e=>e.stopPropagation());
   document.querySelector('.hcard').addEventListener('click',press('mdaily'));}
-function hsSync(){const q=HSL[hslI];[...$('hdots').children].forEach((d,i)=>d.classList.toggle('on',i===hslI));const P=$('hplay');P.classList.toggle('lock',!q[3]);P.textContent=q[3]?'PLAY':'SOON';
+function hsSync(){const q=HSL[hslI];[...$('hdots').children].forEach((d,i)=>d.classList.toggle('on',i===hslI));const P=$('hplay');P.classList.toggle('lock',!q[3]);P.classList.toggle('fire',hslI===0);P.textContent=q[3]?'PLAY':'SOON';
   let cap=q[2];try{if(hslI===1)cap=$('mdstate').textContent;if(hslI===2)cap=$('mdbest').textContent;if(hslI===3)cap=$('msbest').textContent;}catch(e){}$('hcap').textContent=cap;}
 function hsUI(v,sp,done,st){try{hsBuild();const l=lvOf(XP),a=lvBase(l),b=lvBase(l+1);$('hlvn').textContent='LV '+l;$('hlvt').textContent=lvTitle(l).toUpperCase();$('hxplv').innerHTML='<s>'+(l+1)+'</s>';$('hxpbar').style.width=clamp((XP-a)/Math.max(1,b-a)*100,0,100).toFixed(1)+'%';$('hxpt').textContent=Math.round(XP-a).toLocaleString()+' / '+(b-a).toLocaleString()+' XP TO LEVEL '+(l+1);
   let got=0;try{got=BADGES.filter(q=>bdgGot[q[0]]).length;}catch(e){}$('htron').textContent='';$('hdayn').textContent=done?'':'1';
