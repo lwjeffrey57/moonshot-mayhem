@@ -1218,7 +1218,7 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
     </div>
     <div id="ldbar" data-t="LOADING" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 938</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 939</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -4557,7 +4557,7 @@ function simulate(p0,v0,spin,opt){spin=spin||{side:0,lift:0};opt=opt||{};const G
       else if(p.y>WH&&!land){hr=true;hrT=t;hrY=p.y;}
       else if(!land&&!wall&&p.y>WH-.4&&Math.random()<.5){hr=true;hrT=t;hrY=WH;tag='OFF THE TOP OF THE WALL';v.y=Math.abs(v.y)*.3+4.5;v.x*=.45;v.z*=.45;} // catches the top of the wall and hops over
       else if(p.y>WH&&!wall){grd=true;} // bounced in play and hopped the wall: ground-rule double
-      else{if(WH>3.5&&p.y>3.4&&!land&&!tag)tag=phi>0?'OFF THE ARCADE':'OFF THE PORCH';const _fn=fenceN(phi),nx=_fn[0],nz=_fn[1],vn=v.x*nx+v.z*nz;if(vn>0){v.x-=1.35*vn*nx;v.z-=1.35*vn*nz;v.multiplyScalar(.7);}p.x=nx*(fr-.15);p.z=nz*(fr-.15);if(!wall)wallT=t;wall=true;}
+      else{if(WH>3.5&&p.y>3.4&&!land&&!tag)tag=phi>0?'OFF THE ARCADE':'OFF THE PORCH';const rx=p.x/r,rz=p.z/r,_fn=ALLEY_R&&phi>0&&phi<PI/4?fenceN(phi):[rx,rz],nx=_fn[0],nz=_fn[1],vn=v.x*nx+v.z*nz;if(vn>0){v.x-=1.35*vn*nx;v.z-=1.35*vn*nz;v.multiplyScalar(.7);}p.x=rx*(fr-.15);p.z=rz*(fr-.15); /* THE BALL STAYS WHERE IT HIT: it is set back just inside the wall along its own line from the plate (BUILD 935 set it back along the wall's normal instead, which moved it sideways round the park, as far as foul ground). Left and centre come off the wall exactly as they always did; only the two straight walls in right use the wall's true face. */if(!wall)wallT=t;wall=true;}
     }
     if(hr&&Math.abs(phi)<8*DEG){ // the batter's eye is a solid slanted wall behind the centre-field fence: the ball caroms off it
       const d=r-fr,hy=WALL_H+(d-1.3)*2.026;
