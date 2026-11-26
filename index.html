@@ -1207,7 +1207,7 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
     </div>
     <div id="ldbar" data-t="LOADING" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 921</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 922</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -5035,7 +5035,7 @@ function juiceTap(){const t=performance.now();if(t-jTapT<250)return;jTapT=t; // 
       S.overOn=false;S.odUses=Math.max(0,(S.odUses||0)-1);if(S.duel){S.duel=false;$('hud').classList.remove('duel');}
       buzz(20);timing('OVERDRIVE OFF · STILL CHARGED','#9aa3c7',2);}
   }else juiceArmed=!juiceArmed;hud();}
-function doSwing(type){if(S.mode)S.mode.swN=(S.mode.swN||0)+1;
+const LATE_T=1.3;function doSwing(type){if(S.mode)S.mode.swN=(S.mode.swN||0)+1;
   if(paused||S.state==='title'||S.state==='over')return;
   if(S.state==='trot'){S.t=now-TROT.dur;return;} // skip the trot
   if(S.state==='celly2'){S.t=now-D2.dur;return;}
@@ -5051,9 +5051,9 @@ function doSwing(type){if(S.mode)S.mode.swN=(S.mode.swN||0)+1;
   if(S.state==='celebrate'){if(LOCKFX.hr&&(LOCKFX.pend||LOCKFX.cel)&&now-S.t<2.7)return; /* (his Locked In moment at the plate is short and is not skipped by the tap that cut the homer shot short) */if(now-S.t>.25)S.t=now-readyDur;return;} /* (and the celebration at the plate) */
   if(swing)return;
   // between pitches the buttons still swing the bat: a practice cut, no cost, so the first tap always teaches what the button does
-  if(S.state==='ready'||(S.state==='windup'&&now-windupT0<=.55)){swing={t0:now,type,turbo:false,done:false,miss:false,practice:true};SND.whoosh();return;}
+  if(S.state==='ready'||(S.state==='windup'&&now-windupT0<=.55)){swing={t0:now,type,turbo:false,done:false,miss:false,practice:true};SND.whoosh();if(S.state==='ready'&&pmk&&now-pmk.t<LATE_T)try{timing('WAY LATE \u00B7 ALREADY IN THE MITT','#ff8a70',2);}catch(e){}return;}
   /* A SWING IS NEVER IGNORED. If the tap comes just after the ball is already in the mitt (he was that late), the bat still comes through and the read-out says so, instead of the button seeming dead. The call that was made stands. */
-  if(S.state==='result'&&pmk&&now-pmk.t<.5&&!S.next){swing={t0:now,type,turbo:false,done:false,miss:false,practice:true};SND.whoosh();try{timing('WAY LATE','#ff8a70',2);}catch(e){}return;}
+  if(S.state==='result'&&pmk&&now-pmk.t<LATE_T&&!S.next){swing={t0:now,type,turbo:false,done:false,miss:false,practice:true};SND.whoosh();try{timing(now-pmk.t<.3?'WAY LATE':'WAY LATE \u00B7 ALREADY IN THE MITT','#ff8a70',2);}catch(e){}return;} /* (the window is long on purpose: against Overdrive heat a hitter can be absurdly late, and "I was so late" beats "why didn't he swing") */
   if(!(S.state==='pitch'||(S.state==='windup'&&now-windupT0>.55)))return;
   if(S.over&&!S.overOn&&(keys.ShiftLeft||keys.ShiftRight))juiceTap(); // desktop: Shift switches Overdrive on
   const od=S.over&&S.overOn,turbo=od||(!S.over&&juiceOn()&&S.juice>=.25);
