@@ -1218,7 +1218,7 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
     </div>
     <div id="ldbar" data-t="LOADING" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 934</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 935</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -2094,7 +2094,11 @@ const WALL_H=3.4,DUGS=[];
 const BIG_H=11.6, /* 38 feet */BIG_PHI=-.48,BIG_I=7, /* (it ends at 27.5 degrees, a little short of the 379 marker) */ARC_H=8.6,ARC_W=19,PAT_D=6.5,PAT_H=2.3, /* (the first PAT_D metres behind the wall are a short bank of seats climbing PAT_H; from there to the back rail it is an open patio) */ /* THE ARCADE DECK: the top of the right-field wall is a deep standing-room deck (it was a seven-metre walkway). A ball that just clears the wall comes down among the fans on it; only a longer one carries the back rail into the lava. */wallH=phi=>phi<BIG_PHI?BIG_H:phi>.1765&&phi<=PI/4+.001?ARC_H:WALL_H,COVE_A0=.1745,COVE_A1=.7854,CV0=22,CV1=36,COVE={};
 // THE PORCH: in left field the Porch also juts IN toward the plate by seven metres (a short porch, 302 ft down the line), with the seats
 // sitting right on top of it. It steps back out to the normal fence through an angled jog in left-centre.
-const PORCH=0,PORCH2=0, /* (the jutting porch was tried and taken out: left field is the plain tall Porch on the normal fence line. Set these to 7 and 15 to bring it back.) */fenceR=phi=>Math.abs(phi)<=PI/4?99+23*Math.cos(2*phi)-lerp(PORCH,PORCH2,clamp((phi+PI/4)/(BIG_PHI+PI/4),0,1))*clamp((BIG_PHI-phi)/.0436,0,1):99; /* the porch face runs nearly straight across left field (7 m in at the pole, 15 m in by left-centre) and then jogs sharply back out */
+const PORCH=0,PORCH2=0, /* (the jutting porch was tried and taken out: left field is the plain tall Porch on the normal fence line. Set these to 7 and 15 to bring it back.) */fenceR0=phi=>Math.abs(phi)<=PI/4?99+23*Math.cos(2*phi)-lerp(PORCH,PORCH2,clamp((phi+PI/4)/(BIG_PHI+PI/4),0,1))*clamp((BIG_PHI-phi)/.0436,0,1):99,
+  /* TRIPLES ALLEY: right of dead centre the fence is two straight walls instead of a curve. It runs out from centre (400 ft) to a deep corner in right-centre (ALLEY_R, 420 ft, where the brick Arcade begins) and from there the Arcade runs dead straight to the right-field pole. Set ALLEY_R to 0 for the old smooth curve. */
+  ALLEY_R=window.__alley!==undefined?window.__alley:128,ALLEY_A=.1745,_seg=(phi,a0,r0,a1,r1)=>{const ax=r0*Math.sin(a0),ay=r0*Math.cos(a0),bx=r1*Math.sin(a1),by=r1*Math.cos(a1),dx=Math.sin(phi),dy=Math.cos(phi);return (ax*(by-ay)-ay*(bx-ax))/(dx*(by-ay)-dy*(bx-ax));},
+  fenceR=phi=>!ALLEY_R||phi<=0||phi>=PI/4?fenceR0(phi):phi<=ALLEY_A?_seg(phi,0,122,ALLEY_A,ALLEY_R):_seg(phi,ALLEY_A,ALLEY_R,PI/4,99),
+  fenceN=phi=>{const h=.004,r=fenceR(phi),dr=(fenceR(phi+h)-fenceR(phi-h))/(2*h),sx=Math.sin(phi),cz=-Math.cos(phi),tx=Math.cos(phi),tz=Math.sin(phi);let nx=r*sx-dr*tx,nz=r*cz-dr*tz;const L=Math.hypot(nx,nz)||1;return [nx/L,nz/L];}; /* (the outward normal of the wall at that angle: a ball comes off a straight wall square to the wall, not straight back at the plate) */ /* the porch face runs nearly straight across left field (7 m in at the pole, 15 m in by left-centre) and then jogs sharply back out */
 const pol=(r,phi,y=0)=>new V3(r*Math.sin(phi),y,-r*Math.cos(phi));
 // TRANQUILITY BASE: the old Apollo landing site, way out beyond left-centre. A lander, a flag and a pool of work-light, all painted (no real
 // lights: it costs nothing). An Overdrive moonshot can come down right on it.
@@ -2388,7 +2392,7 @@ gl_FragColor=vec4(col,1.0);
       g.fillStyle='#c9a184';g.fillRect(0,60,w,8);g.fillStyle='rgba(0,0,0,.25)';g.fillRect(0,68,w,5);
       {const cx=w/2;g.fillStyle='#07090f';g.fillRect(cx-160,80,320,166);g.strokeStyle='#ffd23b';g.lineWidth=6;g.strokeRect(cx-160,80,320,166);g.textAlign='center';g.textBaseline='middle';g.font='400 36px "Russo One",Arial Black,Arial';g.fillStyle='#fff';g.fillText('COVE SHOTS',cx,112,280);
         g.font='italic 400 104px "Russo One",Arial Black,Arial';g.shadowColor='#ff5a1e';g.shadowBlur=22;g.fillStyle='#ffb040';g.fillText(String(n).padStart(2,'0'),cx,188);g.shadowBlur=0;}
-      g.textAlign='center';g.textBaseline='middle';g.font='italic 400 46px "Russo One",Arial Black,Arial';[['330',.972],['379',.03]].forEach(q=>{g.fillStyle='#07090f';g.fillRect(w*q[1]-46,h-92,92,54);g.fillStyle='#ffe53b';g.fillText(q[0],w*q[1],h-63);});
+      g.textAlign='center';g.textBaseline='middle';g.font='italic 400 46px "Russo One",Arial Black,Arial';[['330',.972],[ALLEY_R?'420':'379',.03]].forEach(q=>{g.fillStyle='#07090f';g.fillRect(w*q[1]-46,h-92,92,54);g.fillStyle='#ffe53b';g.fillText(q[0],w*q[1],h-63);});
       g.font='italic 400 40px "Russo One",Arial Black,Arial';[['ZAPP COLA COVE',.17],['THE ARCADE',.83]].forEach(q=>{g.fillStyle='rgba(0,0,0,.5)';g.fillText(q[0],w*q[1]+2,34+2);g.fillStyle='#f4e6d8';g.fillText(q[0],w*q[1],34);});
       /* painted light, the same recipe as the other walls: bright along the top, shadow at the foot, a pool of floodlight every few bays, and a warm bounce low down from the lava behind */
       const vg=g.createLinearGradient(0,0,0,h);vg.addColorStop(0,'rgba(255,255,255,.3)');vg.addColorStop(.22,'rgba(255,255,255,.04)');vg.addColorStop(.7,'rgba(0,0,0,.1)');vg.addColorStop(1,'rgba(0,0,0,.5)');g.fillStyle=vg;g.fillRect(0,0,w,h);
@@ -4552,7 +4556,7 @@ function simulate(p0,v0,spin,opt){spin=spin||{side:0,lift:0};opt=opt||{};const G
       else if(p.y>WH&&!land){hr=true;hrT=t;hrY=p.y;}
       else if(!land&&!wall&&p.y>WH-.4&&Math.random()<.5){hr=true;hrT=t;hrY=WH;tag='OFF THE TOP OF THE WALL';v.y=Math.abs(v.y)*.3+4.5;v.x*=.45;v.z*=.45;} // catches the top of the wall and hops over
       else if(p.y>WH&&!wall){grd=true;} // bounced in play and hopped the wall: ground-rule double
-      else{if(WH>3.5&&p.y>3.4&&!land&&!tag)tag=phi>0?'OFF THE ARCADE':'OFF THE PORCH';const nx=p.x/r,nz=p.z/r,vn=v.x*nx+v.z*nz;if(vn>0){v.x-=1.35*vn*nx;v.z-=1.35*vn*nz;v.multiplyScalar(.7);}p.x=nx*(fr-.15);p.z=nz*(fr-.15);if(!wall)wallT=t;wall=true;}
+      else{if(WH>3.5&&p.y>3.4&&!land&&!tag)tag=phi>0?'OFF THE ARCADE':'OFF THE PORCH';const _fn=fenceN(phi),nx=_fn[0],nz=_fn[1],vn=v.x*nx+v.z*nz;if(vn>0){v.x-=1.35*vn*nx;v.z-=1.35*vn*nz;v.multiplyScalar(.7);}p.x=nx*(fr-.15);p.z=nz*(fr-.15);if(!wall)wallT=t;wall=true;}
     }
     if(hr&&Math.abs(phi)<8*DEG){ // the batter's eye is a solid slanted wall behind the centre-field fence: the ball caroms off it
       const d=r-fr,hy=WALL_H+(d-1.3)*2.026;
