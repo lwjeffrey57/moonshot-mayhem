@@ -1206,7 +1206,7 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
     </div>
     <div id="ldbar" data-t="LOADING" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 902</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 903</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -3824,7 +3824,8 @@ const trivLast={},TRIVIA={ /* ten each, and every one has to be funny cold: noth
 /* PLAYER PHOTOS ARE KEPT. The head shot taken the first time a player comes to the plate is saved on the device, so his cards (My Squad, the big baseball card) carry his picture from then on, in every later session. */
 const MUGSAVE={};try{for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&k.indexOf('mm_mug_')===0)MUGSAVE[k.slice(7)]=localStorage.getItem(k);}}catch(e){}
 const MUGS={};let faceRT=null,faceCam=null,faceTry=0;
-function faceGrab(){const C=MX.clip,kr=wkPD();if(!C||!C.head||(!kr&&C.bi!==S.bi)||!MX.on)return;const b=kr?KBAT[PD.k]:curBatter(); /* (the Kraken at the plate gets his head shot taken too, for his card) */if(MUGS[b.name]||now-faceTry<.5)return;faceTry=now;
+function faceGrab(){const C=MX.clip,kr=wkPD();if(!C||!C.head||(!kr&&C.bi!==S.bi)||!MX.on)return;const b=kr?KBAT[PD.k]:curBatter(); /* (the Kraken at the plate gets his head shot taken too, for his card) */if(MUGS[b.name]||now-faceTry<.5)return;faceTry=now;faceShot(C,b,true);}
+function faceShot(C,b,live){
   try{if(!faceRT){faceRT=new T.WebGLRenderTarget(160,160);faceCam=new T.PerspectiveCamera(22,1,.05,600);}
     C.head.updateWorldMatrix(true,false);C.head.getWorldPosition(_a);const q=new T.Quaternion();C.head.getWorldQuaternion(q);const d=new V3(0,0,1).applyQuaternion(q);d.y=0;if(d.lengthSq()<.05)return;d.normalize();_a.y+=.08;
     faceCam.position.copy(_a).addScaledVector(d,1.25);faceCam.position.y+=.04;faceCam.lookAt(_a);faceCam.updateMatrixWorld();
@@ -3841,7 +3842,17 @@ function faceGrab(){const C=MX.clip,kr=wkPD();if(!C||!C.head||(!kr&&C.bi!==S.bi)
     {const ng=g.createRadialGradient(N*.2,N*.85,0,N*.2,N*.85,N*.7);ng.addColorStop(0,'rgba(255,138,58,.45)');ng.addColorStop(1,'rgba(255,138,58,0)');g.fillStyle=ng;g.fillRect(0,0,N,N);const n2=g.createRadialGradient(N*.85,N*.15,0,N*.85,N*.15,N*.6);n2.addColorStop(0,'rgba(58,214,255,.3)');n2.addColorStop(1,'rgba(58,214,255,0)');g.fillStyle=n2;g.fillRect(0,0,N,N);
       for(let k=0;k<46;k++){g.fillStyle=`rgba(255,255,255,${rand(.3,.95)})`;const r=Math.random()<.12?1.6:.8;g.fillRect(rand(0,N),rand(0,N),r,r);}}
     g.drawImage(t,0,0);
-    MUGS[b.name]={c,url:c.toDataURL('image/jpeg',.85)};try{MUGSAVE[b.name]=MUGS[b.name].url;localStorage.setItem('mm_mug_'+b.name,MUGS[b.name].url);}catch(e){}faceShow(b);try{sbDraw();}catch(e){}}catch(e){renderer.setRenderTarget(null);MUGS[b.name]={c:null,url:''};}}
+    MUGS[b.name]={c,url:c.toDataURL('image/jpeg',.85)};try{MUGSAVE[b.name]=MUGS[b.name].url;localStorage.setItem('mm_mug_'+b.name,MUGS[b.name].url);}catch(e){}if(live)faceShow(b);try{sbDraw();}catch(e){}}catch(e){renderer.setRenderTarget(null);MUGS[b.name]={c:null,url:''};}}
+/* EVERY PLAYER'S PHOTO IS TAKEN UP FRONT. While the menu is showing, each hitter in the lineup who has no picture yet is stood in front of the camera in turn (his body is built first if it has not been), photographed, and put away again. One player every second or so, only on the menu, so nothing is felt in a game. The cards have real faces without anyone having to bat first. */
+let mugBusy=false;
+function mugTick(){try{if(mugBusy||!MX.ready||MX.loading||!MX.clip||!MX.obj)return;const st=S.state;if(st!=='title'&&st!=='over')return;if(!$('bcard').hidden)return;
+  const b=LINEUP.find(q=>!MUGS[q.name]&&!MUGSAVE[q.name]&&(q._mugN||0)<4);if(!b)return;b._mugN=(b._mugN||0)+1;const k=b.body||0;mugBusy=true;
+  try{if(k!==MX.bcur&&!(MX.brigs&&MX.brigs[k])){if(MX.batVar&&MX.batVar[k]&&MX.batRig)MX.batRig(k);else{if(MX.batLoad)try{MX.batLoad(k);}catch(e){}b._mugN--;mugBusy=false;return;}}
+    const rig=k===MX.bcur?{obj:MX.obj,clip:MX.clip}:(MX.brigs&&MX.brigs[k]);if(!rig||!rig.clip||!rig.clip.head){mugBusy=false;return;}
+    const add=rig.obj.parent!==scene,vis=rig.obj.visible,sx=rig.obj.scale.x,other=rig.obj!==MX.obj?MX.obj:null,ov=other?other.visible:false;if(other)other.visible=false; /* (the man in the box steps out of the shot, or two faces end up in one picture) */if(add)scene.add(rig.obj);rig.obj.visible=true;rig.obj.scale.x=Math.abs(sx); /* (photographed unmirrored: a lefty's mirrored body threw the camera off his face) */rig.obj.updateMatrixWorld(true);faceShot(rig.clip,b,false);rig.obj.scale.x=sx;rig.obj.visible=vis;if(add)scene.remove(rig.obj);if(other)other.visible=ov;rig.obj.updateMatrixWorld(true);
+    if(MUGS[b.name]&&!MUGS[b.name].url){delete MUGS[b.name];} /* (a shot that failed is tried again, a few times) */
+    try{if(!$('squad').hidden&&MUGSAVE[b.name])squadOpen();}catch(e){}}catch(e){}mugBusy=false;}catch(e){mugBusy=false;}}
+setInterval(mugTick,1100);
 function faceShow(b){const F=MUGS[b.name],im=$('wface');if(F&&F.url){im.src=F.url;im.hidden=false;}else im.hidden=true;}
 function walkLabel(){$('wk').textContent='Walk-ups: '+(WALK.on?'on':'off (faster pace)')+' — tap to change';}
 // Every hitter walks up his first time through the order. After that he still gets one a good part of the time (decided once per at-bat),
