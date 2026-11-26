@@ -1207,7 +1207,7 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
     </div>
     <div id="ldbar" data-t="LOADING" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 920</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 921</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -3138,6 +3138,9 @@ function zoneHit(x,y){return x>=ZONE.x0-BALL_R&&x<=ZONE.x1+BALL_R&&y>=ZONE.y0-BA
 const zone=new T.Group(); // drawn as thin bars: WebGL lines are always one pixel wide
 {const m=new T.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.55,depthTest:false}),w=.011,W=ZONE.x1-ZONE.x0,H=ZONE.y1-ZONE.y0,cx=(ZONE.x0+ZONE.x1)/2,cy=(ZONE.y0+ZONE.y1)/2;
  [[cx,ZONE.y0,W+w,w],[cx,ZONE.y1,W+w,w],[ZONE.x0,cy,w,H-w],[ZONE.x1,cy,w,H-w]].forEach(q=>{const b=new T.Mesh(new T.PlaneGeometry(q[2],q[3]),m);b.position.set(q[0],q[1],0);b.renderOrder=8;zone.add(b);});}
+/* THE GAUNTLET'S THIRDS: the zone split into inside / middle / away, with the third that suits the call lit up before the first pitch of each new call. Hidden everywhere else. */
+const zoneHL=new T.Mesh(new T.PlaneGeometry((ZONE.x1-ZONE.x0)/3,ZONE.y1-ZONE.y0),new T.MeshBasicMaterial({color:0x7fe6ff,transparent:true,opacity:.3,depthTest:false}));zoneHL.position.set(0,(ZONE.y0+ZONE.y1)/2,0);zoneHL.renderOrder=7;zoneHL.visible=false;zone.add(zoneHL);
+const zoneTh=new T.Group();{const m=new T.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.3,depthTest:false}),W=ZONE.x1-ZONE.x0;[-W/6,W/6].forEach(x=>{const b=new T.Mesh(new T.PlaneGeometry(.007,ZONE.y1-ZONE.y0),m);b.position.set(x,(ZONE.y0+ZONE.y1)/2,0);b.renderOrder=8;zoneTh.add(b);});}zoneTh.visible=false;zone.add(zoneTh);
 // a dark, see-through backing behind the strike zone, so the white ball stands out against the pale ground when it gets there.
 // It is drawn before the ball (which is moved to the end of the draw order below), so it darkens the background and never the ball.
 {const bk=new T.Mesh(new T.PlaneGeometry(ZONE.x1-ZONE.x0,ZONE.y1-ZONE.y0),new T.MeshBasicMaterial({color:0x05060f,transparent:true,opacity:.34,depthTest:false,depthWrite:false}));
@@ -6294,7 +6297,7 @@ function step(dt){try{stealUI();stealTick();}catch(e){}if(!PD.on){const hc=$('hu
   if(ringsOff&&!ringEcho&&!tutStep){retC.visible=retP.visible=false;} /* a setting: play with only the centre marker. The zones still decide every swing, and the miss replay still shows them */
   if(tutHold&&tutStep===2){const ph=((performance.now()-tutT0)%TUT_LOOP)/TUT_LOOP,red=ph<.48;retP.visible=red;retC.visible=!red;retCfill.visible=!red;} /* STEP 2, RED FIRST: only the red POWER core travels to the ball (POWER button lit), then the green CONTACT circle appears around it (CONTACT button lit). The green ring is never the thing being dragged. */
   if(tutHold&&tutStep===3)showRet=false; /* the timing step of the guide shows only the timing circle, no bat ring or crosshair */
-  reticle.visible=showRet;zone.visible=S.state==='ready'||S.state==='windup'||S.state==='pitch'||(S.state==='result'&&(!!pmk||!!ringEcho)); /* the strike zone stays up while the pitch read-out is showing, so the ball's spot is seen against it: in the zone or off it. Nothing waits for it. */
+  reticle.visible=showRet;zone.visible=S.state==='ready'||S.state==='windup'||S.state==='pitch'||(S.state==='result'&&(!!pmk||!!ringEcho));{const M=S.mode,sh=!!(M&&M.id==='shot'&&M.call&&!M.done);zoneTh.visible=sh;const hl=sh&&!M.cp&&(S.state==='ready'||S.state==='windup');zoneHL.visible=hl;if(hl){zoneHL.position.x=-(MX.lefty?-1:1)*shotWant(M.call)*(ZONE.x1-ZONE.x0)/3;zoneHL.material.opacity=.24+.16*Math.sin(performance.now()/130);}} /* the strike zone stays up while the pitch read-out is showing, so the ball's spot is seen against it: in the zone or off it. Nothing waits for it. */
 }
 // Batting cameras. Each is a position and a look-at point; 'side' ones sit on the open side of the plate, away from the hitter.
 const CAMS=[
@@ -6658,7 +6661,7 @@ function modeEnd(){const M=S.mode;if(!M)return;if(M.id==='weekly'){weekRestore()
 const SHOT_Z=[{id:'L',t:'LEFT FIELD',a:-45,b:-15},{id:'C',t:'CENTRE FIELD',a:-15,b:15},{id:'R',t:'RIGHT FIELD',a:15,b:45},{id:'LL',t:'DOWN THE LEFT-FIELD LINE',a:-45,b:-33,line:1},{id:'RL',t:'DOWN THE RIGHT-FIELD LINE',a:33,b:45,line:1}];
 let SHOT_BEST=0,shotWedge=null;try{SHOT_BEST=+localStorage.getItem('mm_shot')||0;}catch(e){}
 function shotNeed(r){return 1200+500*(r-1);}
-function shotCall(){const M=S.mode,r=Math.random(),z=r<.14?SHOT_Z[3+((Math.random()*2)|0)]:SHOT_Z[(Math.random()*3)|0];let k=z.line?'any':['any','any','fly','ground'][(Math.random()*4)|0];if(M.call&&M.call.z===z&&M.call.k===k)k=k==='any'?'fly':'any';M.call={z,k,v:z.line?750:k==='any'?250:500};
+function shotCall(){const M=S.mode,r=Math.random(),z=r<.14?SHOT_Z[3+((Math.random()*2)|0)]:SHOT_Z[(Math.random()*3)|0];let k=z.line?'any':['any','any','fly','ground'][(Math.random()*4)|0];if(M.call&&M.call.z===z&&M.call.k===k)k=k==='any'?'fly':'any';M.call={z,k,v:z.line?750:k==='any'?250:500};M.cp=0;M.ft=0;
   try{if(shotWedge){scene.remove(shotWedge);shotWedge.geometry.dispose();try{shotWedge.userData.w.geometry.dispose();}catch(e){}}const g=new T.RingGeometry(26,z.line?118:112,24,1,PI/2-z.b*DEG,(z.b-z.a)*DEG);shotWedge=new T.Mesh(g,new T.MeshBasicMaterial({color:z.line?0xffd23b:0x3ddc6a,transparent:true,opacity:.34,depthWrite:false,side:T.DoubleSide,fog:false}));shotWedge.rotation.x=-PI/2;shotWedge.position.y=.07;shotWedge.renderOrder=2;scene.add(shotWedge);{const w=new T.Mesh(new T.CylinderGeometry(121,121,16,24,1,true,PI-z.b*DEG,(z.b-z.a)*DEG),new T.MeshBasicMaterial({color:z.line?0xffd23b:0x3ddc6a,transparent:true,opacity:.3,depthWrite:false,side:T.DoubleSide,fog:false}));w.rotation.x=PI/2;w.position.z=8;w.renderOrder=2;shotWedge.add(w);shotWedge.userData.w=w;}shotRampShow();} /* (and a band of light standing along the wall in that field, so the target reads from the batter's box, where the ground is seen nearly edge-on) */catch(e){}shotHud();}
 /* THE GAUNTLET HAS NO FIELDERS, AND IT HAS RAMPS. One ramp stands in each target field. Only the one in the called field is raised and lit; the
    others lie flat. A ball that comes down short and rolls or skips onto the live ramp is launched off it, and what it travels after that counts. */
@@ -6692,7 +6695,7 @@ function shotIn(pt){try{return clamp(-(MX.lefty?-1:1)*pt.tx/.28,-1,1);}catch(e){
 function shotTOff(pt){return LOC_T&&S.mode&&S.mode.id==='shot'&&pt?-.028*shotIn(pt):0;}
 function shotWant(c){try{const m=(c.z.a+c.z.b)/2*(MX.lefty?-1:1);return m<-8?1:m>8?-1:0;}catch(e){return 0;}} /* the pitch that suits the call: 1 inside (to pull it), -1 away (to go the other way), 0 over the middle */
 /* ...and the pitcher mostly gives you one you can do it with: seven times in ten the pitch is on the side of the plate the call needs. */
-function shotAim(pt){try{const M=S.mode;if(!M||M.id!=='shot'||!M.call||!pt||pt.hbp)return;const w=shotWant(M.call),sd=(MX.lefty?-1:1);if(Math.random()<.7){pt.tx=w>0?-sd*rand(.09,.22):w<0?sd*rand(.09,.22):rand(-.07,.07);pt.inZone=zoneHit(pt.tx,pt.ty);}}catch(e){}}
+function shotAim(pt){try{const M=S.mode;if(!M||M.id!=='shot'||!M.call||!pt||pt.hbp)return;const w=shotWant(M.call),sd=(MX.lefty?-1:1);if(Math.random()<(M.ft>=2?1:.7)){pt.tx=w>0?-sd*rand(.11,.22):w<0?sd*rand(.09,.22):rand(-.07,.07);pt.inZone=zoneHit(pt.tx,pt.ty);}}catch(e){}}
 function shotGfxTick(){const e=$('shotg');if(!e)return;const M=S.mode,on=!!(M&&M.id==='shot'&&M.call&&!M.done&&(S.state==='ready'||S.state==='windup'||S.state==='pitch')&&!paused);if(!on){if(!e.hidden)e.hidden=true;return;}
   _sh.set(0,3.1,-18.4).project(camera);const w=canvas.clientWidth||innerWidth,h=canvas.clientHeight||innerHeight,sx=(_sh.x*.5+.5)*w,sy=(-_sh.y*.5+.5)*h;e.hidden=false;const eh=e.offsetHeight||120,ew=e.offsetWidth||140,top=isFinite(sy)?Math.max(sy-eh,MOB?150:110):(MOB?150:110);e.style.left=clamp(isFinite(sx)?sx:w/2,ew/2+6,w-ew/2-6)+'px';e.style.top=top+'px';
   try{const tt=performance.now()/1000;SHOT_RAMP.list.forEach(R=>{if(!R.st)return;if(R.live){R.st.material.map.offset.y=-(tt*1.6)%1;R.st.material.color.setHex(0xffe53b);R.st.material.opacity=.75+.25*Math.sin(tt*9);}else{R.st.material.color.setHex(0x2f6b4a);R.st.material.opacity=.55;}});}catch(x){}}
@@ -6702,6 +6705,11 @@ function shotPitch(){const M=S.mode;if(!M||M.done||!M.call)return;const F=flight
   if(F&&F!==M.f0&&F.tr){M.f0=F;const tr=F.tr;if(tr.foul){msg='FOUL \u00B7 0';}else{const P=tr.pts,RP=tr.ramp,q=RP||(F.play&&F.play.type==='hr')?P[P.length-1]:tr.land||P[P.length-1],e=P[P.length-1],ang=Math.atan2(e.x,-e.z)/DEG;let apex=0;for(let i=0;i<(RP?RP.i:P.length);i+=3)if(P[i].y>apex)apex=P[i].y; /* (off a ramp: it is a grounder or a fly by what it did before the ramp, and its distance is where it finally came down) */
       const hr=F.play&&F.play.type==='hr',kind=(hr&&!RP)||apex>=7?'fly':apex<2.4?'ground':'line',ft=Math.round((hr&&tr.dist?tr.dist:Math.hypot((kind==='ground'||RP?e:q).x,(kind==='ground'||RP?e:q).z))*3.281),inZ=ang>=c.z.a&&ang<=c.z.b,okK=c.k==='any'||c.k===kind;
       if(inZ&&okK){pts=c.v+ft;msg=(RP?'OFF THE RAMP \u00B7 +':'ON THE MONEY \u00B7 +')+c.v+' +'+ft+' FT';col='#3ddc6a';M.good++;}else{pts=-c.v;msg=(inZ?(c.k==='fly'?'NEEDED IT IN THE AIR':'NEEDED IT ON THE GROUND'):'WRONG FIELD')+' \u00B7 \u2212'+c.v;col='#ff5a4a';}}}
+  /* GETTING THE RIGHT PITCH IS PART OF IT: a take costs nothing unless the pitch was a strike in the third the call is asking for. The call stays up until you swing or let your pitch go by. */
+  {const swung=(M.swN||0)!==(M.swS||0),hit=msg!=='NO CONTACT \u00B7 0';M.swS=M.swN||0;M.cp=(M.cp||0)+1;
+    if(!swung&&!hit){let yours=false;try{const si=shotIn(pitch),col=si>1/3?1:si<-1/3?-1:0;yours=!!pitch.inZone&&col===shotWant(c);}catch(e){}
+      if(!yours){M.ft=(M.ft||0)+1;S.balls=0;S.strikes=0;try{timing('GOOD TAKE \u00B7 NOT YOUR PITCH','#7fe6ff',2.4);}catch(e){}try{shotHud();hud();}catch(e){}return;}
+      msg='THAT WAS YOUR PITCH \u00B7 0';col='#ffb02e';}}
   M.np++;M.rs+=pts;M.total+=pts;S.balls=0;S.strikes=0;try{timing(msg,col,3);}catch(e){}
   const need=shotNeed(M.round);if(M.rs>=need){const left=10-M.np,bonus=left*150;M.total+=bonus;M.best=Math.max(M.best,M.round);M.round++;M.np=0;M.rs=0;try{pop('ROUND '+M.round,'METER FILLED'+(bonus?' \u00B7 +'+bonus+' FOR '+left+' PITCH'+(left===1?'':'ES')+' SAVED':'')+' \u00B7 NEXT: '+shotNeed(M.round).toLocaleString(),'hot',true);cheer(.25,2);}catch(e){}}
   else if(M.np>=10){M.done=true;M.endAt=now;shotHud();return;}shotCall();try{hud();}catch(e){}}
