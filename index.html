@@ -1207,7 +1207,7 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
     </div>
     <div id="ldbar" data-t="LOADING" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 916</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 917</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -1755,7 +1755,10 @@ function pdTick(){if(PD.ph===0){if(!PD._ph0){PD._ph0=true;pdFB();}}else PD._ph0=
     else{ // THE RING CLOSES ON THE TARGET ITSELF, out at the plate: it shrinks onto the yellow circle there, centred on it exactly
       const Q=pdQ(),u=clamp(el/Q.T,0,1.05),r=$('pdring'),h=$('hud').getBoundingClientRect(),W=h.width,H=h.height;
       _s0.set(PD.tx,PD.ty,.02).project(camera);const cx=(_s0.x*.5+.5)*W,cy=(-_s0.y*.5+.5)*H;_s0.set(PD.tx+.0875,PD.ty,.02).project(camera);const mp=Math.max(5,Math.abs((_s0.x*.5+.5)*W-cx)),R=mp*(1+Math.max(0,1-u/.84)*6.5)+2;
-      PD.tapK=Math.max(0,1-u/.84)*6.5;r.classList.remove('rq0','rq1','rq2');r.style.opacity='';r.style.width=r.style.height=(R*2)+'px';r.style.transform='translate('+(cx-R)+'px,'+(cy-R)+'px)';r.style.borderColor=Math.abs(el-Q.T*.84)<pdWin()?'#39ff6a':'#fff';if(el>=Q.T*1.06)pdThrow(.3);}
+      PD.tapK=Math.max(0,1-u/.84)*6.5;r.classList.remove('rq0','rq1','rq2');r.style.opacity='';r.style.width=r.style.height=(R*2)+'px';r.style.transform='translate('+(cx-R)+'px,'+(cy-R)+'px)';r.style.borderColor=Math.abs(el-Q.T*.84)<pdWin()?'#39ff6a':'#fff';
+      /* TAP! FOR THE RELEASE TOO: as the closing ring comes onto the target the same green TAP! goes up that marks full power, a beat ahead so the thumb can answer it */
+      try{let cu=$('pdcue');if(!cu){cu=document.createElement('div');cu.id='pdcue';r.parentNode.appendChild(cu);}const dT=el-Q.T*.84,showT=dT>-.13&&dT<.05;if(showT){cu.textContent='TAP!';cu.style.transform='translate('+cx+'px,'+(cy-(mp*7.5+2)-34)+'px) translate(-50%,-50%)';}cu.style.display=showT?'block':'none';}catch(x){}
+      if(el>=Q.T*1.06)pdThrow(.3);}
     return;}
   if(PD.ph===2){if(now-PD.wuT>=1.0){const pt=PD.pt;try{MX.pit.obj.updateMatrixWorld(true);MX.pit.hand.getWorldPosition(pt.rel);}catch(e){}pt.t0=now;PD.ph=3;ball.visible=true;ballShadow.visible=true;SND.pitch();if(!PD.drillOn&&(PD.grade===2||PD.jzOn)){try{sfx('crush',PD.grade===2?.75:.6,PD.jzOn?.8:1);}catch(e){}} /* the turbo whoosh goes with the ball leaving his hand, not with the tap */pdDecide();}return;}
   if(PD.ph===3){const pt=PD.pt,u=(now-pt.t0)/pt.dur;pitchPos(pt,Math.min(u,1.04),ball.position);ball.scale.setScalar(.62);ballShadow.scale.setScalar(.1); /* a smaller ball out of your pitcher's hand: it reads as quicker */ /* its true size, as when batting (it had been left at the blown-up size of the last ball in flight) */if(u<1){try{trail(pt,pt.P.col||(PD.grade===2?[1,.85,.25]:[1,1,1]),u<.75,true,pt.P.tp||'thin');}catch(e){}} /* every pitch leaves a streak: seen from behind the mound through a long lens, the streak is what reads as speed */ballShadow.position.set(ball.position.x,.02,ball.position.z);
@@ -3758,6 +3761,22 @@ const PERKS2={RAZOR:{n:'CLUTCH GENE',d:'Runner on second or third: the contact r
   ZEPHRA:{n:'HIT AND RUN',d:'Runner on first: the contact ring is 10% bigger.',c:'Nothing with first base open.'},
   CRASH:{n:'HITTER\u2019S COUNT',d:'Ahead in the count: squared-up balls come off 4% harder.',c:'Nothing when behind.'},
   GORMAK:{n:'DUCKS ON THE POND',d:'Two or more runners on: the ball comes off 5% harder.',c:'Nothing with fewer.'}};
+/* A THIRD PERK FOR EVERY HITTER, ALL ABOUT HOW THE BALL COMES OFF THE BAT: the angle it leaves at and how hard. Each shapes that hitter's contact toward the kind of ball he is known for. */
+const PERKS3={RAZOR:{n:'LINE-DRIVE MACHINE',d:'His launch angles are pulled toward a line drive (about 17 degrees).'},
+  VREL:{n:'LIFT',d:'Squared-up balls leave 3 degrees higher.'},
+  XENON:{n:'WORM BURNER',d:'Ground balls come off the bat 6% harder.'},
+  BRICKHOUSE:{n:'BARREL',d:'Squared up between 24 and 32 degrees, the ball leaves 5% harder.'},
+  DRAAK:{n:'TOPSPIN LASERS',d:'Line drives (8 to 18 degrees) leave 5% harder.'},
+  VANTA:{n:'BACKSPIN',d:'Fly balls (25 to 35 degrees) leave 4% harder and carry.'},
+  ZEPHRA:{n:'HIGH CHOPPER',d:'Balls beaten into the ground come off 6% harder and are tough to field.'},
+  CRASH:{n:'LOFT',d:'Power swings leave 4 degrees higher.'},
+  GORMAK:{n:'FLAT BAT',d:'No pop-ups: anything above 38 degrees is brought back down toward it.'}};
+function perk3Of(b){try{return PERKS3[b.name]||null;}catch(e){return null;}}
+/* returns [new launch angle, exit-speed multiplier]; q = how well it was squared up, pw = a power swing */
+function perk3(b,la,q,pw){let m=1;try{switch(b&&b.name){
+  case 'RAZOR':if(q>.5)la+=(17-la)*.22;break;case 'VREL':if(q>.7)la+=3;break;case 'XENON':if(la<8)m=1.06;break;
+  case 'BRICKHOUSE':if(q>.8&&la>=24&&la<=32)m=1.05;break;case 'DRAAK':if(la>=8&&la<=18)m=1.05;break;case 'VANTA':if(la>=25&&la<=35)m=1.04;break;
+  case 'ZEPHRA':if(la<6)m=1.06;break;case 'CRASH':if(pw)la+=4;break;case 'GORMAK':if(la>38)la=38+(la-38)*.45;break;}}catch(e){}return [la,m];}
 function perk2Of(b){try{return PERKS2[b.name]||null;}catch(e){return null;}}
 function perk2(b){const o={r:1,v:1};try{if(!b||!PERKS2[b.name])return o;const B=S.bases,n=(B[0]?1:0)+(B[1]?1:0)+(B[2]?1:0),first=S.balls+S.strikes===0;switch(b.name){
   case 'RAZOR':if(B[1]||B[2])o.r=1.1;break;case 'VREL':if(first)o.v=1.04;break;case 'XENON':if(S.outs===0&&n===0)o.r=1.12;break;
@@ -4629,7 +4648,7 @@ function tryContact(){flight_pop=false;if(pitch.hbp){swing.done=true;swing.miss=
   // spray: timing first, then pitch location (inside pulls, outside goes the other way) and bat-path scatter
   let phi=SHT?(MX.lefty?-1:1)*nS*42+pitch.tx/.28*5+(pitch.tx-aim.x)/R*4+gs()*8:(MX.lefty?-1:1)*n*36+pitch.tx/.28*11+(pitch.tx-aim.x)/R*8+gs()*20; /* (in the gauntlet the timing decides the field: where the pitch was and the luck of the bat path count for much less, so early is pulled and late goes the other way every time) */if(tipped)phi+=rand(-1,1)*50;
   let v=(pw?47:37)*(.5+.5*q)*b.pwr*(tb?1.22:1)*(S.over&&S.overOn?1.14:1)*rand(.9,1.07);
-  try{const og2=MX.lefty?-1:1;if(perkOn(b,'RAZOR')&&S.strikes===2){v*=.95;perkSay(b);}if(perkOn(b,'VREL')&&pitch.ty<.72&&!tipped)perkSay(b);if(perkOn(b,'BRICKHOUSE')&&q>.8){v*=1.045;perkSay(b);}if(perkOn(b,'DRAAK')&&b.hb>0&&!b.badUsed){b.badUsed=true;v*=1.14;perkSay(b);}if(perkOn(b,'VANTA')){if(phi*og2>9){v*=1.05;perkSay(b);}else if(phi*og2<-9)v*=.97;}if(perkOn(b,'ZEPHRA')&&la>28)v*=.96;{const k2=perk2(b);if(k2.v!==1&&q>.6){v*=k2.v;perkSay(b,perk2Of(b));}else if(k2.r!==1&&q>.5)perkSay(b,perk2Of(b));}}catch(e){} /* card perks that change how the ball comes off the bat */
+  try{const og2=MX.lefty?-1:1;if(perkOn(b,'RAZOR')&&S.strikes===2){v*=.95;perkSay(b);}if(perkOn(b,'VREL')&&pitch.ty<.72&&!tipped)perkSay(b);if(perkOn(b,'BRICKHOUSE')&&q>.8){v*=1.045;perkSay(b);}if(perkOn(b,'DRAAK')&&b.hb>0&&!b.badUsed){b.badUsed=true;v*=1.14;perkSay(b);}if(perkOn(b,'VANTA')){if(phi*og2>9){v*=1.05;perkSay(b);}else if(phi*og2<-9)v*=.97;}if(perkOn(b,'ZEPHRA')&&la>28)v*=.96;{const p3=perk3(b,la,q,pw);if(p3[0]!==la||p3[1]!==1){la=p3[0];v*=p3[1];perkSay(b,perk3Of(b));}}{const k2=perk2(b);if(k2.v!==1&&q>.6){v*=k2.v;perkSay(b,perk2Of(b));}else if(k2.r!==1&&q>.5)perkSay(b,perk2Of(b));}}catch(e){} /* card perks that change how the ball comes off the bat */
   if(chase>0){ // off the end, off the handle, beaten into the ground or popped up
     v*=1-.45*chase;la+=(pitch.ty<ZONE.y0?-16:pitch.ty>ZONE.y1?20:0)*chase;phi+=(pitch.tx<ZONE.x0?-1:pitch.tx>ZONE.x1?1:0)*14*chase;la=clamp(la,-25,70);}
   // The big-league pop-up: getting under the ball, or being badly off on timing, can send it straight up.
@@ -6698,7 +6717,7 @@ const SQ_POS={CF:[50,11],LF:[17,25],RF:[83,25],SS:[34,44],'2B':[66,44],'3B':[16,
 function sqFace(b){try{const F=MUGS[b.name],u=(F&&F.url)||MUGSAVE[b.name];return u?'<img src="'+u+'" alt="">':'<s>'+b.num+'</s>';}catch(e){return '<s>'+b.num+'</s>';}}
 let sqStaff=0;
 function bcardShow(i){const B=$('bcin'),isP=i<0;sqPick=i;let h='';if(isP){const st=STAFF[sqStaff]||STAFF[mypI],o=staffOvr(st);$('bcpen').textContent=sqStaff===mypI?'YOUR STARTER':'MAKE HIM YOUR STARTER';$('bcpen').disabled=sqStaff===mypI;B.dataset.tier=tierOf(o);h='<div class="in"><div class="tm"><span>TRANQUILITY COMETS</span><span>#'+st.num+'</span></div><div class="pic"><s>'+st.num+'</s><span class="pos">P</span><span class="gem">'+o+'</span></div><div class="nm"><b>'+st.n+'</b><small>PITCHER · THROWS '+(st.hand==='L'?'LEFT':'RIGHT')+' · '+tierOf(o).toUpperCase()+'</small></div><div class="st">'+['FB','SL','CB','CH'].map((a,k)=>'<span><b>'+Math.max(st.p[k][0],st.p[k][2])+'</b>'+a+'</span>').join('')+'</div><div class="pk"><b>\u2605 '+st.pk[0]+'</b> '+st.pk[1]+'<br><b>'+st.d+'</b></div></div>';}
-  else{const b=LINEUP[i],o=ovrBat(b),k=perkOf(b),k2=perk2Of(b),g=v=>statGrade(v)+gradeMod(v);B.dataset.tier=tierOf(o);h='<div class="in"><div class="tm"><span>TRANQUILITY COMETS</span><span>BATS '+(['1ST','2ND','3RD','4TH','5TH','6TH','7TH','8TH','9TH'][i])+'</span></div><div class="pic">'+sqFace(b)+'<span class="pos">'+(POS_BY[b.name]||'DH')+'</span><span class="gem">'+o+'</span></div><div class="nm"><b>'+bdn(b)+'</b><small>#'+b.num+' · BATS '+(b.lh?'LEFT':'RIGHT')+' · '+tierOf(o).toUpperCase()+'</small></div><div class="st"><span><b>'+g(b.pwr)+'</b>POWER</span><span><b>'+g(b.con)+'</b>CONTACT</span><span><b>'+g(b.spd)+'</b>SPEED</span></div><div class="pk">'+(k?'<b>★ '+k.n+'</b> '+k.d:'')+(k2?'<br><b>★ '+k2.n+'</b> '+k2.d:'')+'</div></div>';}
+  else{const b=LINEUP[i],o=ovrBat(b),k=perkOf(b),k2=perk2Of(b),g=v=>statGrade(v)+gradeMod(v);B.dataset.tier=tierOf(o);h='<div class="in"><div class="tm"><span>TRANQUILITY COMETS</span><span>BATS '+(['1ST','2ND','3RD','4TH','5TH','6TH','7TH','8TH','9TH'][i])+'</span></div><div class="pic">'+sqFace(b)+'<span class="pos">'+(POS_BY[b.name]||'DH')+'</span><span class="gem">'+o+'</span></div><div class="nm"><b>'+bdn(b)+'</b><small>#'+b.num+' · BATS '+(b.lh?'LEFT':'RIGHT')+' · '+tierOf(o).toUpperCase()+'</small></div><div class="st"><span><b>'+g(b.pwr)+'</b>POWER</span><span><b>'+g(b.con)+'</b>CONTACT</span><span><b>'+g(b.spd)+'</b>SPEED</span></div><div class="pk">'+(k?'<b>★ '+k.n+'</b> '+k.d:'')+(k2?'<br><b>★ '+k2.n+'</b> '+k2.d:'')+(perk3Of(b)?'<br><b>★ '+perk3Of(b).n+'</b> '+perk3Of(b).d:'')+'</div></div>';}
   B.innerHTML=h;$('bcup').hidden=$('bcdn').hidden=isP;$('bcpen').hidden=!isP;if(!isP){$('bcup').disabled=i<=0;$('bcdn').disabled=i>=LINEUP.length-1;}$('bcard').hidden=false;}
 function sqMove(d){const i=sqPick,j=i+d;if(i<0||j<0||j>=LINEUP.length)return;const t=LINEUP[i];LINEUP[i]=LINEUP[j];LINEUP[j]=t;try{localStorage.setItem('mm_order',JSON.stringify(LINEUP.map(q=>q.name)));}catch(x){}buzz(20);try{badge1('skipper');}catch(x){}squadOpen();bcardShow(j);}
 setTimeout(()=>{try{$('bcx').addEventListener('click',e=>{e.stopPropagation();$('bcard').hidden=true;sqPick=-1;});$('bcup').addEventListener('click',e=>{e.stopPropagation();sqMove(-1);});$('bcdn').addEventListener('click',e=>{e.stopPropagation();sqMove(1);});$('bcpen').addEventListener('click',e=>{e.stopPropagation();$('bcard').hidden=true;staffApply(sqStaff,false);squadOpen();});$('bcard').addEventListener('click',e=>e.stopPropagation());}catch(e){}},0);
