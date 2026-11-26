@@ -1218,7 +1218,7 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
     </div>
     <div id="ldbar" data-t="LOADING" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 935</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 936</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -2091,7 +2091,7 @@ const glowTex=tex(64,64,(g)=>{const r=g.createRadialGradient(32,32,0,32,32,32);r
 const WALL_H=3.4,DUGS=[];
 // THE PORCH: from the left-field pole round to left-centre the wall is 30 feet high (9.1 m). A ball has to clear all of it to be a home
 // run; anything lower clangs off it and stays in play. THE COVE: a stretch of right field where the seats give way to an open lava vent.
-const BIG_H=11.6, /* 38 feet */BIG_PHI=-.48,BIG_I=7, /* (it ends at 27.5 degrees, a little short of the 379 marker) */ARC_H=8.6,ARC_W=19,PAT_D=6.5,PAT_H=2.3, /* (the first PAT_D metres behind the wall are a short bank of seats climbing PAT_H; from there to the back rail it is an open patio) */ /* THE ARCADE DECK: the top of the right-field wall is a deep standing-room deck (it was a seven-metre walkway). A ball that just clears the wall comes down among the fans on it; only a longer one carries the back rail into the lava. */wallH=phi=>phi<BIG_PHI?BIG_H:phi>.1765&&phi<=PI/4+.001?ARC_H:WALL_H,COVE_A0=.1745,COVE_A1=.7854,CV0=22,CV1=36,COVE={};
+const BIG_H=11.6, /* 38 feet */BIG_PHI=-.48,BIG_I=7, /* (it ends at 27.5 degrees, a little short of the 379 marker) */ARC_H=8.6,ARC_W=30,PAT_D=6.5,PAT_H=2.3, /* (the first PAT_D metres behind the wall are a short bank of seats climbing PAT_H; from there to the back rail it is an open patio) */ /* THE ARCADE DECK: the top of the right-field wall is a deep standing-room deck (it was a seven-metre walkway). A ball that just clears the wall comes down among the fans on it; only a longer one carries the back rail into the lava. */wallH=phi=>phi<BIG_PHI?BIG_H:phi>.1765&&phi<=PI/4+.001?ARC_H:WALL_H,COVE_A0=.1745,COVE_A1=.7854,CV0=22,CV1=36,COVE={};
 // THE PORCH: in left field the Porch also juts IN toward the plate by seven metres (a short porch, 302 ft down the line), with the seats
 // sitting right on top of it. It steps back out to the normal fence through an angled jog in left-centre.
 const PORCH=0,PORCH2=0, /* (the jutting porch was tried and taken out: left field is the plain tall Porch on the normal fence line. Set these to 7 and 15 to bring it back.) */fenceR0=phi=>Math.abs(phi)<=PI/4?99+23*Math.cos(2*phi)-lerp(PORCH,PORCH2,clamp((phi+PI/4)/(BIG_PHI+PI/4),0,1))*clamp((BIG_PHI-phi)/.0436,0,1):99,
@@ -2469,8 +2469,8 @@ gl_FragColor=vec4(col,1.0);
         {const cp=g.createLinearGradient(0,0,w,0);[[0,'#6a6e7c'],[.2,'#f4f6ff'],[.3,'#9aa0b2'],[.5,'#5a5e6c'],[.7,'#f4f6ff'],[.8,'#9aa0b2'],[1,'#6a6e7c']].forEach(q=>cp.addColorStop(q[0],q[1]));g.fillStyle=cp;g.fillRect(0,0,w,h*.05);g.fillStyle='rgba(0,0,0,.35)';for(let x=0;x<w;x+=14)g.fillRect(x,h*.012,5,h*.038);}});bt.anisotropy=ANISO;
       const prof=[[0,0],[3.1,0],[3.3,1],[3.3,13],[2.6,16.5],[1.25,20],[1.15,24],[1.5,24.3],[1.5,25.3],[0,25.3]].map(q=>new T.Vector2(q[0],q[1])),bm=new T.Mesh(new T.LatheGeometry(prof,14),new T.MeshBasicMaterial({map:bt,fog:false}));
       const uv=bm.geometry.attributes.uv,ps=bm.geometry.attributes.position;for(let k=0;k<uv.count;k++)uv.setY(k,1-ps.getY(k)/25.3);
-      const ph=lerp(-PI/4,PI/4,(CV0+3)/N);bm.scale.setScalar(1.5);bm.position.copy(pol(fenceR(ph)+34,ph,0));bm.rotation.z=.14;bm.rotation.y=-ph;scene.add(bm);
-      [[26,0xff5a1e,.5,3],[16,0xfff0d0,.35,30]].forEach(([sz,c,op,y])=>{const sp=new T.Sprite(new T.SpriteMaterial({map:glowTex,color:c,blending:T.AdditiveBlending,depthWrite:false,transparent:true,opacity:op,fog:false}));sp.position.copy(pol(fenceR(ph)+34,ph,y));sp.scale.set(sz,sz*.7,1);scene.add(sp);});} /* a pool of lava-light round its foot and a glint on its shoulder */
+      const ph=lerp(-PI/4,PI/4,(CV0+3)/N);bm.scale.setScalar(1.5);bm.position.copy(pol(fenceR(ph)+ARC_W+15,ph,0));bm.rotation.z=.14;bm.rotation.y=-ph;scene.add(bm);
+      [[26,0xff5a1e,.5,3],[16,0xfff0d0,.35,30]].forEach(([sz,c,op,y])=>{const sp=new T.Sprite(new T.SpriteMaterial({map:glowTex,color:c,blending:T.AdditiveBlending,depthWrite:false,transparent:true,opacity:op,fog:false}));sp.position.copy(pol(fenceR(ph)+ARC_W+15,ph,y));sp.scale.set(sz,sz*.7,1);scene.add(sp);});} /* a pool of lava-light round its foot and a glint on its shoulder */
     // THE VOLCANO: the bay has a source. One of the peaks on its far shore is live: black basalt with rivers of lava running down its
     // flanks into the bay, and a glow over the crater. (A cone and one painted texture.)
     {const vt=tex(512,512,(g,w,h)=>{const bg=g.createLinearGradient(0,0,0,h);bg.addColorStop(0,'#3a1c14');bg.addColorStop(.3,'#241512');bg.addColorStop(1,'#0e0807');g.fillStyle=bg;g.fillRect(0,0,w,h);
