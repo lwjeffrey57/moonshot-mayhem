@@ -1206,7 +1206,7 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
     </div>
     <div id="ldbar" data-t="LOADING" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 906</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 907</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -1618,7 +1618,7 @@ function gtEnter(g){PD.gt=g;PD.gtIn=performance.now();PD.gtK=-1;const kn=$('pdcu
 }
 function gtNext(){const g=PD.gt|0;if(g>=3){PD.gt=0;infoHold=false;gtOff();PD.t=now;try{localStorage.setItem('mm_ptut3','1');}catch(e){}return;}gtEnter(g+1);}
 function gtTick(){const g=PD.gt|0;if(!g)return;if(S.state!=='pduel'||!PD.on){PD.gt=0;infoHold=false;gtOff();return;}const pn=performance.now(),t=(pn-(PD.gtIn||pn))/1000;try{pdPitFix();}catch(e){}
-  if(g===1){const L=pdList(),k=Math.floor(t)%L.length;if(k!==PD.gtK){PD.gtK=k;PD.pk=k;pdGoHome();[...$('pdbtns').children].forEach((b,j)=>b.classList.toggle('show',j===k));try{pdCur();$('pdgo').textContent='PITCH';PD.gtName=L[k].n+' · '+pdMph(L[k])+' MPH';}catch(e){}}} /* each pitch in turn, a second apiece: its key lights, the dial names it, the ball moves to its spot and the red line bends its way */
+  if(g===1){const L=pdList(),k=Math.floor(t*1.9)%L.length;if(k!==PD.gtK){PD.gtK=k;PD.pk=k;pdGoHome();[...$('pdbtns').children].forEach((b,j)=>b.classList.toggle('show',j===k));try{pdCur();$('pdgo').textContent='PITCH';PD.gtName=L[k].n+' · '+pdMph(L[k])+' MPH';}catch(e){}}} /* each pitch in turn, a second apiece: its key lights, the dial names it, the ball moves to its spot and the red line bends its way */
   else if(g===2){const kx=Math.sin(t*2.1)*34,ky=Math.sin(t*1.3+1)*26;try{pdHold(kx,ky);const kn=$('pdcur');kn.style.transition='none';kn.style.transform='translate('+kx.toFixed(1)+'px,'+ky.toFixed(1)+'px)';}catch(e){}} /* the cap moves by itself; the ball and its line follow */
   else if(g===3){ /* one loop: the green dial is pressed, it becomes PITCH! and the ring closes on the target, PITCH! is pressed as the ring turns green */
     const PWD=PD3?1.25:0,c=t%(2.3+PWD),P=$('pd'),go=$('pdgo'),r=$('pdring');let pe=$('pdpwr'),pg=$('pdpwg');if(PD3&&!pe){const par=r.parentNode;pg=document.createElement('div');pg.id='pdpwg';par.appendChild(pg);pe=document.createElement('div');pe.id='pdpwr';par.appendChild(pe);}
@@ -3992,6 +3992,11 @@ function updateRunners(dt){
   }
 }
 // ── The throw back in after a hit is fielded (visual only): the fielder winds up and the ball flies to the base ahead of the lead runner.
+/* A ROUTINE IS WIRED UP THE FIRST TIME IT IS PLAYED, NOT WHEN THE BODY IS BUILT. Every body used to have all eighty-odd walk-ups, celebrations, brawl moves and reactions
+   connected to its skeleton up front, though a game uses a handful. That was most of the memory a body cost and much of the time it took to build. */
+/* ON A COMPUTER, A CLICK OF THE MOUSE WHEEL TOGGLES JUICE: the batting Juice button when you hit, the Juice pitches when you are on the mound. It presses the same on-screen button, so nothing about Juice itself changes. */
+addEventListener('mousedown',e=>{if(e.button!==1)return;try{e.preventDefault();if(PD.on){const b=$('pdjuice');if(b&&!b.disabled)b.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true,cancelable:true,pointerType:'mouse'}));}else if(S.state!=='title'&&S.state!=='over'&&!paused){juiceTap();}}catch(x){}},true);addEventListener('auxclick',e=>{if(e.button===1)e.preventDefault();},true);
+function lazyAct(mixer,clip,ent){let _a=null;Object.defineProperty(ent,'a',{get(){if(!_a){_a=mixer.clipAction(clip);_a.play();_a.setEffectiveWeight(0);}return _a;},enumerable:false});Object.defineProperty(ent,'made',{get(){return !!_a;},enumerable:false});return ent;}
 const THROW_REL=.77;let THROW_CAP=true;try{THROW_CAP=localStorage.getItem('mm_throwcap')!=='0';}catch(e){} /* THE FIELDERS' THROW IS THE CAPTURED ONE: a step, a high release and a follow-through, filmed and converted from a phone capture. (The stock throw is still loaded; mm_throwcap=0 brings it back.) */
 function updateThrow(){
   if(!(flight&&flight.thr))return;const Th=flight.thr;if(Th.bt===undefined)Th.bt=Th.t0+THROW_REL;const e=now-Th.bt;
@@ -4145,7 +4150,7 @@ function qteStart(kind,noPA){QT.noPA=!!noPA;goHide();try{if(PD.on){$('pd').style
   QT.mx=Bp[0]+u[0]*1.5;QT.mz=Bp[1]+u[1]*1.5;{let nx=u[1],nz=-u[0];if(nx*(0-Bp[0])+nz*(-19.4-Bp[1])<0){nx=-nx;nz=-nz;}QT.nx=nx;QT.nz=nz;} // the side-on camera stands on the infield side of the line
   QT.gold=false;QT.stop=!DBG.mash&&!M.arrows&&(DBG.stop||(!QT.mash&&qteSeen&&Math.random()<.42));if(QT.stop)QT.mash=false; /* the third kind: one press, on a moving needle */
   QT.pb=MX.pitCur;pitcherModel(0); /* the man making the play at the bag is a fielder, so he wears the fielders' body, whoever is pitching */
-  QT.b={n:'run',t:now,loop:true};QT.f={n:'b_stance',t:now,loop:true};
+  QT.b={n:'run',t:now,loop:true};QT.f={n:QT.M&&QT.M.soft?'f_ready':'b_stance',t:now,loop:true} /* (a ball he has to field: he waits in a fielder's ready crouch, not the fighting stance used for a play at the bag) */;
   // the men who are really standing there step out of the picture for the close-up; they are put back afterwards
   QT.hid=[];RUN.list.forEach(R=>{if(R.fig.root.visible){QT.hid.push(R.fig.root);R.fig.root.visible=false;}});fielders.forEach(f=>{const r=f.fig.root;if(r.visible&&((!f.isP&&Math.hypot(r.position.x-Bp[0],r.position.z-Bp[1])<9)||(M.soft&&!f.of))){QT.hid.push(r);r.visible=false;}});
   ball.visible=false;ballShadow.visible=false;pop(kind==='dmake'&&!S.dmPit?'THROW HIM OUT!':M.call,'','');buzz([30,30,60]);crowdRise(.8,3,true);hud();}
@@ -4167,7 +4172,7 @@ function qteKey(d){if(CQ.on&&CQ.f===flight&&S.state==='flight'){cqKey();return;}
   qteShow();}
 function qteDone(ok){QT.ph='out';QT.ok=ok;QT.rv=QT.M&&QT.M.def?!ok:ok; /* rv: the RUNNER wins the collision. When the player is the fielder, winning means the runner does not. */QT.t1=now;QT.hit=false;qteSeen=true;try{localStorage.setItem('mm_qte','1');}catch(e){}
   $('hud').classList.remove('qon','qm');setTimeout(()=>{$('qte').hidden=true;},ok?350:120);
-  if(QT.M&&QT.M.soft){QT.b={n:'run',t:now,loop:true};QT.f={n:'b_stance',t:now,loop:true};if(ok)tone('triangle',660,990,.12,.3);else tone('sawtooth',140,70,.25,.35);} /* a race to the bag: no contact, he just runs through it */
+  if(QT.M&&QT.M.soft){QT.b={n:'run',t:now,loop:true};QT.f={n:QT.M&&QT.M.soft?'f_ready':'b_stance',t:now,loop:true} /* (a ball he has to field: he waits in a fielder's ready crouch, not the fighting stance used for a play at the bag) */;if(ok)tone('triangle',660,990,.12,.3);else tone('sawtooth',140,70,.25,.35);} /* a race to the bag: no contact, he just runs through it */
   else if(QT.rv&&(QT.kind==='plate'||QT.kind==='dplate'||QT.kind==='dtag3')&&MX.clip.intros.q_takeout&&(DBG.tko||(QT.lastTk!==true&&Math.random()<.55))){QT.lastTk=true;QT.b={n:'q_takeout',t:now-.73,rot:-PI/2,hold:true};SND.zap();buzz([30,30,80]);} /* AT THE PLATE he can just run the catcher over: lowers the shoulder and goes through him */
   else if(QT.rv){QT.lastTk=false;const sl=MX.clip.intros.q_slide&&(DBG.slide||Math.random()<.6);QT.b={n:sl?'q_slide':'q_flykick',t:now};SND.zap();buzz([20,30,60]);if(sl)noise(.5,'bandpass',900,300,.35,.7,.15);} /* more often than not he goes in feet first, cleats up; otherwise the flying kick. Either way the fielder is sent flying */ else{QT.b={n:'run',t:now,loop:true};QT.f={n:'b_jab',t:now+.12};if(QT.M&&QT.M.def){SND.zap();buzz([20,30,60]);}else tone('sawtooth',140,70,.25,.35);}}
 function qteTick(){const Q=QT,d0=9.5,d1=2.6,pe=now-Q.tp;
@@ -5310,7 +5315,7 @@ function setupClip(obj,clip,B,sk){
   C.intros={};obj.animations.filter(c=>/^[wdcbq]_/.test(c.name)||/^st_/.test(c.name)||c.name==='a_look'||c.name==='run'||/^p_(loser|twerk|chicken|runman|fist|clap|threat|dying|boogie|joy|shuffle|wavy|town|chick2|outta|float|dosido|shrug)$/.test(c.name)).forEach(c=>{keep(c);
     if(c.name==='q_flykick'||c.name==='q_slide'||c.name==='q_takeout'||c.name==='run'||c.name==='w_hurricane'){const ht=c.tracks.find(t=>/Hips\.position$/.test(t.name));if(ht){const v=ht.values,z0=c.name==='q_takeout';for(let k=z0?0:3;k<v.length;k+=3){v[k]=z0?0:v[0];v[k+2]=z0?0:v[2];}}} /* these two play on the spot: the game moves him, so the kick lands him on the bag instead of carrying him past it */
     const loop=c.duration<2.5,ref=hipsAt(c,loop?[0,1,2,3,4,5,6,7].map(k=>k/8*c.duration):[c.duration-.02]);
-    const a=mixer.clipAction(c);a.play();a.setEffectiveWeight(0);C.intros[c.name]={a,dur:c.duration,loop,off:{x:home.x-ref.x,z:home.z-ref.z},loc:{x:-(ref.x-obj.position.x),z:-(ref.z-obj.position.z)}};}); // loc: where the routine sits relative to the model's own origin
+    C.intros[c.name]=lazyAct(mixer,c,{dur:c.duration,loop,off:{x:home.x-ref.x,z:home.z-ref.z},loc:{x:-(ref.x-obj.position.x),z:-(ref.z-obj.position.z)}});}); // loc: where the routine sits relative to the model's own origin
 }
 const WHIFF_CUT=window.__wc||[.45,.25],WHIFF_HOLD=window.__wh||1.05; /* THE MISS STOPS AT THE FOLLOW-THROUGH: the clip's stagger and extra steps afterwards are never reached; he finishes the swing, holds it a beat and comes back to his stance */ // // seconds of the swing-and-miss clip shown after the miss before he resets
 function batterOpacity(k){const set=m=>{if(m){m.transparent=k<1;m.opacity=k;}};
@@ -5356,7 +5361,7 @@ function updateClip(dt){
   const intro=(S.state==='walkup'&&C.bi===S.bi)||wkPD()?C.intros[S.walkClip||WALK.by[curBatter().name]]:null;let base=intro?0:1;
   C.upW=intro&&S.walkClip==='w_walkin'?1:0;C.dnW=intro&&S.walkClip==='w_sad'?1:0;C.flatW=intro&&S.walkClip==='w_pushup'?1:0;
   C.liftW=(intro&&S.walkClip==='w_lift')||(S.state==='trot'&&TROT.cele&&TROT.clip==='w_lift')||(S.state==='celly2'&&D2.clip==='w_lift')?1:0;
-  for(const k in C.intros)C.intros[k].a.setEffectiveWeight(0);
+  for(const k in C.intros)if(C.intros[k].made)C.intros[k].a.setEffectiveWeight(0);
   if(S.kOut&&C.bi===S.kOut.bi){const e=now-S.kOut.t,ci=C.intros[S.kOut.clip],k=ci&&e<DEFEAT?ease(clamp(e/.3,0,1))*ease(clamp((DEFEAT-e)/.3,0,1)):0;
     if(k>0){ci.a.time=Math.min(ci.dur-.01,e);ci.a.setEffectiveWeight(k);base=1-k;o.position.x+=ci.off.x*k;o.position.z+=ci.off.z*k;}
     if(S.kOut.rob&&e>-.05&&e<DEFEAT){o.position.x=23.5;o.position.z=-25.5;}}
@@ -5532,7 +5537,7 @@ function setupPitcher(obj,custom){hev('pit');
   // glove on the non-throwing hand
   {const gl=mkGlove('fielder');gl.position.set(0,1,0);(th===hand?lh:hand).add(gl);}
   mixer.setTime(0);
-  const taunts={};obj.animations.filter(c=>/^[pb]_/.test(c.name)).forEach(c=>{c.tracks=c.tracks.filter(t=>/quaternion$/.test(t.name)||/Hips\.position$/.test(t.name));const a=mixer.clipAction(c);a.play();a.setEffectiveWeight(0);taunts[c.name]={a,dur:c.duration};});
+  const taunts={};obj.animations.filter(c=>/^[pb]_/.test(c.name)||c.name==='f_ready').forEach(c=>{c.tracks=c.tracks.filter(t=>/quaternion$/.test(t.name)||/Hips\.position$/.test(t.name));taunts[c.name]=lazyAct(mixer,c,{dur:c.duration});});
   const defs=obj.animations.filter(c=>/^d_/.test(c.name)).map(c=>{c.tracks=c.tracks.filter(t=>/quaternion$/.test(t.name)||/Hips\.position$/.test(t.name));const a=mixer.clipAction(c);a.play();a.setEffectiveWeight(0);a.dur=c.duration;return a;});
   MX.pit={obj,mixer,pact,taunts,defs,hand:th,tRel,dur:clip.duration};
   showChunky(pitcher,false);
@@ -5713,7 +5718,11 @@ if(T.FBXLoader)loadBuf('bat.txt').then(buf=>{
   const mat=new T.MeshPhongMaterial({map:wood,shininess:70,specular:0x554433}),mesh=new T.Mesh(g,mat);mesh.castShadow=true;
   bat.children.filter(ch=>ch.isMesh).forEach(ch=>bat.remove(ch));bat.add(mesh);bat.userData.wood=mat;
 }).catch(e=>console.warn('bat model unavailable, using built-in bat',e));
-const loadImg=(url,n=0)=>new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=()=>{if(n<3)setTimeout(()=>loadImg(url+(n?'':'?r=1'),n+1).then(res,rej),600*(n+1));else rej(new Error(url));};i.src=url;}); /* (a picture that fails is tried again as well) */
+/* ON A PHONE THE PLAYERS' SKINS ARE LOADED SMALLER. Fifty-odd character textures at 1024 x 1024 came to roughly 300 MB on the graphics side alone (and as much again
+   decoded), which with everything else was enough for a phone to shut the page down mid-game. On touch devices the colour maps are brought down to 768 and the
+   surface maps (bumps, shine) to 512: about 180 MB less, on a screen where the difference is hard to see. Computers keep the full size. */
+const texFit=(i,url)=>{try{if(!MOB||/moon_|earth|stars|sky/.test(url)||!/\.jpg/.test(url)||Math.max(i.width,i.height)<1024)return i;const d=/_d\d?\.jpg/.test(url)?768:512,k=d/Math.max(i.width,i.height),c=document.createElement('canvas');c.width=Math.round(i.width*k);c.height=Math.round(i.height*k);c.getContext('2d').drawImage(i,0,0,c.width,c.height);i.onload=i.onerror=null;c.naturalWidth=c.width;c.naturalHeight=c.height;return c;}catch(e){return i;}};
+const loadImg=(url,n=0)=>new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(texFit(i,url));i.onerror=()=>{if(n<3)setTimeout(()=>loadImg(url+(n?'':'?r=1'),n+1).then(res,rej),600*(n+1));else rej(new Error(url));};i.src=url;}); /* (a picture that fails is tried again as well) */
 let clipsP=null;
 // GPU WARM-UP: every texture a newly arrived body or prop brings is handed to the graphics chip one at a time, at quiet moments, the moment it
 // exists, instead of the first time it is drawn (which on a phone was a 200-700 ms freeze in the middle of play, often between pitches)
@@ -5757,8 +5766,11 @@ function loadPlayers(kind){ // body file = character mesh; clips.json = motion-c
   // the simple built-in figures are only a fallback: keep them out of sight while the models load
   const figs=[batter,pitcher,...fielders.filter(f=>!f.isP).map(f=>f.fig)],fallback=fig=>{showChunky(fig,true);if(fig===batter)bat.visible=true;};
   figs.forEach(f=>showChunky(f,false));bat.visible=false;
-  const mkClip=(c,name)=>new T.AnimationClip(name,c.duration,c.tracks.map(t=>{const ts=typeof t.t==='number'?Array.from({length:t.t},(_,i)=>i/30):t.t; // evenly spaced keys are stored as a count
-    return /position$/.test(t.n)?new T.VectorKeyframeTrack('mixamorig'+t.n,ts,t.v):new T.QuaternionKeyframeTrack('mixamorig'+t.n,ts,t.v);}));
+  /* ONE COPY OF EVERY ANIMATION, SHARED BY EVERY BODY. Each player body used to be given its own copy of all the animation data (a hundred-odd clips, for some
+     twenty bodies), and the plain lists it was made from were kept as well: hundreds of megabytes, enough for a phone to shut the page down. The numbers are now
+     packed once, the first time a clip is asked for, and every body's clip points at the same packed data. */
+  const mkClip=(c,name)=>new T.AnimationClip(name,c.duration,c.tracks.map(t=>{if(!t._T){t._T=typeof t.t==='number'?Float32Array.from({length:t.t},(_,i)=>i/30):Float32Array.from(t.t);t._V=Float32Array.from(t.v);t.v=null;if(typeof t.t!=='number')t.t=t._T.length;} // evenly spaced keys are stored as a count
+    return /position$/.test(t.n)?new T.VectorKeyframeTrack('mixamorig'+t.n,t._T,t._V):new T.QuaternionKeyframeTrack('mixamorig'+t.n,t._T,t._V);}));
   clipsP=clipsP||fetch('clips.json').then(r=>r.ok?r.json():Promise.reject(new Error('clips')));
   const own=cfg.clips?fetch(cfg.clips).then(r=>r.ok?r.json():null).catch(()=>null):Promise.resolve(null); // clips made for this body, where we have them
   const imgs=cfg.tex?Promise.all(['d','n','s','g'].map(k=>loadImg(cfg.tex[k]).then(i=>(loadStep(),i)))):Promise.resolve(null);
@@ -5778,8 +5790,8 @@ function loadPlayers(kind){ // body file = character mesh; clips.json = motion-c
     const fitClips=(o,names)=>{const tr=restOf(o),k=tr.$leg/refRest.$leg,q=new T.Quaternion(),v=new V3();
       return names.map(n=>{const c=mkClip(cj[n],n),own=false; /* joint angles are copied as they are (these bodies share one joint layout); only the hips' height is fitted to the body's own legs */
         c.tracks=c.tracks.filter(t=>{const m=/^mixamorig(\w+)\./.exec(t.name);return m&&tr[m[1]];}); /* a body with fewer fingers has no joint for some tracks: left in, the mixer would turn the WHOLE BODY with them */
-        c.tracks.forEach(t=>{const m=/^mixamorig(\w+)\.(quaternion|position)$/.exec(t.name);if(!m)return;const a=refRest[m[1]],b=tr[m[1]];if(!a||!b)return;const V=t.values=Float32Array.from(t.values);
-          if(m[2]==='position'){if(m[1]!=='Hips')return;const op=own?a.pw.clone().invert().multiply(b.pw).invert():null;for(let i=0;i<V.length;i+=3){v.set(V[i],V[i+1],V[i+2]);if(op)v.applyQuaternion(op);v.multiplyScalar(k);V[i]=v.x;V[i+1]=v.y;V[i+2]=v.z;}}
+        c.tracks.forEach(t=>{const m=/^mixamorig(\w+)\.(quaternion|position)$/.exec(t.name);if(!m)return;const a=refRest[m[1]],b=tr[m[1]];if(!a||!b)return;if(m[2]==='position'&&m[1]!=='Hips')return;if(m[2]!=='position'&&!own)return; /* (joint angles are shared as they are; only the hips' height track is copied, because it is refitted to this body's legs) */const V=t.values=Float32Array.from(t.values);
+          if(m[2]==='position'){const op=own?a.pw.clone().invert().multiply(b.pw).invert():null;for(let i=0;i<V.length;i+=3){v.set(V[i],V[i+1],V[i+2]);if(op)v.applyQuaternion(op);v.multiplyScalar(k);V[i]=v.x;V[i+1]=v.y;V[i+2]=v.z;}}
           else if(own){const op=a.pw.clone().invert().multiply(b.pw).invert(),ob=a.w.clone().invert().multiply(b.w);for(let i=0;i<V.length;i+=4){q.set(V[i],V[i+1],V[i+2],V[i+3]).premultiply(op).multiply(ob);V[i]=q.x;V[i+1]=q.y;V[i+2]=q.z;V[i+3]=q.w;}}});
         return c;});};
     const skins=im?makeSkins(im):null,canClone=!!(T.SkeletonUtils&&T.SkeletonUtils.clone); // the character file is read once; every other player is a copy of it
@@ -5798,7 +5810,7 @@ function loadPlayers(kind){ // body file = character mesh; clips.json = motion-c
     }catch(e){console.warn('defence model failed, using the hitters model',e);makeD=make;defSkin=skins&&skins.away;}
     try{setupModel(make(['hit','idle','idle2','strike'].filter(k=>cj[k]).concat(Object.keys(cj).filter(k=>/^[wdcbq]_/.test(k)||/^st_/.test(k)||k==='a_look'||k==='run'||/^p_(loser|twerk|chicken|runman|fist|clap|threat|dying|boogie|joy|shuffle|wavy|town|chick2|outta|float|dosido|shrug)$/.test(k)))),skins&&skins.home);}catch(e){console.warn('batter model failed, using built-in figure',e);fallback(batter);}
     playersDone();
-    const pitNames=['pitch',...Object.keys(cj).filter(k=>/^[pdb]_/.test(k))];
+    const pitNames=['pitch',...Object.keys(cj).filter(k=>/^[pdb]_/.test(k)||k==='f_ready')];
     try{setupPitcher(makeD(pitNames),defSkin);}catch(e){console.warn('pitcher model failed, using built-in figure',e);fallback(pitcher);}
     // The mound's wardrobe. Body 0 is the defence's usual one; the others are fetched quietly once the game is up, and from then on each
     // pitcher in the bullpen wears his own. A body that has not arrived yet (or fails) just means he comes in wearing the usual one.
@@ -5924,7 +5936,7 @@ function updatePitcher(){
     /* THE LEG KICK IS THE POWER BAR. While the power ring swells his leg comes up with it: full power is the full kick, and a pitch thrown with less
        stops the leg where the bar was stopped. Then the throw goes as it always has (the first instant of it carries him from that kick into the delivery). */
     let e=0;if(act){if(pdW1){let pw=0;try{pw=PD.pwOn?pdPwAt(now-PD.pwT):(PD.pw||0);}catch(x){}PD.kickE=.82*clamp(pw,0,1);e=PD.kickE;}else if(pdW&&!PD.style&&PD.kickE!==undefined&&PD.kickE<.8){const e0=now-PD.wuT,tt=e0-.82;e=tt<.14?lerp(PD.kickE,.96,clamp(tt/.14,0,1)):e0;}else e=now-(pdW?PD.wuT:windupT0);}let k=0; /* (while the ring is still closing he winds and holds at the top) */
-    for(const n in P.taunts)P.taunts[n].a.setEffectiveWeight(0);
+    for(const n in P.taunts)if(P.taunts[n].made)P.taunts[n].a.setEffectiveWeight(0);
     if(S.kOut&&S.kOut.taunt&&now>S.kOut.t&&now<S.kOut.t+DEFEAT){const tn=P.taunts[S.kOut.taunt],te=now-S.kOut.t; // struck him out: rub it in
       k=ease(clamp(te/.35,0,1))*ease(clamp((DEFEAT-te)/.35,0,1));tn.a.time=tn.dur<2.5?te%tn.dur:Math.min(tn.dur-.01,te);tn.a.setEffectiveWeight(k);}
     if(S.sTaunt&&!S.kOut){const T=S.sTaunt,te=now-T.t,tn=P.taunts[T.clip];if(te>T.dur||S.state==='windup'||!tn)S.sTaunt=null;
