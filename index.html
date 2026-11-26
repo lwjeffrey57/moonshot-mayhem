@@ -1207,7 +1207,7 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
     </div>
     <div id="ldbar" data-t="LOADING" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 923</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 924</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -4485,7 +4485,7 @@ const G=9.8,DRAG=.0042;
 // measured across to x, and a little grace because the ball is drawn larger than life at distance.
 const LINE_TOL=.3;
 function simulate(p0,v0,spin,opt){spin=spin||{side:0,lift:0};opt=opt||{};const GG=G*(opt.g||1);let tag='',hrY=0,poleT=0,nb=0,hopT=0; // opt.chop: first bounce is a big one; opt.g: a low-gravity pocket; tag: anything unusual that happened to it
-  const p=p0.clone(),v=v0.clone(),pts=[];let t=0,land=null,hr=false,hrT=0,wall=false,wallT=0,foul=false,dist=0,grd=false,eyeT=0,seatT=0,outT=0,outD=0,foulT,bagPast=false,foulOver=false;const dt=1/120;
+  const p=p0.clone(),v=v0.clone(),pts=[];let t=0,land=null,hr=false,hrT=0,wall=false,wallT=0,foul=false,dist=0,grd=false,eyeT=0,seatT=0,seatB=0,outT=0,outD=0,foulT,bagPast=false,foulOver=false;const dt=1/120;
   while(t<(outT?outT+7:hr?14:9)){
     const sp=v.length();v.multiplyScalar(1-DRAG*sp*dt);
     if(p.y>0||v.y>0)v.y-=GG*dt;
@@ -4516,6 +4516,7 @@ function simulate(p0,v0,spin,opt){spin=spin||{side:0,lift:0};opt=opt||{};const G
       if(d>1.3&&d<9&&p.y<hy){const nx=p.x/r,nz=p.z/r,n3x=-.897*nx,n3y=.443,n3z=-.897*nz,vn=v.x*n3x+v.y*n3y+v.z*n3z;
         if(vn<0){if(!eyeT){eyeT=t;const q=p.clone(),w=v.clone();let n=0;while(q.y>0&&n++<2000){const sp2=w.length();w.multiplyScalar(1-DRAG*sp2*dt);w.y-=G*dt;q.addScaledVector(w,dt);}dist=Math.hypot(q.x,q.z);} // distance is where it would have come down
           v.x-=1.62*vn*n3x;v.y-=1.62*vn*n3y;v.z-=1.62*vn*n3z;v.multiplyScalar(.8);p.y=hy+.03;}}} // comes off the panel up and back toward the field
+    if(seatB&&t-seatB>.85){pts.push({x:p.x,y:p.y,z:p.z,t});seatT=t;break;} /* (the hop is short: under a second, then it is somebody's souvenir) */
     if(hr||grd){const d=r-fr,deck=false; // it comes down among the fans: stopped at head height on the lower deck, or by the upper deck and its facade where there is one
       const sy=phi>COVE_A0&&phi<COVE_A1?(d>ARC_W?.7:d>0?ARC_H+.9:0):d>34?0:d>1.5?WALL_H+.3+(d-1.5)*.667+.9:WALL_H+.2*Math.max(0,d)/1.5+.25; // beyond the back row there is nothing: it has left the ballpark and comes down on the Moon // the first metre and a half behind the wall is the ledge in front of row one: it stops there too
       if(p.y<=sy||d>300||(deck&&d>=30&&p.y>25&&p.y<=32+(d-30)*.667+.9)){
@@ -4524,6 +4525,9 @@ function simulate(p0,v0,spin,opt){spin=spin||{side:0,lift:0};opt=opt||{};const G
         if(hr&&sy===0&&d>34&&d<=300&&p.y<=0){if(!outT){outT=t;outD=Math.hypot(p.x,p.z);}p.y=0;
           if(v.y<-1.4){v.y*=-.46;v.x*=.7;v.z*=.7;}else{v.y=0;const h=Math.hypot(v.x,v.z);if(h<.9){pts.push({x:p.x,y:0,z:p.z,t});break;}const k=Math.max(0,h-6.5*dt)/h;v.x*=k;v.z*=k;}
           pts.push({x:p.x,y:p.y,z:p.z,t});continue;}
+        /* INTO THE SEATS, AND SEEN TO BE: it does not vanish the instant it reaches the crowd. It lands, kicks up off the seats (or the deck) in one short hop and THEN somebody has it. (Not the lava: that swallows it whole.) */
+        if(!seatB&&sy>1.2&&d<=300){seatB=t;p.y=sy+.03;v.y=Math.min(6.5,Math.abs(v.y)*.36+2.4);v.x*=.16;v.z*=.16;pts.push({x:p.x,y:p.y,z:p.z,t});continue;}
+        if(seatB&&t-seatB<.12){pts.push({x:p.x,y:p.y,z:p.z,t});continue;}
         pts.push({x:p.x,y:p.y,z:p.z,t});seatT=t;break;}}
     else if(p.y<=0){
       if(!land){land={x:p.x,z:p.z,t};if(Math.abs(p.x)>.216-p.z+LINE_TOL)foul=true;} // fair or foul is settled by where it first lands, measured from the chalked lines
@@ -4540,7 +4544,7 @@ function simulate(p0,v0,spin,opt){spin=spin||{side:0,lift:0};opt=opt||{};const G
   }
   if(outD)dist=outD;else if(hr&&!eyeT){const q=p.clone(),w=v.clone();let n=0;while(q.y>0&&n++<2000){const sp=w.length();w.multiplyScalar(1-DRAG*sp*dt);w.y-=G*dt;q.addScaledVector(w,dt);}dist=Math.hypot(q.x,q.z);}
   let cove=false;if(hr&&seatT){const L=pts[pts.length-1],pL=Math.atan2(L.x,-L.z),dL=Math.hypot(L.x,L.z)-fenceR(pL);cove=pL>COVE_A0&&pL<COVE_A1&&dL>ARC_W&&L.y<1.6;}
-  return {pts,land,hr,hrT,hrY,poleT,tag,hopT,wall,wallT,foul,foulT,dist,grd,eyeT,seatT,outT,outD,cove,endT:t};
+  return {pts,land,hr,hrT,hrY,poleT,tag,hopT,wall,wallT,foul,foulT,dist,grd,eyeT,seatT,seatB,outT,outD,cove,endT:t};
 }
 const hangK=t=>1+.55*clamp((t-3.2)/1.4,0,1); // how much more ground an outfielder covers on a ball that hangs: nothing extra on liners (under 3.2 s in the air), up to 55% more on a towering fly
 const HANG_CATCH=4.2; // seconds in the air before an outfielder is allowed to make a play at the wall
@@ -6232,6 +6236,7 @@ function step(dt){try{stealUI();stealTick();}catch(e){}if(!PD.on){const hc=$('hu
     if(tr.offF&&flight.play.type==='hit'&&!flight.offFd&&tf>=tr.offF.t){flight.offFd=true;badge1('ate');SND.mitt();SND.boom();tone('sine',110,45,.2,.7);buzz([30,30,60]);shake=Math.max(shake,.5*FX);flash(.4);{const rp=tr.offF.f.fig.root.position;burst(fxS,_p.set(rp.x,1.3,rp.z),24,5,.5,[1,.9,.5],2,1);}crowdOut(.9);}
     if(flight.apollo&&!flight.apoDone&&tr.outT&&tf>=tr.outT){flight.apoDone=true;try{apoLand();}catch(e){}}
     if(tr.hr&&!flight.fenceRoar&&tf>=tr.hrT){flight.fenceRoar=true;roar(flight.roarL||1,.35);} // over the fence: the roar that has been building steps up
+    if(tr.seatB&&!flight.orbit&&!flight.seatBd&&tf>=tr.seatB){flight.seatBd=true;burst(fxL,ball.position,34,7,.75,[1,.95,.6],6,3);burst(fxL,ball.position,14,4,.6,[1,1,1],4,2);try{SND.mitt();buzz(20);}catch(e){}} /* the moment it lands among them: a spray off the seats and a thud, then the hop */
     if(tr.seatT&&!flight.orbit&&tf>=tr.seatT){ball.visible=false;if(!flight.seated){flight.seated=true;if(tr.cove){let n=1;try{n=(+localStorage.getItem('mm_cove')||0)+1;localStorage.setItem('mm_cove',n);}catch(e){}burst(fxL,ball.position,70,11,1.1,[1,.18,.05],7,6);burst(fxL,ball.position,30,5,.8,[1,.9,.4],5,3);SND.zap();buzz([30,30,90]);badge('cove');if(COVE.paint)COVE.paint(n);COVE.hit=now;} /* into the reservoir: a geyser of coolant, and the count goes up */else burst(fxL,ball.position,12,4,.5,[.95,.95,1],4,1);}} /* swallowed by the crowd: somebody up there has a souvenir */
     if(tr.eyeT&&!flight.orbit&&!flight.eyeHit&&tf>=tr.eyeT){flight.eyeHit=true;if(flight.play.type==='hr'&&!flight.noEye){badge('eye');pop("OFF THE BATTER'S EYE!",'','hot');}if(!flight.noEye)zapStart(ball.position,false);burst(fxL,ball.position,26,9,.7,[.6,.85,1],7,1);SND.mitt();tone('sine',120,50,.25,.5);} // thud off the batter's eye
     if(tr.land&&!flight.orbit&&!flight.landed&&tf>=tr.land.t){flight.landed=true;if(flight.play.type==='hit')roar(.75,.3); /* it drops in: the cheer starts now, not when the fielder finally gets to it */_p.set(tr.land.x,.05,tr.land.z);burst(fxL,_p,10,3,.5,[.75,.6,.42],4,2);} // dust where it comes down, so fair or foul is clear
@@ -6674,7 +6679,7 @@ function shotRamp(tr){const R=SHOT_RAMP.list.find(q=>q.live);if(!R||tr.foul||tr.
   for(let i=8;i<P.length;i++){const q=P[i];if(q.y>1.5)continue;const d=q.x*ux+q.z*uz-R.r,l=q.x*(-uz)+q.z*ux;if(d>=0&&d<=SHOT_RAMP.len&&Math.abs(l)<=R.w/2){hit=i;break;}}
   if(hit<0)return tr;const a=P[Math.max(0,hit-4)],q=P[hit],dt=q.t-a.t||.033,vx=(q.x-a.x)/dt,vz=(q.z-a.z)/dt,vh=Math.hypot(vx,vz)||1,sp=clamp(vh*.95+7,20,37),la=34*DEG;
   const t2=simulate(new V3(q.x,Math.max(.4,q.y)+.9,q.z),new V3(vx/vh*Math.cos(la)*sp,Math.sin(la)*sp,vz/vh*Math.cos(la)*sp),{side:0,lift:0},{});if(!t2||!t2.pts||t2.pts.length<4)return tr;
-  const t0=q.t,out=Object.assign({},t2);out.pts=P.slice(0,hit).concat(t2.pts.map(z=>({x:z.x,y:z.y,z:z.z,t:z.t+t0})));['hrT','wallT','eyeT','seatT','outT','endT','poleT','foulT','hopT'].forEach(k=>{if(t2[k])out[k]=t2[k]+t0;});
+  const t0=q.t,out=Object.assign({},t2);out.pts=P.slice(0,hit).concat(t2.pts.map(z=>({x:z.x,y:z.y,z:z.z,t:z.t+t0})));['hrT','wallT','eyeT','seatT','seatB','outT','endT','poleT','foulT','hopT'].forEach(k=>{if(t2[k])out[k]=t2[k]+t0;});
   out.land=tr.land||{x:q.x,z:q.z,t:t0};out.foul=false;out.tag=tr.tag;out.ramp={t:t0,x:q.x,z:q.z,i:hit};return out;}
 function shotFielders(off){try{fielders.forEach(c=>{if(off){if(!c._gs)c._gs=[c.reach,c.speed,c.react];c.reach=0;c.speed=0;c.react=1e6;}else if(c._gs){c.reach=c._gs[0];c.speed=c._gs[1];c.react=c._gs[2];c._gs=null;if(!c.isP)c.fig.root.visible=true;}});}catch(e){}}
 function shotOff(){shotFielders(false);try{if(SHOT_RAMP.g)SHOT_RAMP.g.visible=false;}catch(e){}try{if(shotWedge){scene.remove(shotWedge);shotWedge.geometry.dispose();shotWedge=null;}}catch(e){}$('dgoal').classList.remove('two');}
