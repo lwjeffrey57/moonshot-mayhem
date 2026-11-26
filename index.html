@@ -1218,7 +1218,7 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
     </div>
     <div id="ldbar" data-t="LOADING" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 940</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 941</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -2005,7 +2005,7 @@ function draw(){try{gpuTick();}catch(e){}if(VB.g&&now>(VB.nt||0)){VB.nt=now+.5;t
   if(LED_T)LED_T.offset.x=(performance.now()*.000028)%1; /* the ribbon board crawls, like a real park's (moving a texture costs nothing) */podCls();shTick();hbpPop();markDom();dftDom();{const pc=now-pcutT<.06,e=$('pop');if(pc!==pcutOn){pcutOn=pc;$('hud').classList.toggle('pcut',pc);if(!pc){e.style.top='';e.style.bottom='';e.className='';}}
   if(pc){ // CLOSE-UPS: the call sits in the gap between the top bar and the head of whoever is on camera. If the gap is too small for it, the
     // call is SHRUNK to fit (down to 40%); it is never slid down across him. Only if there is no usable gap at all does it go to the foot of the screen.
-    _s0.copy(pcutH).project(camera);const H=canvas.clientHeight||innerHeight,head=(-_s0.y*.5+.5)*H,top0=MOB?112:84;e.style.bottom='auto';
+    _s0.copy(pcutH).project(camera);const H=canvas.clientHeight||innerHeight,top0=MOB?112:84;let head=(-_s0.y*.5+.5)*H;try{const W=$('walk');if(!W.hidden&&W.classList.contains('pcp')&&PCARD.top)head=Math.min(head,PCARD.top-26);}catch(x){} /* (with the pitcher's card up, the call sits above the CARD, which sits above his head) */e.style.bottom='auto';
     if(e.className.indexOf('go')>=0){if(e._k!==1){e.style.zoom='';e._k=1;}const h0=e.offsetHeight||60,room=head-8-top0;let k=1;
       if(room>=h0*.4){k=Math.min(1,room/h0);e.style.zoom=k<1?k.toFixed(3):'';e._k=k;e.style.top=(Math.max(top0,head-8-h0*k)/k).toFixed(0)+'px';}
       else{k=MOB?.7:.8;e.style.zoom=k;e._k=k;e.style.top=((H-h0*k-(MOB?14:18))/k).toFixed(0)+'px';}}}
@@ -4341,7 +4341,7 @@ function pitCard(P){const W=$('walk'),key='P:'+P[0];W.removeAttribute('data-ovr'
   let n=0;const shoot=()=>{if(!W.classList.contains('pcp')||n++>8)return;try{if(!MUGS[key]&&MX.pit&&MX.pit.obj&&MX.pitCur===(P[3]||0)){let hd=null;MX.pit.obj.traverse(o=>{if(!hd&&o.isBone&&/Head$/.test(o.name))hd=o;});if(hd){const sx=MX.pit.obj.scale.x;MX.pit.obj.scale.x=Math.abs(sx);MX.pit.obj.updateMatrixWorld(true);faceShot({head:hd},{name:key},false);MX.pit.obj.scale.x=sx;MX.pit.obj.updateMatrixWorld(true);if(MUGS[key]&&!MUGS[key].url)delete MUGS[key];}}}catch(e){}if(!put())setTimeout(shoot,350);};setTimeout(shoot,500);}
 setInterval(()=>{try{const W=$('walk');if(W.classList.contains('pcp')&&S.state!=='pchange'){W.classList.remove('pcp');W._pcT=false;W.style.removeProperty('top');if(S.state!=='walkup'&&S.state!=='hbprun'){W.classList.remove('pc');W.hidden=true;}else if(S.state==='walkup')W.classList.remove('pc');}}catch(e){}},120);
 function pcIntro(){if(S.pcI)return;S.pcI=true;pitcherModel();const P=S.pName;
-  flash(.45);pop('PITCHING CHANGE','NOW PITCHING: #'+P[1]+' '+pdn(P),'hot',true);boo(.55);if(organPlay('neenaa',.55))orgNext+=6;buzz([40,60,40]);$('pcap').textContent='PITCHER · '+pdn(P);
+  flash(.45);pop('PITCHING CHANGE','','hot',true); /* (one line: who he is and NOW PITCHING are on his card, which sits right under this banner) */boo(.55);if(organPlay('neenaa',.55))orgNext+=6;buzz([40,60,40]);$('pcap').textContent='PITCHER · '+pdn(P);
   try{pitCard(P);}catch(e){}
   S.pcS=0;} // (he then throws one warm-up pitch, in updatePitcher, so it is plain there is a new arm out there)
 const pcWalk=()=>S.state==='pchange'&&S.pcW&&now-S.t<S.pcW; // the outgoing pitcher is still walking off
@@ -6449,7 +6449,7 @@ function updateCamera(rdt){
   else if(flight&&flight.offPd&&flight.play.type==='hit'&&MX.pit&&MX.pit.taunts.p_dying&&now-flight.t0-flight.tr.offP>.06&&now-flight.t0-flight.tr.offP<2.6&&(S.state==='flight'||S.state==='result')&&!S.goK){ // the pitcher who wore the comebacker: cut to the mound from the plate side, low
     pcutT=now;pcutH.set(0,2.3,-18.4);camPos.set(1.5,1.1,-14.2);camLook.set(0,.75,-18.4);}
   else if(pcWalk()&&MX.pit){pcutT=now;const o=MX.pit.obj.position;pcutH.set(o.x,2.3,o.z);camPos.set(o.x-3.1,1.15,o.z+2.2);camLook.set(o.x,1.15,o.z);} // walking toward the camera, which backs away with him
-  else if(pitCut()>=0||trotPit()||S.state==='pdef'||S.state==='pchange'||S.state==='pod'){pcutT=now;if(S.state==='pod'){pcutH.set(0,3.3,-18.4);camPos.set(1.9,1.35,-12.9);camLook.set(0,1.7,-18.4);} /* his Overdrive: the shot sits further back and looks a little higher, so the call has clear sky above his head */else{pcutH.set(0,2.3,-18.4);camPos.set(1.3,1.25,-15.4);camLook.set(0,1.25,-18.4);}}
+  else if(pitCut()>=0||trotPit()||S.state==='pdef'||S.state==='pchange'||S.state==='pod'){pcutT=now;if(S.state==='pod'){pcutH.set(0,3.3,-18.4);camPos.set(1.9,1.35,-12.9);camLook.set(0,1.7,-18.4);} /* his Overdrive: the shot sits further back and looks a little higher, so the call has clear sky above his head */else if(S.state==='pchange'&&S.pcI){pcutH.set(0,2.3,-18.4);camPos.set(1.3,1.3,-14.2);camLook.set(0,1.85,-18.4);} /* THE NEW ARM, WITH HIS CARD: the camera stands a step further back and looks up a little, which puts his head lower in the picture: room above it for his card and, above that, the PITCHING CHANGE banner. Nothing overlaps and nothing covers him. */else{pcutH.set(0,2.3,-18.4);camPos.set(1.3,1.25,-15.4);camLook.set(0,1.25,-18.4);}}
   else if(S.state==='trot'&&TROT.R){camPos.copy(TROT.cam);TROT.R.fig.root.getWorldPosition(_a);camLook.set(_a.x,TROT.cut&&TROT.clip!=='p_loser'?1.15:1.3,_a.z);}
   else if((S.state==='walkup'||wkPD())&&MX.clip){ // from the pitcher's side, across the plate: his front three-quarter, with the stands behind him
     const e=clamp((now-S.t)/WALK.dur,0,1);MX.clip.hips.getWorldPosition(_a);const sd=_a.x<0?1:-1;
@@ -6773,8 +6773,9 @@ function shotWant(c){try{const m=(c.z.a+c.z.b)/2*(MX.lefty?-1:1);return m<-8?1:m
 /* ...and the pitcher mostly gives you one you can do it with: seven times in ten the pitch is on the side of the plate the call needs. */
 function shotAim(pt){try{const M=S.mode;if(!M||M.id!=='shot'||!M.call||!pt||pt.hbp)return;const w=shotWant(M.call),sd=(MX.lefty?-1:1);if(Math.random()<(M.ft>=2?1:.7)){pt.tx=w>0?-sd*rand(.11,.22):w<0?sd*rand(.09,.22):rand(-.07,.07);pt.inZone=zoneHit(pt.tx,pt.ty);}}catch(e){}}
 /* THE PITCHER'S INTRO CARD SITS ABOVE HIS HEAD, never across his body: its bottom edge follows the top of his head on screen (and it stops short of the scoreboard). */
-const _pcH=new V3();let _pcB=null;function pcardTick(){const W=$('walk');if(!W)return;if(W.hidden||!W.classList.contains('pcp')){if(W._pcT){W._pcT=false;W.style.removeProperty('top');}return;}W._pcT=true;let ok=false;try{if(MX.pit&&MX.pit.obj){if(!_pcB||_pcB._o!==MX.pit.obj){_pcB=null;MX.pit.obj.traverse(o=>{if(o.isBone&&/Head$/.test(o.name)&&!_pcB)_pcB=o;});if(_pcB)_pcB._o=MX.pit.obj;}if(_pcB){_pcB.getWorldPosition(_pcH);_pcH.y+=.42;ok=true;}}}catch(e){}if(!ok)_pcH.set(0,2.45,-18.4);
-  _pcH.project(camera);const h=canvas.clientHeight||innerHeight,sy=(-_pcH.y*.5+.5)*h,ch=W.offsetHeight||110,lo=MOB?150:96;if(!isFinite(sy)||_pcH.z>1)return;W.style.setProperty('top',Math.max(lo,sy-ch-10)+'px','important');}
+const _pcH=new V3();let _pcB=null;function pcardTick(){const W=$('walk');if(!W)return;if(W.hidden||!W.classList.contains('pcp')){if(W._pcT){W._pcT=false;W.style.removeProperty('top');}return;}W._pcT=true;let ok=false;try{if(MX.pit&&MX.pit.obj){if(!_pcB||_pcB._o!==MX.pit.obj){_pcB=null;MX.pit.obj.traverse(o=>{if(o.isBone&&/Head$/.test(o.name)&&!_pcB)_pcB=o;});if(_pcB)_pcB._o=MX.pit.obj;}if(_pcB){_pcB.getWorldPosition(_pcH);_pcH.y+=.2;ok=true;}}}catch(e){}if(!ok)_pcH.set(0,2.45,-18.4);
+  _pcH.project(camera);const h=canvas.clientHeight||innerHeight,sy=(-_pcH.y*.5+.5)*h,ch=W.offsetHeight||110;const lo=MOB?150:96;if(!isFinite(sy)||_pcH.z>1)return;const top=Math.max(lo,sy-ch-10);W.style.setProperty('top',top+'px','important');PCARD.top=top;}
+const PCARD={top:0};
 function shotGfxTick(){const e=$('shotg');if(!e)return;const M=S.mode,on=!!(M&&M.id==='shot'&&M.call&&!M.done&&(S.state==='ready'||S.state==='windup'||S.state==='pitch')&&!paused);if(!on){if(!e.hidden)e.hidden=true;return;}
   _sh.set(0,3.1,-18.4).project(camera);const w=canvas.clientWidth||innerWidth,h=canvas.clientHeight||innerHeight,sx=(_sh.x*.5+.5)*w,sy=(-_sh.y*.5+.5)*h;e.hidden=false;const eh=e.offsetHeight||120,ew=e.offsetWidth||140,top=isFinite(sy)?Math.max(sy-eh,MOB?150:110):(MOB?150:110);e.style.left=clamp(isFinite(sx)?sx:w/2,ew/2+6,w-ew/2-6)+'px';e.style.top=top+'px';
   try{const tt=performance.now()/1000;SHOT_RAMP.list.forEach(R=>{if(!R.st)return;if(R.live){R.st.material.map.offset.y=-(tt*1.6)%1;R.st.material.color.setHex(0xffe53b);R.st.material.opacity=.75+.25*Math.sin(tt*9);}else{R.st.material.color.setHex(0x2f6b4a);R.st.material.opacity=.55;}});}catch(x){}}
