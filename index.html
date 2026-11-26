@@ -1074,7 +1074,7 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
     </div>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 864</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 865</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -5513,13 +5513,13 @@ function loadPlayers(kind){ // body file = character mesh; clips.json = motion-c
     setTimeout(()=>{if(my===MX.token)pitcherModel();},3000);
     // EVERY KRAKEN IN HIS OWN BODY: the fielders start in the house body so the game is never held up, then each is re-dressed in his own as it
     // arrives, one at a time, only between plays.
-    {const FN=['catch','run','strafe','throw','x_dive','x_dive2','x_wall','f_ready','f_turn180','p_dying','d_1','d_2','d_3'],todo=fielders.filter(f=>!f.isP&&f.body);let qi=0;
+    {const FN=['catch','run','strafe','throw','x_dive','x_dive2','x_wall','f_ready','f_turn180','p_dying','d_1','d_2','d_3'],todo=fielders.filter(f=>!f.isP&&f.body);let qi=0;MX.fldPending=()=>my===MX.token&&qi<todo.length; /* (the loading screen waits for the fielders to be dressed too, inside its ten-second limit) */
       const next=()=>{if(my!==MX.token||qi>=todo.length)return;const f=todo[qi],pr=MX.pitLoad(f.body);if(!pr){qi++;setTimeout(next,200);return;}
         pr.then(()=>{const go=()=>{if(my!==MX.token)return;const st=S.state,v=MX.pitVar[f.body];if(!v){qi++;setTimeout(next,300);return;}
             if(!f.obj||!(st==='title'||st==='over'||(st==='ready'&&now-S.t<.4)||st==='walkup'||st==='pchange')||f.run){setTimeout(go,300);return;}
-            try{const old=f.obj;unfitDriver(f.fig);['mixer','act','runAct','strAct','thrAct','dieAct','defActs','rt','wallAct','rdyAct','glR','glL'].forEach(k=>{f[k]=null;});setupFielder(f,v.makeN(FN),v.skin);if(old&&old.parent)old.parent.remove(old);f.mode=null;}catch(e){console.warn('fielder body failed',e);}
-            qi++;setTimeout(next,700);};go();});};
-      setTimeout(next,6000);}
+            try{const old=f.obj;unfitDriver(f.fig);['mixer','act','runAct','strAct','thrAct','dieAct','defActs','rt','wallAct','rdyAct','t180Act','glR','glL'].forEach(k=>{f[k]=null;});setupFielder(f,v.makeN(FN),v.skin);if(old&&old.parent)old.parent.remove(old);f.mode=null;}catch(e){console.warn('fielder body failed',e);}
+            qi++;setTimeout(next,S.state==='title'?60:700);};go();});};
+      setTimeout(next,1500);} /* (on the loading screen they are dressed back to back; once a game is on, one at a time with a breather between) */
     // Hitters' bodies: fetched a couple of hitters ahead, then measured for the swing and dressed as runners in quiet moments (never during a pitch).
     const batNames=['hit','idle','idle2','strike'].filter(k=>cj[k]).concat(Object.keys(cj).filter(k=>/^[wdcbq]_/.test(k)||k==='run'||/^p_(loser|twerk|chicken|runman|fist|clap|threat|dying|boogie|joy|shuffle|wavy|town|chick2|outta|float)$/.test(k))),batP={},jobs=[];
     MX.batVar=[];MX.brigs=null;MX.bcur=0;MX.bshown=undefined;
@@ -5538,8 +5538,8 @@ function loadPlayers(kind){ // body file = character mesh; clips.json = motion-c
     // EVERY BODY THE GAME WILL NEED IS BUILT WHILE THE TITLE SCREEN IS UP, one after another (the nine hitters, then the six Krakens). Unpacking a
     // body freezes the picture for a quarter of a second, and that was happening during walk-ups and between pitches. Once the game starts this
     // stops and whatever is left is done at quiet moments, as before.
-    MX.prepN=0;MX.titlePrep=()=>{const ks=[...new Set(LINEUP.map(q=>q.body||0).concat([10,11,12,13,14,15]))].filter(k=>k&&cfg.bat&&cfg.bat[k-1]);const ps=[...new Set(BULLPEN.map(q=>q[3]||0).concat([14]))].filter(k=>k&&cfg.pit&&cfg.pit[k-1]),todo=ks.map(k=>()=>batLoad(k)).concat(ps.map(k=>()=>MX.pitLoad(k))); /* (and every arm in the bullpen plus your own pitcher: a pitching change, or the first trip to the mound, was still unpacking a body in the middle of the game) */let i=0;const nx=()=>{if(my!==MX.token||S.state!=='title'||i>=todo.length){MX.prepN=0;return;}MX.prepN=1;let p=null;try{p=todo[i++]();}catch(e){}if(p&&p.then)p.then(nx,nx);else setTimeout(nx,0);};nx();};setTimeout(()=>{try{MX.titlePrep();}catch(e){MX.prepN=0;}},900);
-    MX.prepBusy=()=>MX.prepN>0||jobs.length>0||HEAVY.q.length>0;
+    MX.prepN=0;MX.titlePrep=()=>{const okB=k=>k&&cfg.bat&&cfg.bat[k-1],okP=k=>k&&cfg.pit&&cfg.pit[k-1],kl=[...new Set(LINEUP.map(q=>q.body||0))].filter(okB),kk=[10,11,12,13,14,15].filter(k=>okB(k)&&!kl.includes(k)),fb=[...new Set(fielders.filter(f=>!f.isP&&f.body).map(f=>f.body))].filter(okP),ps=[...new Set([14].concat(BULLPEN.map(q=>q[3]||0)))].filter(k=>okP(k)&&!fb.includes(k)),todo=kl.map(k=>()=>batLoad(k)).concat(fb.map(k=>()=>MX.pitLoad(k)),kk.map(k=>()=>batLoad(k)),ps.map(k=>()=>MX.pitLoad(k))); /* IN THE ORDER THE GAME NEEDS THEM: your nine hitters, then the eight Kraken fielders (they are on screen from the first pitch, and the phone reports showed their bodies being unpacked in the middle of games), then the Kraken hitters you pitch to, then the bullpen */ /* (and every arm in the bullpen plus your own pitcher: a pitching change, or the first trip to the mound, was still unpacking a body in the middle of the game) */let i=0;const nx=()=>{if(my!==MX.token||S.state!=='title'||i>=todo.length){MX.prepN=0;return;}MX.prepN=1;let p=null;try{p=todo[i++]();}catch(e){}if(p&&p.then)p.then(nx,nx);else setTimeout(nx,0);};nx();};setTimeout(()=>{try{MX.titlePrep();}catch(e){MX.prepN=0;}},900);
+    MX.prepBusy=()=>MX.prepN>0||jobs.length>0||HEAVY.q.length>0||!!(MX.fldPending&&MX.fldPending());
     const jobTick=()=>{if(my!==MX.token)return;setTimeout(jobTick,S.state==='title'?70:260);if(!jobs.length||!RUN.list.length||!MX.clip)return;const st=S.state;
       if(!(st==='title'||st==='result'||st==='over'||st==='end'||st==='pchange'||st==='trot'||st==='celebrate'||(st==='walkup'&&now-S.t<.3)))return; /* (no longer in the first moments of an at-bat: that is when the player starts to aim, and the freeze was felt there) */
       const bi0=jobs.findIndex(q=>q[0]==='bat'),j=bi0>=0?jobs.splice(bi0,1)[0]:jobs.shift(); /* hitters' own bodies are built before anything else in the queue, so the next man up is himself and not a stand-in */try{if(j[0]==='bat'){batRig(j[1]);const cb=S.bi>=0?(curBatter().body||0):0;if(cb===j[1]&&MX.bcur!==cb&&(st==='ready'||st==='walkup'||st==='title'))MX.bshown=undefined;}else{const R=RUN.list[j[2]],v=MX.batVar[j[1]];if(R&&R.bods&&v)runBuild(R,j[1],v.make(RUN_CLIPS),v.skin());}}catch(e){console.warn('hitter body job failed',e);}};
