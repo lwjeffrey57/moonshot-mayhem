@@ -296,6 +296,24 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
 #shout.go{animation:shoutIn 1.5s cubic-bezier(.2,1.4,.4,1) forwards}
 #shout.b{color:#3ad6ff;text-shadow:0 4px 0 #000,0 0 22px rgba(58,214,255,.6);transform:translate(-50%,-100%) rotate(5deg)}
 #shout.lk{z-index:61}#shout.go.lk{animation:shoutLk .45s cubic-bezier(.2,1.4,.4,1) forwards;color:#7fe6ff;text-shadow:0 clamp(4px,.6vw,6px) 0 #05060f,0 0 26px rgba(58,214,255,.75);transform:translate(-50%,-100%) rotate(-4deg)}@keyframes shoutLk{0%{opacity:0;scale:.3}55%{opacity:1;scale:1.25}100%{opacity:1;scale:1}} /* LOCKED IN! over his head: Overdrive blue, and it stays up for as long as he is burning */
+/* ── HOME SCREEN: the title screen is the menu. A first-time player sees only the logo and PLAY BALL; after one game it shows the modes. ── */
+#menu,#setback{display:none}#title.home #menu{display:flex;flex-direction:column;align-items:center;gap:10px;width:min(440px,92vw)}
+#title.home #tip,#title.home #best,#title.home>.tag:not(.wkopt),#title #opts{display:none}#title.home .logo{width:min(440px,78vw,34vh)}
+#title.home.set #menu,#title.home.set #start,#title.home.set .logo{display:none}#title.home.set #opts{display:flex}#title.home.set #setback{display:block}
+#title:not(.home) #opts{display:flex}
+.mcard{pointer-events:auto;cursor:pointer;width:100%;display:grid;gap:3px;padding:10px 16px;text-align:left;color:var(--chrome);background:linear-gradient(#1b2150,#0d1030);border:2px solid #58d6ff;border-radius:12px;box-shadow:0 4px 0 #000;font-family:var(--hud)}
+.mcard b{display:flex;justify-content:space-between;align-items:baseline;font-family:var(--display);font-style:italic;font-weight:400;font-size:clamp(18px,5vw,24px);color:#ffe53b;text-shadow:0 2px 0 #000}.mcard b i{font-style:normal;font-size:.8em;color:#ff9a1e}
+.mcard span{font-size:13px;line-height:1.25;color:#dfe5ff}.mcard em{font-style:normal;font-weight:700;font-size:11px;letter-spacing:.1em;color:#7fe6ff}
+.mcard.done{border-color:#3ddc6a}.mcard.done em{color:#3ddc6a}.mcard.lock{border-color:rgba(242,245,255,.25);opacity:.62;cursor:default}.mcard.lock b{color:#c9cfe8}.mcard:not(.lock):active{transform:translateY(3px);box-shadow:0 1px 0 #000}
+.mrow{display:flex;gap:14px;justify-content:center;margin-top:4px}
+.ohead{font-family:var(--display);font-style:italic;font-size:clamp(15px,4vw,22px);letter-spacing:.08em;color:#7fe6ff;text-shadow:0 2px 0 #000}.ohead.big{font-size:clamp(28px,8vw,48px);letter-spacing:.02em;color:#ffd23b;text-shadow:0 3px 0 #000}
+#hud:has(~ #title:not([hidden])) :is(#walk,#card,#nowbat),#hud:has(~ #dres:not([hidden])) :is(#walk,#card,#nowbat),#hud:has(~ #prof:not([hidden])) :is(#walk,#card,#nowbat){display:none!important} /* no player card showing through a menu */
+#drhead{font-family:var(--display);font-style:italic;font-size:clamp(30px,9vw,60px);line-height:1;color:#ffe53b;-webkit-text-stroke:5px #05060f;paint-order:stroke fill;text-shadow:0 4px 0 #05060f}#drhead.l{color:#c9cfe8}
+#drstars{font-size:clamp(34px,10vw,56px);letter-spacing:.08em;color:#ffd23b;text-shadow:0 3px 0 #000}#drstars i{font-style:normal;color:rgba(242,245,255,.22)}
+#drtext{max-width:min(420px,88vw);font-size:14px;line-height:1.35;color:#dfe5ff}#drstreak{font-family:var(--display);font-style:italic;font-size:clamp(17px,4.6vw,24px);color:#ff9a1e;text-shadow:0 2px 0 #000}#drstreak small{display:block;margin-top:3px;font:700 12px/1.3 var(--hud);letter-spacing:.06em;color:#7fe6ff;font-style:normal}
+#pfname{pointer-events:auto;display:flex;align-items:center;gap:10px;font:700 12px/1 var(--hud);letter-spacing:.12em;color:#9aa3c7}#pfin{width:min(240px,60vw);padding:8px 12px;font-family:var(--display);font-style:italic;font-size:22px;text-align:center;text-transform:uppercase;color:#ffe53b;background:#0d1030;border:2px solid #58d6ff;border-radius:10px;outline:none}
+#pfteam{font:700 12px/1 var(--hud);letter-spacing:.14em;color:#7fe6ff}#pfstats{max-width:min(560px,94vw)}
+#dgoal{position:absolute;left:50%;top:clamp(178px,25vh,214px);transform:translateX(-50%);z-index:5;pointer-events:none;white-space:nowrap;padding:4px 12px;font-family:var(--display);font-style:italic;font-size:clamp(12px,3.4vw,15px);letter-spacing:.03em;color:#ffe53b;background:rgba(8,9,26,.8);border:2px solid #58d6ff;border-radius:14px}
 #hopc{position:absolute;left:50%;top:40%;z-index:6;pointer-events:none;white-space:nowrap;opacity:0;font-family:var(--display);font-style:italic;font-size:clamp(20px,5.2vw,34px);line-height:1;letter-spacing:.02em;color:#ffe53b;-webkit-text-stroke:clamp(4px,.8vw,6px) #05060f;paint-order:stroke fill;text-shadow:0 3px 0 #05060f,0 0 14px rgba(255,229,59,.5);transform:translate(-50%,-100%) rotate(-5deg)}#hopc.go{animation:hopIn 1.25s cubic-bezier(.2,1.4,.4,1) forwards}@keyframes hopIn{0%{opacity:0;scale:.3}14%{opacity:1;scale:1.25}28%{scale:1}80%{opacity:1}100%{opacity:0;scale:1.06}} /* MOON HOP!: a small call that rides just above the ball for a moment when it takes the bad hop */
 @keyframes shoutIn{0%{opacity:0;scale:.3}14%{opacity:1;scale:1.3}26%{scale:1}82%{opacity:1;scale:1.04}100%{opacity:0;scale:1.12}}
 #pop .t{font-family:var(--display);font-size:clamp(36px,8.6vw,96px);line-height:.95;font-style:italic;letter-spacing:.01em;
@@ -968,7 +986,7 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
       <div class="tz jz"><b>YOUR JUICE IS FULL</b>Tap JUICE, then swing for a monster hit<small>Each Juice swing burns one quarter of the meter.</small></div>
     </div>
     <div id="pop"><div class="t"></div><div class="s"></div></div>
-    <div id="shout" aria-hidden="true"></div><div id="hopc" aria-hidden="true">MOON HOP!</div>
+    <div id="shout" aria-hidden="true"></div><div id="hopc" aria-hidden="true">MOON HOP!</div><div id="dgoal" hidden></div>
     <div id="tags" aria-hidden="true"></div>
     <div id="surge" aria-hidden="true"></div>
     <div id="tim"></div>
@@ -1029,9 +1047,14 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
       <div><b>Overdrive</b>A full Juice meter charges it. Press Shift to switch it on: free Juice on every swing that at-bat.</div>
     </div>
     <button class="cta ldg" id="start" type="button">LOADING…</button>
+    <div id="menu">
+      <button class="mcard" id="mdaily" type="button"><b>DAILY CHALLENGE<i id="mdstreak"></i></b><span id="mdtext"></span><em id="mdstate"></em></button>
+      <button class="mcard lock" id="mcup" type="button" disabled><b>LUNAR LEAGUE CUP</b><span>Six games. One trophy.</span><em>COMING SOON</em></button>
+      <div class="mrow"><button class="cta alt" id="mprof" type="button">PROFILE</button><button class="cta alt" id="mset" type="button">SETTINGS</button></div>
+    </div>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 846</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 847</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -1045,6 +1068,21 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
     </div>
     <button class="tag" id="mdl" type="button" hidden style="pointer-events:auto;background:none;border:1px solid var(--dim);padding:6px 12px;cursor:pointer;font-family:var(--hud)"></button>
     <div class="tag" id="best"></div>
+    <button class="cta" id="setback" type="button">BACK</button>
+  </div>
+  <div class="overlay" id="dres" hidden>
+    <div class="ohead">DAILY CHALLENGE</div>
+    <div id="drhead"></div><div id="drstars"></div><div id="drtext"></div><div id="drstreak"></div>
+    <button class="cta" id="dragain" type="button">TRY AGAIN</button>
+    <button class="cta alt" id="drmenu" type="button">MAIN MENU</button>
+  </div>
+  <div class="overlay" id="prof" hidden>
+    <div class="ohead big">PROFILE</div>
+    <label id="pfname"><span>NAME</span><input id="pfin" type="text" maxlength="12" autocomplete="off" autocapitalize="characters" spellcheck="false"></label>
+    <div id="pfteam">COMETS · LUNAR LEAGUE</div>
+    <div class="final" id="pfstats"></div>
+    <button class="cta alt" id="pfbdg" type="button">ACHIEVEMENTS</button>
+    <button class="cta" id="pfback" type="button">BACK</button>
   </div>
   <div class="overlay" id="over" hidden>
     <div class="logo"><span class="b">FINAL</span></div>
@@ -3666,7 +3704,7 @@ function toReady(d){if(S.walkoff&&S.state!=='end'&&S.state!=='over'){S.walkoff=f
   camMode='bat';hud();syncRunners();
   if(S.pcPending){S.pcPending=false;S.state='pchange';S.t=now; // the scene: the man who got knocked out trudges off, then a cut to the mound for the new arm, then the hitter comes up as usual
     S.pcI=false;S.pcW=WALK.on&&MX.pit&&MX.pit.taunts.p_sadwalk?PCW:0;
-    if(S.pcW){const old=BULLPEN[(S.pChanges+BULLPEN.length-1)%BULLPEN.length];flash(.3);pop('HIT THE SHOWERS, SCRUB!',pdn(old)+' IS DONE','cool',true);cheer(.3,2.4);}else pcIntro();
+    if(S.pcW){const old=BULLPEN[(S.pChanges+BULLPEN.length-1)%BULLPEN.length];flash(.3);{const C=['KNOCKED OUT OF THE GAME!',"HE'S TOAST!",'YOU CHASED HIM!','YOU ROCKED HIM!','YOU SHELLED HIM!','HIT THE SHOWERS, SCRUB!'];let k=(Math.random()*C.length)|0;if(k===S.pcCall)k=(k+1)%C.length;S.pcCall=k;pop(C[k],pdn(old)+' IS DONE','cool',true);} /* the pitcher you knocked out: one of six calls, never the same one twice running */cheer(.3,2.4);}else pcIntro();
     return;}
   if(S.forceWalk&&S.bi>=0){S.wuBi=-9;S.wwBi=-9;} /* a new inning, or the sides have just changed: the man leading off ALWAYS gets his walk-up, whatever the setting */
   if((WALK.on||S.forceWalk)&&(S.fresh||S.forceWalk)&&S.bi>=0&&walkWant()&&MX.clip&&MX.clip.intros[WALK.by[curBatter().name]])startWalkup();}
@@ -3805,7 +3843,7 @@ function qteStart(kind,noPA){QT.noPA=!!noPA;goHide();try{if(PD.on){$('pd').style
   QT.hid=[];RUN.list.forEach(R=>{if(R.fig.root.visible){QT.hid.push(R.fig.root);R.fig.root.visible=false;}});fielders.forEach(f=>{const r=f.fig.root;if(r.visible&&((!f.isP&&Math.hypot(r.position.x-Bp[0],r.position.z-Bp[1])<9)||(M.soft&&!f.of))){QT.hid.push(r);r.visible=false;}});
   ball.visible=false;ballShadow.visible=false;pop(M.call,'','');buzz([30,30,60]);crowdRise(.8,3,true);hud();}
 function qteShow(){if(!MOB&&!QT.fk){QT.fk=1;grabKeys();}const M=QT.M,e=$('qte');$('qtt').textContent=QT.nm||M.name;
-  if(QT.stop){if(!$('qsn')){const P=v=>(v*100).toFixed(2)+'%';$('qtr').innerHTML='<div id="qsw"><div id="qmw" class="st"><s id="qsg" style="left:'+P(QT.sg[0])+';width:'+P(QT.sg[1])+'"></s><s id="qso" style="left:'+P(QT.so[0])+';width:'+P(QT.so[1])+'"></s><u id="qsn"></u></div><em id="qsl"></em></div>';}QT.gp=clamp(.74-(QT.D-1)*.42,.4,.92);{const l=$('qsl');if(l)l.textContent='GOLD = SAFE +2 JUICE · GREEN = '+Math.round(QT.gp*100)+'%';}
+  if(QT.stop){if(!$('qsn')){const P=v=>(v*100).toFixed(2)+'%';$('qtr').innerHTML='<div id="qsw"><div id="qmw" class="st"><s id="qsg" style="left:'+P(QT.sg[0])+';width:'+P(QT.sg[1])+'"></s><s id="qso" style="left:'+P(QT.so[0])+';width:'+P(QT.so[1])+'"></s><u id="qsn"></u></div><em id="qsl"></em></div>';}QT.gp=clamp(.74-(QT.D-1)*.42,.4,.92);{const l=$('qsl');if(l)l.textContent='GOLD = SAFE +2 JUICE · GREEN = SAFE';}
     $('hud').classList.add('qm');e.hidden=false;$('hud').classList.add('qon');return;}
   if(QT.mash){if(!$('qmf')){$('qtr').innerHTML='<div id="qmw"><em id="qmf"></em><span>'+(MOB?'TAP! TAP! TAP!':'MASH SPACE!')+'</span></div>';}$('hud').classList.add('qm');$('qmf').style.transform='scaleX('+Math.min(1,QT.fill).toFixed(3)+')';e.hidden=false;$('hud').classList.add('qon');return;} // the other kind: no code, just hammer the arrows until the bar is full
  {const r=$('qtr');if(r.children.length!==QT.code.length||r.firstChild.tagName!=='I')r.innerHTML=QT.code.map(c=>`<i data-d="${c}">${{U:'⬆️',D:'⬇️',L:'⬅️',R:'➡️'}[c]}</i>`).join('');for(let i=0;i<QT.code.length;i++){const c=i<QT.i?'ok':i===QT.i?'cur':'';if(r.children[i].className!==c)r.children[i].className=c;}}e.hidden=false;$('hud').classList.add('qon');}
@@ -3815,7 +3853,7 @@ function qteKey(d){if(CQ.on&&CQ.f===flight&&S.state==='flight'){cqKey();return;}
   if(QT.stop){ // JUDGED WHERE YOU SAW IT: by the time a tap arrives the needle has moved on (the screen is a frame or two behind, and a finger takes time to land). The press is scored against where the needle was that long ago, and the needle is put back there so the picture agrees.
     const H=QT.hist||[],tp=(inT&&performance.now()-inT<120?inT:performance.now())-17; /* the browser stamps the press with the moment the finger or key actually went down: the needle is put back to exactly where it was drawn then (one frame of display earlier), not to a guess */let x=QT.sx;if(H.length){let a=H[0];for(const h of H){if(h[0]<=tp)a=h;else break;}const b=H[H.indexOf(a)+1];x=b&&b[0]>a[0]?a[1]+(b[1]-a[1])*clamp((tp-a[0])/(b[0]-a[0]),0,1):a[1];}
     QT.sx=x;{const n0=$('qsn');if(n0&&QT.sw)n0.style.transform='translateX('+(x*QT.sw).toFixed(1)+'px)';}
-    const ins=z=>x>=z[0]-.012&&x<=z[0]+z[1]+.012; /* and a hair of grace at the edges */QT.gold=ins(QT.so);const grn=ins(QT.sg),ok=QT.gold||(grn&&Math.random()<QT.gp); /* THE SMALL MARK IS THE SURE THING: land on gold and he is safe, every time. The wide green band only gets him a chance (better on an easy send, worse on a long shot): close, but the throw can still beat him. */if(grn&&!QT.gold&&!ok)timing('BANG-BANG PLAY · THROW BEAT HIM','#ff8a2e',3);buzz(ok?[20,30,60]:[40,30,40]);tone(ok?'triangle':'sawtooth',QT.gold?990:ok?660:150,QT.gold?1480:ok?880:80,.12,.3);const n=$('qsn');if(n)n.className=QT.gold?'au':ok?'ok':'no';qteDone(ok);return;}
+    const ins=z=>x>=z[0]-.012&&x<=z[0]+z[1]+.012; /* and a hair of grace at the edges */QT.gold=ins(QT.so);const grn=ins(QT.sg),ok=QT.gold||grn; /* NO DICE: stop it on green and he is safe, every time. A long-shot send is harder because its green band is narrower, not because a good stop can still be called out. */ /* THE SMALL MARK IS THE SURE THING: land on gold and he is safe, every time. The wide green band only gets him a chance (better on an easy send, worse on a long shot): close, but the throw can still beat him. */buzz(ok?[20,30,60]:[40,30,40]);tone(ok?'triangle':'sawtooth',QT.gold?990:ok?660:150,QT.gold?1480:ok?880:80,.12,.3);const n=$('qsn');if(n)n.className=QT.gold?'au':ok?'ok':'no';qteDone(ok);return;}
   if(QT.mash){QT.fill+=1/(15*Math.pow(QT.D||1,.7));buzz(10);tone('triangle',380+520*Math.min(1,QT.fill),420+560*Math.min(1,QT.fill),.06,.5);qteShow();if(QT.fill>=1)qteDone(true);return;}
   if(d===QT.code[QT.i]){QT.i++;buzz(15);tone('triangle',520+110*QT.i,700+110*QT.i,.09,.6);tone('sine',1040+220*QT.i,1400+220*QT.i,.12,.35); /* a clear ding, a step higher with every arrow you get right */if(QT.i>=QT.code.length){qteShow();qteDone(true);return;}}
   else{QT.t1-=.3;buzz([30,30,30]);tone('sawtooth',160,90,.12,.3);const r=$('qtr');r.classList.remove('bad');requestAnimationFrame(()=>r.classList.add('bad'));} // a wrong arrow costs a third of a second off the clock; your progress stays
@@ -3833,7 +3871,7 @@ function qteTick(){const Q=QT,d0=9.5,d1=2.6,pe=now-Q.tp;
   else if(Q.ph==='run'){const k=clamp(pe/Q.runT,0,1),d=lerp(d0,d1,k);Q.rx=Q.bx+Q.ux*d;Q.rz=Q.bz+Q.uz*d;
     if(k>=1){Q.ph='input';Q.t1=now;
       if(Q.stop){ // STOP THE NEEDLE. Green is safe and its width is the runner's speed; the thin gold strip, set well away from it, is the gamble: safe AND two bars of Juice, with red on both sides of it.
-        const D=Q.D||1,gw=clamp(.2/D,.11,.33),g0=rand(.06,.94-gw),ow=.055;let o0=0;for(let i=0;i<30;i++){o0=rand(.03,.97-ow);if(o0>g0+gw+.1||o0+ow<g0-.1)break;}
+        const D=Q.D||1,gw=clamp(clamp(.2/D,.11,.33)*clamp(.74-(D-1)*.42,.4,.92)/.74,.06,.33),g0=rand(.06,.94-gw),ow=.055;let o0=0;for(let i=0;i<30;i++){o0=rand(.03,.97-ow);if(o0>g0+gw+.1||o0+ow<g0-.1)break;}
         Object.assign(Q,{lim:3.6+(qteSeen?0:1.2),sg:[g0,gw],so:[o0,ow],sx:Math.random()<.5?0:1,sv:rand(.95,1.25)*Math.sqrt(D),lt:now,hist:[],sw:0});Q.sd=Q.sx?-1:1;$('qtr').innerHTML='';}
       if(Q.mash){Q.lim=3.1+(qteSeen?0:1.2);Q.fill=0;Q.lt=now;$('qtr').innerHTML='';}Q.b={n:'run',t:now,freeze:((now-Q.b.t)*.5)%.7,loop:true};qteShow();buzz(40);tone('sine',880,880,.1,.3);}}
   else if(Q.ph==='input'){if(Q.stop){const dt=Math.min(.05,now-(Q.lt||now));Q.lt=now;Q.sx+=Q.sd*Q.sv*dt;if(Q.sx>=1){Q.sx=1;Q.sd=-1;Q.sv*=1.13;}else if(Q.sx<=0){Q.sx=0;Q.sd=1;Q.sv*=1.13;}const n=$('qsn');if(n){if(!Q.sw)Q.sw=n.parentNode.clientWidth||300;n.style.transform='translateX('+(Q.sx*Q.sw).toFixed(1)+'px)';}(Q.hist||(Q.hist=[])).push([performance.now(),Q.sx]);if(Q.hist.length>40)Q.hist.shift();} /* it gets quicker every time it turns round */
@@ -3884,7 +3922,7 @@ function startGame(){
   newGame();
 }
 // loading bar on the title screen: one step per file fetched, the last for building the hitter
-let ldN=0;const LD_TOTAL=8;function loadStep(done){ldN=done?LD_TOTAL:Math.min(LD_TOTAL-1,ldN+1);if(!MX.pendingStart){const st=$('start');st.textContent=ldN>=LD_TOTAL?'PLAY BALL':'LOADING…';st.classList.toggle('ldg',ldN<LD_TOTAL);}
+let ldN=0;const LD_TOTAL=8;function loadStep(done){setTimeout(()=>{try{homeUI();}catch(e){}},0);ldN=done?LD_TOTAL:Math.min(LD_TOTAL-1,ldN+1);if(!MX.pendingStart){const st=$('start');st.textContent=ldN>=LD_TOTAL?'PLAY BALL':'LOADING…';st.classList.toggle('ldg',ldN<LD_TOTAL);}
   const b=$('ldbar');if(!b)return;b.firstElementChild.style.width=(ldN/LD_TOTAL*100)+'%';b.classList.toggle('done',ldN>=LD_TOTAL);$('ldtxt').textContent=ldN>=LD_TOTAL?'':'LOADING PLAYERS '+Math.round(ldN/LD_TOTAL*100)+'%';}
 // WARM-UP: everything that is normally built or compiled the first time it is needed (the lasers, the Moon seen from orbit, every effect's
 // shader) is done once while the title screen is up, so the first homer, the first Overdrive and the first orbit shot do not stutter.
@@ -4277,11 +4315,11 @@ function tryContact(){flight_pop=false;if(pitch.hbp){swing.done=true;swing.miss=
   flight={tr,play,t0:now,q,pw,tb,jp:!!(pitch&&pitch.P&&pitch.P.sp),pod:!!pOD(),fp:(S.balls|0)+(S.strikes|0)===0,od:!!(S.over&&S.overOn),v,done:false,called:false,trailC:S.over&&S.overOn?[.2,.55,1]:tb?[1,.45,.1]:pw&&q>.75?[1,.85,.25]:[.5,.5,.55]}; // Overdrive hits burn blue, Juice hits orange
   // Some Overdrive home runs don't come down: the ball leaves the Moon's orbit, headed for Earth. Always the first one a player ever hits; after that, about a third of them.
   if(apo&&play.type==='hr')flight.apollo=true;
-  if(flight.od&&!flight.apollo&&play.type==='hr'&&(DBG.orbit||DBG.sat||DBG.lamp||DBG.rev||(PLAY_NEWEST_FIRST&&UFO.ok&&!S.ufoG)||Math.random()<.65)){const kd=DBG.lamp?'lamp':DBG.sat?'sat':DBG.rev?'rev':DBG.orbit?'earth':(PLAY_NEWEST_FIRST&&UFO.ok&&!S.ufoG)?'sat':odPick(), /* (playtest rule: the newest one, the saucer, is the first a player sees) */ /* (NEXT STOP: EARTH is no longer forced to be the first one a player sees) */lampH=kd==='lamp'&&TOWERS.length>0,sat=kd==='sat',rev=kd==='rev';S.orbN=(S.orbN||0)+1;orbSeen=true;try{localStorage.setItem('mm_orbit','1');}catch(e){}flight.orbit=true;flight.rev=rev;play.endT+=9;
+  if(flight.od&&!flight.apollo&&play.type==='hr'&&(DBG.orbit||DBG.sat||DBG.lamp||DBG.rev||Math.random()<.65)){const kd=DBG.lamp?'lamp':DBG.sat?'sat':DBG.rev?'rev':DBG.orbit?'earth':odPick(), /* (playtest rule: the newest one, the saucer, is the first a player sees) */ /* (NEXT STOP: EARTH is no longer forced to be the first one a player sees) */lampH=kd==='lamp'&&TOWERS.length>0,sat=kd==='sat',rev=kd==='rev';S.orbN=(S.orbN||0)+1;orbSeen=true;try{localStorage.setItem('mm_orbit','1');}catch(e){}flight.orbit=true;flight.rev=rev;play.endT+=9;
     // its own flight from the moment it leaves the bat: one smooth climb out over the wall and away, never the normal arc
     const hd=Math.hypot(v0.x,v0.z)||1,dx=v0.x/hd,dz=v0.z/hd;flight.orbP=[p0.clone(),new V3(p0.x+dx*46,p0.y+15,p0.z+dz*46),new V3(p0.x+dx*135,96,p0.z+dz*135),ORB_TO.clone()];
     // ...or it never gets as far as Earth: there is a satellite in the way
-    if(sat){flight.sat=true;const T0=new V3(p0.x+dx*430,500,p0.z+dz*430);flight.orbP[2].set(p0.x+dx*190,250,p0.z+dz*190);flight.orbP[3]=T0;satPlace(T0,Math.atan2(dx,dz));if(UFO.ok&&(DBG.ufo||(PLAY_NEWEST_FIRST&&!S.ufoG&&!DBG.sat)||Math.random()<.5)){S.ufoG=true;flight.ufo=true;SAT.g.visible=false;ufoPlace(T0);flight.orbP[3]=UFO.hold.clone();}}
+    if(sat){flight.sat=true;const T0=new V3(p0.x+dx*430,500,p0.z+dz*430);flight.orbP[2].set(p0.x+dx*190,250,p0.z+dz*190);flight.orbP[3]=T0;satPlace(T0,Math.atan2(dx,dz));if(UFO.ok&&(DBG.ufo||(!DBG.sat&&Math.random()<.5))){S.ufoG=true;flight.ufo=true;SAT.g.visible=false;ufoPlace(T0);flight.orbP[3]=UFO.hold.clone();}}
     // ...or it finds a light tower
     if(lampH){const ph=Math.atan2(dx,-dz)/DEG;let bi=0,bd=1e9;TOWERS.forEach((t,i)=>{const e=Math.abs(t.d-ph);if(e<bd){bd=e;bi=i;}});const T1=TOWERS[bi].p;flight.lamp=bi+1;
       flight.orbP[1].set(lerp(p0.x,T1.x,.3),lerp(p0.y,T1.y,.4),lerp(p0.z,T1.z,.3));flight.orbP[2].set(lerp(p0.x,T1.x,.7),lerp(p0.y,T1.y,.86),lerp(p0.z,T1.z,.7)); /* a line shot: it leaves the bat on a rope and is still climbing when it smashes into the lights, never dropping onto them */flight.orbP[3]=T1.clone();}}
@@ -4561,7 +4599,7 @@ function hrFeetAdd(ft){hrFeet+=ft;try{localStorage.setItem('mm_hrft',Math.round(
 let odEver=false;try{odEver=localStorage.getItem('mm_od')==='1';}catch(e){}
 let orbSeen=false;try{orbSeen=localStorage.getItem('mm_orbit')==='1';}catch(e){} // the very first Overdrive homer a player ever hits always leaves orbit; after that it is about one in three
 const D2={clip:'',dur:2.9,base:2},PDEF=2.0,ORB_TO=new V3(94,462,-858);
-function endGame(){if(S.runs>S.opp)badge('win');if(S.runs>=10)badge('ten');
+function endGame(){if(S.scn&&S.scn.daily){S.state='over';return;} /* (a Daily Challenge has its own result screen) */if(S.runs>S.opp)badge('win');if(S.runs>=10)badge('ten');
   S.state='over';let best=0;try{best=+localStorage.getItem('mm_best')||0;if(S.runs>best)localStorage.setItem('mm_best',S.runs);}catch(e){}
   const rows=[['RUNS',S.runs],['HITS',S.hits],['HOMERS',S.hrs],['LONGEST',S.longest?S.longest+' FT':'—'],['BEST STREAK',S.bestStreak],['BEST GAME',Math.max(best,S.runs)]];
   {const R=gameRating(),G=S.goal;STATS.g++;STATS.runs+=S.runs;STATS.hits+=S.hits;STATS.hrs+=S.hrs;STATS.longest=Math.max(STATS.longest,S.longest);try{localStorage.setItem('mm_stats',JSON.stringify(STATS));}catch(e){}
@@ -4726,6 +4764,7 @@ function toMenu(){
   $('over').hidden=true;$('title').hidden=false;$('pausebtn').hidden=true;$('mutebtn').hidden=true;$('rep').hidden=true;$('walk').hidden=true;$('hud').classList.remove('wk');$('pop').className='';$('tim').className='';$('pitchinfo').classList.remove('on'),$('plast').classList.remove('on');
   scoreboard('MOONSHOT','MAYHEM');
   try{const b=+localStorage.getItem('mm_best')||0;if(b)$('best').textContent='Best game: '+b+' runs';}catch(e){}
+  try{$('dgoal').hidden=true;homeUI();}catch(e){}
 }
 $('pausebtn').addEventListener('click',()=>setPaused(true));
 $('resume').addEventListener('click',()=>setPaused(false));
@@ -5793,7 +5832,7 @@ function step(dt){try{stealUI();stealTick();}catch(e){}if(!PD.on){const hc=$('hu
   // reticle
   const b=S.bi>=0?curBatter():LINEUP[0],tb=(S.over&&S.overOn)||(!S.over&&juiceOn()&&S.juice>=.25);
   if(QT.pb!=null&&S.state!=='qte'){QT.pb=null;pitcherModel();}
-  stickHint();sbTick();zapTick();crowdTick(dt);shoutTick();poleTick();satTick();ufoTick();{const hr=flight&&!flight.done&&flight.play&&flight.play.type==='hr'&&ball.visible;TWG.forEach(G=>{const p=G.position,near=hr&&ball.position.y<70&&Math.hypot(ball.position.x-p.x,ball.position.z-p.z)<15;if(G.visible===near)G.visible=!near;});(TWG.x||[]).forEach(o=>{const p=o.m.position,near=hr&&ball.position.y<70&&Math.hypot(ball.position.x-p.x,ball.position.z-p.z)<o.r;if(o.m.visible===near)o.m.visible=!near;});} /* A HOMER NEVER PASSES THROUGH A LIGHT TOWER: the one in its way steps out of the picture while the ball goes by (the flight and the distance count are untouched) */lampTick(dt);laserTick(dt);organTick();vendorTick();clapTick();roarTick();heartTick();zoneTick();
+  stickHint();sbTick();zapTick();crowdTick(dt);shoutTick();dailyTick();poleTick();satTick();ufoTick();{const hr=flight&&!flight.done&&flight.play&&flight.play.type==='hr'&&ball.visible;TWG.forEach(G=>{const p=G.position,near=hr&&ball.position.y<70&&Math.hypot(ball.position.x-p.x,ball.position.z-p.z)<15;if(G.visible===near)G.visible=!near;});(TWG.x||[]).forEach(o=>{const p=o.m.position,near=hr&&ball.position.y<70&&Math.hypot(ball.position.x-p.x,ball.position.z-p.z)<o.r;if(o.m.visible===near)o.m.visible=!near;});} /* A HOMER NEVER PASSES THROUGH A LIGHT TOWER: the one in its way steps out of the picture while the ball goes by (the flight and the distance count are untouched) */lampTick(dt);laserTick(dt);organTick();vendorTick();clapTick();roarTick();heartTick();zoneTick();
   if(flight&&flight.play.type==='hr'&&!flight.sbHit&&!flight.noSb&&!flight.orbit&&ball.visible&&Math.abs(ball.position.x-SBX)<33&&ball.position.y>30&&ball.position.y<48&&ball.position.z<-(fenceR(0)+15)&&ball.position.z>-(fenceR(0)+24)){flight.sbHit=true;badge('board');pop('SCOREBOARD!','','hot');zapStart(ball.position,true);burst(fxL,ball.position,26,9,.7,[.6,.85,1],7,1);}
   if(!!MX.lefty!==lhCls){lhCls=!!MX.lefty;$('hud').classList.toggle('lh',lhCls);}
   if(rawMouse&&rawMouse.d){rawMouse.d=0;pointerAim(rawMouse);}
@@ -6087,6 +6126,31 @@ function streakPlay(z,stars,today){const t=today||dayStr(),v=streakView(z,t),ev=
   if(z.n%7===0&&z.freezes<3){z.freezes++;ev.earned=1;}
   const keys=Object.keys(z.stars).sort();while(keys.length>40)delete z.stars[keys.shift()]; /* (only the last few weeks of stars are kept) */
   return {z,ev};}
+/* ── HOME SCREEN, DAILY CHALLENGE, PROFILE ──────────────────────────────────────────────────────────────────────────────────────────── */
+function homeUI(){const T0=$('title'),ready=!MX.loading&&!MX.pdW&&!$('start').classList.contains('ldg'),home=gamesPlayed>0&&ready;T0.classList.toggle('home',home);if(!home)T0.classList.remove('set');
+  const z=streakLoad(),v=streakView(z),sp=dailySpec(),done=v.state==='done',st=z.stars[dayStr()]|0;
+  $('mdstreak').textContent=v.n>0?'\uD83D\uDD25 '+v.n:'';$('mdtext').textContent=sp.text;$('mdaily').classList.toggle('done',done);
+  $('mdstate').textContent=done?'DONE TODAY '+'\u2605'.repeat(st)+'\u2606'.repeat(3-st)+' \u00B7 PLAY AGAIN':v.state==='frozen'?'A FREEZE IS HOLDING YOUR STREAK \u00B7 PLAY TODAY':v.state==='alive'?'PLAY TODAY TO KEEP YOUR STREAK':'ABOUT 90 SECONDS \u00B7 NEW EVERY DAY';}
+function dailyStart(){if(MX.loading||MX.pdW)return;try{audioInit();if(AC&&AC.state==='suspended')AC.resume();}catch(e){}const sp=dailySpec(),z=scnStart(sp);z.daily=true;
+  const e=$('dgoal');e.textContent='DAILY: '+sp.goal.t.toUpperCase();e.hidden=false;try{pop('DAILY CHALLENGE',(sp.sit.t+(sp.score?', '+sp.score.t:'')+' \u00B7 '+sp.goal.t).toUpperCase(),'cool',true);}catch(x){}}
+function dailyTick(){const z=S.scn;if(!z||!z.daily||z.shown)return;const r=scnCheck();if(r===null)return;if(z.endAt===undefined)z.endAt=now;const st=S.state,e=now-z.endAt,
+    busy=st==='flight'||st==='result'||st==='trot'||st==='celebrate'||st==='celly2'||st==='qte'||st==='pitch'||st==='windup'||st==='brawl'||st==='hbp'||st==='hbprun'||(st==='pduel'&&PD.ph>0);
+  if(e<1.1||(busy&&e<14))return; /* the play that settled it is allowed to finish: the homer lands, he rounds the bases, the strikeout gets its beat */z.shown=true;dailyEnd(r,z);}
+function dailyEnd(r,z){let stars=0;try{if(r){stars=1;if(z.spec.pitch){if(PD.ks>0)stars++;if(PD.perf>0)stars++;}else{if(S.bi<=z.bi0)stars++;if(S.hrs>z.hrs0||S.runs-z.runs0>=2)stars++;}}}catch(e){}
+  const res=streakPlay(streakLoad(),stars),k=res.z,ev=res.ev;streakSave(k);try{if(PD.on)pdEnd();}catch(e){}S.scn=null;toMenu();$('title').hidden=true;
+  const H=$('drhead');H.textContent=r?'NAILED IT!':'NOT TODAY';H.classList.toggle('l',!r);$('drstars').innerHTML='\u2605'.repeat(stars)+'<i>'+'\u2605'.repeat(3-stars)+'</i>';$('drtext').textContent=z.spec.text;
+  $('drstreak').innerHTML='\uD83D\uDD25 '+k.n+'-DAY STREAK'+'<small>'+(ev.broke?'YOUR OLD STREAK ENDED \u00B7 A NEW ONE STARTS TODAY':ev.used?'A FREEZE SAVED YOUR STREAK':ev.earned?'7 DAYS: YOU EARNED A STREAK FREEZE':r?'SHOWING UP COUNTS \u00B7 COME BACK TOMORROW':'THE STREAK COUNTS FOR SHOWING UP \u00B7 TRY AGAIN FOR STARS')+(k.freezes?' \u00B7 FREEZES HELD: '+k.freezes:'')+'</small>';
+  $('dragain').textContent=stars>=3?'PLAY AGAIN':'TRY AGAIN';$('dres').hidden=false;try{if(r){cheer(.3,2);buzz([30,40,60]);}}catch(e){}}
+let PNAME='ROOKIE';try{PNAME=(localStorage.getItem('mm_name')||'ROOKIE').slice(0,12);}catch(e){}
+function profOpen(){const z=streakLoad(),v=streakView(z);let best=0,got=0,tot=0;try{best=+localStorage.getItem('mm_best')||0;}catch(e){}try{tot=BADGES.length;got=BADGES.filter(b=>bdgGot[b[0]]).length;}catch(e){}
+  const rows=[['GAMES',STATS.g],['RUNS',STATS.runs],['HITS',STATS.hits],['HOMERS',STATS.hrs],['LONGEST',STATS.longest?STATS.longest+' FT':'\u2014'],['BEST GAME',best?best+' RUNS':'\u2014'],['DAILY STREAK',v.n],['BEST STREAK',z.best],['DAILIES PLAYED',z.total]];
+  $('pfstats').innerHTML=rows.map(r=>'<div class="slab"><span class="lbl">'+r[0]+'</span><div class="big">'+r[1]+'</div></div>').join('');$('pfin').value=PNAME;$('pfbdg').textContent='ACHIEVEMENTS'+(tot?': '+got+' / '+tot:'');$('title').hidden=true;$('prof').hidden=false;}
+function profClose(){try{const v=($('pfin').value||'').replace(/[^A-Za-z0-9 _.-]/g,'').trim().toUpperCase().slice(0,12);PNAME=v||'ROOKIE';localStorage.setItem('mm_name',PNAME);}catch(e){}$('prof').hidden=true;$('title').hidden=false;homeUI();}
+$('mdaily').addEventListener('click',e=>{e.stopPropagation();dailyStart();});$('mprof').addEventListener('click',e=>{e.stopPropagation();profOpen();});$('pfback').addEventListener('click',e=>{e.stopPropagation();profClose();});$('pfbdg').addEventListener('click',e=>{e.stopPropagation();try{bdgOpen();}catch(x){}});
+$('mset').addEventListener('click',e=>{e.stopPropagation();$('title').classList.add('set');});$('setback').addEventListener('click',e=>{e.stopPropagation();$('title').classList.remove('set');});
+$('dragain').addEventListener('click',e=>{e.stopPropagation();$('dres').hidden=true;dailyStart();});$('drmenu').addEventListener('click',e=>{e.stopPropagation();$('dres').hidden=true;$('title').hidden=false;homeUI();});
+['pfin'].forEach(id=>['keydown','keyup','pointerdown','mousedown','touchstart'].forEach(t=>$(id).addEventListener(t,e=>e.stopPropagation()))); /* typing a name never swings the bat or starts a game */
+setTimeout(()=>{try{homeUI();}catch(e){}},0);window.__home={ui:homeUI,daily:dailyStart,end:dailyEnd,tick:dailyTick,prof:profOpen};
 window.__streak={load:streakLoad,save:streakSave,view:streakView,play:streakPlay,fresh:streakNew,gap:dayGap,day:dayStr};
 
 window.__brw=BRW;window.__tutOff=()=>{try{tutClose();}catch(e){}tutHold=false;};window.__ih=()=>[infoHold,paused,tutHold].join();window.__bdg=id=>{delete bdgGot[id];if(S.bdgGame)delete S.bdgGame[id];badge(id);pop('GONE!','512 FT · +1 RUN','hot',true);};window.__lu=LINEUP;window.__bp=k=>BULLPEN[k];window.__mm={pitcherModel,crowdFx,setE:v=>{crowdE=v;crowdShow=v;},GLOVE,renderer,scene,LODM,camera,zapStart,acState:()=>AC?(zoneLP?"lp="+Math.round(zoneLP.frequency.value)+" ":"")+AC.state+" t="+AC.currentTime.toFixed(1)+" real="+crowdReal+" roar="+(roarG?roarG.gain.value.toFixed(2)+(roarTop?"T":""):"off")+" bed="+crowdGain.gain.value.toFixed(2):"none",roar,roarOff,boo,cheer,crowdRise,crowdDrop,S,aim,MX,DBG,landRingOn:()=>landRing.visible,hud,tutAnim,draw:()=>draw(),endGame,TROT,SFX,RUN,ballPos:()=>ball.position,ballVisible:()=>ball.visible,fielders,toReady,CAM_HOME,CAM_LOOK,now:()=>now,simulate,judge,get pitch(){return pitch;},get flight(){return flight;},lastSwing:()=>{const t=swing&&swing.type;swing=null;return t;},lastSwingTurbo:()=>!!(swing&&swing.turbo),doSwing,newGame,V3,
