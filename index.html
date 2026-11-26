@@ -1206,7 +1206,7 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
     </div>
     <div id="ldbar" data-t="LOADING" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 903</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 904</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -3050,7 +3050,7 @@ const LINEUP=[ /* batting order: the three hitters in similar armour (Razor, Xen
   {name:'XENON',ini:'',body:1,lh:true,num:8,spd:1.14,pwr:.96,con:1.12,skin:0x6b4226},
   {name:'BRICKHOUSE',ini:'',body:2,num:44,stance:'st_wide',spd:0.78,pwr:1.16,con:.82,skin:0xd9a47c},
   {name:'DRAAK',ini:'',body:9,up:.45,num:19,crouch:true,stance:'st_sword',spd:0.95,pwr:1.1,con:.95,skin:0xa8683e},
-  {name:'VANTA',ini:'',body:6,lh:true,num:51,stance:'st_chef',spd:1.1,pwr:1.02,con:1.08,skin:0xe6bd94},
+  {name:'VANTA',ini:'',body:6,lh:true,num:51,stance:'st_chef',wag:8.6,spd:1.1,pwr:1.02,con:1.08,skin:0xe6bd94},
   {name:'ZEPHRA',ini:'',body:4,lh:true,num:12,spd:1.15,pwr:.94,con:1.1,skin:0xf0c4a0},
   {name:'CRASH',ini:'',body:8,num:35,crouch:true,spd:0.81,pwr:1.12,con:.93,skin:0x5a3820},
   {name:'GORMAK',ini:'',body:5,num:6,stance:'st_norm2',spd:1.04,pwr:.98,con:1.04,skin:0xe8b690},
@@ -3612,7 +3612,7 @@ function stickHint(){
   const live=!S.stk&&!touchLast&&S.inning===1&&S.outs===0&&S.bi===0&&S.balls+S.strikes===0&&(S.state==='ready'||S.state==='windup'||S.state==='pitch');
   if(live!==hintOn){hintOn=live;$('apad').classList.toggle('hint',live);}}
 // Celebrating on second: he shouts, in big letters over his head. Two lines per celebration, the second one about the runs he drove in if any.
-const SHOUT_A=["BEAST MODE!","LET'S GO!!","LET'S GOOO!","YEAH!!","HEATING UP!","YOU'RE SEEING IT!","YOU'RE TEEING OFF!"],SHOUT_B=['TWO BAGS!','KEEP IT ROLLING!','TWO BAGGER!'],SHOUT_H=['PIMPED IT!','PIMPED IT!',"STUNT ON 'EM!","STUNT ON 'EM!","FLEX ON 'EM!","FLEX ON 'EM!",'SEE YA!','WENT YARD!','BIG FLY!','TATER!','GOT ALL OF IT!','NO DOUBTER!','TOUCH \'EM ALL!','ABSOLUTE TANK!','GONE FOREVER!','DINGER!','ADIOS PELOTA!','PLAKATA!','BARRELED!','SAYONARA!','HASTA LA VISTA!','SMELL YA!','GET OFF ME, BALL!','NUKED!','SMELL YA, BALL!','YOU WENT YA YA!','YEETED!','GO, BALL!','GET OUT, BALL!','BEAST MODE!'];
+const SHOUT_A=["YESSIR!","BEAST MODE!","LET'S GO!!","LET'S GOOO!","YEAH!!","HEATING UP!","YOU'RE SEEING IT!","YOU'RE TEEING OFF!"],SHOUT_B=['TWO BAGS!','KEEP IT ROLLING!','TWO BAGGER!'],SHOUT_H=['PIMPED IT!','PIMPED IT!',"STUNT ON 'EM!","STUNT ON 'EM!","FLEX ON 'EM!","FLEX ON 'EM!",'SEE YA!','WENT YARD!','BIG FLY!','TATER!','GOT ALL OF IT!','NO DOUBTER!','TOUCH \'EM ALL!','ABSOLUTE TANK!','GONE FOREVER!','DINGER!','ADIOS PELOTA!','PLAKATA!','BARRELED!','SAYONARA!','HASTA LA VISTA!','SMELL YA!','GET OFF ME, BALL!','NUKED!','SMELL YA, BALL!','YOU WENT YA YA!','YEETED!','GO, BALL!','GET OUT, BALL!','BEAST MODE!'];
 let ndLast='';let shoutI=-1,shoutLast='';const _sh=new V3();
 /* NO CALL OVER A PLAYER'S HEAD IS EVER WIDER THAN THE SCREEN: whenever its words change, the lettering is shrunk until the whole line fits with a margin each side */
 try{const el=$('shout'),fit=()=>{try{el.style.fontSize='';const w=(canvas.clientWidth||innerWidth)*.92,sw=el.scrollWidth||el.offsetWidth;if(sw>w){const fs=parseFloat(getComputedStyle(el).fontSize)||40;el.style.fontSize=Math.max(14,Math.floor(fs*w/sw*.98))+'px';}}catch(e){}};new MutationObserver(fit).observe(el,{childList:true,characterData:true,subtree:true});addEventListener('resize',fit);}catch(e){}
@@ -5251,6 +5251,8 @@ function clipBat(){const C=MX.clip;C.hL.getWorldPosition(_pl);C.mL.getWorldPosit
     C.hR.getWorldPosition(_t1);C.mR.getWorldPosition(_t2);_t1.lerp(_t2,.55).sub(_pl);
     if(_t1.lengthSq()>1e-4){_t1.normalize().multiplyScalar(.55).add(_t2.set(0,.45,0)).normalize();_bd.lerp(_t1,C.crW).normalize();}}
   {const bu=C.bi!==undefined&&LINEUP[C.bi%LINEUP.length].up;if(bu&&!C.upW&&!C.dnW&&!C.flatW&&!C.liftW){const w=bu*(1-clamp((C.h||0)*4,0,1));if(w>0)_bd.lerp(_t1.set(0,1,0),w).normalize();}} /* a hitter whose hands sit oddly on this body carries the bat more upright in his stance (it eases back into the swing's own line as he starts it) */
+  /* THE WAGGLE: a hitter with one keeps the barrel moving while he waits, tipping it toward the pitcher and back in a small loop (the hands hold still; phone capture does not pick up wrist roll, so the bat's own motion is added here). It stops the instant he starts his swing. */
+  {const lw=C.bi!==undefined?LINEUP[C.bi%LINEUP.length]:null;if(lw&&lw.wag&&C.stW>0&&!C.flatW&&!C.liftW){const w=C.stW*(1-clamp((C.h||0)*4,0,1)),ph=now*lw.wag;if(w>0){_bd.z-=(Math.sin(ph)*.4+.12)*w;_bd.x+=Math.cos(ph)*.16*w;_bd.normalize();}}}
   if(C.liftW>0&&C.hR){ // clean and jerk: the bat is the barbell, gripped in both hands and centred between them
     C.hR.getWorldPosition(_t1);C.mR.getWorldPosition(_t2);_t1.lerp(_t2,.55);_t2.copy(_t1).sub(_pl);
     if(_t2.lengthSq()>1e-4){_t2.normalize();_pl.add(_t1).multiplyScalar(.5).addScaledVector(_t2,-.36);_bd.copy(_t2);}}
@@ -5385,7 +5387,7 @@ function updateClip(dt){
   if(C.idle){const lb=C.bi>=0?LINEUP[C.bi%LINEUP.length]:null,sk=lb&&lb.stance&&C.intros&&C.intros[lb.stance]&&!window.__noStance?C.intros[lb.stance]:null,cr=!sk&&C.idle2&&lb&&lb.crouch?1:0,wI=base*(1-hw); // which stance this hitter uses
     /* MORE STANCES: a hitter can have a stance clip of his own (wide and squatted, or a second upright one). It takes the place of the standard stance while he waits; the swing itself is the same swing. */
     for(const k of STANCES){const q=C.intros&&C.intros[k];if(q&&(!sk||q!==sk)&&!(intro&&intro===q))q.a.setEffectiveWeight(0);}
-    if(sk){sk.a.time=STANCE_HOLD[lb.stance]!==undefined?STANCE_HOLD[lb.stance]:(now*.9)%sk.dur;sk.a.setEffectiveWeight(wI);}
+    if(sk){sk.a.time=STANCE_HOLD[lb.stance]!==undefined?STANCE_HOLD[lb.stance]:(now*.9)%sk.dur;sk.a.setEffectiveWeight(wI);}C.stW=sk?wI:0;
     C.idle.time=(now*.9)%C.idleDur;C.idle.setEffectiveWeight(sk?0:wI*(1-cr));
     if(C.idle2){C.idle2.time=(now*.9)%C.idle2Dur;C.idle2.setEffectiveWeight(sk?0:wI*cr);}C.crW=wI*cr;}
   C.mixer.update(0);
