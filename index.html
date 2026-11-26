@@ -1206,7 +1206,7 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
     </div>
     <div id="ldbar" data-t="LOADING" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 905</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 906</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -3992,7 +3992,7 @@ function updateRunners(dt){
   }
 }
 // ── The throw back in after a hit is fielded (visual only): the fielder winds up and the ball flies to the base ahead of the lead runner.
-const THROW_REL=.77;
+const THROW_REL=.77;let THROW_CAP=true;try{THROW_CAP=localStorage.getItem('mm_throwcap')!=='0';}catch(e){} /* THE FIELDERS' THROW IS THE CAPTURED ONE: a step, a high release and a follow-through, filmed and converted from a phone capture. (The stock throw is still loaded; mm_throwcap=0 brings it back.) */
 function updateThrow(){
   if(!(flight&&flight.thr))return;const Th=flight.thr;if(Th.bt===undefined)Th.bt=Th.t0+THROW_REL;const e=now-Th.bt;
   if(e<0){if(Th.pick&&now>=Th.t0-Th.pick){ball.visible=false;ballShadow.visible=false;}return;} // picked up: the ball is in his glove until he lets it go
@@ -5627,7 +5627,7 @@ function setupFielder(f,obj,custom,noGlove){hev('fld');
     f.mixer=f.mixer||new T.AnimationMixer(obj);f.strAct=f.mixer.clipAction(sc);f.strDur=sc.duration;}
   // BURNED: the ball is over his head. He drops, spins round and goes straight back after it (outfielders only; played on the spot, the game moves him)
   {const uc=obj.animations.find(c=>c.name==='f_turn180');if(uc&&f.of){uc.tracks=uc.tracks.filter(t=>/quaternion$/.test(t.name)||/Hips\.position$/.test(t.name));const ht=uc.tracks.find(t=>/Hips\.position$/.test(t.name));if(ht){const v=ht.values;for(let i=3;i<v.length;i+=3){v[i]=v[0];v[i+2]=v[2];}}f.mixer=f.mixer||new T.AnimationMixer(obj);f.t180Act=f.mixer.clipAction(uc);f.t180Act.dur=uc.duration;}}
-  const tc=obj.animations.find(c=>c.name==='throw');
+  const tc=(THROW_CAP&&obj.animations.find(c=>c.name==='throw_cap'))||obj.animations.find(c=>c.name==='throw');
   if(tc){tc.tracks=tc.tracks.filter(t=>/quaternion$/.test(t.name)||/Hips\.position$/.test(t.name));
     const ht=tc.tracks.find(t=>/Hips\.position$/.test(t.name));if(ht){const v=ht.values;for(let i=3;i<v.length;i+=3){v[i]=v[0];v[i+2]=v[2];}}
     f.mixer=f.mixer||new T.AnimationMixer(obj);f.thrAct=f.mixer.clipAction(tc);f.thrDur=tc.duration;}
@@ -5814,7 +5814,7 @@ function loadPlayers(kind){ // body file = character mesh; clips.json = motion-c
     setTimeout(()=>{if(my===MX.token)pitcherModel();},3000);
     // EVERY KRAKEN IN HIS OWN BODY: the fielders start in the house body so the game is never held up, then each is re-dressed in his own as it
     // arrives, one at a time, only between plays.
-    {const FN=['catch','run','strafe','throw','x_dive','x_dive2','x_wall','f_ready','f_turn180','p_dying','d_1','d_2','d_3'],todo=fielders.filter(f=>!f.isP&&f.body);let qi=0;MX.fldPending=()=>my===MX.token&&qi<todo.length; /* (the loading screen waits for the fielders to be dressed too, inside its ten-second limit) */
+    {const FN=['catch','run','strafe','throw','throw_cap','x_dive','x_dive2','x_wall','f_ready','f_turn180','p_dying','d_1','d_2','d_3'],todo=fielders.filter(f=>!f.isP&&f.body);let qi=0;MX.fldPending=()=>my===MX.token&&qi<todo.length; /* (the loading screen waits for the fielders to be dressed too, inside its ten-second limit) */
       const next=()=>{if(my!==MX.token||qi>=todo.length)return;const f=todo[qi],pr=MX.pitLoad(f.body);if(!pr){qi++;setTimeout(next,200);return;}
         pr.then(()=>{const go=()=>{if(my!==MX.token)return;const st=S.state,v=MX.pitVar[f.body];if(!v){qi++;setTimeout(next,300);return;}
             if(!f.obj||!(st==='title'||st==='over'||(st==='ready'&&now-S.t<.4)||st==='walkup'||st==='pchange')||f.run){setTimeout(go,300);return;}
@@ -5847,7 +5847,7 @@ function loadPlayers(kind){ // body file = character mesh; clips.json = motion-c
     MX.batRig=batRig;MX.batLoad=batLoad;MX.batBoost=k=>{try{const v=cfg.bat&&cfg.bat[k-1];if(v)dlBoost(v.body);}catch(e){}};MX.pitBoost=k=>{try{const v=cfg.pit&&cfg.pit[k-1];if(v)dlBoost(v.body);}catch(e){}};try{if(MX.pitLoad)MX.pitLoad(14);}catch(e){} /* YOUR pitcher's body is asked for the moment the game loads, not a few seconds in: on a phone on a cold cache it was still on its way when the player first took the mound, and the stand-in pitched */try{[10,11,12].forEach(k=>batLoad(k));}catch(e){} /* the Krakens' hitters and the Comets' pitcher, for the pitching half-innings: fetched a little later, they are not needed until the first inning is over */setTimeout(jobTick,1500);setTimeout(MX.batPrep,500); /* started straight away: the first few hitters' bodies are fetched while the title screen is still up */
     // fielders are built one at a time so the page doesn't freeze while seven more models are prepared
     fielders.filter(f=>!f.isP).forEach((f,i)=>setTimeout(()=>{if(my!==MX.token)return;
-      try{setupFielder(f,makeD(['catch','run','strafe','throw','x_dive','x_dive2','x_wall','f_ready','f_turn180','p_dying','d_1','d_2','d_3'].filter(k=>cj[k])),defSkin);}catch(e){console.warn('fielder model failed, using built-in figure',e);fallback(f.fig);}},400+i*220));
+      try{setupFielder(f,makeD(['catch','run','strafe','throw','throw_cap','x_dive','x_dive2','x_wall','f_ready','f_turn180','p_dying','d_1','d_2','d_3'].filter(k=>cj[k])),defSkin);}catch(e){console.warn('fielder model failed, using built-in figure',e);fallback(f.fig);}},400+i*220));
     if(skins&&cj.run)setTimeout(()=>{if(my!==MX.token)return;try{setupRunners(make,skins,cj);}catch(e){console.warn('baserunners failed',e);}},2300);
     // the umpire has his own model too. It is the least important download in the game, so nothing waits for it: the plate crew (only seen in
     // walk-ups) is built when it arrives, or after a few seconds with the stand-in umpire if it hasn't.
