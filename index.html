@@ -1074,7 +1074,7 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
     </div>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 856</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 857</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -1084,6 +1084,8 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
     <button class="tag wkopt" id="ring1" type="button"></button>
     <button class="tag wkopt" id="diff1" type="button"></button>
     <button class="tag wkopt" id="mute1" type="button"></button>
+    <button class="tag wkopt" id="org1" type="button"></button>
+    <button class="tag wkopt" id="hap1" type="button"></button>
     <button class="tag wkopt" id="bdgbtn" type="button"></button>
     <button class="tag wkopt danger" id="resetbtn" type="button">Reset all progress</button>
     <div class="tag" id="credits">Moonshot Mayhem · work in progress · progress is saved on this device only</div>
@@ -1129,6 +1131,9 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
     <button class="cta alt" id="howbtn" type="button">HOW TO PLAY</button>
     <button class="cta alt" id="howpit" type="button">HOW TO PITCH</button>
     <button class="cta alt" id="pstyle2" type="button"></button>
+    <button class="cta alt" id="vol2" type="button"></button>
+    <button class="cta alt" id="org2" type="button"></button>
+    <button class="cta alt" id="hap2" type="button"></button>
     <button class="cta alt" id="shbtn" type="button">FIELD SHADOWS: OFF</button>
     <button class="cta alt" id="fpsbtn" type="button">SHOW SPEED: OFF</button>
     <button class="cta" id="psetback" type="button">BACK</button>
@@ -1425,7 +1430,17 @@ const PTUT=[['pdpad','LEFT THUMB: HOLD TO AIM','Push the stick and <i>hold it</i
   ['pdbtns','PICK · AIM · TAP · TAP','<i>Pick a pitch</i> on the arc. <i>Hold your aim</i> with the left thumb. <i>Tap the dial</i> in the middle: a ring starts closing on your target and the dial becomes one big <i>PITCH!</i> button. <i>Tap it</i> as the ring meets the yellow circle. On the money, it goes exactly where you aimed. Miss badly and you hung it.'],
   ['pdjuice','JUICE, OVERDRIVE, DRILL','<i>JUICE</i> swaps in four trick pitches for a quarter of your bar each. Fill the bar and the same button becomes <i>OVERDRIVE</i>: every Juice pitch, free, for one batter. <i>DRILL HIM</i> plunks the batter once a half. In the zone, <i>red</i> is where he is hot and <i>blue</i> where he is cold. The green bar up top is your <i>stamina</i>.']];
 /* ON A PHONE THE GUIDE IS HANDS-ON, like the batting one: one control is lit, the card says what to do with it, and it moves on only when the player has done it. */
-const PTUT_EVERY_GAME=true; /* QC: the pitching guide runs the first time you pitch in EVERY game. Set false before release. */
+/* ONE SWITCH FOR RELEASE. Off (the default) is playtest mode: the build tag shows, tutorials and explainers replay every game, the newest animation
+   is forced to play first and the pause menu can skip to pitching. On, all of that is gone. It is on for a link that ends in #release, or once
+   localStorage mm_release is '1'; the App Store build sets it for good. */
+const RELEASE=(()=>{try{if(/[#?&]release\b/.test(location.href)){localStorage.setItem('mm_release','1');return true;}return localStorage.getItem('mm_release')==='1';}catch(e){return false;}})();
+/* SAVE DATA HAS A VERSION, so an update can carry progress forward instead of wiping it. Everything the game keeps lives under keys that start
+   with mm_. saveSnapshot() / saveRestore() move the whole lot as one piece of text (what an iCloud save will use). */
+const SAVE_V=1;(function(){try{const v=+localStorage.getItem('mm_save_v')||0;if(v<1){['mm_stats','mm_badges3','mm_streak1'].forEach(k=>{const t=localStorage.getItem(k);if(t!==null){try{JSON.parse(t);}catch(e){localStorage.removeItem(k);}}});} /* v0 -> v1: anything unreadable is dropped, so one bad value can never stop the game loading */if(v!==SAVE_V)localStorage.setItem('mm_save_v',SAVE_V);}catch(e){}})();
+function saveSnapshot(){const o={v:SAVE_V,at:Date.now(),k:{}};try{Object.keys(localStorage).forEach(k=>{if(k.indexOf('mm_')===0)o.k[k]=localStorage.getItem(k);});}catch(e){}return JSON.stringify(o);}
+function saveRestore(txt){try{const o=JSON.parse(txt);if(!o||typeof o.k!=='object'||(o.v|0)>SAVE_V)return false;Object.keys(o.k).forEach(k=>{if(k.indexOf('mm_')===0&&typeof o.k[k]==='string')localStorage.setItem(k,o.k[k]);});return true;}catch(e){return false;}}
+window.__save={snapshot:saveSnapshot,restore:saveRestore,v:SAVE_V,release:RELEASE};
+const PTUT_EVERY_GAME=!RELEASE; /* QC: the pitching guide runs the first time you pitch in EVERY game. Set false before release. */
 const GTF=()=>[null,[MOB?'PICK YOUR PITCH':'PICK YOUR PITCH (1-4)',MOB?'Right thumb: tap one on the wheel':'Press 1-4, or click one on the wheel','Each one moves differently. The red line shows how.'],[MOB?'AIM WITH THE LEFT STICK':'AIM WITH THE MOUSE',MOB?'Hold it and the ball goes where you hold it':'The ball goes where you point',''],PD3?['HOLD FOR POWER · TAP THE SPOT',MOB?'Hold PITCH: let go as the ring fills the big circle':'Hold: let go as the ring fills the big circle',MOB?'Then tap as it closes on the small one.':'Then tap as it closes on the small one.']:['PITCH, THEN TAP ON THE RING',MOB?'PITCH starts the ring':'Click or Space starts the ring',MOB?'Tap again as it meets the white circle.':'Again as it meets the white circle.']];
 /* THE PITCHING GUIDE RUNS LIKE THE BATTING ONE: the game is held, everything is blacked out except the strike zone and the controls, and each
    control is SHOWN AT WORK (the wheel turning through its pitches, the stick steering the ball, the dial and the ring). Nothing has to be
@@ -1871,7 +1886,7 @@ const PORCH=0,PORCH2=0, /* (the jutting porch was tried and taken out: left fiel
 const pol=(r,phi,y=0)=>new V3(r*Math.sin(phi),y,-r*Math.cos(phi));
 // TRANQUILITY BASE: the old Apollo landing site, way out beyond left-centre. A lander, a flag and a pool of work-light, all painted (no real
 // lights: it costs nothing). An Overdrive moonshot can come down right on it.
-const PLAY_NEWEST_FIRST=true; /* playtesting: the most recently built animation is the first one a game shows. Set false before release. */
+const PLAY_NEWEST_FIRST=!RELEASE; /* playtesting: the most recently built animation is the first one a game shows. Set false before release. */
 const APO={r:334,phi:-.13,ok:false,wob:-9,flag:null};
 {try{const G=new T.Group(),shade=tex(64,8,g=>{const l=g.createLinearGradient(0,0,64,0);l.addColorStop(0,'#777');l.addColorStop(.3,'#fff');l.addColorStop(.6,'#cfcfcf');l.addColorStop(1,'#4a4a4a');g.fillStyle=l;g.fillRect(0,0,64,8);}),
     M=c=>new T.MeshBasicMaterial({color:c,map:shade,fog:false}),B=c=>new T.MeshBasicMaterial({color:c,fog:false}),UP=new V3(0,1,0),
@@ -3069,11 +3084,15 @@ function unlockAudio(){
 }
 ['touchend','pointerup','click','keydown'].forEach(ev=>document.addEventListener(ev,unlockAudio,{capture:true,passive:true}));
 let muted=false;try{muted=localStorage.getItem('mm_mute')==='1';}catch(e){}
-function muteLabel(){$('mutebtn').textContent=muted?'SOUND OFF':'SOUND ON';$('mutebtn').classList.toggle('off',muted);$('mute1').textContent='Sound: '+(muted?'off':'on');}
-function toggleMute(){muted=!muted;try{localStorage.setItem('mm_mute',muted?'1':'0');}catch(e){}if(master)master.gain.value=muted?0:.8;muteLabel();}
+const VOLS=[.3,.55,.8],VOLN=['low','medium','full'];let volI=2,organOff=false,hapOff=false;try{const v=localStorage.getItem('mm_vol');if(v!==null)volI=Math.max(0,Math.min(2,+v|0));organOff=localStorage.getItem('mm_organ')==='0';hapOff=localStorage.getItem('mm_hap')==='0';}catch(e){}
+function volApply(){if(master)master.gain.value=muted?0:VOLS[volI];}
+function volCycle(){if(muted){muted=false;volI=0;}else if(volI<2)volI++;else muted=true;try{localStorage.setItem('mm_mute',muted?'1':'0');localStorage.setItem('mm_vol',volI);}catch(e){}volApply();muteLabel();} /* settings: low, medium, full, off */
+function feelLabels(){const set=(id,t)=>{const e=document.getElementById(id);if(e)e.textContent=t;};set('org1','Organ: '+(organOff?'off':'on'));set('org2','ORGAN: '+(organOff?'OFF':'ON'));set('hap1','Vibration: '+(hapOff?'off':'on'));set('hap2','VIBRATION: '+(hapOff?'OFF':'ON'));set('vol2','SOUND: '+(muted?'OFF':VOLN[volI].toUpperCase()));}
+function muteLabel(){$('mutebtn').textContent=muted?'SOUND OFF':'SOUND ON';$('mutebtn').classList.toggle('off',muted);$('mute1').textContent='Sound: '+(muted?'off':VOLN[volI]);try{feelLabels();}catch(e){}}
+function toggleMute(){muted=!muted;try{localStorage.setItem('mm_mute',muted?'1':'0');}catch(e){}volApply();muteLabel();}
 function audioInit(){
   if(AC)return;try{AC=new (window.AudioContext||window.webkitAudioContext)();}catch(e){return;}
-  master=AC.createGain();master.gain.value=muted?0:.8;master.connect(AC.destination);
+  master=AC.createGain();master.gain.value=muted?0:VOLS[volI];master.connect(AC.destination);
   noiseBuf=AC.createBuffer(1,AC.sampleRate*2,AC.sampleRate);const d=noiseBuf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;
   // (noiseBuf is still used for short percussive effects: the bat crack, the glove snap, the zap. There is no hiss crowd any more:
   // the crowd is the recording or nothing.)
@@ -3162,7 +3181,7 @@ function crowdTick(dt){
 let orgS=null,orgG=null,orgNext=0,orgLast='',orgSt='',orgInn=0;const orgN={}; // orgN: how often each riff has played, so the ones heard least come up next
 function organStop(fade=.3){if(!orgS)return;const t=AC.currentTime;try{orgG.gain.cancelScheduledValues(t);orgG.gain.setValueAtTime(orgG.gain.value,t);orgG.gain.linearRampToValueAtTime(0,t+fade);orgS.stop(t+fade+.05);}catch(e){}orgS=null;}
 function organPlay(name,vol=.5){const b=SFX['org_'+name];if(!AC||!b)return false;organStop(.15);
-  const t=AC.currentTime;orgS=AC.createBufferSource();orgG=AC.createGain();orgS.buffer=b;orgG.gain.value=vol;orgS.connect(orgG);orgG.connect(master);orgS.start(t);
+  const t=AC.currentTime;orgS=AC.createBufferSource();orgG=AC.createGain();orgS.buffer=b;orgG.gain.value=organOff?0:vol;orgS.connect(orgG);orgG.connect(master);orgS.start(t);
   const me=orgS;orgS.onended=()=>{if(orgS===me)orgS=null;};orgLast=name;orgN[name]=(orgN[name]||0)+1;orgNext=t+b.duration+rand(5,10);return true;}
 // LIGHTS OUT. An Overdrive homer that goes into a light tower: the bank shatters in a shower of sparks, arcs crawl over it, that tower stays
 // dead and the whole park drops into half-darkness (with the surge flickering what is left) for as long as he is rounding the bases.
@@ -3313,7 +3332,7 @@ function pop(t,s='',cls='',long=false){
   const e=$('pop');e.className='';{const T0=e.querySelector('.t');T0.style.fontSize='';T0.textContent=t;try{const rg=document.createRange();rg.selectNodeContents(T0);const w=rg.getBoundingClientRect().width,Wm=$('hud').getBoundingClientRect().width*.9;if(w>Wm)T0.style.fontSize=(parseFloat(getComputedStyle(T0).fontSize)*Wm/w).toFixed(1)+'px';}catch(x){}} /* A LONG CALL IS SHRUNK TO FIT: no callout ever runs off the edge of the screen */e.querySelector('.s').textContent=s;
   if(cls==='logo'&&s==='MOONSHOT MAYHEM'){try{const sv=$('title').querySelector('.logo svg').cloneNode(true),S2=e.querySelector('.s');S2.textContent='';sv.style.cssText='display:block;margin:-4px auto 0;width:clamp(84px,7vw,92px);height:auto;filter:drop-shadow(0 4px 0 rgba(0,0,0,.6))';sv.removeAttribute('id');S2.appendChild(sv);}catch(x){}} /* the game's own logo under PLAY BALL */void e.offsetWidth;e.className='go '+cls+(long?' long':'');e._goT=performance.now();try{const d=long?3300:1700,sp=$('nowbat').firstChild;window._popEnd=e._goT+d;sp.style.animation='none';void sp.offsetWidth;sp.style.animation='';sp.style.animationDelay=d+'ms';clearTimeout(window._nbT);window._nbT=setTimeout(()=>{sp.style.animationDelay='';},d);}catch(x){} /* NOW BATTING waits for the callout to clear */try{timPlace(true);}catch(x){}}
 let MOB=false;function setMob(){MOB=matchMedia('(pointer:coarse)').matches||innerWidth<=560;$('hud').classList.toggle('mob',MOB);document.body.classList.toggle('mob',MOB);}setMob();addEventListener('resize',setMob); // narrow a desktop window to preview the phone layout
-const buzz=p=>{try{if(navigator.vibrate)navigator.vibrate(p);}catch(e){}};
+const buzz=p=>{try{if(!hapOff&&navigator.vibrate)navigator.vibrate(p);}catch(e){}};
 const TIPS=[['AIM','Drag your left thumb anywhere on the screen to move the bat ring onto the pitch.'],['SWING','Tap CONTACT or POWER the moment the shrinking yellow ring meets the white circle and turns green. Bigger is too early, smaller is late.'],
   ['CONTACT OR POWER','Contact has a big sweet spot and sprays line drives. Power has a small one and hits moonshots.'],
   ['INSIDE THE RING','To hit it, the ball has to be inside your ring when you swing: anywhere in the green ring for CONTACT, inside the red core for POWER.'],
@@ -3333,7 +3352,7 @@ TIPS_PC[8]=['OVERDRIVE','Fill the Juice meter all the way and Shift switches on 
   TIPS_PC[TIPS_PC.length-2][1]='Punch in the arrow keys, hammer Space or stop the needle on green before the clock runs out. Fast runners get more green.';}
 let tipI=(Math.random()*3)|0;function nextTip(){const L=MOB?TIPS:TIPS_PC,t=L[tipI++%L.length];$('tiph').textContent='TIPS: '+t[0];$('tipb').textContent=t[1];}nextTip();setInterval(()=>{if(!$('title').hidden)nextTip();},4500);
 // thumb guide before the very first pitch on a phone
-const TUT_EVERY_LAUNCH=true; // testing: show the guide on every launch; set false to go back to once per device
+const TUT_EVERY_LAUNCH=!RELEASE; // testing: show the guide on every launch; set false to go back to once per device
 let tutFirst=false,tutHold=false,tutSeen=!MOB;try{if(!TUT_EVERY_LAUNCH&&localStorage.getItem('mm_tut')==='1')tutSeen=true;}catch(e){}
 let tutOff=false,jtutSeen=!MOB;try{tutOff=localStorage.getItem('mm_tutoff')==='1';if(!TUT_EVERY_LAUNCH&&localStorage.getItem('mm_jtut')==='1')jtutSeen=true;}catch(e){}
 // the first time the Juice meter is full: point at the JUICE button
@@ -3924,7 +3943,7 @@ function podReveal(){S.podPending=false;S.state='pod';S.t=now;PODFX.t=now+.55;PO
 // A ONE-TIME EXPLAINER: the first time something big and new happens (the pitcher's Overdrive, a Showdown, a hitter getting LOCKED IN) the
 // game stops, says what it is in three lines, and waits for GOT IT. Each is shown once per device.
 let infoDone=null;
-const INFO_EVERY_GAME=true; /* PLAYTEST: the pitcher-Overdrive and Locked In explainers come up once every game, not once ever. Set to false before release. */
+const INFO_EVERY_GAME=!RELEASE; /* PLAYTEST: the pitcher-Overdrive and Locked In explainers come up once every game, not once ever. Set to false before release. */
 function infoOnce(key,delay,ok,cls,title,html,done){let seen=false;try{seen=localStorage.getItem(key)==='1';}catch(e){}if(INFO_EVERY_GAME&&(key==='mm_podx'||key==='mm_lkx'||key==='mm_pjz')){const G=S.bdgGame||(S.bdgGame={});seen=!!G['i:'+key];G['i:'+key]=1;}if(seen||window.__mmManual&&!DBG.info)return;try{localStorage.setItem(key,'1');}catch(e){}
   let tries=0;const go=()=>{let k=false;try{k=ok();}catch(e){}if(k==='wait'||((infoHold||paused||tutHold)&&k)){if(tries++<400)setTimeout(go,150);return;} /* (it WAITS for its moment instead of being lost: a skipped cut-scene, a pause or another card used to swallow it for good) */if(!k)return;infoHold=true;infoDone=done||null;const X=$('podx');X.className=cls||'';$('podxt').textContent=title;$('podxb').innerHTML=html;X.hidden=false;X._t=performance.now();};setTimeout(go,delay);}
 function podExplain(delay){
@@ -4789,14 +4808,15 @@ optLabels();['diff1','diff2'].forEach(id=>$(id).addEventListener('click',e=>{e.s
 ['ring1','ring2'].forEach(id=>$(id).addEventListener('click',e=>{e.stopPropagation();ringsOff=!ringsOff;try{localStorage.setItem('mm_rings',ringsOff?'0':'1');}catch(x){}if(ringsOff&&markI===0){markI=1;try{localStorage.setItem('mm_mark2',markI);}catch(x){}markSet();}optLabels();})); /* with the rings hidden there has to be something to aim with: the dot comes on */
 markSet();['mark1','mark2'].forEach(id=>$(id).addEventListener('click',e=>{e.stopPropagation();markI=(markI+1)%4;try{localStorage.setItem('mm_mark2',markI);}catch(x){}markSet();}));
 bdgLabel();$('bdgbtn').addEventListener('click',e=>{e.stopPropagation();bdgOpen();});
-muteLabel();$('mutebtn').addEventListener('click',e=>{e.stopPropagation();toggleMute();});$('mute1').addEventListener('click',toggleMute);
+muteLabel();$('mutebtn').addEventListener('click',e=>{e.stopPropagation();toggleMute();});$('mute1').addEventListener('click',e=>{e.stopPropagation();volCycle();});
+{const org=e=>{e.stopPropagation();organOff=!organOff;try{localStorage.setItem('mm_organ',organOff?'0':'1');if(orgG&&organOff)orgG.gain.value=0;}catch(x){}feelLabels();},hap=e=>{e.stopPropagation();hapOff=!hapOff;try{localStorage.setItem('mm_hap',hapOff?'0':'1');}catch(x){}feelLabels();if(!hapOff)buzz(30);};['org1','org2'].forEach(i=>$(i).addEventListener('click',org));['hap1','hap2'].forEach(i=>$(i).addEventListener('click',hap));$('vol2').addEventListener('click',e=>{e.stopPropagation();volCycle();});feelLabels();}
 walkLabel();$('wk').addEventListener('click',()=>{WALK.on=!WALK.on;try{localStorage.setItem('mm_walk2',WALK.on?'1':'0');}catch(e){}walkLabel();});
 $('mdl').addEventListener('click',()=>loadPlayers(ORDER[(ORDER.indexOf(MX.kind)+1)%ORDER.length]));
 $('again').addEventListener('click',()=>{audioInit();startGame();});
 // pause / restart / main menu
 let PSET=null,paused=false,infoHold=false,odhrCls=false,inT=0;['pointerdown','keydown','touchstart','mousedown'].forEach(n=>addEventListener(n,e=>{inT=e.timeStamp||performance.now();},{capture:true,passive:true}));
 const inPlay=()=>S.state!=='title'&&S.state!=='over';
-function setPaused(on){try{const md=!!(S.mode||(S.scn&&S.scn.daily));$('pdtest').style.display=md?'none':'';$('restart').textContent=md?'START OVER':'RESTART GAME';}catch(e){}try{if(PSET)PSET(false);}catch(e){}
+function setPaused(on){try{const md=!!(S.mode||(S.scn&&S.scn.daily));$('pdtest').style.display=md||RELEASE?'none':'';$('restart').textContent=md?'START OVER':'RESTART GAME';}catch(e){}try{if(PSET)PSET(false);}catch(e){}
   if(on&&!inPlay())return;
   paused=on;$('pause').hidden=!on;document.body.classList.toggle('paused',on);for(const k in keys)keys[k]=false;
   if(AC){try{on?AC.suspend():AC.resume();}catch(e){}}
@@ -4823,7 +4843,10 @@ $('howbtn').addEventListener('click',()=>{setPaused(false);tutShow('s1');}); // 
 $('cambtn').addEventListener('click',()=>{nextCam();draw();});
 $('restart').addEventListener('click',()=>{setPaused(false);fireworks.length=0;const M=S.mode,dz=S.scn&&S.scn.daily;try{shotOff();$('dgoal').hidden=true;}catch(e){}if(M&&M.id==='shot')shotStart();else if(M)modeStart(M.id);else if(dz)dailyStart();else newGame();}); /* RESTART restarts what you were playing: the practice, the derby, the gauntlet or today's challenge, not a full game */
 $('quit').addEventListener('click',toMenu);$('overmenu').addEventListener('click',toMenu);
-document.addEventListener('visibilitychange',()=>{if(document.hidden&&inPlay())setPaused(true);});
+/* INTERRUPTIONS: a phone call, a notification pulled down, the app sent to the background or the phone locked all pause the game where it stands.
+   Coming back never resumes by itself (you would be mid-pitch with your thumb elsewhere): the pause menu is waiting, and the sound is woken up. */
+function interrupt(){try{if(inPlay()&&!paused)setPaused(true);}catch(e){}}
+document.addEventListener('visibilitychange',()=>{if(document.hidden)interrupt();else{try{if(AC&&AC.state!=='running')AC.resume();}catch(e){}}});addEventListener('pagehide',interrupt);document.addEventListener('freeze',interrupt);addEventListener('pageshow',()=>{try{if(AC&&AC.state!=='running')AC.resume();}catch(e){}});
 
 // ───────────────────────── rigged batter mesh (Mixamo skeleton), dressed in code and driven by the rig above
 const MX={ready:false,map:[],on:true,token:0,kind:'ely'};
@@ -6129,7 +6152,7 @@ shApply();
 resize();hud();
 const HEV=[];function hev(n){try{HEV.push([n,performance.now()]);if(HEV.length>14)HEV.shift();}catch(e){}} /* what the game was loading or building lately: written into the performance report beside every long frame */
 const DBG={slice:false,corn:false,dtag:false,dadv:false,beat:false,tko:false,dive:'',hbp:false,pcut:false,fl:'',rob:false,pc:false,staunt:false,pod:false,trail:false,orbit:false,sat:false,drill:false,brawl:false,qte:false,mash:false,slide:false,pn:'',laser:false,lamp:false,mw:false,rev:false,stop:false,aerial:false,pdef:false,dbl:false,cam:false,admire:'',trip:false,fist:false,pop:false,loser:false}; // test hook: pin the camera to CAM_HOME/CAM_LOOK
-window.__ret=()=>reticle.position;window.__fl=()=>fielders;window.__VB=VB;window.__glbMesh=glbMesh;window.__gpuq=GPUQ;window.__dugs=DUGS;window.__rk=ROCKET;window.__reticle=reticle;window.__tut=m=>tutShow(m);window.__cq={CQ,key:()=>cqKey()};window.__rocket=()=>{ROCKET.t=now;};window.__lk=LOCKFX;window.__ramp={n:rampN,d:DFX};window.__mode={start:modeStart,shot:shotStart};window.__prop={hit:PROPHIT,boxes:propBoxes,inside:propInside};window.__cb=curBatter;window.__pd={q:pdQ,tut:pdTut,drill:pdDrill,tap:pdTap,pick:pdPick,PD,start:pdStart,kcel:kCelOn};window.__lockfx=(x,z)=>{Object.assign(LOCKFX,{t:now,x,z,hr:true,pend:false,name:'R. RAZOR',fired:false});};window.__fly=()=>{FLY.t=now;};window.__jt=juiceTap;window.__sb=scoreboard;window.__sbd=()=>sbDraw(true);window.__sync=syncRunners;window.__lr=()=>landRing.visible+' at '+landRing.position.x.toFixed(0)+','+landRing.position.z.toFixed(0)+' scale '+landRing.scale.x.toFixed(1)+' geo '+landRing.geometry.type+' rot '+landRing.rotation.x.toFixed(2)+' op '+landRing.material.opacity.toFixed(2)+' par '+(landRing.parent&&landRing.parent.type)+' scr '+(()=>{const v=landRing.position.clone().project(camera);return v.x.toFixed(2)+','+v.y.toFixed(2)+','+v.z.toFixed(3);})()+' y '+landRing.position.y;try{const tg=document.createElement('div');tg.id='bldtag';tg.textContent=($('bld').textContent||'').replace('BUILD ','B');tg.style.cssText='position:fixed;left:50%;bottom:max(2px,env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:9;font:700 9px/1 sans-serif;letter-spacing:.12em;color:rgba(255,255,255,.38);pointer-events:none;text-shadow:0 1px 0 #000';document.body.appendChild(tg);}catch(e){} /* PLAYTEST: the build number is on the screen at all times, tiny, at the bottom, so a screenshot always says which build it is. Remove before release. */window.__pop=pop;
+window.__ret=()=>reticle.position;window.__fl=()=>fielders;window.__VB=VB;window.__glbMesh=glbMesh;window.__gpuq=GPUQ;window.__dugs=DUGS;window.__rk=ROCKET;window.__reticle=reticle;window.__tut=m=>tutShow(m);window.__cq={CQ,key:()=>cqKey()};window.__rocket=()=>{ROCKET.t=now;};window.__lk=LOCKFX;window.__ramp={n:rampN,d:DFX};window.__mode={start:modeStart,shot:shotStart};window.__prop={hit:PROPHIT,boxes:propBoxes,inside:propInside};window.__cb=curBatter;window.__pd={q:pdQ,tut:pdTut,drill:pdDrill,tap:pdTap,pick:pdPick,PD,start:pdStart,kcel:kCelOn};window.__lockfx=(x,z)=>{Object.assign(LOCKFX,{t:now,x,z,hr:true,pend:false,name:'R. RAZOR',fired:false});};window.__fly=()=>{FLY.t=now;};window.__jt=juiceTap;window.__sb=scoreboard;window.__sbd=()=>sbDraw(true);window.__sync=syncRunners;window.__lr=()=>landRing.visible+' at '+landRing.position.x.toFixed(0)+','+landRing.position.z.toFixed(0)+' scale '+landRing.scale.x.toFixed(1)+' geo '+landRing.geometry.type+' rot '+landRing.rotation.x.toFixed(2)+' op '+landRing.material.opacity.toFixed(2)+' par '+(landRing.parent&&landRing.parent.type)+' scr '+(()=>{const v=landRing.position.clone().project(camera);return v.x.toFixed(2)+','+v.y.toFixed(2)+','+v.z.toFixed(3);})()+' y '+landRing.position.y;try{if(RELEASE)throw 0;const tg=document.createElement('div');tg.id='bldtag';tg.textContent=($('bld').textContent||'').replace('BUILD ','B');tg.style.cssText='position:fixed;left:50%;bottom:max(2px,env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:9;font:700 9px/1 sans-serif;letter-spacing:.12em;color:rgba(255,255,255,.38);pointer-events:none;text-shadow:0 1px 0 #000';document.body.appendChild(tg);}catch(e){} /* PLAYTEST: the build number is on the screen at all times, tiny, at the bottom, so a screenshot always says which build it is. Remove before release. */window.__pop=pop;
 /* ── SCENARIOS (groundwork for the Daily Challenge and Campaign runs; nothing in the game calls this yet) ──────────────────────────────
    scnStart(spec) starts a batting situation from a plain description; dailySpec(date) builds the day's description from the date alone, so
    every phone gets the same one with no server; scnCheck() says whether the goal has been met, missed, or is still open. */
