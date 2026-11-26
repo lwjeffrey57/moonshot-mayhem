@@ -1218,7 +1218,7 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
     </div>
     <div id="ldbar" data-t="LOADING" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 936</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 937</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -3934,7 +3934,8 @@ function walkLabel(){$('wk').textContent='Walk-ups: '+(WALK.on?'on':'off (faster
 // so the walk-ups keep coming all game without every single at-bat waiting for one.
 function walkWant(){if(S.mode)return false;if(S.wuBi===S.bi)return false; /* one walk-up per trip to the plate: after the pitcher's own show on the mound the at-bat just starts */if(S.wwBi!==S.bi){S.wwBi=S.bi;S.ww=true;}return S.ww;} /* every hitter, every time up: his walk-up and his card */
 const plainWalk=I=>I.w_stepup&&(DBG.trip==='w_stepup'||(lastWalk!=='w_stepup'&&Math.random()<.5))?'w_stepup':'w_walkin'; // the plain walk to the plate: either straight in, or stepping in, tapping the plate and getting set
-function startWalkup(){S.forceWalk=false;
+function bodyMissing(){try{const b=curBatter().body||0;return !!(b&&b!==MX.bcur&&!(MX.brigs&&MX.brigs[b])&&!(MX.batVar&&MX.batVar[b])&&MX.batLoad);}catch(e){return false;}}
+function startWalkup(){S.forceWalk=false;S.wuPend=0;
   const b=curBatter(),i=S.bi%LINEUP.length,r=v=>clamp(Math.round((v-.85)/.3*9+1),1,10);
   S.seen[i]=1;S.wuBi=S.bi;S.state='walkup';S.t=now;
   // now and then a surprise replaces his usual routine: he eats dirt on the way in, chips a golf shot with the bat,
@@ -4093,7 +4094,7 @@ function toReady(d){if(S.walkoff&&S.state!=='end'&&S.state!=='over'){S.walkoff=f
     if(S.pcW){const old=BULLPEN[(S.pChanges+BULLPEN.length-1)%BULLPEN.length];flash(.3);{const C=['KNOCKED OUT OF THE GAME!',"HE'S TOAST!",'YOU CHASED HIM!','YOU ROCKED HIM!','YOU SHELLED HIM!','HIT THE SHOWERS, SCRUB!'];let k=(Math.random()*C.length)|0;if(k===S.pcCall)k=(k+1)%C.length;S.pcCall=k;pop(C[k],pdn(old)+' IS DONE','cool',true);badge1('chase');} /* the pitcher you knocked out: one of six calls, never the same one twice running */cheer(.3,2.4);}else pcIntro();
     return;}
   if(S.forceWalk&&S.bi>=0){S.wuBi=-9;S.wwBi=-9;} /* a new inning, or the sides have just changed: the man leading off ALWAYS gets his walk-up, whatever the setting */
-  if((WALK.on||S.forceWalk)&&(S.fresh||S.forceWalk)&&S.bi>=0&&walkWant()&&MX.clip&&MX.clip.intros[WALK.by[curBatter().name]])startWalkup();}
+  if((WALK.on||S.forceWalk)&&(S.fresh||S.forceWalk)&&S.bi>=0&&walkWant()&&MX.clip&&MX.clip.intros[WALK.by[curBatter().name]]){if(bodyMissing()){S.wuPend=performance.now();try{const b=curBatter().body;MX.batLoad(b);MX.batBoost(b);}catch(e){}}else startWalkup();}} /* NO WALK-UP OVER AN EMPTY BOX: if his own body is still downloading, his card, his music and his walk wait for it (a short quiet beat on the field) instead of playing with nobody there */
 // The Krakens' arms. name, number, 'L' = left-hander, which body he wears, first initial. The human ones have everyday surnames; the aliens go
 // by a single name, the way it is said where they come from (no initial).
 /* WHAT EACH KRAKEN ARM THROWS */const ARS={MAC:['FASTBALL','SLIDER','CURVEBALL','CHANGEUP'],CARLOS:['FASTBALL','SINKER','SPLITTER'],LEE:['FASTBALL','CURVEBALL','CHANGEUP','SCREWBALL'],BRAXX:['FASTBALL','CUTTER','SWEEPER','KNUCKLE CURVE'],MALGOR:['FASTBALL','SLIDER','EEPHUS']};
@@ -6200,7 +6201,7 @@ function trail(o,c,far,hot,pat){
   lp.copy(p);
 }
 
-function step(dt){try{stealUI();stealTick();}catch(e){}if(!PD.on){const hc=$('hud').classList;if(!(S.over&&S.overOn)&&hc.contains('odon')&&S.state!=='flight'&&S.state!=='trot'&&S.state!=='celebrate')hc.remove('odon');if(!S.duel&&hc.contains('duel'))hc.remove('duel');} /* belt and braces at the plate too: no Overdrive, no blue flames; no Showdown, no Showdown dressing. They were being left up into the next at-bat (and they are not cheap on a phone) */if(CQ.on||(flight&&flight.cq&&flight.cq.st===0&&flight.pd))try{cqTick(dt);}catch(e){CQ.on=false;}
+function step(dt){if(S.wuPend){if(S.state!=='ready')S.wuPend=0;else if(!bodyMissing()||performance.now()-S.wuPend>BODY_WAIT){S.wuPend=0;try{startWalkup();}catch(e){}}else S.t=now;}try{stealUI();stealTick();}catch(e){}if(!PD.on){const hc=$('hud').classList;if(!(S.over&&S.overOn)&&hc.contains('odon')&&S.state!=='flight'&&S.state!=='trot'&&S.state!=='celebrate')hc.remove('odon');if(!S.duel&&hc.contains('duel'))hc.remove('duel');} /* belt and braces at the plate too: no Overdrive, no blue flames; no Showdown, no Showdown dressing. They were being left up into the next at-bat (and they are not cheap on a phone) */if(CQ.on||(flight&&flight.cq&&flight.cq.st===0&&flight.pd))try{cqTick(dt);}catch(e){CQ.on=false;}
   overCheck();if(hudLater)hud(); // checked every frame, so the bar and the button switch the instant the meter fills
   {const hide=MOB&&!(S.state==='ready'||S.state==='windup'||S.state==='pitch');if(hide!==ctlHidden){ctlHidden=hide;$('hud').classList.toggle('noctl',hide);if(!hide&&jPend)hud();}} // the stick and buttons are only on screen while there is a pitch to hit
   landRing.visible=false;
