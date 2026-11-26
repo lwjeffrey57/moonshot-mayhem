@@ -1087,7 +1087,7 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
     </div>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 880</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 881</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -1924,7 +1924,7 @@ const PORCH=0,PORCH2=0, /* (the jutting porch was tried and taken out: left fiel
 const pol=(r,phi,y=0)=>new V3(r*Math.sin(phi),y,-r*Math.cos(phi));
 // TRANQUILITY BASE: the old Apollo landing site, way out beyond left-centre. A lander, a flag and a pool of work-light, all painted (no real
 // lights: it costs nothing). An Overdrive moonshot can come down right on it.
-const PLAY_NEWEST_FIRST=!RELEASE;const NEW_T=['p_town','p_shuffle','p_wavy','p_chick2','p_joy'],NEW_K=['p_outta','p_chick2','p_town','p_shuffle','p_wavy']; /* the newest celebrations: after a homer, and on the mound after a strikeout */ /* playtesting: the most recently built animation is the first one a game shows. Set false before release. */
+const PLAY_NEWEST_FIRST=!RELEASE;const NEW_T=['p_dosido','p_town','p_shuffle','p_wavy','p_chick2','p_joy'],NEW_K=['p_dosido','p_outta','p_chick2','p_town','p_shuffle','p_wavy']; /* the newest celebrations: after a homer, and on the mound after a strikeout */ /* playtesting: the most recently built animation is the first one a game shows. Set false before release. */
 const APO={r:334,phi:-.13,ok:false,wob:-9,flag:null};
 {try{const G=new T.Group(),shade=tex(64,8,g=>{const l=g.createLinearGradient(0,0,64,0);l.addColorStop(0,'#777');l.addColorStop(.3,'#fff');l.addColorStop(.6,'#cfcfcf');l.addColorStop(1,'#4a4a4a');g.fillStyle=l;g.fillRect(0,0,64,8);}),
     M=c=>new T.MeshBasicMaterial({color:c,map:shade,fog:false}),B=c=>new T.MeshBasicMaterial({color:c,fog:false}),UP=new V3(0,1,0),
@@ -2897,16 +2897,17 @@ function ik(sh,el,target,L1,L2,poleV){
 // teams (fictional)
 const HOME={base:'#1b2a6b',trim:'#f26a1b',ink:'#f4f4f0',word:'Comets'};
 const AWAY={base:'#f4f4f0',trim:'#0e7c86',ink:'#0e3c46',pin:'rgba(14,60,70,.35)',word:'Krakens'};
+const STANCES=['st_wide','st_norm2'];
 const LINEUP=[ /* batting order: the three hitters in similar armour (Razor, Xenon, Draak) are never next to each other */
   {name:'RAZOR',ini:'',num:27,spd:1.0,pwr:1.0,con:1.05,skin:0xb9794f},
   {name:'VREL',ini:'',body:7,num:3,crouch:true,spd:1.02,pwr:1.06,con:1.0,skin:0xe2b08a},
   {name:'XENON',ini:'',body:1,lh:true,num:8,spd:1.14,pwr:.96,con:1.12,skin:0x6b4226},
-  {name:'BRICKHOUSE',ini:'',body:2,num:44,spd:0.78,pwr:1.16,con:.82,skin:0xd9a47c},
+  {name:'BRICKHOUSE',ini:'',body:2,num:44,stance:'st_wide',spd:0.78,pwr:1.16,con:.82,skin:0xd9a47c},
   {name:'DRAAK',ini:'',body:9,up:.45,num:19,crouch:true,spd:0.95,pwr:1.1,con:.95,skin:0xa8683e},
   {name:'VANTA',ini:'',body:6,lh:true,num:51,spd:1.1,pwr:1.02,con:1.08,skin:0xe6bd94},
   {name:'ZEPHRA',ini:'',body:4,lh:true,num:12,spd:1.15,pwr:.94,con:1.1,skin:0xf0c4a0},
   {name:'CRASH',ini:'',body:8,num:35,crouch:true,spd:0.81,pwr:1.12,con:.93,skin:0x5a3820},
-  {name:'GORMAK',ini:'',body:5,num:6,spd:1.04,pwr:.98,con:1.04,skin:0xe8b690},
+  {name:'GORMAK',ini:'',body:5,num:6,stance:'st_norm2',spd:1.04,pwr:.98,con:1.04,skin:0xe8b690},
 ];
 /* THE BATTING ORDER IS THE PLAYER'S: My Squad can swap any two spots, and the order is remembered by name. */
 try{const o=JSON.parse(localStorage.getItem('mm_order')||'null');if(Array.isArray(o)&&o.length===LINEUP.length&&o.every(n=>LINEUP.some(b=>b.name===n))&&new Set(o).size===o.length){const by={};LINEUP.forEach(b=>{by[b.name]=b;});o.forEach((n,k)=>{LINEUP[k]=by[n];});}}catch(e){}
@@ -3557,13 +3558,13 @@ const WALK_ONLY=['w_milling','w_drive','w_golf','w_sad']; // routines that are w
 /* CELEBRATIONS ARE EARNED. Eight come with the game; one more unlocks at each level after that, the showiest last. In playtest mode everything is
    open (the ladder is still shown, so it can be judged); in the release build only what the player has reached is in the mix. The player can also
    pick one as their SIGNATURE: it is the first home-run celebration of every game. */
-const CEL_LADDER=[['p_joy','JOY JUMP'],['w_wave','THE WAVE'],['p_runman','RUNNING MAN'],['w_macarena','MACARENA'],['p_chicken','FUNKY CHICKEN'],['w_salsa','SALSA'],['w_bdance','BELLY DANCE'],['p_twerk','TWERK'],['w_cartwheel','CARTWHEEL'],['p_town','AROUND TOWN'],['w_backflip','BACKFLIP'],['p_shuffle','SHUFFLE'],['w_bboy','BREAK DANCE'],['p_wavy','WAVE DANCE'],['w_salsa2','SALSA SPIN'],['p_chick2','CHICKEN DANCE'],['w_hurricane','HURRICANE KICK'],['p_boogie','BOOGIE'],['p_float','FLOATING']],
+const CEL_LADDER=[['p_joy','JOY JUMP'],['w_wave','THE WAVE'],['p_runman','RUNNING MAN'],['w_macarena','MACARENA'],['p_chicken','FUNKY CHICKEN'],['w_salsa','SALSA'],['w_bdance','BELLY DANCE'],['p_twerk','TWERK'],['w_cartwheel','CARTWHEEL'],['p_town','AROUND TOWN'],['w_backflip','BACKFLIP'],['p_shuffle','SHUFFLE'],['w_bboy','BREAK DANCE'],['p_wavy','WAVE DANCE'],['w_salsa2','SALSA SPIN'],['p_chick2','CHICKEN DANCE'],['w_hurricane','HURRICANE KICK'],['p_boogie','BOOGIE'],['p_float','FLOATING'],['p_dosido','DO-SI-DO']],
   CEL_START=[['w_flair','FLAIR'],['w_salute','SALUTE'],['p_fist','FIST PUMP'],['p_clap','CLAP'],['w_arrow','ARROW'],['w_lift','BAT LIFT'],['w_pushup','PUSH-UPS'],['w_boxing','SHADOW BOX']],CEL_LV={};CEL_LADDER.forEach((c,i)=>{CEL_LV[c[0]]=i+2;});
 function celOK(k){try{return !RELEASE||!CEL_LV[k]||lvOf(XP)>=CEL_LV[k];}catch(e){return true;}}function celPool(){return WILD_CEL.filter(celOK);}
 let CEL_SIG='';try{CEL_SIG=localStorage.getItem('mm_sig')||'';}catch(e){}
-const CEL_FAV=['p_float','p_town','p_shuffle','p_boogie','w_bboy','w_backflip','p_twerk','w_macarena','w_flair','w_salute','w_salsa2'];let celLast='';const celClip=own=>{if(!WALK_ONLY.includes(own))return own;const C=MX.clip,w=C?celPool().filter(k=>C.intros[k]):[];return w.length?w[(Math.random()*w.length)|0]:own;}; // the milling routine is a walk-up only
+const CEL_FAV=['p_dosido','p_float','p_town','p_shuffle','p_boogie','w_bboy','w_backflip','p_twerk','w_macarena','w_flair','w_salute','w_salsa2'];let celLast='';const celClip=own=>{if(!WALK_ONLY.includes(own))return own;const C=MX.clip,w=C?celPool().filter(k=>C.intros[k]):[];return w.length?w[(Math.random()*w.length)|0]:own;}; // the milling routine is a walk-up only
 const earlyShow=n=>n<(gamesPlayed<=3?2:1);let wildTrot=false;
-const WILD_CEL=['p_float','p_joy','p_shuffle','p_wavy','p_town','p_chick2','p_boogie','w_cartwheel','w_salsa2','w_salute','w_backflip','w_bboy','w_macarena','w_salsa','w_bdance','w_flair','w_lift','w_pushup','p_loser','p_twerk','p_chicken','p_runman','p_fist','p_clap','p_threat','w_boxing','w_arrow','w_wave','w_hurricane'],WILD_TAUNT=['p_twerk','p_chicken','p_backflip','p_bboy','p_macarena','p_runman'];
+const WILD_CEL=['p_dosido','p_float','p_joy','p_shuffle','p_wavy','p_town','p_chick2','p_boogie','w_cartwheel','w_salsa2','w_salute','w_backflip','w_bboy','w_macarena','w_salsa','w_bdance','w_flair','w_lift','w_pushup','p_loser','p_twerk','p_chicken','p_runman','p_fist','p_clap','p_threat','w_boxing','w_arrow','w_wave','w_hurricane'],WILD_TAUNT=['p_twerk','p_chicken','p_backflip','p_bboy','p_macarena','p_runman'];
 const juiceOn=()=>juiceArmed||keys.ShiftLeft||keys.ShiftRight;
 // ratings shown as grades: S is elite, F is a liability. The same scale for power, contact and speed.
 const GRADE_COL={S:'#ffd23b',A:'#3ddc6a',B:'#3ad6ff',C:'#f2f5ff',D:'#ff9a3b',F:'#ff4d2e'};
@@ -4474,7 +4475,7 @@ function tryContact(){flight_pop=false;if(pitch.hbp){swing.done=true;swing.miss=
   // a liner that would die at the foot of the wall carries a touch further and bangs off it instead: more balls off the wall, fewer dropping at its base
   for(let i=0;i<7&&!tr.hr&&!tr.foul&&tr.land&&!(tr.wall&&tr.wallT<tr.land.t)&&Math.atan2(v0.y,Math.hypot(v0.x,v0.z))<26*DEG;i++){const L=tr.land,gap=fenceR(Math.atan2(L.x,-L.z))-Math.hypot(L.x,L.z),hard=v0.length()>=37;if(gap<0||gap>(hard?24:9))break;v0.multiplyScalar(hard?1.055:1.04);if(hard&&v0.y>2)v0.y*=.97;tr=simulate(p0,v0,spin,fopt);} /* a hard liner headed for the deep outfield keeps going on a rope, a laser off the wall */
   if(S.mode&&S.mode.id==='shot')try{tr=shotRamp(tr);}catch(e){}
-  const play=judge(tr,S.over&&S.overOn?Object.assign({},b,{spd:b.spd*1.08}):perkOn(b,'ZEPHRA')&&la<12?Object.assign({},b,{spd:b.spd*1.1}):b);try{if(perkOn(b,'ZEPHRA')&&la<12&&play.type==='hit'&&play.infield)perkSay(b);}catch(e){}if(S.mode&&S.mode.id==='derby'&&play.type!=='hr'&&play.type!=='foul')play.endT=Math.min(play.endT,Math.max(2.3,tr.wallT?Math.max(tr.wallT+1.1,(tr.land?tr.land.t:0)+.6):0)); /* A BALL OFF THE WALL IS ALWAYS SEEN HITTING IT and coming back down onto the grass before the picture moves on */ /* (the derby: it stayed in the park, so it is an out and the next pitch is coming) */play.tag=play.tag||tr.tag||(kind==='TOPSPIN SINKER'?'':kind);/* a bad hop is only called when it beat the fielder: if he still made the play, nobody mentions it */if(play.tag==='MOON HOP!'&&play.type!=='hit')play.tag='';if(tr.offP&&play.type==='hit'&&!play.infield)play.tag='ERROR · OFF THE PITCHER';if(tr.offF&&play.type==='hit')play.tag='ERROR · ATE HIM UP'; /* a ball a fielder should have handled and didn't is scored as his error */
+  const play=judge(tr,S.over&&S.overOn?Object.assign({},b,{spd:b.spd*1.08}):perkOn(b,'ZEPHRA')&&la<12?Object.assign({},b,{spd:b.spd*1.1}):b);try{if(perkOn(b,'ZEPHRA')&&la<12&&play.type==='hit'&&play.infield)perkSay(b);}catch(e){}if(S.mode&&(S.mode.id==='derby'||S.mode.id==='bp')&&play.type!=='hr'&&play.type!=='foul')play.endT=Math.min(play.endT,Math.max(2.3,tr.wallT?Math.max(tr.wallT+1.1,(tr.land?tr.land.t:0)+.6):0)); /* A BALL OFF THE WALL IS ALWAYS SEEN HITTING IT and coming back down onto the grass before the picture moves on */ /* (the derby: it stayed in the park, so it is an out and the next pitch is coming) */play.tag=play.tag||tr.tag||(kind==='TOPSPIN SINKER'?'':kind);/* a bad hop is only called when it beat the fielder: if he still made the play, nobody mentions it */if(play.tag==='MOON HOP!'&&play.type!=='hit')play.tag='';if(tr.offP&&play.type==='hit'&&!play.infield)play.tag='ERROR · OFF THE PITCHER';if(tr.offF&&play.type==='hit')play.tag='ERROR · ATE HIM UP'; /* a ball a fielder should have handled and didn't is scored as his error */
   flight={tr,play,t0:now,q,pw,tb,jp:!!(pitch&&pitch.P&&pitch.P.sp),pod:!!pOD(),fp:(S.balls|0)+(S.strikes|0)===0,od:!!(S.over&&S.overOn),v,done:false,called:false,trailC:S.over&&S.overOn?[.2,.55,1]:tb?[1,.45,.1]:pw&&q>.75?[1,.85,.25]:[.5,.5,.55]}; // Overdrive hits burn blue, Juice hits orange
   // Some Overdrive home runs don't come down: the ball leaves the Moon's orbit, headed for Earth. Always the first one a player ever hits; after that, about a third of them.
   if(apo&&play.type==='hr')flight.apollo=true;
@@ -4671,7 +4672,8 @@ function finishPlay(){revOff();if(PD.on&&flight&&flight.pd){pdFinish(flight,flig
       if(wait){const rp=pl.f.fig.root.position;pl.from=rp.clone();pl.tS=tfN;pl.tField=tfN+wait;}
       f.thr={t0:now+.34+wait,pick:.34,wait,to:new V3(BASES[tb][0],1.2,BASES[tb][1])};crowdHold(2+wait);}
   }
-  const cel=S.state==='celebrate'||S.state==='trot';setBatter();if(cel)readyDur=3.1;else readyDur=f.thr?2.2+(f.thr.wait||0):1.5;S.next=null;hud();
+  if(S.mode&&S.mode.id!=='shot')try{modePA();}catch(e){} /* practice and the Derby have nobody in the field, so a hit or a homer ends the at-bat here (it used to be tallied only when a fielder made an out) */
+  const cel=S.state==='celebrate'||S.state==='trot';setBatter();if(cel)readyDur=S.mode?1.3:3.1;else readyDur=S.mode&&S.mode.id!=='shot'?1.1:f.thr?2.2+(f.thr.wait||0):1.5;S.next=null;hud();
   // Plays that turn into a quick time event: a single with a man on second or a double with a man on first (the runner now on third can be sent home), a double he tries to stretch into a triple, a single he tries to stretch into a double.
   if(pl.type==='hit'&&!pl.infield&&!pl.grd&&pl.bases<3&&S.state==='result'){ // offered on every base hit that leaves somebody a base to take: the lead runner first, otherwise the hitter
     const k=S.bases[2]?'plate':pl.bases===2?'stretch3':S.bases[1]?'adv3':'stretch2';GD.hit++;setTimeout(goDiag,0);
@@ -5201,9 +5203,12 @@ function updateClip(dt){
     const rem=WALK.dur-e;if(rem<.2&&C.swap==null)batterOpacity(Math.max(0,rem/.2));else if(C.swap==null&&C._opq!==S.t){C._opq=S.t;batterOpacity(1);}} /* (he is always solid for his walk-up: a fade left over from a play at a bag while pitching had him see-through) */
   C.hit.time=C.t;C.hit.setEffectiveWeight(base*hw*(1-C.sk));
   if(C.strike){C.strike.time=C.st;C.strike.setEffectiveWeight(base*hw*C.sk);}
-  if(C.idle){const cr=C.idle2&&C.bi>=0&&LINEUP[C.bi%LINEUP.length].crouch?1:0,wI=base*(1-hw); // which stance this hitter uses
-    C.idle.time=(now*.9)%C.idleDur;C.idle.setEffectiveWeight(wI*(1-cr));
-    if(C.idle2){C.idle2.time=(now*.9)%C.idle2Dur;C.idle2.setEffectiveWeight(wI*cr);}C.crW=wI*cr;}
+  if(C.idle){const lb=C.bi>=0?LINEUP[C.bi%LINEUP.length]:null,sk=lb&&lb.stance&&C.intros&&C.intros[lb.stance]&&!window.__noStance?C.intros[lb.stance]:null,cr=!sk&&C.idle2&&lb&&lb.crouch?1:0,wI=base*(1-hw); // which stance this hitter uses
+    /* MORE STANCES: a hitter can have a stance clip of his own (wide and squatted, or a second upright one). It takes the place of the standard stance while he waits; the swing itself is the same swing. */
+    for(const k of STANCES){const q=C.intros&&C.intros[k];if(q&&(!sk||q!==sk)&&!(intro&&intro===q))q.a.setEffectiveWeight(0);}
+    if(sk){sk.a.time=(now*.9)%sk.dur;sk.a.setEffectiveWeight(wI);}
+    C.idle.time=(now*.9)%C.idleDur;C.idle.setEffectiveWeight(sk?0:wI*(1-cr));
+    if(C.idle2){C.idle2.time=(now*.9)%C.idle2Dur;C.idle2.setEffectiveWeight(sk?0:wI*cr);}C.crW=wI*cr;}
   C.mixer.update(0);
   if(w>0){ // lean the upper body so the barrel meets the height you aimed at
     const th=clamp((aim.y-C.y0)/.9,-.45,.45)*w*(MX.leanSign||1);
