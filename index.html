@@ -1207,7 +1207,7 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
     </div>
     <div id="ldbar" data-t="LOADING" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 922</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 923</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -4049,7 +4049,7 @@ function updateThrow(){
     if(Th.safe){const r=flight.raceR||0;pop('SAFE!',[r?`+${r} RUN${r>1?'S':''}`:'','BEAT THE THROW'].filter(Boolean).join(' · '),'',true);buzz([30,40,70]);roar(1,.15);sfxSlice('cheer_big',.8,rand(1,1.08),rand(0,.25),2.8);if(AC)cheerBusy=AC.currentTime+2.4;}}}
 }
 function toReady(d){if(S.walkoff&&S.state!=='end'&&S.state!=='over'){S.walkoff=false;roarOff(4);S.state='end';S.t=now;readyDur=1.6;hud();return;} // nobody else needs to bat: that was the ballgame
-  roarOff();showCard();$('hitinfo').hidden=true;S.state='ready';S.t=now;aim.x=0;aim.y=.825;mouseKeep(); /* ring back to the middle of the zone before every pitch (or under the mouse) */lampFix();if(d)readyDur=d;swing=null;pitch=null;flight=null;decoy.visible=false;ball.visible=false;ballShadow.visible=false;pring.visible=false;ballGlow.material.opacity=0;
+  roarOff();showCard();$('hitinfo').hidden=true;S.state='ready';S.t=now;aim.x=0;aim.y=.825;mouseKeep(); /* ring back to the middle of the zone before every pitch (or under the mouse) */lampFix();if(d)readyDur=d;if(!(swing&&swing.late))swing=null;pitch=null;flight=null;decoy.visible=false;ball.visible=false;ballShadow.visible=false;pring.visible=false;ballGlow.material.opacity=0;
   fielders.forEach(f=>{if(!f.isP){f.fig.root.position.copy(f.home);f.fig.root.rotation.y=Math.atan2(-f.home.x,-f.home.z);}f.run=null;});
   camMode='bat';hud();syncRunners();
   if(S.pcPending){S.pcPending=false;S.state='pchange';S.t=now; // the scene: the man who got knocked out trudges off, then a cut to the mound for the new arm, then the hitter comes up as usual
@@ -5051,9 +5051,9 @@ const LATE_T=1.3;function doSwing(type){if(S.mode)S.mode.swN=(S.mode.swN||0)+1;
   if(S.state==='celebrate'){if(LOCKFX.hr&&(LOCKFX.pend||LOCKFX.cel)&&now-S.t<2.7)return; /* (his Locked In moment at the plate is short and is not skipped by the tap that cut the homer shot short) */if(now-S.t>.25)S.t=now-readyDur;return;} /* (and the celebration at the plate) */
   if(swing)return;
   // between pitches the buttons still swing the bat: a practice cut, no cost, so the first tap always teaches what the button does
-  if(S.state==='ready'||(S.state==='windup'&&now-windupT0<=.55)){swing={t0:now,type,turbo:false,done:false,miss:false,practice:true};SND.whoosh();if(S.state==='ready'&&pmk&&now-pmk.t<LATE_T)try{timing('WAY LATE \u00B7 ALREADY IN THE MITT','#ff8a70',2);}catch(e){}return;}
+  if(S.state==='ready'||(S.state==='windup'&&now-windupT0<=.55)){swing={t0:now,type,turbo:false,done:false,miss:false,practice:true};SND.whoosh();if(S.state==='ready'&&pmk&&now-pmk.t<LATE_T){swing.late=true;try{timing('WAY LATE','#ff8a70',2);}catch(e){}}return;}
   /* A SWING IS NEVER IGNORED. If the tap comes just after the ball is already in the mitt (he was that late), the bat still comes through and the read-out says so, instead of the button seeming dead. The call that was made stands. */
-  if(S.state==='result'&&pmk&&now-pmk.t<LATE_T&&!S.next){swing={t0:now,type,turbo:false,done:false,miss:false,practice:true};SND.whoosh();try{timing(now-pmk.t<.3?'WAY LATE':'WAY LATE \u00B7 ALREADY IN THE MITT','#ff8a70',2);}catch(e){}return;} /* (the window is long on purpose: against Overdrive heat a hitter can be absurdly late, and "I was so late" beats "why didn't he swing") */
+  if(S.state==='result'&&pmk&&now-pmk.t<LATE_T&&!S.next){swing={t0:now,type,turbo:false,done:false,miss:false,practice:true,late:true};SND.whoosh();try{timing('WAY LATE','#ff8a70',2);}catch(e){}return;} /* (the window is long on purpose: against Overdrive heat a hitter can be absurdly late, and "I was so late" beats "why didn't he swing") */
   if(!(S.state==='pitch'||(S.state==='windup'&&now-windupT0>.55)))return;
   if(S.over&&!S.overOn&&(keys.ShiftLeft||keys.ShiftRight))juiceTap(); // desktop: Shift switches Overdrive on
   const od=S.over&&S.overOn,turbo=od||(!S.over&&juiceOn()&&S.juice>=.25);
@@ -6162,7 +6162,7 @@ function step(dt){try{stealUI();stealTick();}catch(e){}if(!PD.on){const hc=$('hu
     const e=$('odh'),tg=MOB?$('tj'):$('kj'),r=tg.getBoundingClientRect(),hr=$('hud').getBoundingClientRect();e.textContent=MOB?'TAP IT! ▼':'';e.className=MOB?'m':''; /* on a computer the key pill itself swells and flashes: nothing is written across the hitter */
     if(MOB){e.style.left=(r.left+r.width/2-hr.left)+'px';e.style.top=(r.top-hr.top-34)+'px';}else{e.style.left=(r.right-hr.left+12)+'px';e.style.top=(r.top+r.height/2-hr.top)+'px';}$('kj').firstChild.nodeValue='OVERDRIVE';$('hud').classList.add('odhint');}
   if(S.odHolding&&(st!=='ready'||!S.over||S.overOn||swing||now-S.odHoldT>=S.odHoldD)){S.odHolding=false;$('kj').firstChild.nodeValue='JUICE';$('hud').classList.remove('odhint');if(st==='ready'&&now-S.t>readyDur-.7)S.t=now-(readyDur-.7);} /* a beat to settle, then the pitch */
-  if(st==='ready'&&el>=readyDur&&!swing&&!S.odHolding&&!(ringEcho&&now-ringEcho.t<ECHO_T)){S.state='windup'; /* the pitcher waits for a practice cut to finish: no quick pitches */windupT0=now;released=false;S.fresh=false;pitch=choosePitch();shotAim(pitch);S.pitches++;readyDur=1.15;$('pitchinfo').classList.remove('on'),$('plast').classList.remove('on');}
+  if(st==='ready'&&el>=readyDur&&!(swing&&!swing.late)&&!S.odHolding&&!(ringEcho&&now-ringEcho.t<ECHO_T)){S.state='windup'; /* the pitcher waits for a practice cut to finish: no quick pitches */windupT0=now;released=false;S.fresh=false;pitch=choosePitch();shotAim(pitch);S.pitches++;readyDur=1.15;$('pitchinfo').classList.remove('on'),$('plast').classList.remove('on');}
   else if(st==='windup'&&now-windupT0>=1.0){
     if(MX.pit&&MX.on){MX.pit.obj.updateMatrixWorld(true);MX.pit.hand.getWorldPosition(pitch.rel);}else{pitcher.root.updateMatrixWorld(true);pitcher.handR.getWorldPosition(pitch.rel);}pitch.t0=now;S.state='pitch';if(S.over&&S.overOn)S.odSeen=true;SND.pitch();if(pitch.P.sp)sfx('crush',.7,.72);ball.visible=true;ballShadow.visible=true;
   }
@@ -6188,7 +6188,7 @@ function step(dt){try{stealUI();stealTick();}catch(e){}if(!PD.on){const hc=$('hu
   if(swing&&!swing.done&&now>=swing.t0+SW_T){
     if(swing.practice)swing.done=true;else if(S.state==='pitch'&&pitch&&!pitch.hit)tryContact();else{swing.done=true;swing.miss=true;}
   }
-  if(swing&&swing.practice&&now-swing.t0>.55){swing=null;if(S.state==='ready')S.t=Math.max(S.t,now-readyDur+.5);} // bat is back; give him another half second to get set before the windup // practice cut finished: bat is back, he can swing for real
+  if(swing&&swing.practice&&now-swing.t0>.55){const lt=swing.late;swing=null;if(S.state==='ready'&&!lt)S.t=Math.max(S.t,now-readyDur+.5);} /* (a LATE cut after the pitch never holds the game up: the pitcher does not wait for it) */ // bat is back; give him another half second to get set before the windup // practice cut finished: bat is back, he can swing for real
   if(S.state==='pitch'&&pitch){
     const u=(now-pitch.t0)/pitch.dur;pitchPos(pitch,u,ball.position);
     if(pitch.hbp&&u>=.985)hbpStart();
