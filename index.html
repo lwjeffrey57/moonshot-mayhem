@@ -1207,7 +1207,7 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
     </div>
     <div id="ldbar" data-t="LOADING" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 918</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 919</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -6254,7 +6254,7 @@ function step(dt){try{stealUI();stealTick();}catch(e){}if(!PD.on){const hc=$('hu
   if(shock.userData.t!==undefined&&shock.userData.t<.3){shock.userData.t+=dt;const k=shock.userData.t/.3;shock.scale.setScalar(.06+k*shock.userData.s*.9);shock.material.opacity=(1-k)*.9;}else shock.material.opacity=0;
 
   updateBatter(dt);updatePitcher();updateFielders(dt);updatePlateCrew();updateRunners(dt);updateTrot(dt);updateThrow();
-  if(MX.ready&&MX.clip&&MX.obj){const v=S.state!=='trot'&&S.state!=='hbprun'&&!(PD.on&&(PD.hideBat||now<(PD.showT||0)||(PD.needBody&&MX.bcur!==PD.needBody&&now<(PD.bodyBy||0)))); /* (pitching: once a hitter's turn is over the box is EMPTY until the next man walks up; the retired hitter is not left standing there) */MX.obj.visible=v||TROT.cele;bat.visible=(v||(TROT.cele&&TROT.clip==='w_lift'))&&!(S.kOut&&S.kOut.rob&&now>S.kOut.t-.05&&now<S.kOut.t+DEFEAT)&&S.state!=='brawl'&&S.state!=='qte'&&!(S.state==='hbp'&&now-S.t>.45)&&!(S.state==='celebrate'&&LOCKFX.hr&&LOCKFX.plate&&(LOCKFX.cel||LOCKFX.pend)); /* (and no bat in his hands while he celebrates at the plate after a homer, the Locked In fist pump above all: with a bat he looked like the next man up) */} /* he lets go of the bat when the pitch gets him: nobody gets up swinging it */ // the man at the plate is the one trotting
+  if(MX.ready&&MX.clip&&MX.obj){const v=S.state!=='trot'&&S.state!=='hbprun'&&!(PD.on&&(PD.hideBat||now<(PD.showT||0)||(PD.needBody&&MX.bcur!==PD.needBody&&now<(PD.bodyBy||0)))); /* (pitching: once a hitter's turn is over the box is EMPTY until the next man walks up; the retired hitter is not left standing there) */MX.obj.visible=v||TROT.cele;bat.visible=(v||(TROT.cele&&TROT.clip==='w_lift'))&&!(S.kOut&&S.kOut.rob&&now>S.kOut.t-.05&&now<S.kOut.t+DEFEAT)&&S.state!=='brawl'&&S.state!=='qte'&&!(S.state==='hbp'&&now-S.t>.45)&&!(S.state==='celebrate'&&!(flight&&flight.cel==='w_lift')); /* NO BAT IN HIS HANDS FOR ANY CELEBRATION AT THE PLATE AFTER A HOMER (with one he looked like the next man up). The one exception is the bat-lift routine, where the bat is the barbell. */} /* he lets go of the bat when the pitch gets him: nobody gets up swinging it */ // the man at the plate is the one trotting
   fxS.update(dt);fxL.update(dt);fxT.update(dt);
 
   ptarget.visible=pring.visible;if(pring.visible)ptarget.position.copy(pring.position);
@@ -6460,7 +6460,7 @@ function perfFlush(){if(PERF.busy||PERF.n<300||(window.__mmManual&&!DBG.perf))re
     Promise.resolve().then(()=>db.collection('perf').doc(PERF.id).set(r)).then(()=>{PERF.sent++;},()=>{}).then(()=>{PERF.busy=false;});};
   if(PERF.db){go(PERF.db);return;}if(PERF.dbTried)return;PERF.dbTried=true;try{if(window.claude&&window.claude.use)window.claude.use('db').then(db=>{PERF.db=db||null;if(!db)PERF.dbTried=true;else go(db);},()=>{});}catch(x){}}
 try{document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')perfFlush();});addEventListener('pagehide',()=>perfFlush());}catch(x){}
-window.__qd=ok=>qteDone(ok);window.__QT=QT;window.__BRW=BRW;window.__goOffer=goOffer;window.__LU=LINEUP;window.__batSwap=batSwap;window.__ball=ball;window.__perf=()=>perfReport();window.__perfTick=perfTick;window.__perfFlush=perfFlush;
+window.__batVis=()=>bat.visible;window.__qd=ok=>qteDone(ok);window.__QT=QT;window.__BRW=BRW;window.__goOffer=goOffer;window.__LU=LINEUP;window.__batSwap=batSwap;window.__ball=ball;window.__perf=()=>perfReport();window.__perfTick=perfTick;window.__perfFlush=perfFlush;
 let fpsOn=false,fN=0,fT=0,fMax=0,fWork=0;
 {const set=on=>{fpsOn=on;$('fps').hidden=!on;$('fpsbtn').textContent='SHOW SPEED: '+(on?'ON':'OFF');$('fps1').textContent='Show speed: '+(on?'on':'off')+' — tap to change';try{localStorage.setItem('mm_fps',on?'1':'0');}catch(e){}};let on0=false;try{on0=localStorage.getItem('mm_fps')==='1';}catch(e){}set(on0);$('fpsbtn').addEventListener('click',()=>set(!fpsOn));$('fps1').addEventListener('click',()=>set(!fpsOn));} /* the speed read-out can be switched on before the game starts, and it is remembered */
 function fpsTick(ms,work){fN++;fT+=ms;fWork+=work;if(ms>fMax)fMax=ms;if(fT<500)return;
