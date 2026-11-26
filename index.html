@@ -298,7 +298,7 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
 #shout.lk{z-index:61}#shout.go.lk{animation:shoutLk .45s cubic-bezier(.2,1.4,.4,1) forwards;color:#7fe6ff;text-shadow:0 clamp(4px,.6vw,6px) 0 #05060f,0 0 26px rgba(58,214,255,.75);transform:translate(-50%,-100%) rotate(-4deg)}@keyframes shoutLk{0%{opacity:0;scale:.3}55%{opacity:1;scale:1.25}100%{opacity:1;scale:1}} /* LOCKED IN! over his head: Overdrive blue, and it stays up for as long as he is burning */
 /* ── HOME SCREEN: the title screen is the menu. A first-time player sees only the logo and PLAY BALL; after one game it shows the modes. ── */
 #menu,#setback{display:none}#title.home #menu{display:flex;flex-direction:column;align-items:center;gap:10px;width:min(440px,92vw)}
-#title.home #tip,#title.home #best,#title.home>.tag:not(.wkopt),#title #opts{display:none}#title.home .logo{width:min(440px,78vw,34vh)}
+#title.home #tip,#title.home #best,#title.home>.tag:not(.wkopt),#title #opts{display:none}#title.home .logo{width:min(440px,78vw,28vh)}#title.home{gap:10px}.mcard.arc{border-color:#ffd23b}.mcard.arc em{color:#ffd23b}
 #title.home.set #menu,#title.home.set #start,#title.home.set .logo{display:none}#title.home.set #opts{display:flex}#title.home.set #setback{display:block}
 #title:not(.home) #opts{display:flex}
 .mcard{pointer-events:auto;cursor:pointer;width:100%;display:grid;gap:3px;padding:10px 16px;text-align:left;color:var(--chrome);background:linear-gradient(#1b2150,#0d1030);border:2px solid #58d6ff;border-radius:12px;box-shadow:0 4px 0 #000;font-family:var(--hud)}
@@ -1048,13 +1048,14 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
     </div>
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="menu">
+      <button class="mcard arc" id="marc" type="button"><b>ARCADE</b><span>A three-inning game against the Krakens. Bat, pitch and swing for the lights.</span><em>ABOUT 10 MINUTES · PLAY ANY TIME</em></button>
       <button class="mcard" id="mdaily" type="button"><b>DAILY CHALLENGE<i id="mdstreak"></i></b><span id="mdtext"></span><em id="mdstate"></em></button>
       <button class="mcard lock" id="mcup" type="button" disabled><b>LUNAR LEAGUE CUP</b><span>Six games. One trophy.</span><em>COMING SOON</em></button>
       <div class="mrow"><button class="cta alt" id="mprof" type="button">PROFILE</button><button class="cta alt" id="mset" type="button">SETTINGS</button></div>
     </div>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 848</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 849</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -6149,7 +6150,7 @@ function profOpen(){const z=streakLoad(),v=streakView(z);let best=0,got=0,tot=0;
   const rows=[['GAMES',STATS.g],['RUNS',STATS.runs],['HITS',STATS.hits],['HOMERS',STATS.hrs],['LONGEST',STATS.longest?STATS.longest+' FT':'\u2014'],['BEST GAME',best?best+' RUNS':'\u2014'],['DAILY STREAK',v.n],['BEST STREAK',z.best],['DAILIES PLAYED',z.total]];
   $('pfstats').innerHTML=rows.map(r=>'<div class="slab"><span class="lbl">'+r[0]+'</span><div class="big">'+r[1]+'</div></div>').join('');$('pfin').value=PNAME;$('pfbdg').textContent='ACHIEVEMENTS'+(tot?': '+got+' / '+tot:'');$('title').hidden=true;$('prof').hidden=false;}
 function profClose(){try{const v=($('pfin').value||'').replace(/[^A-Za-z0-9 _.-]/g,'').trim().toUpperCase().slice(0,12);PNAME=v||'ROOKIE';localStorage.setItem('mm_name',PNAME);}catch(e){}$('prof').hidden=true;$('title').hidden=false;homeUI();}
-$('mdaily').addEventListener('click',e=>{e.stopPropagation();dailyStart();});$('mprof').addEventListener('click',e=>{e.stopPropagation();profOpen();});$('pfback').addEventListener('click',e=>{e.stopPropagation();profClose();});$('pfbdg').addEventListener('click',e=>{e.stopPropagation();try{bdgOpen();}catch(x){}});
+$('marc').addEventListener('click',e=>{e.stopPropagation();$('start').click();});$('mdaily').addEventListener('click',e=>{e.stopPropagation();dailyStart();});$('mprof').addEventListener('click',e=>{e.stopPropagation();profOpen();});$('pfback').addEventListener('click',e=>{e.stopPropagation();profClose();});$('pfbdg').addEventListener('click',e=>{e.stopPropagation();try{bdgOpen();}catch(x){}});
 $('mset').addEventListener('click',e=>{e.stopPropagation();$('title').classList.add('set');});$('setback').addEventListener('click',e=>{e.stopPropagation();$('title').classList.remove('set');});
 $('dragain').addEventListener('click',e=>{e.stopPropagation();$('dres').hidden=true;dailyStart();});$('drmenu').addEventListener('click',e=>{e.stopPropagation();$('dres').hidden=true;$('title').hidden=false;homeUI();});
 ['pfin'].forEach(id=>['keydown','keyup','pointerdown','mousedown','touchstart'].forEach(t=>$(id).addEventListener(t,e=>e.stopPropagation()))); /* typing a name never swings the bat or starts a game */
