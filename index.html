@@ -302,7 +302,34 @@ body.paused #gobtn,body.paused #qpad,body.paused #qmash{visibility:hidden}
 #shout.lk{z-index:61}#shout.go.lk{animation:shoutLk .45s cubic-bezier(.2,1.4,.4,1) forwards;color:#7fe6ff;text-shadow:0 clamp(4px,.6vw,6px) 0 #05060f,0 0 26px rgba(58,214,255,.75);transform:translate(-50%,-100%) rotate(-4deg)}@keyframes shoutLk{0%{opacity:0;scale:.3}55%{opacity:1;scale:1.25}100%{opacity:1;scale:1}} /* LOCKED IN! over his head: Overdrive blue, and it stays up for as long as he is burning */
 /* ── HOME SCREEN: the title screen is the menu. A first-time player sees only the logo and PLAY BALL; after one game it shows the modes.
    One primary action (Arcade), the day's challenge, a grid of the other modes, and three quiet links. ── */
-#menu,#setback{display:none}#title.home #menu{display:flex;flex-direction:column;align-items:stretch;gap:9px;width:min(430px,92vw)}
+#menu,#setback{display:none}
+/* THE HOME SCREEN: icons and level up top, a progress card, one big mode at a time to swipe through with a single PLAY button, and tabs along the bottom */
+.mold{display:none!important}
+#title.home{justify-content:flex-start;padding:0;gap:0;background:linear-gradient(rgba(8,9,30,.78),rgba(8,9,30,.38) 42%,rgba(8,9,30,.5) 74%,rgba(8,9,30,.9))} /* the ballpark shows through behind the menu */#title.home .logo{display:none}
+#title.home #menu{position:relative;width:min(460px,100vw);height:100%;gap:0;padding:max(10px,env(safe-area-inset-top,0px)) 12px 0;box-sizing:border-box}
+.htop{display:flex;align-items:center;gap:8px;pointer-events:auto}.htop span{flex:1}
+.htop button{position:relative;width:42px;height:42px;border-radius:50%;border:2px solid #000;background:#0b0a1a;color:#fff;font-size:19px;line-height:1;box-shadow:0 3px 0 #000;cursor:pointer;padding:0}
+.htop button i{position:absolute;right:-5px;top:-6px;min-width:18px;height:18px;padding:0 4px;box-sizing:border-box;border-radius:9px;background:#ff3b6b;color:#fff;font:800 11px/18px var(--hud);font-style:normal;border:1.5px solid #000}.htop button i:empty{display:none}
+.htop #hlv{width:auto;height:42px;border-radius:21px;padding:0 14px;display:flex;align-items:center;gap:8px;border-color:#ffd23b}.htop #hlv b{font:400 italic 20px/1 var(--display);color:#ffe53b}.htop #hlv small{font:800 9.5px/1 var(--hud);letter-spacing:.12em;color:#c9cfe8}
+.hcard{position:relative;margin-top:26px;padding:26px 12px 9px;border-radius:14px;background:linear-gradient(#18205e,#0c1038);border:2px solid #58d6ff;box-shadow:0 4px 0 #000;pointer-events:auto;font-family:var(--hud);color:#fff}
+.hcrest{position:absolute;left:50%;top:-26px;transform:translateX(-50%);width:52px;height:52px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ffb14a,#ff6a1a 60%,#b9360a);border:3px solid #ffe53b;box-shadow:0 3px 0 #000;display:grid;place-items:center;font:400 italic 27px/1 var(--display);color:#fff;text-shadow:0 2px 0 #000}
+.hrow{display:flex;gap:10px;align-items:stretch}.hobj{flex:1;min-width:0;display:grid;gap:3px;text-align:left}.hobj b{font:400 italic 17px/1 var(--display)}.hobj span{font-size:11.5px;line-height:1.25;color:#c9cfe8;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.hobj u,.hxp u{display:block;height:8px;border-radius:5px;background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.25);overflow:hidden;text-decoration:none}.hobj u i{display:block;height:100%;background:linear-gradient(90deg,#ff9a1e,#ffe53b)}.hobj em{font-style:normal;font-weight:800;font-size:9.5px;letter-spacing:.1em;color:#7fe6ff}
+.hnext{width:92px;flex:none;display:grid;align-content:center;gap:3px;text-align:center;padding-left:10px;border-left:1px solid rgba(255,255,255,.2)}.hnext small{font-weight:800;font-size:8.5px;letter-spacing:.12em;color:#9aa3c7}.hnext b{font:400 italic 14px/1.05 var(--display);color:#ffe53b}.hnext em{font-style:normal;font-weight:800;font-size:9px;letter-spacing:.1em;color:#c9cfe8}
+.hxp{display:flex;align-items:center;gap:8px;margin-top:9px}.hxp span{font:400 italic 13px/1 var(--display);color:#7fe6ff}.hxp u{flex:1;height:10px}.hxp u i{display:block;height:100%;background:linear-gradient(90deg,#2b8cff,#7fe6ff)}.hxp b{min-width:26px;height:26px;display:grid;place-items:center;transform:rotate(45deg);background:#0b0a1a;border:2px solid #7fe6ff;font:400 italic 13px/1 var(--display);color:#fff}.hxp b>s{transform:rotate(-45deg);text-decoration:none}
+.hxpt{text-align:center;font-weight:700;font-size:10px;letter-spacing:.08em;color:#9aa3c7;margin-top:2px}
+.hhero{flex:1;min-height:0;display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;pointer-events:auto;margin:6px -12px 0;-webkit-overflow-scrolling:touch}.hhero::-webkit-scrollbar{display:none}
+.hslide{flex:0 0 100%;scroll-snap-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:0;padding:0 12px;box-sizing:border-box}
+.hemb{position:relative;width:min(58vw,250px,30vh);aspect-ratio:1/1.05;display:grid;place-items:center;clip-path:polygon(50% 0,100% 14%,100% 66%,50% 100%,0 66%,0 14%);background:linear-gradient(160deg,var(--c1,#ffe53b),var(--c2,#ff9a1e));filter:drop-shadow(0 5px 0 #000)}
+.hemb::before{content:'';position:absolute;inset:7px;clip-path:inherit;background:linear-gradient(#141a52,#070922)}.hemb>*{position:relative}.hemb span{font-size:min(24vw,104px,12.5vh);line-height:1;filter:drop-shadow(0 4px 0 rgba(0,0,0,.6))}.hemb svg{width:86%;height:auto}
+.hslide h3{margin:0;font:400 italic clamp(30px,10.5vw,46px)/.92 var(--display);color:#fff;text-align:center;-webkit-text-stroke:2px #000;paint-order:stroke fill;text-shadow:0 4px 0 #000;letter-spacing:.01em}
+.hplay{align-self:center;pointer-events:auto;cursor:pointer;margin-top:6px;padding:10px 54px 8px;font:400 italic clamp(26px,8vw,34px)/1 var(--display);color:#0b0a1a;background:linear-gradient(#ffe53b,#ff9a1e);border:3px solid #000;border-radius:12px;box-shadow:0 5px 0 #000;clip-path:polygon(7% 0,93% 0,100% 50%,93% 100%,7% 100%,0 50%)}.hplay:active{transform:translateY(2px)}.hplay.lock{background:#5a607e;color:#c9cfe8}
+.hcap{align-self:center;margin-top:8px;padding:5px 14px;border-radius:14px;background:#f2f5ff;color:#0b0a1a;font:800 11.5px/1.2 var(--hud);letter-spacing:.04em;text-align:center;max-width:92%}
+.hdots{display:flex;justify-content:center;gap:7px;margin:8px 0 8px;pointer-events:auto}.hdots i{width:9px;height:9px;border-radius:50%;background:rgba(242,245,255,.35);cursor:pointer}.hdots i.on{background:#58d6ff;box-shadow:0 0 8px #58d6ff}
+.htabs{display:flex;margin:0 -12px;padding-bottom:max(4px,env(safe-area-inset-bottom,0px));background:linear-gradient(#141a52,#070922);border-top:2px solid #2b3a9a;pointer-events:auto}
+.htabs button{flex:1;display:grid;gap:3px;justify-items:center;padding:9px 0 7px;background:none;border:0;color:#aeb6d6;font:800 9.5px/1 var(--hud);letter-spacing:.1em;cursor:pointer}.htabs button i{font-style:normal;font-size:20px;line-height:1}.htabs button.on{color:#7fe6ff;background:linear-gradient(#22308f,#101653);box-shadow:inset 0 3px 0 #58d6ff}
+@media (max-height:640px){.hcard{padding-top:22px}.hobj span{display:none}.hemb{width:min(46vw,24vh)}.hslide h3{font-size:clamp(24px,8vw,34px)}}
+#title.home #menu{display:flex;flex-direction:column;align-items:stretch;gap:9px;width:min(430px,92vw)}
 #title.home #tip,#title.home #best,#title.home>.tag:not(.wkopt),#title #opts,#title.home #start,#title.home #bld{display:none}#title.home .logo{width:min(400px,74vw,27vh);margin-bottom:2px}#title.home{gap:10px}
 #title.home.set #menu,#title.home.set .logo{display:none}#title.home.set #opts{display:flex}#title.home.set #setback{display:block}
 #title:not(.home) #opts{display:flex}
@@ -1074,6 +1101,16 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
     </div>
     <button class="cta ldg" id="start" type="button">LOADING…</button>
     <div id="menu">
+      <div class="htop"><button id="hset" type="button" aria-label="Settings">&#9881;</button><button id="htro" type="button" aria-label="Trophies">&#127942;<i id="htron"></i></button><button id="hday" type="button" aria-label="Daily Challenge">&#128197;<i id="hdayn"></i></button><span></span><button id="hlv" type="button"><b id="hlvn"></b><small id="hlvt"></small></button></div>
+      <div class="hcard"><div class="hcrest" id="hcrest"></div>
+        <div class="hrow"><div class="hobj"><b>DAILY CHALLENGE</b><span id="hobjt"></span><u><i id="hobjbar"></i></u><em id="hobjs"></em></div><div class="hnext"><small>NEXT UNLOCK</small><b id="hnextn"></b><em id="hnextl"></em></div></div>
+        <div class="hxp"><span>XP</span><u><i id="hxpbar"></i></u><b id="hxplv"></b></div><div class="hxpt" id="hxpt"></div></div>
+      <div class="hhero" id="hhero"></div>
+      <button class="hplay" id="hplay" type="button">PLAY</button>
+      <div class="hcap" id="hcap"></div>
+      <div class="hdots" id="hdots"></div>
+      <div class="htabs"><button id="tsquad" type="button"><i>&#127183;</i>SQUAD</button><button id="ttro" type="button"><i>&#127942;</i>TROPHIES</button><button id="thome" class="on" type="button"><i>&#9918;</i>HOME</button><button id="tprof" type="button"><i>&#128100;</i>PROFILE</button><button id="tset" type="button"><i>&#9881;</i>SETTINGS</button></div>
+      <div class="mold">
       <button class="mstrip" id="mplayer" type="button"><b id="mpname"></b><span id="mpinfo"></span></button>
       <button class="mcard arc" id="marc" type="button"><b>PLAY BALL<i>&#9656;</i></b><span>Three innings against the Krakens</span></button>
       <button class="mcard" id="mdaily" type="button"><b>DAILY CHALLENGE<i id="mdstreak"></i></b><span id="mdtext"></span><em id="mdstate"></em></button>
@@ -1085,10 +1122,11 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
         <button class="mtile lock wide" id="mcup" type="button" disabled><b>LUNAR LEAGUE CUP</b><em>COMING SOON</em></button>
       </div>
       <div class="mfoot"><button id="mprof" type="button">PROFILE</button><button id="mtro" type="button">TROPHIES</button><button id="mset" type="button">SETTINGS</button></div>
+      </div>
     </div>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 883</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 884</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -1348,7 +1386,7 @@ const KBAT=[{name:'ZLORP',body:10,con:.92,pow:1.15,eye:.45,hot:[0,1,1, 0,1,0, -1
   {name:'KORVO',body:13,con:.85,pow:1.2,eye:.4,hot:[1,1,0, 1,0,-1, 0,-1,-1]},{name:'SKARR',body:14,con:1.05,pow:.95,eye:.65,hot:[0,0,1, -1,1,1, -1,0,0]},{name:'NYXA',body:15,con:1.15,pow:.85,eye:.75,hot:[-1,1,0, 0,1,0, 1,0,-1]}], /* six in the Kraken order: each trip to the mound picks up where the last one stopped */
   // the Comets' pitcher and what he throws. Each pitch is rated for VELOcity, CONTROL and BREAK (out of 99); STAMINA is how long he lasts.
   NOVA={name:'NOVA',stam:72},
-  PPITCH=[{n:'FASTBALL',i:0,T:.78,v:91,c:78,b:52},{n:'CURVEBALL',i:1,T:.95,v:58,c:64,b:92},{n:'SLIDER',i:2,T:.88,v:76,c:70,b:84},{n:'CHANGEUP',i:3,T:.92,v:60,c:86,b:68}],
+  PPITCH=[{n:'FASTBALL',i:0,T:.78,v:91,c:78,b:52},{n:'SLIDER',i:2,T:.88,v:76,c:70,b:84},{n:'CURVEBALL',i:1,T:.95,v:58,c:64,b:92},{n:'CHANGEUP',i:3,T:.92,v:60,c:86,b:68}],
   PD={on:false,ph:0,n:0,k:0,balls:0,strikes:0,outs:0,bases:[0,0,0],runs:0,tx:0,ty:.825,pk:0,last:-1,t:0,wuT:0,pt:null,res:null,bx:0,bz:-40,style:0,done:null,_p:new V3(),sv:null};
 PD.style=0;try{localStorage.removeItem('mm_pstyle');}catch(e){} /* ONE PITCHING SYSTEM EVERYWHERE: power, then timing, on a phone and on a computer alike. The old meter option is gone (a browser that had it saved was still pitching the old way). */
 function pdCan(){return !!(MX.pit&&MX.on&&MX.clip&&(!window.__mmManual||DBG.pd)&&!DBG.nopd);}
@@ -1749,7 +1787,7 @@ function pdFinish(f,pl){if(f._res&&pl.dc&&PD.dmk){if(now-f._res>=.04){PD.dmk=fal
   if(pl.type==='foul'){if(PD.strikes<2)PD.strikes++;timing('FOULED OFF'+(PD.res&&PD.res.tim?' · '+PD.res.tim.replace('WAY ','')+' ON IT':''),'#f2f5ff',2);PD.after=next;pdUI();return;}
   if(pl.dc){PD.dmk=true;try{const r=pl.f.fig.root.position;S.qteAt={x:r.x,z:r.z};}catch(e){S.qteAt=null;}PD.after=()=>{PD.qAfter=over;PD.hideBat=false;try{S.goD=Math.random()<.3?1.2:.7;qteStart('dcatch',true);}catch(e){PD.hideBat=true;PD.outs++;over();}};pdUI();hud();return;}
   /* MAKE THE PLAY: a routine grounder to an infielder is sometimes the player's to finish. The arrows, short and with plenty of clock; now and then a tougher hop (a longer code, less time). Boot it and he is safe on the error. */
-  try{if(pl.type==='out'&&pl.label==='GROUND OUT'&&!pl.dp&&!pl.dive&&!pl.cq&&!pl.rob&&pl.f&&!pl.f.of&&qteParts()&&!DBG.nodq&&(DBG.dmake||(PLAY_NEWEST_FIRST&&!S.dmG)||Math.random()<.3)){S.dmG=true;SND.mitt();PD.dmk=true;PD.after=()=>{PD.qAfter=over;PD.hideBat=false;try{S.goD=DBG.dmakeH||Math.random()<.28?1.2:.6;qteStart('dmake',true);}catch(e){PD.hideBat=true;PD.outs++;over();}};pdUI();hud();return;}}catch(e){}
+  try{if(pl.type==='out'&&pl.label==='GROUND OUT'&&!pl.dp&&!pl.dive&&!pl.cq&&!pl.rob&&pl.f&&!pl.f.of&&qteParts()&&!DBG.nodq&&(DBG.dmake||(PLAY_NEWEST_FIRST&&!S.dmG)||Math.random()<.3)){S.dmG=true;S.dmPit=pl.f===fielders[0];SND.mitt();PD.dmk=true;PD.after=()=>{PD.qAfter=over;PD.hideBat=false;try{S.goD=DBG.dmakeH||Math.random()<.28?1.2:.6;qteStart('dmake',true);}catch(e){PD.hideBat=true;PD.outs++;over();}};pdUI();hud();return;}}catch(e){}
   if(pl.type==='out'){PD.outs++;const dp=!!pl.dp&&PD.bases[0]&&PD.outs<3;if(dp){PD.outs++;PD.bases[0]=0;}
     {const call=()=>{if(pl.label==='GROUND OUT')SND.ump(false);if(camped(pl))badge('corn');pop(dp?'DOUBLE PLAY!':pl.dive?'WHAT A CATCH!':pl.rob?'ROBBED HIM!':pl.cq?(pl.label==='FOUL OUT'?'WHAT A GRAB!':'SNARED IT!'):camped(pl)?'CAN OF CORN!':'OUT!',pl.label+' · '+h.name+' IS RETIRED','cool');cheer(.5,2.5);};if(pl.label==='GROUND OUT'&&pl.f&&pl.f.thrAct&&pl.f!==fielders[0]){f.thr={t0:now+.05,to:new V3(BASES[1][0],1.2,BASES[1][1]),next:null,full:true,call};}else call();}
     if(pl.dive||pl.rob||dp||pl.cq){roar(.8,.3);badge('web');}SND.mitt();PD.after=over;
@@ -3979,7 +4017,7 @@ function stealTick(){const C=S.stealCut;if(!C)return;const e=now-C.t;if(e<0)retu
 function goHide(){if(S.goK){S.goK=null;}$('gobtn').classList.remove('on');$('gostay').classList.remove('on');$('hud').classList.remove('goq');}
 function goStay(){if(!S.goK||S.state!=='result')return;goHide();if(LOCKFX.wait&&!LOCKFX.hr){LOCKFX.t0=now;S.t=now;readyDur=2.3;buzz(15);return;} /* HE JUST GOT LOCKED IN: holding the runner does not skip it. The fire goes up on his base now, and then the game moves on. */S.t=Math.min(S.t,now-readyDur+.35);buzz(15);tone('triangle',520,390,.1,.25);} /* he holds up: the game moves straight on */
 function goTap(){if(!S.goK||S.state!=='result')return;GD.tap++;goDiag();const k=S.goK;goHide();S.next=()=>qteStart(k,true);S.t=now-readyDur+.2;buzz([20,30,60]);tone('triangle',660,990,.12,.3);}
-function qteStart(kind,noPA){QT.noPA=!!noPA;goHide();try{if(PD.on){$('pd').style.visibility='hidden';$('pdring').style.display='none';PD.ringT=0;}}catch(e){} /* (none of the pitching controls show during a play at the bag) */{const e=$('bdg');if(e.classList.contains('go')){e.classList.remove('go');if(bdgCur&&!bdgCur.re){bdgCur.re=1;bdgCur.old=1;bdgQ.unshift(bdgCur);}bdgCur=null;}} /* a plate that is up when the event starts is taken down and comes back afterwards */const D=QT.D=kind==='dp'?1:clamp(S.goD||1,.55,1.6);S.goD=0;const M=QTE_MOVES[kind];QT.nm=M.def&&M.name==='THROW HIM OUT!'?(r=>kind!=='dsteal2'&&r<.5?'HOSE HIM!':r<.75?'TAG HIM OUT!':'')(Math.random()):''; /* (a throw in from the outfield is as often HOSE HIM!; a steal is the catcher's throw, so never that) */ /* the plays at a bag are called either way, turn and turn about */const solo=!!(M.solo&&S.qteAt),Bp=solo?[S.qteAt.x,S.qteAt.z]:M.base?[BASES[M.base][0],BASES[M.base][1]]:[0,0],u=solo?(h=>[-S.qteAt.x/h,-S.qteAt.z/h])(Math.hypot(S.qteAt.x,S.qteAt.z)||1):M.u; /* (MAKE THE CATCH is staged where the fielder is standing, facing the plate) */
+function qteStart(kind,noPA){QT.noPA=!!noPA;goHide();try{if(PD.on){$('pd').style.visibility='hidden';$('pdring').style.display='none';PD.ringT=0;}}catch(e){} /* (none of the pitching controls show during a play at the bag) */{const e=$('bdg');if(e.classList.contains('go')){e.classList.remove('go');if(bdgCur&&!bdgCur.re){bdgCur.re=1;bdgCur.old=1;bdgQ.unshift(bdgCur);}bdgCur=null;}} /* a plate that is up when the event starts is taken down and comes back afterwards */const D=QT.D=kind==='dp'?1:clamp(S.goD||1,.55,1.6);S.goD=0;const M=QTE_MOVES[kind];QT.nm=M.def&&M.name==='THROW HIM OUT!'?(r=>kind!=='dsteal2'&&r<.5?'HOSE HIM!':r<.75?'TAG HIM OUT!':'')(Math.random()):''; /* (a throw in from the outfield is as often HOSE HIM!; a steal is the catcher's throw, so never that) */ if(kind==='dmake'&&!S.dmPit)QT.nm='THROW HIM OUT!'; /* a grounder to an infielder cuts to the runner: THROW HIM OUT! MAKE THE PLAY! is kept for the comebacker, when the ball is the pitcher's own */ /* the plays at a bag are called either way, turn and turn about */const solo=!!(M.solo&&S.qteAt),Bp=solo?[S.qteAt.x,S.qteAt.z]:M.base?[BASES[M.base][0],BASES[M.base][1]]:[0,0],u=solo?(h=>[-S.qteAt.x/h,-S.qteAt.z/h])(Math.hypot(S.qteAt.x,S.qteAt.z)||1):M.u; /* (MAKE THE CATCH is staged where the fielder is standing, facing the plate) */
   S.state='qte';S.t=now;S.qteN=(S.qteN||0)+1;QT.headT=/^steal/.test(kind)||M.solo?.02:kind==='dsteal2'?1.5:1.15; /* your own steal has already shown him breaking: straight to the play at the bag. A steal AGAINST you while you pitch has shown nothing yet, so it gets the full heads-up: HE'S STEALING! and the runner coming, before THROW HIM OUT! */Object.assign(QT,{ph:'heads',tp:now,kind,M,code:D<.85?M.code.slice(0,-2):M.code /* a good bet is a shorter code */,i:0,mash:!!M.mash||(!M.arrows&&(DBG.mash||(qteSeen&&Math.random()<.35))),fill:0,lt:0,lim:(.38*(D<.85?M.code.length-2:M.code.length)+1.0)/Math.pow(D,.8)+(qteSeen?0:1.2), /* the clock: enough to punch the whole code in at a brisk pace with room for one slip, and no more */ok:false,bx:Bp[0],bz:Bp[1],ux:u[0],uz:u[1],ball:null,blow:0,fk:0});
   QT.fx=Bp[0]+u[0]*.35;QT.fz=Bp[1]+u[1]*.35;QT.fry=kind==='dmake'?Math.atan2(-6-Bp[0],-27-Bp[1]):Math.atan2(u[0],u[1]); /* (MAKE THE PLAY: the first baseman is turned to the infield, where the throw is coming from, not to the runner) */QT.rry=Math.atan2(-u[0],-u[1]);QT.rx=Bp[0]+u[0]*17;QT.rz=Bp[1]+u[1]*17;
   QT.mx=Bp[0]+u[0]*1.5;QT.mz=Bp[1]+u[1]*1.5;{let nx=u[1],nz=-u[0];if(nx*(0-Bp[0])+nz*(-19.4-Bp[1])<0){nx=-nx;nz=-nz;}QT.nx=nx;QT.nz=nz;} // the side-on camera stands on the infield side of the line
@@ -3988,7 +4026,7 @@ function qteStart(kind,noPA){QT.noPA=!!noPA;goHide();try{if(PD.on){$('pd').style
   QT.b={n:'run',t:now,loop:true};QT.f={n:'b_stance',t:now,loop:true};
   // the men who are really standing there step out of the picture for the close-up; they are put back afterwards
   QT.hid=[];RUN.list.forEach(R=>{if(R.fig.root.visible){QT.hid.push(R.fig.root);R.fig.root.visible=false;}});fielders.forEach(f=>{const r=f.fig.root;if(r.visible&&((!f.isP&&Math.hypot(r.position.x-Bp[0],r.position.z-Bp[1])<9)||(M.soft&&!f.of))){QT.hid.push(r);r.visible=false;}});
-  ball.visible=false;ballShadow.visible=false;pop(M.call,'','');buzz([30,30,60]);crowdRise(.8,3,true);hud();}
+  ball.visible=false;ballShadow.visible=false;pop(kind==='dmake'&&!S.dmPit?'THROW HIM OUT!':M.call,'','');buzz([30,30,60]);crowdRise(.8,3,true);hud();}
 function qteShow(){if(!MOB&&!QT.fk){QT.fk=1;grabKeys();}const M=QT.M,e=$('qte');$('qtt').textContent=QT.nm||M.name;
   if(QT.stop){if(!$('qsn')){const P=v=>(v*100).toFixed(2)+'%';$('qtr').innerHTML='<div id="qsw"><div id="qmw" class="st"><s id="qsg" style="left:'+P(QT.sg[0])+';width:'+P(QT.sg[1])+'"></s><s id="qso" style="left:'+P(QT.so[0])+';width:'+P(QT.so[1])+'"></s><u id="qsn"></u></div><em id="qsl"></em></div>';}QT.gp=clamp(.74-(QT.D-1)*.42,.4,.92);{const l=$('qsl');if(l)l.textContent='GOLD = SAFE +2 JUICE · GREEN = SAFE';}
     $('hud').classList.add('qm');e.hidden=false;$('hud').classList.add('qon');return;}
@@ -4203,7 +4241,7 @@ let gamesPlayed=0;try{gamesPlayed=+localStorage.getItem('mm_games')||0;}catch(e)
 const DIFF=[{n:'ROOKIE',ring:1.18,dur:1.1,mid:1.35},{n:'PRO',ring:1,dur:1,mid:1},{n:'ALL-STAR',ring:.8,dur:.9,mid:.65,brk:1.08},{n:'LEGEND',ring:.66,dur:.84,mid:.5,brk:1.2},{n:'MOONSHOT',ring:.54,dur:.78,mid:.38,brk:1.32},{n:'GALACTIC',ring:.45,dur:.72,mid:.3,brk:1.45},{n:'INTERGALACTIC',ring:.38,dur:.67,mid:.24,brk:1.58}]; /* GALACTIC: one past Moonshot. About 8% quicker again, a timing window and bat ring a sixth tighter, a smaller middle-middle and more break. */ /* TWO TIERS ABOVE ALL-STAR for the player who has outgrown it. Each one is faster (dur), with a tighter timing window and bat ring (ring), a smaller middle-middle for squared-up and perfect (mid), and more break on everything (brk). MOONSHOT is meant to be beaten by very few. */ /* mid: THE CROSSHAIR IS 'MIDDLE-MIDDLE'. The harder the game, the smaller it is drawn, the closer to dead centre the barrel has to be to count as squared up, and the tighter the timing has to be to count as perfect */
 /* A BIG INNING GETS HARDER TO KEEP GOING. Once the Comets have four runs in an inning the pitching bears down, and it bears down more with every run after that: quicker pitches, a tighter timing window and bat ring, a smaller middle-middle and more break. It lasts for that inning only. Hits in a rout stay earned, and the inning ends. */
 const RAMP_AT=4,RAMP_MAX=6;function rampN(){try{if(S.mode)return S.mode.id==='shot'?clamp(S.mode.round-2,0,RAMP_MAX):0;if(S._ik!==S.inning||S.runs<S._ir0){S._ik=S.inning;S._ir0=S.runs;S._irS=0;}if(PD.on)return 0;return clamp(S.runs-S._ir0-(RAMP_AT-1),0,RAMP_MAX);}catch(e){return 0;}}
-const _dfx={};function DFX(){const d=DIFF[diffI],h=rampN();if(!h)return d;if(h>S._irS){S._irS=h;try{if(h===1)timing('THE KRAKENS ARE BEARING DOWN \u00B7 TOUGHER PITCHES','#ff8a2e',4);}catch(e){}}_dfx.n=d.n;_dfx.ring=d.ring*Math.max(.62,1-.065*h);_dfx.dur=d.dur*Math.max(.8,1-.032*h);_dfx.mid=d.mid*Math.max(.55,1-.075*h);_dfx.brk=(d.brk||1)*(1+.05*h);return _dfx;}
+const _dfx={};function DFX(){const d=DIFF[diffI],h=rampN();if(!h)return d;if(h>S._irS){S._irS=h;}_dfx.n=d.n;_dfx.ring=d.ring*Math.max(.62,1-.065*h);_dfx.dur=d.dur*Math.max(.8,1-.032*h);_dfx.mid=d.mid*Math.max(.55,1-.075*h);_dfx.brk=(d.brk||1)*(1+.05*h);return _dfx;}
 const SQR=()=>.3*DFX().mid,PFT=()=>.22*DFX().mid;let diffI=1;try{const v=localStorage.getItem('mm_diff');if(v!==null)diffI=clamp(+v|0,0,DIFF.length-1);}catch(e){}
 let ringsOff=false;try{ringsOff=localStorage.getItem('mm_rings')==='0';}catch(e){}
 function optLabels(){const set=(id,t)=>{const e=document.getElementById(id);if(e)e.textContent=t;};set('diff1','Difficulty: '+DIFF[diffI].n.toLowerCase());set('diff2','DIFFICULTY: '+DIFF[diffI].n);set('ring1','Bat rings: '+(ringsOff?'hidden':'shown'));set('ring2','BAT RINGS: '+(ringsOff?'HIDDEN':'SHOWN'));}
@@ -6328,6 +6366,28 @@ function streakPlay(z,stars,today){const t=today||dayStr(),v=streakView(z,t),ev=
   const keys=Object.keys(z.stars).sort();while(keys.length>40)delete z.stars[keys.shift()]; /* (only the last few weeks of stars are kept) */
   return {z,ev};}
 /* ── HOME SCREEN, DAILY CHALLENGE, PROFILE ──────────────────────────────────────────────────────────────────────────────────────────── */
+
+/* HOME SCREEN (carousel). The old menu buttons still exist, hidden, and do the work: each new control presses the one it stands for. */
+const HSL=[['PLAY BALL','⚾','Three innings against the Krakens','marc','#ffe53b','#ff9a1e'],['DAILY CHALLENGE','📅','','mdaily','#58d6ff','#2b6cff'],['HOME RUN DERBY','💥','','mderby','#ff7a5a','#d2261a'],['THE GAUNTLET','🎯','','mshot','#3ddc6a','#17933c'],['BATTING PRACTICE','🥎','No outs, no score: find your swing','mbp','#7fe6ff','#3aa0c8'],['LUNAR LEAGUE CUP','🏆','Coming soon','','#9aa3c7','#5a607e']];
+let hslI=0;
+function hsBuild(){const H=$('hhero');if(H.childElementCount)return;H.innerHTML=HSL.map((q,i)=>'<div class="hslide" data-i="'+i+'"><div class="hemb" style="--c1:'+q[4]+';--c2:'+q[5]+'">'+(i?'<span>'+q[1]+'</span>':'')+'</div><h3>'+q[0]+'</h3></div>').join('');
+  try{const lg=document.querySelector('#title .logo svg');if(lg)H.querySelector('.hemb').appendChild(lg.cloneNode(true));else H.querySelector('.hemb').innerHTML='<span>⚾</span>';}catch(e){}
+  $('hdots').innerHTML=HSL.map((q,i)=>'<i data-i="'+i+'"></i>').join('');
+  H.addEventListener('scroll',()=>{const i=Math.round(H.scrollLeft/Math.max(1,H.clientWidth));if(i!==hslI){hslI=clamp(i,0,HSL.length-1);hsSync();}},{passive:true});
+  $('hdots').addEventListener('click',e=>{e.stopPropagation();const d=e.target.closest('i');if(!d)return;H.scrollTo({left:(+d.dataset.i)*H.clientWidth,behavior:'smooth'});});
+  H.addEventListener('click',e=>{e.stopPropagation();});
+  const press=id=>e=>{e.stopPropagation();const b=$(id);if(b)b.click();};
+  $('hplay').addEventListener('click',e=>{e.stopPropagation();const q=HSL[hslI];if(q[3])$(q[3]).click();});
+  $('hset').addEventListener('click',press('mset'));$('tset').addEventListener('click',press('mset'));$('htro').addEventListener('click',press('mtro'));$('ttro').addEventListener('click',press('mtro'));
+  $('hday').addEventListener('click',press('mdaily'));$('hlv').addEventListener('click',press('mplayer'));$('tprof').addEventListener('click',press('mplayer'));$('tsquad').addEventListener('click',press('msquad'));$('thome').addEventListener('click',e=>e.stopPropagation());
+  document.querySelector('.hcard').addEventListener('click',press('mdaily'));}
+function hsSync(){const q=HSL[hslI];[...$('hdots').children].forEach((d,i)=>d.classList.toggle('on',i===hslI));const P=$('hplay');P.classList.toggle('lock',!q[3]);P.textContent=q[3]?'PLAY':'SOON';
+  let cap=q[2];try{if(hslI===1)cap=$('mdstate').textContent;if(hslI===2)cap=$('mdbest').textContent;if(hslI===3)cap=$('msbest').textContent;}catch(e){}$('hcap').textContent=cap;}
+function hsUI(v,sp,done,st){try{hsBuild();const l=lvOf(XP),a=lvBase(l),b=lvBase(l+1);$('hlvn').textContent='LV '+l;$('hlvt').textContent=lvTitle(l).toUpperCase();$('hxplv').innerHTML='<s>'+(l+1)+'</s>';$('hxpbar').style.width=clamp((XP-a)/Math.max(1,b-a)*100,0,100).toFixed(1)+'%';$('hxpt').textContent=Math.round(XP-a).toLocaleString()+' / '+(b-a).toLocaleString()+' XP TO LEVEL '+(l+1);
+  let got=0;try{got=BADGES.filter(q=>bdgGot[q[0]]).length;}catch(e){}$('htron').textContent='';$('hdayn').textContent=done?'':'1';
+  $('hobjt').textContent=sp.text;$('hobjbar').style.width=(done?Math.max(34,st/3*100):0)+'%';$('hobjs').textContent=done?'DONE TODAY '+'★'.repeat(st)+'☆'.repeat(3-st):(v.n>0?'🔥 '+v.n+' DAY STREAK · PLAY TODAY':'NEW EVERY DAY · ABOUT 90 SECONDS');
+  const nx=CEL_LADDER.find(c=>CEL_LV[c[0]]>l);$('hnextn').textContent=nx?nx[1]:'ALL UNLOCKED';$('hnextl').textContent=nx?'CELEBRATION · LV '+CEL_LV[nx[0]]:got+' / '+BADGES.length+' TROPHIES';
+  $('hcrest').textContent='C';hsSync();}catch(e){}}
 function homeUI(){const T0=$('title'),ready=!MX.loading&&!MX.pdW&&!$('start').classList.contains('ldg'),home=gamesPlayed>0&&ready;T0.classList.toggle('home',home);if(!home)T0.classList.remove('set');
   const z=streakLoad(),v=streakView(z),sp=dailySpec(),done=v.state==='done',st=z.stars[dayStr()]|0;
   try{let got=0;try{got=BADGES.filter(b=>bdgGot[b[0]]).length;}catch(e){}$('mpname').textContent=PNAME+' \u00B7 LV '+lvOf(XP);$('mpinfo').textContent=(v.n>0?'\uD83D\uDD25 '+v.n+' \u00B7 ':'')+'\uD83C\uDFC6 '+got+'/'+BADGES.length;}catch(e){}
@@ -6335,7 +6395,7 @@ function homeUI(){const T0=$('title'),ready=!MX.loading&&!MX.pdW&&!$('start').cl
   try{$('msbest').textContent=SHOT_BEST?'YOUR BEST: '+SHOT_BEST.toLocaleString():'HIT THE TARGET FIELD';}catch(e){}
   try{$('mdbest').textContent=DERBY_PTS?'YOUR BEST: '+DERBY_PTS.toLocaleString():'TEN OUTS \u00B7 SWING BIG';}catch(e){}
   $('mdstreak').textContent=v.n>0?'\uD83D\uDD25 '+v.n:'';$('mdtext').textContent=sp.text;$('mdaily').classList.toggle('done',done);
-  $('mdstate').textContent=done?'DONE TODAY '+'\u2605'.repeat(st)+'\u2606'.repeat(3-st)+' \u00B7 PLAY AGAIN':v.state==='frozen'?'A FREEZE IS HOLDING YOUR STREAK \u00B7 PLAY TODAY':v.state==='alive'?'PLAY TODAY TO KEEP YOUR STREAK':'ABOUT 90 SECONDS \u00B7 NEW EVERY DAY';}
+  $('mdstate').textContent=done?'DONE TODAY '+'\u2605'.repeat(st)+'\u2606'.repeat(3-st)+' \u00B7 PLAY AGAIN':v.state==='frozen'?'A FREEZE IS HOLDING YOUR STREAK \u00B7 PLAY TODAY':v.state==='alive'?'PLAY TODAY TO KEEP YOUR STREAK':'ABOUT 90 SECONDS \u00B7 NEW EVERY DAY';hsUI(v,sp,done,st);}
 function dailyStart(){if(MX.loading||MX.pdW)return;try{audioInit();if(AC&&AC.state==='suspended')AC.resume();}catch(e){}const sp=dailySpec(),z=scnStart(sp);z.daily=true;
   const e=$('dgoal');e.textContent='DAILY: '+sp.goal.t.toUpperCase();e.hidden=false;try{pop('DAILY CHALLENGE',(sp.sit.t+(sp.score?', '+sp.score.t:'')+' \u00B7 '+sp.goal.t).toUpperCase(),'cool',true);}catch(x){}}
 function dailyTick(){const z=S.scn;if(!z||!z.daily||z.shown)return;const r=scnCheck();if(r===null)return;if(z.endAt===undefined)z.endAt=now;const st=S.state,e=now-z.endAt,
