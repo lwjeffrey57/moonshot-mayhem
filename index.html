@@ -1055,7 +1055,7 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
     </div>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 849</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 850</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -4769,6 +4769,7 @@ function toMenu(){
   scoreboard('MOONSHOT','MAYHEM');
   try{const b=+localStorage.getItem('mm_best')||0;if(b)$('best').textContent='Best game: '+b+' runs';}catch(e){}
   try{$('dgoal').hidden=true;homeUI();}catch(e){}
+  try{if(MX.titlePrep&&!MX.prepN&&!MX.loading)setTimeout(()=>{try{if(S.state==='title'&&!MX.prepN)MX.titlePrep();}catch(e){}},600);}catch(e){} /* BACK AT THE MENU: any pitcher or hitter not yet built is built now, while nothing is happening (the phone reports showed bullpen arms still being unpacked in the middle of games) */
 }
 $('pausebtn').addEventListener('click',()=>setPaused(true));
 $('resume').addEventListener('click',()=>setPaused(false));
