@@ -1074,7 +1074,7 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
     </div>
     <div id="ldbar" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 860</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 861</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -3982,7 +3982,7 @@ const PROPHIT=[];function propReg(url,g){try{if(/^(ufo|sat|dugout)\./.test(url))
 function propBoxes(){const out=[];for(const m of PROPHIT){try{let v=true,q=m;while(q){if(!q.visible){v=false;break;}q=q.parent;}if(!v)continue;m.updateWorldMatrix(true,false);const b=new T.Box3().setFromObject(m),k=DBG.pbig||.84,cx=(b.min.x+b.max.x)/2,cz=(b.min.z+b.max.z)/2,hx=(b.max.x-b.min.x)/2*k,hz=(b.max.z-b.min.z)/2*k;if(!isFinite(hx)||!isFinite(hz)||Math.hypot(cx,cz)<60)continue; /* (boxes are drawn in a little, so nothing bounces off thin air at a corner; nothing in the infield counts) */const H=b.max.y,W=Math.max(hx,hz)*2;if(H>W*2&&!DBG.pbig){const lo=new T.Box3(new V3(cx-hx*.28,-1,cz-hz*.28),new V3(cx+hx*.28,H*.66,cz+hz*.28)),hi=new T.Box3(new V3(cx-hx,H*.66,cz-hz),new V3(cx+hx,H,cz+hz));out.push(lo,hi);continue;} /* a light tower is a thin mast with a wide head: the mast's box is narrow, so a ball going past below the lamps is not turned back by empty air */b.min.x=cx-hx;b.max.x=cx+hx;b.min.z=cz-hz;b.max.z=cz+hz;b.min.y=-1;out.push(b);}catch(e){}}return out;}
 function propInside(B,p){for(const b of B)if(p.x>b.min.x&&p.x<b.max.x&&p.y<b.max.y&&p.y>b.min.y&&p.z>b.min.z&&p.z<b.max.z)return b;return null;}
 function propBounce(F,tf,i,dt){const tr=F.tr;if(!F.pbx)F.pbx=propBoxes();if(!F.pbx.length)return;
-  if(!F.bnc){const p=ball.position,b=propInside(F.pbx,p);if(!b)return;const a=tr.pts[Math.max(0,i-4)],v=new V3((p.x-a.x)*30,(p.y-a.y)*30,(p.z-a.z)*30);F.bnc={p:p.clone(),v,n:0};propReflect(F.bnc,b,true);F.propHit=true;}
+  if(!F.bnc){const p=ball.position,b=propInside(F.pbx,p);if(!b)return;const a=tr.pts[Math.max(0,i-4)],v=new V3((p.x-a.x)*30,(p.y-a.y)*30,(p.z-a.z)*30);F.bnc={p:p.clone(),v,n:0};propReflect(F.bnc,b,true);F.propHit=true;try{if(F.play&&F.play.endT>tf+.65)F.play.endT=tf+.65;}catch(e){}} /* THE FLIGHT ENDS WHERE IT HITS: the ball comes off the ironwork, drops for a beat and the play is over. The camera does not go on following it down. (It is still a home run, with its full distance.) */
   else{const B=F.bnc,st=Math.min(.05,dt||.016);B.v.y-=7.5*st;B.p.addScaledVector(B.v,st);const b=propInside(F.pbx,B.p);if(b&&B.n<6)propReflect(B,b,false);if(B.p.y<.25){B.p.y=.25;if(B.v.y<0)B.v.y*=-.32;B.v.x*=.7;B.v.z*=.7;}}
   ball.position.copy(F.bnc.p);}
 function propReflect(B,b,first){const p=B.p,pen=[[p.x-b.min.x,-1,0,0],[b.max.x-p.x,1,0,0],[p.z-b.min.z,0,0,-1],[b.max.z-p.z,0,0,1],[b.max.y-p.y,0,1,0]].concat(b.min.y>0?[[p.y-b.min.y,0,-1,0]]:[]).sort((x,y)=>x[0]-y[0])[0],n=_v.set(pen[1],pen[2],pen[3]),vn=B.v.dot(n);if(vn<0)B.v.addScaledVector(n,-2*vn);B.v.multiplyScalar(first?.34:.5);p.addScaledVector(n,pen[0]+.35);B.n++;
