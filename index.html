@@ -1218,7 +1218,7 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
     </div>
     <div id="ldbar" data-t="LOADING" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 941</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 942</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -2026,7 +2026,7 @@ const DRS={k:1,n:0,t:0,good:0,lows:0,cap:false,capT:0,last:0};
 let viewH=600,QS=1; // QS: render scale, lowered automatically on slow devices
 function resize(){
   const w=canvas.clientWidth||innerWidth, h=canvas.clientHeight||innerHeight;
-  const ph=Math.round(Math.min(1200,h*Math.min(devicePixelRatio||1,2))*QS*DRS.k),pw=Math.round(ph*w/h);
+  const ph=Math.round(Math.min(1200,h*Math.min(devicePixelRatio||1,2))*QS*DRS.k*(window.__resK||1)),pw=Math.round(ph*w/h);
   renderer.setSize(pw,ph,false);
   if(composer){composer.setSize(pw,ph);if(fxaa)fxaa.uniforms.resolution.value.set(1/pw,1/ph);}
   camera.aspect=w/h; viewH=h;
@@ -6533,7 +6533,15 @@ function perfHud(on){try{if(on){document.body.classList.add('hudlite');PAB2.paus
 function perfAB(ms){if(!MOB||PAB2.lock>=0)return;const pn=performance.now();if(!PAB2.t)PAB2.t=pn;if(pn-PAB2.t>20000){if(PAB2.arm===2)perfHud(false);PAB2.arm=(PAB2.arm+1)%3;PAB2.t=pn;PAB2.skip=30;window.__shLite=PAB2.arm===1;if(PAB2.arm===2)perfHud(true);}
   if(PAB2.skip>0){PAB2.skip--;return;}PAB2.n[PAB2.arm]++;if(ms>34)PAB2.slow[PAB2.arm]++;
   if(PAB2.n[0]>2200&&PAB2.n[1]>2200&&PAB2.n[2]>2200){const a=PAB2.slow[0]/PAB2.n[0],b=PAB2.slow[1]/PAB2.n[1];if(PAB2.arm===2)perfHud(false);PAB2.lock=b<a*.7?1:0;window.__shLite=PAB2.lock===1;try{localStorage.setItem('mm_shl2',PAB2.lock?'lite':'full');}catch(e){}}}
-function perfTick(ms,work){try{if(perfCtx())perfAB(ms);}catch(e){}if(PLAG.ch){if(ms>34&&PLAG.allN>0){PLAG.slowN++;PLAG.slowLag+=PLAG.lag;if(PLAG.lag>8)PLAG.slowBusy++;}PLAG.t=performance.now();try{PLAG.ch.port2.postMessage(0);}catch(e){}}if(window.__mmManual&&!DBG.perf)return;if(ms>1000||ms<=0)return; /* (a frame that long is the tab coming back, not the game) */const c=perfCtx();
+/* A ONE-OFF MEASUREMENT ON EACH PHONE (about a minute and a half of play, once): the phone reports show one frame in ten running long whatever is on screen
+   (few triangles or many, shadows or not, HUD animations or not) with the game's own work at 3 ms. Two things are recorded to find out why: how frame times
+   fall against a 120 Hz screen's 8.3 ms steps, and whether drawing 40% fewer pixels (in 15-second turns) makes any difference. Nothing is changed for good. */
+const PAB3={arm:0,t:0,n:[0,0],slow:[0,0],skip:0,done:false,fine:[0,0,0,0,0,0,0]};try{const v=JSON.parse(localStorage.getItem('mm_ab3')||'null');if(v&&v.n){PAB3.done=true;PAB3.n=v.n;PAB3.slow=v.slow;}}catch(e){}
+function perfAB3(ms){PAB3.fine[ms<12.5?0:ms<21?1:ms<29.5?2:ms<37.5?3:ms<46?4:ms<60?5:6]++;if(!MOB||PAB3.done||PAB2.lock<0||window.__mmManual)return;const pn=performance.now();if(!PAB3.t)PAB3.t=pn;
+  if(pn-PAB3.t>15000){PAB3.arm^=1;PAB3.t=pn;PAB3.skip=45;window.__resK=PAB3.arm?.6:1;try{resize();}catch(e){}}
+  if(PAB3.skip>0){PAB3.skip--;return;}PAB3.n[PAB3.arm]++;if(ms>34)PAB3.slow[PAB3.arm]++;
+  if(PAB3.n[0]>2700&&PAB3.n[1]>2700){PAB3.done=true;window.__resK=1;try{resize();}catch(e){}try{localStorage.setItem('mm_ab3',JSON.stringify({n:PAB3.n,slow:PAB3.slow}));}catch(e){}}}
+function perfTick(ms,work){try{if(perfCtx())perfAB(ms);}catch(e){}try{if(perfCtx())perfAB3(ms);}catch(e){}if(PLAG.ch){if(ms>34&&PLAG.allN>0){PLAG.slowN++;PLAG.slowLag+=PLAG.lag;if(PLAG.lag>8)PLAG.slowBusy++;}PLAG.t=performance.now();try{PLAG.ch.port2.postMessage(0);}catch(e){}}if(window.__mmManual&&!DBG.perf)return;if(ms>1000||ms<=0)return; /* (a frame that long is the tab coming back, not the game) */const c=perfCtx();
   if(S.state==='over'&&PERF.st!=='over')perfFlush();PERF.st=S.state;if(!c)return;if(!PERF.t0)PERF.t0=performance.now();if(performance.now()-PERF.t0<3000)return; /* the first seconds are loading, not play */
   if(S.state!==PERF.stC){PERF.stL=PERF.stC;PERF.stC=S.state;PERF.stT=performance.now();}
   PERF.n++;PERF.ms+=ms;PERF.hist[ms<12?0:ms<18?1:ms<25?2:ms<34?3:ms<50?4:ms<80?5:ms<150?6:7]++;
@@ -6544,7 +6552,7 @@ function perfTick(ms,work){try{if(perfCtx())perfAB(ms);}catch(e){}if(PLAG.ch){if
 function perfReport(){const tot=PERF.ms||1,ctx=Object.keys(PERF.ctx).map(k=>{const o=PERF.ctx[k],sm=o.sm||1;return {c:k,sec:Math.round(o.ms/1000),share:+(o.ms/tot).toFixed(3),fps:+(1000*o.n/o.ms).toFixed(1),workMs:+(o.wk/o.n).toFixed(1),slow25:+(o.s25/o.n).toFixed(3),slow50:+(o.s50/o.n).toFixed(3),worstMs:Math.round(o.mx),calls:Math.round(o.calls/sm),tris:Math.round(o.tris/sm),res:+(o.k/sm).toFixed(2)};}).sort((a,b)=>b.sec-a.sec).slice(0,28);
   const h=PERF.hist,n=PERF.n||1;let bld='';try{bld=$('bld').textContent;}catch(x){}
   return {v:1,build:bld,ts:Date.now(),playSec:Math.round(tot/1000),frames:PERF.n,fps:+(1000*n/tot).toFixed(1),cap30:(h[3]+h[2])/n>.8&&h[0]+h[1]<n*.05, /* nearly every frame at about 33 ms and none faster: the phone is holding the page to 30 a second (Low Power Mode does this) */
-    hist:{lt12:h[0],lt18:h[1],lt25:h[2],lt34:h[3],lt50:h[4],lt80:h[5],lt150:h[6],over150:h[7]},quality:qLvl,res:+DRS.k.toFixed(2),canvas:renderer.domElement.width+'x'+renderer.domElement.height,ab:{arms:'base,shadow-every-3rd,hud-lite',n:PAB2.n.slice(),slow:PAB2.slow.slice(),rate:PAB2.n.map((n,i)=>+(PAB2.slow[i]/Math.max(1,n)).toFixed(4)),lock:PAB2.lock},lag:{avgMs:+(PLAG.allLag/Math.max(1,PLAG.allN)).toFixed(2),busyShare:+(PLAG.busy/Math.max(1,PLAG.allN)).toFixed(3),slowFrames:PLAG.slowN,slowAvgMs:+(PLAG.slowLag/Math.max(1,PLAG.slowN)).toFixed(1),slowBusyShare:+(PLAG.slowBusy/Math.max(1,PLAG.slowN)).toFixed(3)},dev:perfDev(),models:(()=>{try{return {bcur:MX.bcur,pit:MX.pitCur,rigs:Object.keys(MX.brigs||{}).join(','),bodies:Object.keys(MX.batVar||{}).join(','),pits:Object.keys(MX.pitVar||{}).join(','),at:MX.dlT||{},batErr:MX.batErr||{},pitErr:MX.pitErr||{},dl:{queued:DLQ.q.length,inFlight:DLQ.n,retries:DLQ.retry,failed:DLQ.fail,cacheHit:ACH.hit,cacheMiss:ACH.miss},wait:PD.waitMax||0,standin:PD.standin||0};}catch(e){return {};}})(),ctx,worst:PERF.hit.slice(0,16)};}
+    hist:{lt12:h[0],lt18:h[1],lt25:h[2],lt34:h[3],lt50:h[4],lt80:h[5],lt150:h[6],over150:h[7]},quality:qLvl,res:+DRS.k.toFixed(2),canvas:renderer.domElement.width+'x'+renderer.domElement.height,ab:{arms:'base,shadow-every-3rd,hud-lite',n:PAB2.n.slice(),slow:PAB2.slow.slice(),rate:PAB2.n.map((n,i)=>+(PAB2.slow[i]/Math.max(1,n)).toFixed(4)),lock:PAB2.lock},ab3:{arms:'base,res-0.6',n:PAB3.n.slice(),slow:PAB3.slow.slice(),done:PAB3.done,steps:{ms8:PAB3.fine[0],ms17:PAB3.fine[1],ms25:PAB3.fine[2],ms33:PAB3.fine[3],ms42:PAB3.fine[4],ms50:PAB3.fine[5],more:PAB3.fine[6]}},lag:{avgMs:+(PLAG.allLag/Math.max(1,PLAG.allN)).toFixed(2),busyShare:+(PLAG.busy/Math.max(1,PLAG.allN)).toFixed(3),slowFrames:PLAG.slowN,slowAvgMs:+(PLAG.slowLag/Math.max(1,PLAG.slowN)).toFixed(1),slowBusyShare:+(PLAG.slowBusy/Math.max(1,PLAG.slowN)).toFixed(3)},dev:perfDev(),models:(()=>{try{return {bcur:MX.bcur,pit:MX.pitCur,rigs:Object.keys(MX.brigs||{}).join(','),bodies:Object.keys(MX.batVar||{}).join(','),pits:Object.keys(MX.pitVar||{}).join(','),at:MX.dlT||{},batErr:MX.batErr||{},pitErr:MX.pitErr||{},dl:{queued:DLQ.q.length,inFlight:DLQ.n,retries:DLQ.retry,failed:DLQ.fail,cacheHit:ACH.hit,cacheMiss:ACH.miss},wait:PD.waitMax||0,standin:PD.standin||0};}catch(e){return {};}})(),ctx,worst:PERF.hit.slice(0,16)};}
 function perfFlush(){if(PERF.busy||PERF.n<300||(window.__mmManual&&!DBG.perf))return;const go=db=>{if(!db)return;PERF.busy=true;let r;try{r=perfReport();}catch(x){PERF.busy=false;return;}
     Promise.resolve().then(()=>db.collection('perf').doc(PERF.id).set(r)).then(()=>{PERF.sent++;},()=>{}).then(()=>{PERF.busy=false;});};
   if(PERF.db){go(PERF.db);return;}if(PERF.dbTried)return;PERF.dbTried=true;try{if(window.claude&&window.claude.use)window.claude.use('db').then(db=>{PERF.db=db||null;if(!db)PERF.dbTried=true;else go(db);},()=>{});}catch(x){}}
