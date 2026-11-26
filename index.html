@@ -1207,7 +1207,7 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
     </div>
     <div id="ldbar" data-t="LOADING" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 915</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 916</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -2607,23 +2607,18 @@ vec3 old=texture2D(rk,vU).rgb;gl_FragColor=vec4(mix(old,moon,mK)*tint,1.0);}`}):
       S1.position.set(o[0],o[1],o[2]);G.add(S1);});
     G.scale.setScalar(1.7);G.visible=false;scene.add(G);FLY.g=G;FLY.p=new V3();}
   // the crowd near the plate, close enough to read: rows of fans in bubble helmets (it is the Moon, after all)
-  const fans=tex(512,512,(g,w,h)=>{g.fillStyle='#191630';g.fillRect(0,0,w,h);
-    const cols=['#e8e8f0','#d8423a','#3a6ad8','#f0c838','#f08a3a','#27408f','#3ad6ff','#ffffff','#2a8a4a','#c84a8a','#ff4d2e'],skins=['#f0c4a0','#c98f62','#8a5a3a','#e2b08a'];
-    const CW=w/16,CH=h/12;
-    for(let r=0;r<12;r++){const y0=r*CH;
-      g.fillStyle='#0d0b1c';g.fillRect(0,y0+CH-7,w,7);
-      for(let c=-1;c<16;c++){const x0=c*CW+(r%2)*CW/2,cx=x0+CW/2;
-        g.fillStyle='#232a55';g.fillRect(x0+3,y0+12,CW-6,CH-18);
-        if(Math.random()<.93){
-          g.fillStyle=cols[(Math.random()*cols.length)|0];g.fillRect(x0+4,y0+22,CW-8,CH-28);
-          g.fillStyle='rgba(0,0,0,.22)';g.fillRect(x0+4,y0+CH-13,CW-8,7);
-          g.fillStyle=skins[(Math.random()*4)|0];g.beginPath();g.arc(cx,y0+15,5.5,0,7);g.fill();
-          g.fillStyle='rgba(190,225,255,.3)';g.beginPath();g.arc(cx,y0+14,10,0,7);g.fill();
-          g.strokeStyle='rgba(255,255,255,.85)';g.lineWidth=1.6;g.beginPath();g.arc(cx,y0+14,10,0,7);g.stroke();
-          g.strokeStyle='rgba(255,255,255,.95)';g.lineWidth=2;g.beginPath();g.arc(cx,y0+14,7.5,3.5,4.6);g.stroke();
-          g.fillStyle='#c9ccd6';g.fillRect(cx-7,y0+23,14,3);
-        }}}});
-  fans.wrapS=fans.wrapT=T.RepeatWrapping;fans.repeat.set(1/9.6,3.84);fans.anisotropy=ANISO;
+  /* THE GRANDSTAND WEARS THE OUTFIELD BOWL'S LOOK. Same idea, drawn finer because these seats are closer: bright block-colour fans in neat rows, cut into
+     sections by dark aisles running up the stand and a cross-walkway half-way up each deck, so it reads as stadium seating from pole to pole and behind the plate.
+     (It was a dimmer picture of fans in bubble helmets, with grey stairways laid over it.) */
+  const fanDraw=aisle=>(g,w,h)=>{g.fillStyle='#15122a';g.fillRect(0,0,w,h);
+    const cols=['#e8e8f0','#d8423a','#3a6ad8','#f0c838','#f08a3a','#1b2a6b','#8a5a3a','#3ad6ff','#ffffff','#2a8a4a','#c84a8a'],skins=['#f0c4a0','#c98f62','#8a5a3a','#e2b08a'];
+    const R=24,CW=w/16,CH=h/R;
+    for(let r=0;r<R;r++){const y0=r*CH;g.fillStyle='rgba(0,0,0,.45)';g.fillRect(0,y0+CH*.72,w,CH*.28);
+      for(let c=-1;c<16;c++){const x0=c*CW+(r%2)*CW*.45;if(Math.random()<.9){const j=rand(-1.5,1.5);g.fillStyle=cols[(Math.random()*cols.length)|0];g.fillRect(x0+CW*.14,y0+CH*.36+j,CW*.72,CH*.6);g.fillStyle=skins[(Math.random()*4)|0];g.fillRect(x0+CW*.31,y0+CH*.06+j,CW*.38,CH*.32);}}}
+    if(aisle){g.fillStyle='#34304e';g.fillRect(0,0,CW*1.15,h);}g.fillStyle='#262340';g.fillRect(0,h*.5-CH*.65,w,CH*1.3);};
+  const fans=tex(512,1024,fanDraw(true)),fansW=tex(512,1024,fanDraw(false));
+  [fans,fansW].forEach(t=>{t.wrapS=t.wrapT=T.RepeatWrapping;t.repeat.set(1/9.6,1.92);t.anisotropy=ANISO;});
+  const fmW=basic({map:fansW}); /* (behind the plate the sections are the wedges themselves, with an aisle on every seam, so that picture has no aisles of its own) */
   const fm=basic({map:fans});EYE.fm=fm;EYE.fans=fans;
   // the backstop is an arc behind the plate (BK_A metres back at its deepest) that runs smoothly into the two foul-side walls
   const BK_A=17,BK_R=(26-BK_A)/(Math.SQRT2-1),BK_Z=BK_A-BK_R;
@@ -2665,7 +2660,7 @@ vec3 old=texture2D(rk,vU).rgb;gl_FragColor=vec4(mix(old,moon,mK)*tint,1.0);}`}):
        were one unbroken sheet of seats. They now have the same grey stairs with a yellow nosing every dozen metres, lower deck and upper, tapering toward the top
        the way the others do. */
     {const sm2=sideStair||(sideStair=(()=>{const t=tex(16,32,(g,w,h)=>{g.fillStyle='#8f93a3';g.fillRect(0,0,w,h);g.fillStyle='#5d6172';g.fillRect(0,0,w,9);g.fillStyle='#ffe53b';g.fillRect(0,9,w,3);});t.wrapS=t.wrapT=T.RepeatWrapping;t.repeat.set(1,46);return basic({map:t});})());
-      for(let i=0;i<line.length-1;i++){const A=line[i],B=line[i+1],L=A.distanceTo(B),d=B.clone().sub(A).multiplyScalar(1/L),cnt=Math.max(1,Math.round(L/11.5));
+      for(let i=0;i<0;i++){ /* (superseded: the aisles are now part of the seating picture itself, the same as the outfield bowl) */const A=line[i],B=line[i+1],L=A.distanceTo(B),d=B.clone().sub(A).multiplyScalar(1/L),cnt=Math.max(1,Math.round(L/11.5));
         for(let j=(i===0?0:1);j<cnt;j++){const q=A.clone().addScaledVector(d,L*(j+.5*(i===0?1:0))/cnt+(i===0?0:0)),P2=(o,y,hw)=>[q.clone().addScaledVector(n,o).addScaledVector(d,-hw).setY(y),q.clone().addScaledVector(n,o).addScaledVector(d,hw).setY(y)];
           scene.add(new T.Mesh(ribbon(P2(1.74,1.97,1.6),P2(34,23.07,.95)),sm2));scene.add(new T.Mesh(ribbon(P2(30,30.07,.95),P2(58,52.07,.7)),sm2));}}}
     // THE GRANDSTAND IS A SOLID BUILDING, not a sheet of seats: a back wall from the top row down to the ground, and a closed end wall at
@@ -2734,12 +2729,12 @@ vec3 old=texture2D(rk,vU).rgb;gl_FragColor=vec4(mix(old,moon,mK)*tint,1.0);}`}):
     // seats: lower deck, upper deck, and the back rim
     const stair=tex(16,32,(g,w,h)=>{g.fillStyle='#8f93a3';g.fillRect(0,0,w,h);g.fillStyle='#5d6172';g.fillRect(0,0,w,9);g.fillStyle='#ffe53b';g.fillRect(0,9,w,3);});
     stair.wrapS=stair.wrapT=T.RepeatWrapping;stair.repeat.set(1,46);
-    const sm=basic({map:stair});
+    const sm=basic({color:0x34304e}); /* (the aisles between the wedges are the same dark navy as every other aisle in the park) */
     for(let k=0;k<NS;k++){const t0=lerp(1,-1,k/NS),t1=lerp(1,-1,(k+1)/NS);
-      wedge(1,1.9,34,23,t0,t1,fm);wedge(30,30,58,52,t0,t1,fm);}
+      wedge(1,1.9,34,23,t0,t1,fmW);wedge(30,30,58,52,t0,t1,fmW);}
     for(let k=0;k<=NS;k++){const t=lerp(1,-1,k/NS),dt=.62/len(arc(17,12));
-      scene.add(new T.Mesh(ribbon([Bp(t+dt*2.6,1,1.96),Bp(t-dt*2.6,1,1.96)],[Bp(t+dt*1.5,34,23.06),Bp(t-dt*1.5,34,23.06)]),sm));
-      scene.add(new T.Mesh(ribbon([Bp(t+dt*1.5,30,30.06),Bp(t-dt*1.5,30,30.06)],[Bp(t+dt*1.1,58,52.06),Bp(t-dt*1.1,58,52.06)]),sm));}
+      scene.add(new T.Mesh(ribbon([Bp(t+dt*1.5,1,1.96),Bp(t-dt*1.5,1,1.96)],[Bp(t+dt*1.0,34,23.06),Bp(t-dt*1.0,34,23.06)]),sm));
+      scene.add(new T.Mesh(ribbon([Bp(t+dt*1.0,30,30.06),Bp(t-dt*1.0,30,30.06)],[Bp(t+dt*.8,58,52.06),Bp(t-dt*.8,58,52.06)]),sm));}
     scene.add(new T.Mesh(ribbon(arc(58,52),arc(58,55.5)),basic({color:0x1a1838})));roofAdd((o,y)=>arc(o,y));
     // ribbon board on the face of the upper deck
     const FL=len(arc(30,23));
