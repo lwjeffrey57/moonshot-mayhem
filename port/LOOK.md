@@ -2,7 +2,7 @@
 
 Photographs of the running prototype, with the numbers behind them. The pictures are the requirement: when a description here and a picture disagree, the picture wins; when a picture and `index.html` disagree, the code wins.
 
-All 55 images are in `port/look/`. `phone_*` is a 414×800 phone in portrait (the lead device). `pc_*` is 1280×720. `stadium_*` is the park from a free camera with the HUD hidden.
+All the images are in `port/look/` (about 75). `phone_*` is a 414×800 phone in portrait (the lead device). `pc_*` is 1280×720. `stadium_*` is the park from a free camera with the HUD hidden.
 
 Coordinates below are the prototype's: meters, home plate at (0,0,0), center field toward **negative z**, right field toward positive x, y up. Flip z for Unity.
 
@@ -120,6 +120,31 @@ Dimensions (from `fenceR`, `wallH` and the scene build):
 ## Characters
 
 - Hitters wear dark armored exo-suits with glowing orange seams and a bat that leaves a gold arc when swung. Fielders are slimmer figures in team colors with name tags floating over them on PC. Your pitcher in the pitching view is a plain dark track-suit figure with a brown glove. These are placeholders for final art, but the scale and framing in the pictures are right.
+
+## Menus and screens (phone)
+
+- `phone_screen_11_squad_batters`: MY SQUAD. Nine player cards laid out on a diamond at their positions, each a portrait with a rating badge; BATTERS / PITCHERS tabs at the top; a bullpen strip of small cards along the bottom; a two-tab bar (SQUAD, HOME) at the very bottom.
+- `phone_screen_12_squad_pitchers`: the pitching staff as a grid of jersey-number cards (gold for the starter, blue and gray for the rest), each with a badge.
+- `phone_screen_19_player_card`: a single card enlarged: team strip, position, big jersey number, name, role, the pitch ratings in a row, the perk line, and YOUR STARTER / CLOSE buttons.
+- `phone_screen_13_profile`: PROFILE. Name field, level and XP, a week strip, then stat tiles (games, runs, hits, homers, longest, best game, wins, streaks, derby and gauntlet bests) and buttons to Achievements and Celebrations.
+- `phone_screen_14_celebrations`: a three-column grid of celebration names with the level each unlocks at.
+- `phone_screen_20_achievements`: a gold career home-run-distance bar at the top, then a scrolling list of achievements with icon, name and description.
+- `phone_screen_15_settings`: the title screen with its settings pills (walk-ups, aim sensitivity, ring marker, show speed, bat rings, difficulty, sound, organ, vibration, achievements, reset).
+- `phone_screen_16_invite_a_friend`: BRING A FRIEND. The invite code in large type, a yellow SHARE YOUR CODE button, reward tiers, a code box with REDEEM.
+- `phone_screen_24_pause_menu`: PAUSED with a column of white slab buttons (RESUME highlighted yellow, SKIP TO PITCHING, SETTINGS, RESTART GAME, QUIT TO MAIN MENU).
+- `phone_screen_25_pause_settings`: the in-game settings list (camera, sensitivity, ring marker, bat rings, difficulty, how to play, how to pitch, sound, organ, vibration, field shadows, show speed).
+- `phone_screen_10_now_batting_walkup`, `phone_screen_17_daily_challenge_start`: the walk-up, and the start of a Daily Challenge with its goal chip ("DAILY: GO DEEP") and situation line.
+
+Menu styling throughout: deep navy background, gold italic headings, white slab buttons with a hard black offset shadow, thin cyan or white outlines on secondary pills.
+
+## Camera moves on a home run (five frames each, about one second apart, left to right)
+
+- `phone_strip_homer_trail`: **the chase camera.** Rides just behind and above the ball, looking where it is going, with the distance running up in big numbers above the ball and the flame trail streaming back. It follows the ball out of the park and down. Used on most long homers.
+- `phone_strip_homer_sky`: **the blimp cut.** Jumps straight off the bat to high above the park; the ball stays small and a flame streak draws its flight across the field into the seats. For no-doubters that stay in the building.
+- `phone_strip_homer_aerial`: **the aerial show.** Stays on the hitter for the swing and follow-through, then goes up over the stadium with lasers and fireworks.
+- `phone_strip_homer_admire`: **the admire shot.** Stays on the hitter, low, from the pitcher's side: he holds his finish, watches it and drops the bat, with the call ("PLAKATA!", "OUTTA HERE!") above; then it cuts to the ball arriving beyond the wall.
+
+In all of them the top-left pills keep showing grade, exit speed and the distance counting up, and any tap ends the shot.
 
 ## The picture list
 

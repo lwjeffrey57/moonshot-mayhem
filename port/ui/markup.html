@@ -1,0 +1,274 @@
+<!-- The prototype's complete page markup, verbatim (scripts and styles removed, embedded images shortened). Every HUD element, overlay, menu and button with its id. -->
+<title>Moonshot Mayhem</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Russo+One&family=Saira+Condensed:wght@500;700;800&display=swap">
+
+
+<div id="game">
+  <canvas id="c"></canvas>
+  <div id="hud">
+    <div id="flash"></div>
+    <div id="bug">
+      <div class="badge" aria-hidden="true"><span>MM</span></div>
+      <div class="rows">
+        <div class="inn"><i>▼</i><span id="inn">1ST</span></div>
+        <div class="tm alt"><span>KRA</span><b id="oruns">0</b></div>
+        <div class="tm"><span>COM</span><b id="runs">0</b></div>
+        <div class="cnt"><span id="count">0-0</span><span id="outs">O: 0</span></div>
+      </div>
+    </div>
+    <div id="pmk" hidden></div><div id="hrft" hidden></div><div id="shotg" hidden></div><div id="pitchinfo"><b id="mph">--</b><span>MPH</span></div>
+    <div id="meters">
+      <div id="juice" class="meter"><div id="jbar" class="mbar"><div id="jfill" class="mfill"></div><span id="jtxt" class="mtxt">JUICE</span></div>
+        <div class="mcap">BATTER</div></div>
+      <div id="zmini" title="Last pitch location"><i id="zdot" hidden></i></div>
+      <div id="heat" class="meter"><div class="mbar"><div id="hfill" class="mfill"></div><span class="mtxt">JUICE</span></div>
+        <div class="mcap" id="pcap">PITCHER</div></div>
+    </div>
+    <div id="podx" hidden><b id="podxt"></b><div id="podxb"></div><button id="podxok" type="button">GOT IT</button></div>
+    <div id="ptspot" hidden></div><div id="ptut" hidden><em id="ptn"></em><b id="ptt"></b><span id="ptx"></span><div><button id="ptskip" type="button">SKIP</button><button id="ptnext" type="button">NEXT</button></div></div>
+    <div id="pdask" hidden><b>CHANGE SIDES?</b><div><button id="pdyes" type="button">LET ME PITCH</button><button id="pdno" type="button">KEEP HITTING</button></div></div>
+    <div id="pd" hidden><div id="pdaim"></div><i id="pdland"></i><div id="pdmph"></div><svg id="pdsvg" xmlns="http://www.w3.org/2000/svg"><polyline id="pdpb" fill="none" stroke="#fff" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/><polyline id="pdpp" fill="none" stroke="#d0000e" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><g id="pdgh"></g><circle id="pdcb" fill="none" stroke="#05060f" stroke-width="7"/><circle id="pdcc" fill="none" stroke="#fff" stroke-width="3.5"/><clipPath id="pdclip"><circle id="pdbc" r="10"/></clipPath><circle id="pdbw" fill="#fbfbf6" stroke="#05060f" stroke-width="2.5" style="filter:drop-shadow(0 0 3px rgba(0,0,0,.8))"/><g clip-path="url(#pdclip)"><g id="pdseam"></g></g></svg><div id="pdtop"><b id="pdwho"></b><span id="pdrat"></span><span id="pdcnt"></span><span id="pdstam"><i></i></span></div><button id="pdjuice" type="button">JUICE PITCH</button><button id="pddrill" type="button">DRILL HIM</button>
+      <div id="pdpad"><div id="pdzone"></div><i id="pdcur"></i></div><i id="pdring"></i>
+      <div id="pdmeter" hidden><i id="pdmline"></i><i id="pdmfill"></i></div>
+      <div id="pdinfo"><b id="pdin"></b><span id="pdir"></span></div><div id="pdbtns"></div><button id="pdgo" type="button">THROW</button><button id="pdstyle" type="button"></button><div id="pdhint"></div></div>
+    <div id="walk" hidden><img id="wface" alt="" hidden><div class="wn" id="wnum"></div><div class="wb"><div class="wname" id="wname"></div><div class="wrow" id="wrat"></div><div class="wrow sub"><span id="wspot"></span><span id="wskip"></span></div></div></div><div id="nowbat" aria-hidden="true"><span>NOW BATTING</span></div>
+    <svg id="diamond" viewBox="0 0 104 86" aria-hidden="true">
+      <path d="M52 82 L4 34 A68 68 0 0 1 100 34 Z" fill="#2f8a3c" stroke="#f2f5ff" stroke-width="2.5" stroke-linejoin="round"/>
+      <path d="M52 82 L24 54 A40 40 0 0 1 80 54 Z" fill="#9a9ba3"/>
+      <path d="M52 76 L68 60 L52 44 L36 60 Z" fill="#2f8a3c"/>
+      <circle cx="52" cy="62" r="3.5" fill="#9a9ba3"/>
+      <circle class="base" id="b1" cx="70" cy="60" r="5.5"/><circle class="base" id="b2" cx="52" cy="42" r="5.5"/><circle class="base" id="b3" cx="34" cy="60" r="5.5"/>
+      <circle cx="52" cy="78" r="5" fill="#e23a22" stroke="#fff" stroke-width="1.5"/>
+    </svg>
+    <div id="card" class="slab"><span id="cnum">27</span><div><div id="cname">RAZOR</div>
+      <div class="stats"><div class="stat">PWR <b><i id="spw"></i></b><em id="gpw"></em></div><div class="stat">CON <b><i id="sco"></i></b><em id="gco"></em></div><div class="stat">SPD <b><i id="ssp"></i></b><em id="gsp"></em></div></div></div></div>
+    <div id="hitinfo" hidden><div class="q" id="hq"></div><div class="r"><span>EXIT VELO</span><b id="hev"></b></div><div class="r"><span>LAUNCH</span><b id="hla"></b></div>
+      <div class="r" id="hdr" hidden><span>DISTANCE</span><b id="hds"></b></div>
+      <div class="r sm"><span>TIMING</span><b id="htm"></b></div><div class="r sm"><span>CONTACT</span><b id="hct"></b></div>
+      <svg id="hpt" viewBox="0 0 172 46" aria-hidden="true"><rect id="hbat" x="20" y="18" width="132" height="10" rx="5" fill="#d8a25a" stroke="#000" stroke-width="1.5"/><circle id="hball" cx="86" cy="23" r="13" fill="#fff" stroke="#000" stroke-width="1.5" fill-opacity=".92"/><circle id="hdot" cx="86" cy="23" r="3" fill="#e23a22"/></svg></div>
+    <div id="plast"></div>
+    <div id="rep" hidden><div class="cap">PITCHES</div><div id="replist" class="pills"></div></div>
+    <div id="keys" class="pills"><div class="pill">POWER<span class="k">CLICK</span></div><div class="pill">CONTACT<span class="k">R-CLICK</span></div><div class="pill dk" id="kj">JUICE<span class="k">SHIFT</span></div><div class="pill dk">CAMERA<span class="k">C</span></div><div class="pill dk">PAUSE<span class="k">ESC</span></div></div>
+    <button id="pausebtn" type="button" aria-label="Pause game" hidden>❚❚</button>
+    <button id="mutebtn" type="button" aria-label="Mute sound" hidden></button>
+    <div id="jtoast" aria-hidden="true">JUICE READY!<small>tap it, then swing</small></div>
+    <div id="apad" aria-hidden="true"><i></i><span>AIM</span></div>
+    <div id="touch">
+      <button class="tb jc" id="tj" type="button">JUICE<b id="tjn"></b></button>
+      <button class="tb ct" id="tc" type="button">CONTACT</button>
+      <button class="tb pw" id="tp" type="button">POWER</button>
+    </div>
+    <div id="tut" hidden>
+      <div class="spot"></div><div class="spot2"></div>
+      <div class="tz htp">HOW TO PLAY</div>
+      <div class="tz stp" id="tutstp"></div>
+      <div class="tz go" id="tutgo">NEXT ▶</div>
+      <div class="tz skip" id="tutskip">Skip ▶▶</div>
+      <div class="tz off" id="tutoff">Don't show tutorials again</div>
+      <div class="tz aimz"><b>LEFT THUMB: AIM</b>Push the stick and the bat ring moves with it</div>
+      <div class="tz pcz"><b><span style="color:#ff6a4a">RED = POWER</span> · <span style="color:#3ddc6a">GREEN = CONTACT</span></b>Each swing has its own contact zone<small>Move your ring onto the ball. Ball in the red core: POWER. Ball in the green: CONTACT. Closer to the middle = better contact.</small></div>
+      <div class="tz lbl lc" id="tlc">CONTACT ZONE<span>▼</span></div><div class="tz lbl lp" id="tlp">POWER ZONE<span>▼</span></div>
+      <div class="tz tmz"><b>YELLOW RING = TIMING</b>It shrinks onto a white circle the size of the ball<small>Ring still bigger than the ball: too early. Ring meets the circle and turns <span style="color:#39ff6a">green</span>: swing!</small></div>
+      <div class="tz tgz" id="tutg"><span>EARLY</span><div class="trk"><i class="gc"></i><i class="gp"></i><i class="tg"></i><i class="mk"></i></div><span>LATE</span><em>PERFECT!</em></div>
+      <div class="tz swz"><b>RIGHT THUMB: SWING</b>Tap a button the moment the ring turns green<small>CONTACT is easier and hits line drives. POWER is harder and hits moonshots.</small></div>
+      <div class="tz jcz"><b>JUICE: MONSTER SWING</b>Tap JUICE and POWER catches fire. Costs one quarter<small>Every hit and every walk adds a quarter back. Fill all four for Overdrive.</small></div>
+      <div class="tz ovz"><b>SAVE YOUR JUICE = OVERDRIVE</b>Don't spend it and the bar keeps building<small>Every hit adds a quarter. Fill all four and the bar catches fire: Overdrive is ready.</small></div>
+      <div class="tz ovz3"><b>OVERDRIVE: TAP TO UNLEASH</b>A full bar turns JUICE into this button<small>Tap it: every swing that at-bat is a free Juice swing and your ratings jump a grade. Then the bar starts over.</small></div>
+      <div class="tz ovz2"><b>OVERDRIVE READY!</b>Tap the blue OVERDRIVE button when you want it<small>Every swing this at-bat becomes a free Juice swing: bigger sweet spot, easier timing, harder contact.</small></div>
+      <div class="tz jz"><b>YOUR JUICE IS FULL</b>Tap JUICE, then swing for a monster hit<small>Each Juice swing burns one quarter of the meter.</small></div>
+    </div>
+    <div id="pop"><div class="t"></div><div class="s"></div></div>
+    <div id="shout" aria-hidden="true"></div><div id="hopc" aria-hidden="true">MOON HOP!</div><div id="dgoal" hidden></div>
+    <div id="tags" aria-hidden="true"></div>
+    <div id="surge" aria-hidden="true"></div>
+    <div id="tim"></div>
+    <div id="tbar" aria-hidden="true"><span>EARLY</span><div class="trk"><i class="jx" id="tjx"></i><i class="gc" id="tgc"></i><i class="gp" id="tgp"></i><i class="tg"></i><i class="mk" id="tmk"></i></div><span>LATE</span><em><i id="tcb" hidden><b></b></i><span id="tfb"></span><span id="tpt"></span></em></div>
+    <div id="fps" hidden></div>
+    <div id="duelv" aria-hidden="true"></div>
+    <div id="odv" aria-hidden="true"><i class="b"></i><i class="t"></i><i class="l"></i><i class="r"></i></div>
+    <div id="odp" class="odp" aria-hidden="true"><i class="b"></i><i class="t"></i><i class="l"></i><i class="r"></i></div>
+    <div id="statfx" aria-hidden="true"></div>
+    <button id="qmash" type="button" aria-hidden="true">TAP!</button>
+    <div id="odh" aria-hidden="true"></div>
+    <div id="orbc" aria-hidden="true"><b>YOU HIT IT INTO ORBIT!</b></div>
+    <div id="bdg" aria-live="polite"><i></i><div><em>ACHIEVEMENT UNLOCKED</em><b></b><span></span></div></div>
+    <button id="stealbtn" type="button">STEAL<small></small></button><div id="gopair"><button id="gobtn" type="button">GO?<small></small><em id="goodds"></em></button><button id="gostay" type="button">NO, STAY<small></small></button></div>
+    <div id="qte" hidden><b id="qtt"></b><div id="qtr"></div><div id="qtm"><i id="qtb"></i></div></div>
+    <div id="qpad" aria-hidden="true"><button type="button" data-d="U">▲</button><button type="button" data-d="L">◀</button><button type="button" data-d="R">▶</button><button type="button" data-d="D">▼</button></div>
+    <div id="podtag" aria-hidden="true">PITCHER<br>OVERDRIVE ACTIVE</div>
+    <div id="duel" aria-hidden="true"><i class="dl">BATTER</i><i class="dr">PITCHER</i><b>OVERDRIVE<span>SHOWDOWN</span></b></div>
+    <div id="goal" hidden></div>
+  </div>
+  <div class="overlay" id="title">
+    <div class="logo" role="img" aria-label="Moonshot Mayhem"><svg viewBox="0 0 640 372" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<radialGradient id="lgMoon" cx="38%" cy="32%" r="78%"><stop offset="0" stop-color="#f4f6ff"/><stop offset=".55" stop-color="#aab0c8"/><stop offset="1" stop-color="#565b78"/></radialGradient>
+<linearGradient id="lgTop" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff8a8"/><stop offset=".5" stop-color="#ffe53b"/><stop offset="1" stop-color="#ff9a1e"/></linearGradient>
+<linearGradient id="lgSlab" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff6a3c"/><stop offset="1" stop-color="#c21a0e"/></linearGradient>
+<linearGradient id="lgTail" x1="1" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset=".18" stop-color="#bff0ff"/><stop offset=".5" stop-color="#3aa8ff"/><stop offset="1" stop-color="#1e4bff" stop-opacity="0"/></linearGradient>
+<radialGradient id="lgGlow" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#3ad6ff" stop-opacity=".55"/><stop offset="1" stop-color="#3ad6ff" stop-opacity="0"/></radialGradient>
+</defs>
+<g transform="rotate(-5 320 190)">
+<circle cx="320" cy="150" r="190" fill="url(#lgGlow)"/>
+<g fill="#fff"><circle cx="58" cy="70" r="2.4"/><circle cx="112" cy="26" r="1.6"/><circle cx="590" cy="150" r="2"/><circle cx="548" cy="238" r="1.5"/><circle cx="84" cy="212" r="1.8"/><circle cx="230" cy="14" r="1.4"/><path d="M40 138l3 8 8 3-8 3-3 8-3-8-8-3 8-3z"/><path d="M600 70l2.4 6.4 6.4 2.4-6.4 2.4-2.4 6.4-2.4-6.4-6.4-2.4 6.4-2.4z"/></g>
+<circle cx="320" cy="146" r="124" fill="url(#lgMoon)" stroke="#0b0a1a" stroke-width="7"/>
+<g fill="#6b7190" opacity=".55"><ellipse cx="268" cy="92" rx="26" ry="20"/><ellipse cx="372" cy="70" rx="15" ry="11"/><ellipse cx="398" cy="124" rx="21" ry="16"/><ellipse cx="236" cy="150" rx="12" ry="9"/><ellipse cx="322" cy="52" rx="8" ry="6"/></g>
+<g fill="none" stroke="#e23a22" stroke-linecap="round"><path d="M250 46C292 96 292 196 250 246M390 46C348 96 348 196 390 246" stroke-width="4.5" opacity=".9"/><g stroke-width="3.6" opacity=".9"><path d="M251 60l11 -5"/><path d="M262 82l11 -5"/><path d="M270 104l11 -5"/><path d="M274 126l11 -5"/><path d="M276 144l11 5"/><path d="M274 166l11 5"/><path d="M270 188l11 5"/><path d="M262 210l11 5"/><path d="M251 232l11 5"/><path d="M389 60l-11 -5"/><path d="M378 82l-11 -5"/><path d="M370 104l-11 -5"/><path d="M366 126l-11 -5"/><path d="M364 144l-11 5"/><path d="M366 166l-11 5"/><path d="M370 188l-11 5"/><path d="M378 210l-11 5"/><path d="M389 232l-11 5"/></g></g><g fill="none" stroke="#f4f6ff" stroke-width="2.5" opacity=".5"><path d="M246 84a26 20 0 0 1 30-11"/><path d="M360 64a15 11 0 0 1 16-4"/><path d="M380 116a21 16 0 0 1 22-7"/></g>
+<path d="M96 262C210 250 420 190 548 60L566 80C452 214 250 286 100 284Z" fill="url(#lgTail)" stroke="#0b0a1a" stroke-width="5" stroke-linejoin="round"/>
+<path d="M190 256C290 236 440 168 540 72" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" opacity=".8"/>
+<g transform="translate(560 62)"><circle r="30" fill="#fdfdf6" stroke="#0b0a1a" stroke-width="6"/><path d="M-13-25c10 16 10 34 0 50M13-25c-10 16-10 34 0 50" fill="none" stroke="#e23a22" stroke-width="3.2"/><g stroke="#e23a22" stroke-width="2.4"><path d="M-12-14l-7-2M-9-2l-8 0M-10 10l-7 3M12-14l7-2M9-2l8 0M10 10l7 3"/></g></g>
+<g font-family="'Russo One','Arial Black',Impact,sans-serif" font-style="italic" text-anchor="middle" transform="skewX(-8)">
+<text x="350" y="212" font-size="100" textLength="548" lengthAdjust="spacingAndGlyphs" fill="#0b0a1a" stroke="#0b0a1a" stroke-width="22" stroke-linejoin="round">MOONSHOT</text>
+<text x="350" y="221" font-size="100" textLength="548" lengthAdjust="spacingAndGlyphs" fill="#1b2a8c" stroke="#1b2a8c" stroke-width="10" stroke-linejoin="round">MOONSHOT</text>
+<text x="350" y="212" font-size="100" textLength="548" lengthAdjust="spacingAndGlyphs" fill="url(#lgTop)" stroke="#fff" stroke-width="2.5" paint-order="stroke">MOONSHOT</text>
+<path d="M176 240H570L554 318H160Z" fill="#0b0a1a" stroke="#0b0a1a" stroke-width="12" stroke-linejoin="round"/>
+<path d="M176 240H570L554 318H160Z" fill="url(#lgSlab)"/>
+<path d="M176 240H570L567 254H173Z" fill="#fff" opacity=".22"/>
+<text x="366" y="302" font-size="64" textLength="340" lengthAdjust="spacing" fill="#0b0a1a" stroke="#0b0a1a" stroke-width="9" stroke-linejoin="round">MAYHEM</text>
+<text x="366" y="302" font-size="64" textLength="340" lengthAdjust="spacing" fill="#f6f8ff">MAYHEM</text>
+</g>
+<g font-family="'Saira Condensed','Arial Narrow',Arial,sans-serif" font-weight="800" text-anchor="middle"><text x="320" y="352" font-size="19" letter-spacing="7" fill="#9fd9ff">LUNAR LEAGUE BASEBALL</text></g>
+</g></svg></div>
+    <div class="how">
+      <div><b>Aim</b>Move the mouse (or drag) to put the bat ring on the pitch.</div>
+      <div><b>Contact swing</b>Right-click, Z or Space. Big sweet spot, line drives.</div>
+      <div><b>Power swing</b>Left-click or X. Small sweet spot, moonshots.</div>
+      <div><b>Juice</b>Hold Shift while swinging to burn a quarter: about 20% harder off the bat, bigger sweet spot. Every hit or walk adds a quarter.</div>
+      <div><b>Timing</b>Swing as the yellow ring closes. Early pulls, late slices.</div>
+      <div><b>Overdrive</b>A full Juice meter charges it. Press Shift to switch it on: free Juice on every swing that at-bat.</div>
+    </div>
+    <button class="cta ldg" id="start" type="button">LOADING…</button>
+    <div id="menu">
+      <div class="htop"><button id="hset" type="button" aria-label="Settings">&#9881;</button><button id="htro" type="button" aria-label="Trophies">&#127942;<i id="htron"></i></button><button id="hinv" type="button" aria-label="Invite a friend">&#127873;<i id="hinvn"></i></button><button id="hday" type="button" aria-label="Daily Challenge">&#128197;<i id="hdayn"></i></button><span></span><button id="hlv" type="button"><b id="hlvn"></b><small id="hlvt"></small></button></div>
+      <div class="hcard"><div class="hcrest" id="hcrest"></div>
+        <div class="hrow"><div class="hobj"><b>DAILY CHALLENGE</b><span id="hobjt"></span><u><i id="hobjbar"></i></u><em id="hobjs"></em></div><div class="hnext"><small>NEXT UNLOCK</small><b id="hnextn"></b><em id="hnextl"></em></div></div>
+        <div class="hxp"><span>XP</span><u><i id="hxpbar"></i></u><b id="hxplv"></b></div><div class="hxpt" id="hxpt"></div></div>
+      <div class="hhero" id="hhero"></div>
+      <button class="hplay" id="hplay" type="button">PLAY</button>
+      <div class="hcap" id="hcap"></div>
+      <div class="hdots" id="hdots"></div>
+      <div class="htabs"><button id="tsquad" type="button"><i>&#127183;</i>SQUAD</button><button id="ttro" type="button"><i>&#127942;</i>TROPHIES</button><button id="thome" class="on" type="button"><i>&#9918;</i>HOME</button><button id="tprof" type="button"><i>&#128100;</i>PROFILE</button><button id="tset" type="button"><i>&#9881;</i>SETTINGS</button></div>
+      <div class="mold">
+      <button class="mstrip" id="mplayer" type="button"><b id="mpname"></b><span id="mpinfo"></span></button>
+      <button class="mcard arc" id="marc" type="button"><b>PLAY BALL<i>&#9656;</i></b><span>Three innings against the Krakens</span></button>
+      <button class="mcard" id="mdaily" type="button"><b>DAILY CHALLENGE<i id="mdstreak"></i></b><span id="mdtext"></span><em id="mdstate"></em></button>
+      <div class="mgrid">
+        <button class="mtile" id="mderby" type="button"><b>HOME RUN DERBY</b><em id="mdbest"></em></button>
+        <button class="mtile" id="mshot" type="button"><b>THE GAUNTLET</b><em id="msbest"></em></button>
+        <button class="mtile" id="mweek" type="button"><b>WEEKLY CHALLENGE</b></button><button class="mtile" id="mbp" type="button"><b>BATTING PRACTICE</b><em>NO OUTS · NO SCORE</em></button>
+        <button class="mtile" id="msquad" type="button"><b>MY SQUAD</b><em id="msqinfo">YOUR NINE</em></button>
+        <button class="mtile lock wide" id="mcup" type="button" disabled><b>LUNAR LEAGUE CUP</b><em>COMING SOON</em></button>
+      </div>
+      <div class="mfoot"><button id="mprof" type="button">PROFILE</button><button id="mtro" type="button">TROPHIES</button><button id="mset" type="button">SETTINGS</button></div>
+      </div>
+    </div>
+    <div id="ldbar" data-t="LOADING" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
+    <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 989</div>
+    <div id="opts">
+    <button class="tag wkopt" id="wk" type="button"></button>
+    <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
+    <button class="tag wkopt sens" id="sens1" type="button"></button>
+    <button class="tag wkopt" id="mark1" type="button"></button>
+    <button class="tag wkopt" id="fps1" type="button"></button>
+    <button class="tag wkopt" id="ring1" type="button"></button>
+    <button class="tag wkopt" id="diff1" type="button"></button>
+    <button class="tag wkopt" id="mute1" type="button"></button>
+    <button class="tag wkopt" id="org1" type="button"></button>
+    <button class="tag wkopt" id="hap1" type="button"></button>
+    <button class="tag wkopt" id="bdgbtn" type="button"></button>
+    <button class="tag wkopt danger" id="resetbtn" type="button">Reset all progress</button>
+    <div class="tag" id="credits">Moonshot Mayhem · work in progress · progress is saved on this device only</div>
+    </div>
+    <button class="tag" id="mdl" type="button" hidden style="pointer-events:auto;background:none;border:1px solid var(--dim);padding:6px 12px;cursor:pointer;font-family:var(--hud)"></button>
+    <div class="tag" id="best"></div>
+    <button class="cta" id="setback" type="button">BACK</button>
+  </div>
+  <div class="overlay" id="dres" hidden>
+    <div class="ohead" id="drtitle">DAILY CHALLENGE</div>
+    <div id="drhead"></div><div id="drstars"></div><div id="drtext"></div><div id="drstreak"></div><div id="drach" hidden></div><div id="drxp"></div>
+    <button class="cta" id="dragain" type="button">TRY AGAIN</button>
+    <button class="cta alt" id="drmenu" type="button">MAIN MENU</button>
+  </div>
+  <div class="overlay" id="bcard" hidden><div id="bcin"></div><div class="bcbtn"><button class="cta alt" id="bcup" type="button">&#9664; BAT EARLIER</button><button class="cta alt" id="bcdn" type="button">BAT LATER &#9654;</button></div><button class="cta alt" id="bcpen" type="button" hidden>BULLPEN</button><button class="cta" id="bcx" type="button">CLOSE</button></div>
+  <div class="overlay" id="squad" hidden>
+    <div class="sqhead"><span id="sqteam"></span><b>MY SQUAD</b></div>
+    <div class="sqtabs"><button id="sqtb" class="on" type="button">BATTERS</button><button id="sqtp" type="button">PITCHERS</button></div>
+    <div id="sqnote" hidden></div>
+    <div id="sqlist"></div>
+    <div class="htabs sqt"><button id="sqsq" class="on" type="button"><i>&#127183;</i>SQUAD</button><button id="sqback" type="button"><i>&#9918;</i>HOME</button></div>
+  </div>
+  <div class="overlay" id="cels" hidden>
+    <div class="ohead big">CELEBRATIONS</div>
+    <div id="celnote"></div>
+    <div id="cellist"></div>
+    <button class="cta" id="celback" type="button">BACK</button>
+  </div>
+  <div class="overlay" id="dpick" hidden>
+    <div class="ohead big">PICK YOUR HITTER</div>
+    <div id="dplist"></div>
+    <button class="cta alt" id="dpback" type="button">BACK</button>
+  </div>
+  <div class="overlay" id="prof" hidden>
+    <div class="ohead big">PROFILE</div>
+    <label id="pfname"><span>NAME</span><input id="pfin" type="text" maxlength="12" autocomplete="off" autocapitalize="characters" spellcheck="false"></label>
+    <div id="pfteam"></div><div id="pfweek" aria-label="Daily challenges this week"></div>
+    <div class="final" id="pfstats"></div>
+    <button class="cta alt" id="pfbdg" type="button">ACHIEVEMENTS</button>
+    <button class="cta alt" id="pfcel" type="button">CELEBRATIONS</button>
+    <button class="cta" id="pfback" type="button">BACK</button>
+  </div>
+  <div class="overlay" id="over" hidden>
+    <div class="logo"><span class="b">FINAL</span></div>
+    <div id="rating"></div>
+    <div class="final" id="final"></div>
+    <button class="cta" id="again" type="button">RUN IT BACK</button>
+    <button class="cta alt" id="overmenu" type="button">MAIN MENU</button>
+  </div>
+  <div class="overlay" id="inv" hidden><div class="logo"><span class="b">BRING A FRIEND</span></div>
+    <div id="invbox"><small>YOUR INVITE CODE</small><b id="invme"></b><button class="cta" id="invshare" type="button">SHARE YOUR CODE</button><em id="invmsg"></em>
+      <div id="invlad"></div>
+      <small id="invfl">GOT A CODE FROM A FRIEND?</small><div id="invrow"><input id="invin" type="text" maxlength="6" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="CODE"><button id="invgo" type="button">REDEEM</button></div></div>
+    <button class="cta alt" id="invback" type="button">BACK</button></div>
+  <div class="overlay" id="pstaff" hidden><div class="logo"><span class="b">BULLPEN</span></div><div id="pslist"></div><button class="cta alt" id="psback" type="button">BACK</button></div>
+  <div class="overlay" id="pause" hidden>
+    <div class="logo"><span class="b">PAUSED</span></div>
+    <button class="cta" id="resume" type="button">RESUME</button>
+    <button class="cta alt" id="pchg" type="button">CHANGE PITCHER</button>
+    <button class="cta alt" id="pdtest" type="button">SKIP TO PITCHING</button>
+    <button class="cta alt" id="psetbtn" type="button">SETTINGS</button>
+    <button class="cta alt" id="restart" type="button">RESTART GAME</button>
+    <button class="cta alt" id="quit" type="button">QUIT TO MAIN MENU</button>
+    <div id="pset" hidden>
+    <button class="cta alt" id="cambtn" type="button">CAMERA</button>
+    <button class="cta alt sens" id="sens2" type="button"></button>
+    <button class="cta alt" id="mark2" type="button"></button>
+    <button class="cta alt" id="ring2" type="button"></button>
+    <button class="cta alt" id="diff2" type="button"></button>
+    <button class="cta alt" id="howbtn" type="button">HOW TO PLAY</button>
+    <button class="cta alt" id="howpit" type="button">HOW TO PITCH</button>
+    <button class="cta alt" id="pstyle2" type="button"></button>
+    <button class="cta alt" id="vol2" type="button"></button>
+    <button class="cta alt" id="org2" type="button"></button>
+    <button class="cta alt" id="hap2" type="button"></button>
+    <button class="cta alt" id="shbtn" type="button">FIELD SHADOWS: OFF</button>
+    <button class="cta alt" id="fpsbtn" type="button">SHOW SPEED: OFF</button>
+    <button class="cta" id="psetback" type="button">BACK</button>
+    </div>
+    <div class="tag">Esc or P to resume</div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+

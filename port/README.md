@@ -22,3 +22,16 @@ Use: before porting a system, read its file end to end and treat every bold line
 - [`16-stadium-and-other.md`](16-stadium-and-other.md): Stadium, presentation and everything else (415 entries)
 - [`HISTORY.md`](HISTORY.md): every change shipped, oldest first (917 entries)
 - [`LOOK.md`](LOOK.md) and `look/`: what everything looks like. 55 photographs of the running prototype (phone, PC and the stadium) with the camera positions, colors, fonts and field dimensions behind them. **Read this before building any screen, camera or scenery.**
+- [`data/TABLES.md`](data/TABLES.md): every data table, copied verbatim: rosters, ratings, pitches, perks, difficulty tiers, event definitions, callout lists, badges, cameras (94 tables).
+- [`data/STRINGS.md`](data/STRINGS.md): every word the game says, grouped by where it is shown (about 1,400 lines of text).
+- [`data/ASSETS.md`](data/ASSETS.md): every model, texture, sound and animation clip, with clip lengths. Models are base64 FBX and convert straight to files Unity imports.
+- [`ui/style.css`](ui/style.css) and [`ui/markup.html`](ui/markup.html): the complete stylesheet and page markup, verbatim: exact sizes, positions, colors and animations of every HUD element and menu.
+- In the repo root: `PORT_SPEC_HITTING.md` (requirements for hitting), `UNITY_REVIEW.md` (what to fix), `BACKLOG.md` (ideas and open items), `CREDITS.md` (where assets came from and their terms).
+
+## Order to read in
+
+1. The owner record (private, delivered separately): who he is and how he talks.
+2. `LOOK.md` and the pictures.
+3. The numbered file for the system you are about to build, end to end.
+4. `data/TABLES.md` and `data/STRINGS.md` for that system's tables and wording.
+5. `index.html` for anything still unclear. It is the final word.
