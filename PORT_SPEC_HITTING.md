@@ -39,6 +39,19 @@ There is no F key. Mouse sensitivity is a setting with six steps: 1, 1.2, 1.4, 1
 - The incoming ball, with a thin trail.
 - A "rings off" setting hides the circles and leaves only the center marker; the zones still decide every swing.
 
+## The view
+
+- Default camera is **STRIKE ZONE**: position (0, 1.3, 2.9) looking at (0, .95, -18), prototype coordinates. Others, cycled with C: CLASSIC (-.15, 1.85, 4.5 → .3, 1, -18), OFF-CENTER, HIGH, FAR.
+- Field of view 2*atan(tan(31°)/aspect), clamped 42–68.
+
+## The timing circle and pitch marker (the heart of the feel)
+
+- From 22% of the pitch's flight (42% on a Juice pitch) a yellow ring appears where the pitch will cross and closes steadily onto a target of radius .068, running .07 s ahead so that tapping as it closes is exactly on time.
+- It flashes green at the on-time moment, then keeps shrinking; smaller than the target means late.
+- The target is a small bright baseball with no halo.
+- The rings are filled: green CONTACT ring with a soft green fill (about 26%), red POWER core with a red fill (about 40%).
+- The ball in flight is always clearly visible: true size, with a thin tapering trail that never hides it.
+
 ## Feedback: every swing
 
 Shown after contact, in a small panel (PC: left side; phone: placed so it never covers the hitter or the buttons):

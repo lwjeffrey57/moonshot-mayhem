@@ -30,6 +30,15 @@ Every problem below is in `Sandbox/BattingPractice.cs`: controls, rhythm and fee
 9. **Timing read-out.** Replace "NN ms early/late" as the main feedback with the prototype's: the timing word plus a timing bar with a marker. Milliseconds can stay as a small debug line.
 10. **Contact feedback panel.** Grade word, exit velocity, launch angle, timing word, contact word, and the small picture of where the barrel met the ball. Placed so it never covers the hitter, the zone or the buttons.
 
+### Added after the owner's first look at the rig (same priority as "Must fix")
+
+16. **Default camera is wrong.** The prototype's default batting view is STRIKE ZONE, not CLASSIC: position (0, 1.3, 2.9), looking at (0, .95, -18) in prototype coordinates (flip z for Unity). The five views are CLASSIC, STRIKE ZONE, OFF-CENTER, HIGH, FAR (`CAMS` in the prototype); C cycles them. Field of view: 2*atan(tan(31 deg)/aspect), clamped 42 to 68.
+17. **The timing circle is missing. This is the core of the hitting feel.** While the pitch is in flight (from 22% of the way in; 42% for a Juice pitch) a yellow ring sits at the spot where the pitch will cross and closes at a steady speed onto a target of radius .068. It runs ahead by the swing time (.07 s) so "tap when it finishes closing" is exactly on time. It flashes green at that moment, then keeps shrinking: smaller than the target means late. Read `pring` / `ptarget` in the prototype's pitch tick.
+18. **The pitch-location marker is missing.** The target at that spot is a small baseball (bright, no halo), the same size as the ball marker left behind after a take.
+19. **The rings are not filled.** CONTACT is a green ring (0x3ddc6a) with a soft green fill at about 26% opacity. POWER is a red ring (0xff4d2e) with a red fill at about 40%, reading as a hot core inside the bat ring.
+20. **The ball cannot be seen.** The trail is as wide as the ball and bright white, so it hides it. The prototype's pitch trail is a thin flame ribbon that tapers; the ball itself is always the brightest, clearest thing. Make the trail much thinner than the ball and fading, and keep the ball its true size on the way in.
+21. **Center marker default is the crosshair** (item 7). The owner called this out specifically.
+
 ### Decide and tell the owner
 
 11. `Application.targetFrameRate = 60`. The iPhone screen is 120 Hz and the prototype's biggest complaint was uneven frame pacing in the browser. Say whether you intend 60 or 120 on device and why. Do not leave it as an accident.
