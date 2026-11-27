@@ -146,6 +146,16 @@ Menu styling throughout: deep navy background, gold italic headings, white slab 
 
 In all of them the top-left pills keep showing grade, exit speed and the distance counting up, and any tap ends the shot.
 
+## More sequences (frames about 0.6–0.9 s apart, left to right)
+
+- `phone_strip_flyout`: a fly ball caught. The camera holds on the hitter's follow-through with the grade and distance pills counting, then the call ("ROBBED!", "OUT!") and, with a runner on, the TAG UP? / NO, STAY buttons.
+- `phone_strip_groundout`: a ground ball. Same hold on the hitter, the out call with its sub-plate.
+- `phone_strip_strikeout`: strike three. The miss replay, then a cut to the pitcher from the plate side doing his taunt, with K calls on the ribbon board.
+- `phone_strip_hbp_brawl`: the hitter is plunked, goes down, gets up; then CHARGING THE MOUND and the fight, each blow with a comic burst word (POW! BLOCKED!).
+- `phone_strip_you_drill_him_brawl`: the same from the mound when you drill a hitter: your pitcher in the foreground, the cutaway of the hitter coming, the fight.
+- `phone_strip_you_strike_him_out`: you strike a hitter out: the mitt pop, the achievement toast, your pitcher's celebration from in front, then the next hitter's walk-up card with THE DUEL line.
+- `phone_strip_pitch_delivery`: one pitch from the mound, frame by frame: pick and aim, the power meter around the target, the release ring closing, the ball away with the release grade.
+
 ## The picture list
 
 See `port/look/`. File names say what each one shows.

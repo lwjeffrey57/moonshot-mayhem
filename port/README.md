@@ -1,5 +1,7 @@
 # Everything decided in the prototype, by system
 
+**Start with [`HOW_TO_USE.md`](HOW_TO_USE.md).** Then [`IMPROVE.md`](IMPROVE.md) (what we want better in Unity) and [`BALL_FLIGHT.md`](BALL_FLIGHT.md).
+
 Pulled automatically from every comment in `index.html` at the time of writing. Each line is something that was built, tuned or ruled on during playtesting, in the words written next to the code that does it. **Bold** lines are standing rules (written in capitals in the code). `L` is the line in `index.html`; the name after it is the function it sits in. Where a line here and the code disagree, the code wins.
 
 Use: before porting a system, read its file end to end and treat every bold line as a requirement.
@@ -35,3 +37,6 @@ Use: before porting a system, read its file end to end and treat every bold line
 3. The numbered file for the system you are about to build, end to end.
 4. `data/TABLES.md` and `data/STRINGS.md` for that system's tables and wording.
 5. `index.html` for anything still unclear. It is the final word.
+- [`code/`](code/): the prototype's own functions, sorted by system and reformatted one statement per line (208 functions).
+- [`data/SOUNDS.md`](data/SOUNDS.md): which sound fires at which moment.
+- [`data/flight_cases.json`](data/flight_cases.json): 1,428 ball flights computed by the prototype, for testing the Unity flight.
