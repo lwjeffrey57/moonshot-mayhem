@@ -1230,7 +1230,7 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
     </div>
     <div id="ldbar" data-t="LOADING" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 977</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 978</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -1916,7 +1916,7 @@ function cqStart(f){const c=f.cq;c.st=1;CQ.on=true;{const e=$('bdg');if(e.classL
   $('qte').hidden=false;$('hud').classList.add('qon','qm');buzz([30,30,60]);tone('triangle',520,880,.15,.35);crowdRise(.7,2.5,true);}
 function cqEnd(ok){const f=CQ.f,c=f.cq;CQ.on=false;c.st=2;$('hud').classList.remove('qon','qm');setTimeout(()=>{if(!CQ.on)$('qte').hidden=true;},300);
   if(ok){buzz([20,30,60]);tone('triangle',660,990,.12,.3);timing('MADE THE PLAY!','#39ff6a',3);}
-  else{buzz([40,30,40]);tone('sawtooth',150,80,.12,.3);const pl=c.lose;if(c.win.f)pl.from=c.win.f.fig.root.position.clone();pl.tS=now-f.t0;f.play=pl;timing(pl.type==='hr'?'OVER HIS GLOVE!':pl.type==='foul'?'JUST OUT OF REACH':'GOT BY HIM!','#ff8a2e',3);}}
+  else{buzz([40,30,40]);tone('sawtooth',150,80,.12,.3);const pl=c.lose;if(c.win.f)pl.from=c.win.f.fig.root.position.clone();pl.tS=now-f.t0;f.play=pl;timing(pl.type==='hr'?'OVER HIS GLOVE!':pl.type==='foul'?'JUST OUT OF REACH':'GOT BY HIM!','#ff8a2e',3);try{pop(pl.type==='hr'?'OVER HIS GLOVE!':pl.type==='foul'?'JUST OUT OF REACH':'GOT BY HIM!',pl.type==='hr'?'HOME RUN':pl.type==='foul'?'FOUL BALL':'IT DROPS IN FOR A HIT','hot',true);buzz([40,30,40]);}catch(e){}}} /* (losing one of these is now SAID, in the big lettering, with what it cost: it used to be a small line of text and then straight on to the next hitter) */
 function cqOff(){CQ.on=false;CQ.f=null;try{$('hud').classList.remove('qon','qm');$('qte').hidden=true;}catch(e){}}
 function cqTick(dt){if(CQ.on&&(CQ.f!==flight||!PD.on||S.state!=='flight'||paused)){if(!paused)cqOff();return;} /* A SHOWDOWN CAN NEVER OUTLIVE ITS PLAY: left switched on after the ball was dead it swallowed every touch for the rest of the game */const f=flight;if(!f||!f.cq)return;const c=f.cq;if(c.st===0&&now-f.t0>=c.t)cqStart(f);if(!CQ.on||CQ.f!==f)return;
   f.t0+=dt*.94; /* the play hangs in slow motion while you make it */
@@ -4353,7 +4353,7 @@ function qteTick(){const Q=QT,d0=9.5,d1=2.6,pe=now-Q.tp;
       hud();}
     if(Q.rv&&Q.blow){const k=1-Math.pow(1-clamp((now-Q.blow)/.55,0,1),2);Q.fx=Q.fx0-Q.ux*1.8*k;Q.fz=Q.fz0-Q.uz*1.8*k;} // the kick sends him back off his feet, well clear of the bag
     if(Q.ball){const t=now-Q.ball.t;ball.visible=t<1.6;ball.scale.setScalar(1.05);ball.position.set(Q.ball.x-Q.ux*1.4*t+Q.nx*.9*t,1.1+4.2*t-4.9*t*t,Q.ball.z-Q.uz*1.4*t+Q.nz*.9*t);if(ball.position.y<.06)ball.position.y=.06;}
-    if(e>=2.4){Q.hid.forEach(r=>{r.visible=true;});Q.hid=[];ball.visible=false;ball.scale.setScalar(1);$('qte').hidden=true;
+    if(e>=(Q.M.def&&Q.rv?3.2:2.4)){Q.hid.forEach(r=>{r.visible=true;}); /* (a play you LOST on defense is held most of a second longer, so the call and what it cost are read before the game moves on) */Q.hid=[];ball.visible=false;ball.scale.setScalar(1);$('qte').hidden=true;
       if(Q.M.def){S.state='pduel';S.t=now;PD.hideBat=true;PD.ph=4;try{$('pd').style.visibility='';}catch(e){}PD.t=now-2;PD.after=PD.qAfter||(()=>{});PD.qAfter=null;try{pdUI();hud();}catch(x){}return;} /* back to the mound: the next man is called up as after any play */
       syncRunners();if(Q.M.pa&&!Q.noPA)afterPA(.9);else toReady(PACE.newBatter);}}}
 function hbpRunEnd(){$('statfx').className='';$('walk').hidden=true;$('walk').classList.remove('pc','pc3');$('walk').style.top='';$('hud').classList.remove('wk');afterPA(.5);}
