@@ -37,3 +37,15 @@ Paste this as the first message of a Claude Code session opened on the Mac in th
 ## Machine
 
 - MacBook Air M1 2020, 8 GB RAM, about 85 GB free disk. Keep the project lean; avoid huge imports without asking.
+
+## Parity with the prototype (added after the hitting port)
+
+The owner has playtested the prototype exhaustively. Every piece of his feedback is already built into `index.html`: the numbers are the tuning, and the capitalized comments beside them (several hundred, e.g. `/* A SWING IS NEVER IGNORED ... */`) record what he asked for and why. Treat those comments as requirements, not history.
+
+The goal is that he never has to re-find a problem he already found once.
+
+1. **Port behavior, not just formulas.** For each system, list the rules stated in the prototype's capitalized comments for that area and confirm each one in Unity. Report any you skipped, by name.
+2. **Test against the prototype, not against your reading of it.** Prefer recorded input/output cases produced by the running prototype (the web session can generate them into this repo as JSON) over re-deriving numbers by hand.
+3. **Never "improve" a tuned number.** If something in the prototype looks wrong, ask; it was probably tuned on purpose.
+4. **Say what cannot be machine-checked** (input latency, camera feel, animation timing) so his playtesting is spent only there.
+5. When the prototype changes, the web session notes it in the repo history; re-read the affected area before building on it.
