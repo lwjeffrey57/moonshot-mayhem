@@ -44,6 +44,8 @@ Every problem below is in `Sandbox/BattingPractice.cs`: controls, rhythm and fee
 23. **The ball marker after a taken pitch is a must** (owner, 27 Nov). A small bright baseball stays where the pitch crossed for about 1.7 s with the speed and pitch name beside it and the zone outline kept up. See `port/look/*_06b_took_a_pitch_*` and `port/TRAILS_AND_EFFECTS.md`.
 24. **Trails.** Read `port/TRAILS_AND_EFFECTS.md` and match it: thin, tapering, never hiding the ball; colors by swing type; each Juice pitch its own color and shape.
 
+25. **Timing.** `port/TIMING.md` lists how long everything takes and what changes it. Match the at-bat rhythm table exactly (wind-up 1.0 s, swing live from 0.55 s, about 2.1 s between pitches) and the pitch flight times per tier.
+
 ### Decide and tell the owner
 
 11. `Application.targetFrameRate = 60`. The iPhone screen is 120 Hz and the prototype's biggest complaint was uneven frame pacing in the browser. Say whether you intend 60 or 120 on device and why. Do not leave it as an accident.
