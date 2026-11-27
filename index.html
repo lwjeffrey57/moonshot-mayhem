@@ -1230,7 +1230,7 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
     </div>
     <div id="ldbar" data-t="LOADING" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 967</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 968</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -5177,7 +5177,7 @@ const LATE_T=1.3;function doSwing(type){if(S.mode)S.mode.swN=(S.mode.swN||0)+1;
   // between pitches the buttons still swing the bat: a practice cut, no cost, so the first tap always teaches what the button does
   if(S.state==='ready'||(S.state==='windup'&&now-windupT0<=.55)){swing={t0:now,type,turbo:false,done:false,miss:false,practice:true};SND.whoosh();if(S.state==='ready'&&pmk&&now-pmk.t<LATE_T){swing.late=true;try{timing('WAY LATE','#ff8a70',2);}catch(e){}}return;}
   /* A SWING IS NEVER IGNORED. If the tap comes just after the ball is already in the mitt (he was that late), the bat still comes through and the read-out says so, instead of the button seeming dead. The call that was made stands. */
-  if(S.state==='result'&&pmk&&now-pmk.t<LATE_T&&!S.next){swing={t0:now,type,turbo:false,done:false,miss:false,practice:true,late:true};SND.whoosh();try{timing('WAY LATE','#ff8a70',2);}catch(e){}return;} /* (the window is long on purpose: against Overdrive heat a hitter can be absurdly late, and "I was so late" beats "why didn't he swing") */
+  if(S.state==='result'&&pmk&&now-pmk.t<LATE_T){ /* (strike three and ball four included: the late cut still comes through and still says WAY LATE. It used to be swallowed on exactly those pitches, the ones where it stings most.) */swing={t0:now,type,turbo:false,done:false,miss:false,practice:true,late:true};SND.whoosh();try{timing('WAY LATE','#ff8a70',2);}catch(e){}return;} /* (the window is long on purpose: against Overdrive heat a hitter can be absurdly late, and "I was so late" beats "why didn't he swing") */
   if(!(S.state==='pitch'||(S.state==='windup'&&now-windupT0>.55)))return;
   if(S.over&&!S.overOn&&(keys.ShiftLeft||keys.ShiftRight))juiceTap(); // desktop: Shift switches Overdrive on
   const od=S.over&&S.overOn,turbo=od||(!S.over&&juiceOn()&&S.juice>=.25);
@@ -6315,7 +6315,7 @@ function step(dt){if(S.wuPend){if(S.state!=='ready')S.wuPend=0;else if(!bodyMiss
   else if(st==='end'&&el>=readyDur){endGame();}
 
   if(swing&&!swing.done&&now>=swing.t0+SW_T){
-    if(swing.practice)swing.done=true;else if(S.state==='pitch'&&pitch&&!pitch.hit)tryContact();else{swing.done=true;swing.miss=true;}
+    if(swing.practice)swing.done=true;else if(S.state==='pitch'&&pitch&&!pitch.hit)tryContact();else{swing.done=true;swing.miss=true;try{if(!swing.late&&!$('tim').classList.contains('go'))timing('WAY LATE','#ff8a70',2);}catch(e){}} /* (the bat came through after the ball was already in the mitt: say so, so the cut is never silent) */
   }
   if(swing&&swing.practice&&now-swing.t0>.55){const lt=swing.late;swing=null;if(S.state==='ready'&&!lt)S.t=Math.max(S.t,now-readyDur+.5);} /* (a LATE cut after the pitch never holds the game up: the pitcher does not wait for it) */ // bat is back; give him another half second to get set before the windup // practice cut finished: bat is back, he can swing for real
   if(S.state==='pitch'&&pitch){
