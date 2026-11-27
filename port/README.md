@@ -21,3 +21,4 @@ Use: before porting a system, read its file end to end and treat every bold line
 - [`15-performance-loading.md`](15-performance-loading.md): Performance, loading, memory (85 entries)
 - [`16-stadium-and-other.md`](16-stadium-and-other.md): Stadium, presentation and everything else (415 entries)
 - [`HISTORY.md`](HISTORY.md): every change shipped, oldest first (917 entries)
+- [`LOOK.md`](LOOK.md) and `look/`: what everything looks like. 55 photographs of the running prototype (phone, PC and the stadium) with the camera positions, colors, fonts and field dimensions behind them. **Read this before building any screen, camera or scenery.**

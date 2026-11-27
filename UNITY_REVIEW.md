@@ -39,6 +39,8 @@ Every problem below is in `Sandbox/BattingPractice.cs`: controls, rhythm and fee
 20. **The ball cannot be seen.** The trail is as wide as the ball and bright white, so it hides it. The prototype's pitch trail is a thin flame ribbon that tapers; the ball itself is always the brightest, clearest thing. Make the trail much thinner than the ball and fading, and keep the ball its true size on the way in.
 21. **Center marker default is the crosshair** (item 7). The owner called this out specifically.
 
+22. **Look at the pictures.** `port/LOOK.md` and the 55 images in `port/look/` show the batting view from every camera, the HUD on phone and PC, the timing circle, the miss replay, the hit feedback, the pitching view, the events and the whole ballpark, with the numbers behind them. The gray-box rig should be laid out to match `phone_03_batting_ready_default_view.jpg` and `pc_03_batting_ready_default_view.jpg`: same camera, same control positions and sizes, same ring. Art can stay gray; framing and layout may not differ.
+
 ### Decide and tell the owner
 
 11. `Application.targetFrameRate = 60`. The iPhone screen is 120 Hz and the prototype's biggest complaint was uneven frame pacing in the browser. Say whether you intend 60 or 120 on device and why. Do not leave it as an accident.
