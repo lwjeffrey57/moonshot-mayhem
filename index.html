@@ -1230,7 +1230,7 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
     </div>
     <div id="ldbar" data-t="LOADING" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 965</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 966</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -1892,9 +1892,10 @@ function pdKCall(R){if((PD.ks||0)>=2){const L=KCALL.shove.filter(c=>c!==PD.shLas
 // a screamer right at an infielder, a foul fly just out of reach) sometimes stops the action in slow motion and hands it to you: win the
 // showdown and he makes the play, lose it and it gets by him. Never on routine outs, and only now and then, so it is never expected.
 const CQ={on:false};
-function cqSetup(tr,play,v){if(!PD.on||!qteParts())return null;if(!(DBG.cq||Math.random()<.45))return null;const J=(k,val)=>{const o=DBG[k];DBG[k]=val;let r=null;try{r=judge(tr,{spd:1});}catch(e){}DBG[k]=o;return r;};let win=null,lose=null,kind='';
+function cqSetup(tr,play,v){if(!PD.on||!qteParts())return null;if(!(DBG.cq||Math.random()<.45||play.type==='hr'||play.rob))return null; /* ROB HIM! is offered EVERY time a homer is low enough for your outfielder to get a glove on: the biggest moment a fielder has is never left to a coin flip */const J=(k,val)=>{const o=DBG[k];DBG[k]=val;let r=null;try{r=judge(tr,{spd:1});}catch(e){}DBG[k]=o;return r;};let win=null,lose=null,kind='';
   try{if(play.type==='out'&&play.dive&&!play.dive.miss){const L=J('dive','miss');if(L&&L.type!=='out'){win=play;lose=L;kind='DIVE FOR IT!';}}
-    else if(play.type==='out'&&play.rob){const L=J('norob',true);if(L&&L.type==='hr'){win=play;lose=L;kind='GO GET IT!';}}
+    else if(play.type==='out'&&play.rob){const L=J('norob',true);if(L&&L.type==='hr'){win=play;lose=L;kind='ROB HIM!';}}
+    else if(play.type==='hr'){DBG.robH=2.6;const W=J('rob',true);DBG.robH=0; /* (when it is yours to make, he can go higher up the wall for it than he would on his own: one-sixth gravity) */if(W&&W.type==='out'&&W.rob){win=W;lose=play;kind='ROB HIM!';}} /* (a homer that only just clears, with an outfielder who can get to the wall: it is yours to bring back) */
     else if(play.type==='out'&&play.label==='LINE OUT'&&play.f&&!play.f.of&&v>=36){win=play;lose={type:'hit',bases:1,endT:play.endT+.35,f:play.f,p:play.p,infield:true,tag:'TOO HOT TO HANDLE'};kind='SNAG IT!';}
     else if(play.type==='hit'&&!play.grd&&(play.bases||1)<=2){const W=J('dive','catch');if(W&&W.type==='out'&&W.dive&&!W.dive.miss){win=W;lose=play;kind='DIVE FOR IT!';}}
     else if(play.type==='foul'&&play.f&&tr.land&&tr.land.z<11){const f=play.f,L=tr.land,d=Math.hypot(f.home.x-L.x,f.home.z-L.z),r=f.reach+f.speed*Math.max(0,L.t-f.react);if(d>r&&d<=r+8&&L.t>1.4){win={type:'out',label:'FOUL OUT',endT:L.t,f,p:{x:L.x,y:1,z:L.z,t:L.t},air:true};lose=play;kind='GO GET IT!';}}}catch(e){return null;}
@@ -4676,7 +4677,7 @@ function judge(tr,bt){const pl=judge0(tr,bt),L=tr.land;
 function judge0(tr,bt){const spd=bt&&bt.spd||1; // batter's speed: 0.85 (plodder) to 1.15 (burner)
   if(tr.hr){
     // a ball that only just clears can be brought back: an outfielder who can get to that spot on the wall in time sometimes goes up and takes it away
-    if(!tr.tag&&!tr.eyeT&&tr.hrY-WALL_H<1.5){const w=tr.pts[Math.min(tr.pts.length-1,Math.round(tr.hrT*120))];let c=null,bd=1e9;
+    if(!tr.tag&&!tr.eyeT&&tr.hrY-WALL_H<(DBG.robH||1.5)){const w=tr.pts[Math.min(tr.pts.length-1,Math.round(tr.hrT*120))];let c=null,bd=1e9;
       for(const o of fielders){if(!o.of)continue;const d=Math.hypot(o.home.x-w.x,o.home.z-w.z);if(d<bd){bd=d;c=o;}}
       if(c&&!DBG.norob&&tr.hrT>=HANG_CATCH&&bd<=10+c.speed*1.6*tr.hrT&&(DBG.rob||Math.random()<.3)){const wr=Math.hypot(w.x,w.z),k=(wr-1.6)/wr; // he makes the catch standing in front of the wall, not in it
         return {type:'out',label:'ROBBED AT THE WALL',endT:tr.hrT,f:c,p:{x:w.x*k,y:w.y,z:w.z*k,t:tr.hrT},air:true,rob:true,dist:tr.dist};}}
@@ -6160,7 +6161,7 @@ function updateFielders(dt){
           pl.tgt={x:D.sx,z:D.sz,face:O.yaw,lead:Math.max(0,(pl.tField||pl.endT)-D.t0)};} // he has to be at the take-off spot when the dive starts
         if(pl.rob&&f.wallAct&&!pl.dive){ // ROBBED: he faces the wall, runs along it the way he came, goes up and takes it off the top of it, and comes down on his back
           const p=pl.p,k=f.scale||1,yaw=Math.atan2(p.x,p.z),cs=Math.cos(yaw),sn=Math.sin(yaw),m=(p.x-r.position.x)*cs-(p.z-r.position.z)*sn<0,lx=f.wallG.x*(m?-1:1),lz=f.wallG.z;
-          const D=pl.wj={f,t:pl.endT,x:p.x,z:p.z,mir:m,yaw,wall:true};D.sx=D.x-(lx*cs+lz*sn)*k;D.sz=D.z-(-lx*sn+lz*cs)*k;D.t0=D.t-f.wv.t;f.wLift=clamp(p.y-f.wv.y*k,0,.9)/k; /* a ball higher than his glove can reach: he gets up that much higher */
+          const D=pl.wj={f,t:pl.endT,x:p.x,z:p.z,mir:m,yaw,wall:true};D.sx=D.x-(lx*cs+lz*sn)*k;D.sz=D.z-(-lx*sn+lz*cs)*k;D.t0=D.t-f.wv.t;f.wLift=clamp(p.y-f.wv.y*k,0,2)/k; /* a ball higher than his glove can reach: he gets up that much higher */
           {const ex=f.wallE.x*(m?-1:1),ez=f.wallE.z;D.ex=D.sx+(ex*cs+ez*sn)*k;D.ez=D.sz+(-ex*sn+ez*cs)*k;}
           if(f.wallB){const bx=f.wallB.x*(m?-1:1),bz=f.wallB.z;D.bx=D.sx+(bx*cs+bz*sn)*k;D.bz=D.sz+(-bx*sn+bz*cs)*k;} /* (where his BODY is as he goes up: the circle on the ground is drawn there, under him, not out at the end of his glove arm) */
           pl.tgt={x:D.sx,z:D.sz,face:yaw,lead:Math.max(0,pl.endT-D.t0)};}}
@@ -6610,7 +6611,7 @@ function perfFlush(){if(PERF.busy||PERF.n<300||(window.__mmManual&&!DBG.perf))re
     Promise.resolve().then(()=>db.collection('perf').doc(PERF.id).set(r)).then(()=>{PERF.sent++;},()=>{}).then(()=>{PERF.busy=false;});};
   if(PERF.db){go(PERF.db);return;}if(PERF.dbTried)return;PERF.dbTried=true;try{if(window.claude&&window.claude.use)window.claude.use('db').then(db=>{PERF.db=db||null;if(!db)PERF.dbTried=true;else go(db);},()=>{});}catch(x){}}
 try{document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')perfFlush();});addEventListener('pagehide',()=>perfFlush());}catch(x){}
-window.__wallV=wallV;window.__batVis=()=>bat.visible;window.__qd=ok=>qteDone(ok);window.__QT=QT;window.__BRW=BRW;window.__goOffer=goOffer;window.__LU=LINEUP;window.__batSwap=batSwap;window.__ball=ball;window.__lring=landRing;window.__perf=()=>perfReport();window.__perfTick=perfTick;window.__perfFlush=perfFlush;
+window.__wallV=wallV;window.__batVis=()=>bat.visible;window.__qd=ok=>qteDone(ok);window.__QT=QT;window.__BRW=BRW;window.__goOffer=goOffer;window.__LU=LINEUP;window.__batSwap=batSwap;window.__ball=ball;window.__lring=landRing;window.__cqs=cqSetup;window.__perf=()=>perfReport();window.__perfTick=perfTick;window.__perfFlush=perfFlush;
 let fpsOn=false,fN=0,fT=0,fMax=0,fWork=0;
 {const set=on=>{fpsOn=on;$('fps').hidden=!on;$('fpsbtn').textContent='SHOW SPEED: '+(on?'ON':'OFF');$('fps1').textContent='Show speed: '+(on?'on':'off')+' — tap to change';try{localStorage.setItem('mm_fps',on?'1':'0');}catch(e){}};let on0=false;try{on0=localStorage.getItem('mm_fps')==='1';}catch(e){}set(on0);$('fpsbtn').addEventListener('click',()=>set(!fpsOn));$('fps1').addEventListener('click',()=>set(!fpsOn));} /* the speed read-out can be switched on before the game starts, and it is remembered */
 function fpsTick(ms,work){fN++;fT+=ms;fWork+=work;if(ms>fMax)fMax=ms;if(fT<500)return;
