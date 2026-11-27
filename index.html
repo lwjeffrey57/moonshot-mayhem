@@ -1231,7 +1231,7 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
     </div>
     <div id="ldbar" data-t="LOADING" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 986</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 987</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -1466,12 +1466,12 @@ let hbTop=false;function hbpPop(){const e=$('pop');if(S.state==='hbp'&&MX.clip&&
     e.style.bottom='auto';e.style.top=Math.min(H-eh-10,Math.max(y+14,H*.4)).toFixed(0)+'px';hbTop=true;}else if(hbTop){hbTop=false;e.style.top='';e.style.bottom='';}}
 // THE CENTER MARKER, RAZOR SHARP: an SVG laid over the canvas at the exact point where the middle of the bat ring is on screen. White with a black edge.
 let markEl=null,markK=-1;function markDom(){if(!markEl){markEl=document.createElement('div');markEl.id='pmark';$('hud').appendChild(markEl);}
-  const bat=S.state==='ready'||S.state==='windup'||S.state==='pitch',on=markI>0&&bat&&!paused&&!(tutHold&&tutStep===3); /* (not in the timing step of the guide: only the timing circle shows there) */ /* steady for the whole at-bat: it never blinks off after a swing or between pitches */
+  const bat=S.state==='ready'||S.state==='windup'||S.state==='pitch',echo=!!ringEcho,mi=markI||(echo?2:0) /* WHERE YOU HAD IT, ON EVERY SWING AND MISS: the frozen ring that shows a miss now carries your center marker too (your own choice of dot, crosshair or small ring; the crosshair if you play with none), sitting exactly where the middle of the barrel was */,on=mi>0&&(bat||echo)&&!paused&&!(tutHold&&tutStep===3); /* (not in the timing step of the guide: only the timing circle shows there) */ /* steady for the whole at-bat: it never blinks off after a swing or between pitches */
   {const cur=!MOB&&bat&&!paused&&(markI>0||MSENS[sensI]>1)?'none':'';if(cur!==canvas._cur){canvas._cur=cur;canvas.style.cursor=cur;}} /* and the system pointer stays hidden for that whole time too, so there is one aiming mark, not two swapping */if(!on){if(markEl.style.display!=='none')markEl.style.display='none';return;}
-  if(markK!==markI){markK=markI; /* the ORIGINAL marker shapes and proportions (thin cross, small dot, small ring), just drawn sharp */
-    markEl.innerHTML='<svg viewBox="-50 -50 100 100" width="100%" height="100%" style="overflow:visible;display:block">'+(markI===1?'<circle r="50" fill="rgba(0,0,0,.7)"/><circle r="35" fill="#fff"/>':markI===2?'<path d="M-50 0H50M0 -50V50" stroke="rgba(0,0,0,.7)" stroke-width="21" fill="none"/><path d="M-44 0H44M0 -44V44" stroke="#fff" stroke-width="9.5" fill="none"/>':'<circle r="37.5" stroke="rgba(0,0,0,.7)" stroke-width="25" fill="none"/><circle r="37.5" stroke="#fff" stroke-width="13" fill="none"/>')+'</svg>';}
+  if(markK!==mi){markK=mi; /* the ORIGINAL marker shapes and proportions (thin cross, small dot, small ring), just drawn sharp */
+    markEl.innerHTML='<svg viewBox="-50 -50 100 100" width="100%" height="100%" style="overflow:visible;display:block">'+(mi===1?'<circle r="50" fill="rgba(0,0,0,.7)"/><circle r="35" fill="#fff"/>':mi===2?'<path d="M-50 0H50M0 -50V50" stroke="rgba(0,0,0,.7)" stroke-width="21" fill="none"/><path d="M-44 0H44M0 -44V44" stroke="#fff" stroke-width="9.5" fill="none"/>':'<circle r="37.5" stroke="rgba(0,0,0,.7)" stroke-width="25" fill="none"/><circle r="37.5" stroke="#fff" stroke-width="13" fill="none"/>')+'</svg>';}
   const W=canvas.clientWidth||innerWidth,H=canvas.clientHeight||innerHeight;_s0.set(reticle.position.x,reticle.position.y,0).project(camera);const x=(_s0.x*.5+.5)*W,y=(-_s0.y*.5+.5)*H;
-  _s0.set(reticle.position.x+.05,reticle.position.y,0).project(camera);const px=Math.max(markI===1?8:15,Math.abs((_s0.x*.5+.5)*W-x)*2*(markI===1?.4:markI===2?.75:.68)*DFX().mid); /* the same size in the park as before: cross 7.5 cm, dot 4 cm, ring 7 cm */ /* about ten centimeters across in the park, never under 18 px */
+  _s0.set(reticle.position.x+.05,reticle.position.y,0).project(camera);const px=Math.max(mi===1?8:15,Math.abs((_s0.x*.5+.5)*W-x)*2*(mi===1?.4:mi===2?.75:.68)*DFX().mid); /* the same size in the park as before: cross 7.5 cm, dot 4 cm, ring 7 cm */ /* about ten centimeters across in the park, never under 18 px */
   markEl.style.display='block';markEl.style.width=markEl.style.height=px.toFixed(1)+'px';markEl.style.transform='translate('+(x-px/2).toFixed(1)+'px,'+(y-px/2).toFixed(1)+'px)';}
 // THE TAPE MEASURE: on the camera that rides behind a home run, the distance runs up live in big numbers just above the ball.
 let dftEl=null,dftOn=false,dftV=-1;function dftDom(){const on=!!(flight&&!flight.done&&flight.play.type==='hr'&&flight.trailCam&&!flight.orbit&&flight.dShow&&now-flight.t0>.3&&ball.visible&&!paused);
