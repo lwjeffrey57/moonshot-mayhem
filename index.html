@@ -1229,7 +1229,7 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
     </div>
     <div id="ldbar" data-t="LOADING" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 961</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 962</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -2964,9 +2964,9 @@ function sbTick(){if(sbMsgT<0)sbMsgT=now+4.5;else if(sbMsgT&&now>sbMsgT&&S.state
       const back=new T.Mesh(new T.BoxGeometry(9.6,18,2.5),new T.MeshBasicMaterial({color:0x15132a}));back.position.set(sd*28.9,0,0);sb.add(back);
       const m=new T.Mesh(new T.PlaneGeometry(9.2,17.6),new T.MeshBasicMaterial({map:t,fog:false}));m.position.set(sd*28.9,0,1.27);sb.add(m);};
     wing('KRAKENS','KEPLER','#1d6f8a','#062a3a','#7fe6ff',-1);wing('COMETS','TRANQUILITY','#d2581a','#5a1c04','#ffb070',1);}
-  sb.position.set(SBX,39,-(fenceR(0)+17));sb.lookAt(SBX*.4,16,0);scene.add(sb); /* set off to the right of center, so it is not sitting behind the batter card on a phone */
+  sb.position.set(SBX,39,-(fenceR(0)+13));sb.lookAt(SBX*.4,16,0);scene.add(sb); /* set off to the right of center, so it is not sitting behind the batter card on a phone */
   const leg=new T.MeshBasicMaterial({color:0x15132a});
-  [-26,-9,9,26].forEach(x=>{const m=new T.Mesh(new T.BoxGeometry(1.6,22,1.6),leg);m.position.set(SBX+x,20,-(fenceR(0)+18));scene.add(m);});
+  [-26,-9,7,17].forEach(x=>{const m=new T.Mesh(new T.BoxGeometry(1.6,22,1.6),leg);m.position.set(SBX+x,20,-(fenceR(0)+14));scene.add(m);}); /* (the right-hand legs are set further in and the whole board a little further forward: since right field's wall became straight the halo board runs closer here, and the far leg was standing through it) */
   // LIT LIKE A PS2 JUMBOTRON: a bright bezel with a row of bulbs, a soft halo of its own light behind it, and a glassy sheen with scan
   // lines across the face. All painted textures on flat panels, so it is free to draw.
   {const face=tex(512,192,(g,w,h)=>{g.clearRect(0,0,w,h);g.fillStyle='rgba(0,0,0,.16)';for(let y=0;y<h;y+=4)g.fillRect(0,y,w,1.4);
@@ -6326,7 +6326,10 @@ function step(dt){if(S.wuPend){if(S.state!=='ready')S.wuPend=0;else if(!bodyMiss
   }
   if(flight&&!flight.done&&(S.state==='flight')){
     const tf=now-flight.t0,tr=flight.tr,i=Math.min(tr.pts.length-1,Math.floor(tf*120)),p=tr.pts[i];
-    ball.visible=true;ball.position.set(p.x,p.y,p.z);if(flight.play.type==='hr'&&p.y<120&&!flight.orbit&&!flight.rev&&!flight.apollo&&!flight.sat&&!flight.ufo&&!flight.lamp&&PROPHIT.length)try{propBounce(flight,tf,i,dt);}catch(e){}
+    ball.visible=true;ball.position.set(p.x,p.y,p.z);
+    /* OFF THE WALL AND INTO HIS HANDS, IN ONE PIECE: a ball played off the fence used to be a few metres from the outfielder when the play ended, and then it was simply in his glove. Over the last half second it now comes to him: it rolls or hops across from wherever the carom had taken it and is in the glove as he gathers it. */
+    try{const pl=flight.play;if(pl.type==='hit'&&tr.wall&&pl.f&&pl.f.of&&tf>pl.endT-.55&&tf>tr.wallT+.25){const k0=clamp((tf-(pl.endT-.55))/.55,0,1),k=k0*k0*(3-2*k0),fp=pl.f.fig.root.position;ball.position.set(lerp(p.x,fp.x,k),lerp(p.y,.95,k)+(p.y<.4?Math.sin(k0*PI)*.3:0),lerp(p.z,fp.z,k));}}catch(e){}
+    if(flight.play.type==='hr'&&p.y<120&&!flight.orbit&&!flight.rev&&!flight.apollo&&!flight.sat&&!flight.ufo&&!flight.lamp&&PROPHIT.length)try{propBounce(flight,tf,i,dt);}catch(e){}
     {const q=tr.pts[Math.min(tr.pts.length-1,i+2)],dx=q.x-p.x,dz=q.z-p.z,L=Math.hypot(dx,dz);if(L>1e-4&&flight.spI!==i){const n=i-(flight.spI??i);flight.spI=i;_spin.set(dz/L,.18,-dx/L).normalize();ball.rotateOnWorldAxis(_spin,(p.y<.4?1:-1)*Math.min(n,12)*.26);}} /* a hit ball spins: backspin in the air, tumbling forward along the ground */
     if(flight.orbit){const B=flight.orbP,bez=(u,o)=>{const v=1-u;return o.set(0,0,0).addScaledVector(B[0],v*v*v).addScaledVector(B[1],3*v*v*u).addScaledVector(B[2],3*v*u*u).addScaledVector(B[3],u*u*u);};
       if(!flight.orb&&tf>=1.1&&!(flight.admire&&tf<flight.A)){flight.orb=now;flight.orbFrom=bez(.22,new V3());flight.play.endT=tf+(flight.rev?REV.cut+REV.dur:flight.sat?4.7:flight.lamp?3.6:3.1);if(flight.rev||flight.lamp){}else if(flight.ufo){}else if(flight.sat)pop('WAY UP THERE!','','cool');else{badge('earth');pop('LEFT ORBIT!','NEXT STOP: EARTH','cool',true);}SND.boom();SND.zap();buzz([40,40,40,40,120]);}
@@ -6388,7 +6391,7 @@ function step(dt){if(S.wuPend){if(S.state!=='ready')S.wuPend=0;else if(!bodyMiss
   const b=S.bi>=0?curBatter():LINEUP[0],tb=(S.over&&S.overOn)||(!S.over&&juiceOn()&&S.juice>=.25);
   if(QT.pb!=null&&S.state!=='qte'){QT.pb=null;pitcherModel();}
   stickHint();sbTick();zapTick();crowdTick(dt);shoutTick();dailyTick();achTick();modeTick();poleTick();satTick();ufoTick();{const hr=flight&&!flight.done&&flight.play&&flight.play.type==='hr'&&ball.visible;{const ov=!!(hr&&Math.hypot(ball.position.x,ball.position.z)>88);if(ball.material.depthTest===ov){ball.material.depthTest=!ov;ball.material.needsUpdate=true;}} /* A HOMER IN FLIGHT IS NEVER HIDDEN: once it is out past the fence the ball is drawn over whatever is between it and the camera (the halo board, an upper deck), so it does not blink out on the chase camera as it goes over them */TWG.forEach(G=>{const p=G.position,near=hr&&!PROPHIT.length&&ball.position.y<70&&Math.hypot(ball.position.x-p.x,ball.position.z-p.z)<15;if(G.visible===near)G.visible=!near;});(TWG.x||[]).forEach(o=>{const p=o.m.position,near=hr&&!PROPHIT.length&&ball.position.y<70&&Math.hypot(ball.position.x-p.x,ball.position.z-p.z)<o.r;if(o.m.visible===near)o.m.visible=!near;});} /* A HOMER NEVER PASSES THROUGH A LIGHT TOWER: the one in its way steps out of the picture while the ball goes by (the flight and the distance count are untouched) */lampTick(dt);laserTick(dt);organTick();vendorTick();clapTick();roarTick();heartTick();zoneTick();
-  if(flight&&flight.play.type==='hr'&&!flight.sbHit&&!flight.noSb&&!flight.orbit&&ball.visible&&Math.abs(ball.position.x-SBX)<33&&ball.position.y>30&&ball.position.y<48&&ball.position.z<-(fenceR(0)+15)&&ball.position.z>-(fenceR(0)+24)){flight.sbHit=true;badge('board');pop('SCOREBOARD!','','hot');zapStart(ball.position,true);burst(fxL,ball.position,26,9,.7,[.6,.85,1],7,1);}
+  if(flight&&flight.play.type==='hr'&&!flight.sbHit&&!flight.noSb&&!flight.orbit&&ball.visible&&Math.abs(ball.position.x-SBX)<33&&ball.position.y>30&&ball.position.y<48&&ball.position.z<-(fenceR(0)+11)&&ball.position.z>-(fenceR(0)+20)){flight.sbHit=true;badge('board');pop('SCOREBOARD!','','hot');zapStart(ball.position,true);burst(fxL,ball.position,26,9,.7,[.6,.85,1],7,1);}
   if(!!MX.lefty!==lhCls){lhCls=!!MX.lefty;$('hud').classList.toggle('lh',lhCls);}
   if(rawMouse&&rawMouse.d){rawMouse.d=0;pointerAim(rawMouse);}
   touchSettle();reticle.position.set(aim.x,aim.y,0);
@@ -6437,7 +6440,7 @@ function updateCamera(rdt){
   else if(flight&&flight.aerial&&!flight.done&&flight.clr){if(!flight.aerT){flight.aerT=now;{const BAG=[0,0,0,1,2,3,4]; /* (the chase shot riding over the interceptors is gone: it clipped through the ridges) */ /* the interceptor shots come up most: the chase camera behind them (5) and the straight-down view with them crossing underneath (0) */let k=DBG.aerK!==undefined?DBG.aerK:BAG[(Math.random()*BAG.length)|0];if(DBG.aerK===undefined&&k===aerLast){const o=BAG.filter(q=>q!==aerLast);k=o[(Math.random()*o.length)|0];}aerLast=flight.aerK=k;flight.aerA=rand(0,6.28);if(k===2&&now-ROCKET.t>19)ROCKET.t=now+.8;if(k===5||k===0){FLY.t=now+(k===5?.15:.5);try{tone('sawtooth',420,70,2.6,.4,.3);}catch(e){}}}flight.play.endT=Math.max(flight.play.endT,now-flight.t0+5.2); /* held for a good five seconds */
       // THE SHOW IS TIMED TO THE SHOT: the lasers come on as the camera goes up, fireworks burst over the bowl through it, and the scoreboard takes a power surge near the end
       if(!LAS.on&&!LAMP.on)laserStart();for(let i=0;i<14;i++)fireworks.push({t:now+.3+i*.33,p:new V3(rand(-70,70),rand(40,80),rand(-150,-20))});flight.aerZap=now+3.1;crowdPump(1);}
-    if(flight.aerZap&&now>=flight.aerZap){flight.aerZap=0;try{zapStart(_p.set(SBX,39,-(fenceR(0)+17)),true,true);}catch(e){}}
+    if(flight.aerZap&&now>=flight.aerZap){flight.aerZap=0;try{zapStart(_p.set(SBX,39,-(fenceR(0)+13)),true,true);}catch(e){}}
     // FIVE DIFFERENT SHOTS FROM THE AIR, never the same one twice running: straight down over the mound, the blimp circling the bowl, from
     // behind the rocket on its pad (which lifts off), a crane rising behind home plate, and riding high above the ball itself. All of them
     // stay well above every roof, tower and ridge.
