@@ -1230,7 +1230,7 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
     </div>
     <div id="ldbar" data-t="LOADING" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 968</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 969</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -4263,7 +4263,7 @@ function stealTick(){const C=S.stealCut;if(!C)return;const e=now-C.t;if(e<0)retu
   if(C.R)C.R.fig.root.visible=false; /* once the picture is on the catcher the runner is out of it: the next time he is seen is the play at the bag */const u=clamp((e-.5)/.6,0,1);if(e>.5){ball.visible=true;ball.scale.setScalar(1.3);ball.position.set(lerp(0,C.bx,u),1.7+Math.sin(u*PI)*1.6,lerp(1.2,C.bz,u));}
   if(e>=1.12){S.stealCut=null;if(C.R){C.R.s=C.from;C.R.target=C.from;}ball.visible=false;ball.scale.setScalar(1);qteStart(C.k,true);}}
 function goHide(){if(S.goK){S.goK=null;}$('gobtn').classList.remove('on');$('gostay').classList.remove('on');$('hud').classList.remove('goq');}
-function goStay(){if(!S.goK||S.state!=='result')return;goHide();if(LOCKFX.wait&&!LOCKFX.hr){LOCKFX.t0=now;S.t=now;readyDur=2.3;buzz(15);return;} /* HE JUST GOT LOCKED IN: holding the runner does not skip it. The fire goes up on his base now, and then the game moves on. */S.t=Math.min(S.t,now-readyDur+.35);buzz(15);tone('triangle',520,390,.1,.25);} /* he holds up: the game moves straight on */
+function goStay(){if(!S.goK||S.state!=='result')return;goHide();if(LOCKFX.wait&&!LOCKFX.hr){LOCKFX.t0=now;S.t=now;readyDur=2.3;buzz(15);return;} /* HE JUST GOT LOCKED IN: holding the runner does not skip it. The fire goes up on his base now, and then the game moves on. */{const hd=flight&&flight.thr&&flight.thr.hold&&!flight.thr.from;S.t=hd?now-readyDur+1.55:Math.min(S.t,now-readyDur+.35);}buzz(15);tone('triangle',520,390,.1,.25);} /* (he holds up: the throw comes in, then the game moves on) /* he holds up: the game moves straight on */
 function goTap(){if(!S.goK||S.state!=='result')return;GD.tap++;goDiag();const k=S.goK;goHide();S.next=()=>qteStart(k,true);S.t=now-readyDur+.2;buzz([20,30,60]);tone('triangle',660,990,.12,.3);}
 function qteStart(kind,noPA){QT.noPA=!!noPA;QT.flip=kind==='beat1'&&!!S.beatFlip;S.beatFlip=false;goHide();try{if(PD.on){$('pd').style.visibility='hidden';$('pdring').style.display='none';PD.ringT=0;}}catch(e){} /* (none of the pitching controls show during a play at the bag) */{const e=$('bdg');if(e.classList.contains('go')){e.classList.remove('go');if(bdgCur&&!bdgCur.re){bdgCur.re=1;bdgCur.old=1;bdgQ.unshift(bdgCur);}bdgCur=null;}} /* a plate that is up when the event starts is taken down and comes back afterwards */const D=QT.D=kind==='dp'?1:clamp(S.goD||1,.55,1.6);S.goD=0;const M=QTE_MOVES[kind];QT.nm=M.def&&M.name==='THROW HIM OUT!'?(r=>kind!=='dsteal2'&&r<.4?'HOSE HIM!':kind!=='dsteal2'&&r<.7?'GUN HIM DOWN!':'')(Math.random()):''; /* (a throw in from the outfield is as often HOSE HIM!; a steal is the catcher's throw, so never that) */ if(kind==='dmake'&&!S.dmPit)QT.nm='THROW HIM OUT!'; /* a grounder to an infielder cuts to the runner: THROW HIM OUT! MAKE THE PLAY! is kept for the comebacker, when the ball is the pitcher's own */ /* the plays at a bag are called either way, turn and turn about */const solo=!!(M.solo&&S.qteAt),Bp=solo?[S.qteAt.x,S.qteAt.z]:M.base?[BASES[M.base][0],BASES[M.base][1]]:[0,0],u=solo?(h=>[-S.qteAt.x/h,-S.qteAt.z/h])(Math.hypot(S.qteAt.x,S.qteAt.z)||1):M.u; /* (MAKE THE CATCH is staged where the fielder is standing, facing the plate) */
   S.state='qte';S.t=now;S.qteN=(S.qteN||0)+1;QT.headT=/^steal/.test(kind)||M.solo?.02:kind==='dsteal2'?1.5:1.15; /* your own steal has already shown him breaking: straight to the play at the bag. A steal AGAINST you while you pitch has shown nothing yet, so it gets the full heads-up: HE'S STEALING! and the runner coming, before THROW HIM OUT! */Object.assign(QT,{ph:'heads',tp:now,kind,M,code:D<.85?M.code.slice(0,-2):M.code /* a good bet is a shorter code */,i:0,mash:!!M.mash||(!M.arrows&&(DBG.mash||(qteSeen&&Math.random()<.35))),fill:0,lt:0,lim:(.38*(D<.85?M.code.length-2:M.code.length)+1.0)/Math.pow(D,.8)+(qteSeen?0:1.2), /* the clock: enough to punch the whole code in at a brisk pace with room for one slip, and no more */ok:false,bx:Bp[0],bz:Bp[1],ux:u[0],uz:u[1],ball:null,blow:0,fk:0});
@@ -4762,7 +4762,7 @@ function tryContact(){flight_pop=false;if(pitch.hbp){swing.done=true;swing.miss=
   const d=Math.hypot(aim.x-pitch.tx,aim.y-pitch.ty);
   // where the barrel was relative to the ball, in sweet-spot radii: u>0 = swung under it, e>0 = ball out toward the end of the bat
   const cu=(pitch.ty-aim.y)/R,ce=(pitch.tx-aim.x)/R*(MX.lefty?-1:1),cr=Math.hypot(cu,ce);
-  const onT=Math.abs(n)<PFT(),side=onT?(cr<.7?'GOOD WOOD':'CUED IT'):n<0?'OFF THE END':'JAMMED'; // jammed means late and off the end means early, so the words always agree with the timing
+  const onT=Math.abs(n)<PFT(),side=onT?(cr<.7?'GOOD WOOD':'CUE SHOT'):n<0?'OFF THE END':'JAMMED'; // jammed means late and off the end means early, so the words always agree with the timing
   let where=cr<SQR()?'SQUARED UP':Math.abs(cu)>=Math.abs(ce)?(onT&&cr<.7?(cu>0?'BACKSPUN IT':'TOPSPUN IT'):(cu>0?'GOT UNDER IT':'TOPPED IT')):side;
   timeBar(n*(pw?.85/1.2:1)*JT*SK,pw,JT,Math.abs(n)<PFT(),SK);
   if(Math.abs(n)>1.4||d>R*1.3){swing.miss=true;
@@ -6295,6 +6295,7 @@ function step(dt){if(S.wuPend){if(S.state!=='ready')S.wuPend=0;else if(!bodyMiss
   else if(st==='windup'&&now-windupT0>=1.0){
     if(MX.pit&&MX.on){MX.pit.obj.updateMatrixWorld(true);MX.pit.hand.getWorldPosition(pitch.rel);}else{pitcher.root.updateMatrixWorld(true);pitcher.handR.getWorldPosition(pitch.rel);}pitch.t0=now;S.state='pitch';if(S.over&&S.overOn)S.odSeen=true;SND.pitch();if(pitch.P.sp)sfx('crush',.7,.72);ball.visible=true;ballShadow.visible=true;
   }
+  else if(st==='result'&&el>=readyDur&&S.goK&&flight&&flight.thr&&flight.thr.hold&&!flight.thr.from){goHide();S.t=now-readyDur+1.55;} /* THE OFFER RAN OUT WITH THE BALL STILL IN HIS HAND: the outfielder now throws it in, and is watched doing it, before the game moves on. The throw always comes after your decision (or your no decision), never behind the next shot. */
   else if(st==='result'&&el>=readyDur){goHide();if(S.next){const n=S.next;S.next=null;n();}else toReady(S.fresh?PACE.newBatter:PACE.samePitch);}
   else if(st==='walkup'&&el>=WALK.dur)endWalkup();
   else if(st==='pduel')pdTick();
