@@ -2,6 +2,8 @@
 
 Paste this as the first message of a Claude Code session opened on the Mac in the `moonshot-unity` folder.
 
+**First thing to do with this note:** save its contents as `CLAUDE.md` in the root of the `moonshot-unity` folder, so every future session here starts with it loaded. Keep that file up to date as decisions are made.
+
 ## Who and what
 
 - The owner is a former ballplayer with no game-dev background. Explain in plain words, use ballplayer language, American spelling, and keep reports short and honest about what was and was not verified.
