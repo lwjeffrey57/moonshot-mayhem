@@ -65,4 +65,6 @@ Sources, in order of authority:
 
 ## Testing the port
 
+**Luck is pinned in the cases.** The flight has three random moments: a 50/50 flip for a ball arriving within 0.4 m below the top of the wall, a 1.1% Moon hop on a bounce, and the direction and height of a kick off a bag. The cases were generated with every random draw returning 0.75 (so: the wall flip takes the not-under-0.5 branch, no Moon hop ever, a bag kick turns the positive way by 0.675 rad and pops up at 5.0). Feed the Unity flight a random source that always returns 0.75 for these tests. Test the three random behaviors separately, each forced on.
+
 Run every row of `flight_cases.json` through the Unity flight and compare: home run or not, wall or not, foul or not (exact); distance and first landing point within about half a meter; times within about 0.05 s. Rows that differ point at a specific missing rule (pole, eye, tower, patio, alley), which the row's `tag` and flags will name.

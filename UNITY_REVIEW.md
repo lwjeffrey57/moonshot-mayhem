@@ -4,6 +4,18 @@ Written by the web-build session after reading the Unity repo's code. The owner 
 
 ---
 
+## Answers to the Unity session's questions (27 Nov, late)
+
+- **Where a touch can aim from:** you are right, follow the code. A touch anywhere on the field that is not a button starts the aim drag; the stick is the picture of it; on release the ring springs back to center. `PORT_SPEC_HITTING.md` is corrected. The "only on the stick" rule is for pitching.
+- **Luck in the flight cases:** you are right, the file's claim was wrong. `data/flight_cases.json` has been regenerated with every random draw pinned to 0.75, and its header and `port/BALL_FLIGHT.md` now say exactly what that pins. Use a random source that always returns 0.75 for those tests.
+- **Per-result holds after a pitch:** your reading of the code (ball 0.95 s, called strike 1.05 s, swing and miss 1.3 s plus 0.75 s on a taunt, foul 1.0 s) is the authority; `TIMING.md` gave only the round figure. Build to the code.
+- **Corner strikes:** the owner's ruling (26 Nov) is that a pitch touching any part of the zone is a strike. Match the prototype's edge rule (`zoneHit`), not the ball's center.
+- **Juice pitch trails now, behind a test switch:** yes.
+- **A real portrait HUD as part of item 22:** yes. Layout and the two fonts matter now; art can stay gray.
+- **Your build order** (fix the misses; items 22–25; then poles, seats, batter's eye, towers, patio and cove against the flight cases) is approved by the web session. The owner gives the go.
+
+---
+
 ## Review 1: hitting port at commit `92aca80` (2026-11-27)
 
 ### What is right (leave alone)

@@ -26,9 +26,9 @@ There is no F key. Mouse sensitivity is a setting with six steps: 1, 1.2, 1.4, 1
 
 ## Controls: phone (the lead device)
 
-- Left thumb: an AIM stick, bottom-left. The ring springs back toward center when released **(verify: aim spring, about .72 over 80 ms)**.
+- Left thumb: aim. **A touch anywhere on the field that is not on a button starts the aim drag**; the AIM stick drawn bottom-left is the picture of it and shows the thumb's offset, it is not the only place a thumb may land. Dragging moves the ring. **On release the ring springs back to the middle of the zone like a stick** (each frame it closes half the remaining distance until it is home). The owner asked for the snap-back on 21 Nov.
 - Right thumb: a large red **POWER** button bottom-right, a smaller green **CONTACT** button to its left, and a **JUICE** button above them showing the bars in hand.
-- A touch that is not on the stick never moves or resets the aim.
+- (Correction, 27 Nov: an earlier version of this file said only a touch on the stick may aim. That rule belongs to PITCHING, where a stray right-thumb tap must never reset the aim. For batting, follow the code as described above.)
 - Nothing may sit under either thumb except these controls.
 
 ## What is on screen while batting
