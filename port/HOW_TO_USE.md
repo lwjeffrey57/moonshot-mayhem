@@ -36,6 +36,7 @@ What this means in practice: portrait first; controls sized and placed for thumb
 | `ui/style.css`, `ui/markup.html` | Exact sizes, positions, colors and animations of every HUD element and menu. |
 | `IMPROVE.md` | What the owner wants better, his open questions, and what is provisional. |
 | `UNITY_OPPORTUNITIES.md` | Where the browser held the prototype back and what to do with a real engine, with the guardrail: improve look, sound, motion and speed, never the rules. |
+| `TRAILS_AND_EFFECTS.md` | Every trail, ball marker and impact effect: colors, sizes, shapes, when each shows, with the code. |
 | `BALL_FLIGHT.md` | How a batted ball behaves and why variety matters. |
 | `HISTORY.md` | Every change shipped, oldest first. Use it to see what was tried and reversed. |
 | Root: `PORT_SPEC_*.md` | Requirements for a system, written by the web session before you start it. |

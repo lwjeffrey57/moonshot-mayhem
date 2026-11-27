@@ -61,6 +61,12 @@ Pictures: `phone_03_batting_ready_default_view`, `pc_03_batting_ready_default_vi
 - A yellow ring at the spot where the pitch will cross, closing onto a small bright baseball marker. It turns green at the on-time moment.
 - The ball itself is small, white with red seams, with a thin tapering trail. It is never hidden by its own trail.
 
+## Taking a pitch (see `*_06b_took_a_pitch_called_strike_marker`, `*_06b_took_a_pitch_ball_marker`)
+
+- A small bright baseball stays where the pitch crossed, against the zone outline, for about 1.7 s.
+- Beside it: the speed in large white italic ("83 MPH") with the pitch name in gold beneath. It sits on whichever side of the ball is clear.
+- The call ("BALL ONE", "STRIKE ONE!") with the count on a plate under it, and on a good take "GOOD EYE!" in cyan. The pitch line shows in gold at top-left.
+
 ## Swing and miss (see `*_06_swing_and_miss_replay`)
 
 - Big white italic **WHIFF!** with a dark outline, a navy plate under it with the count ("STRIKE ONE · 0-1").

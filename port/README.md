@@ -1,6 +1,6 @@
 # Everything decided in the prototype, by system
 
-**Start with [`HOW_TO_USE.md`](HOW_TO_USE.md).** Then [`IMPROVE.md`](IMPROVE.md) (what we want better in Unity), [`UNITY_OPPORTUNITIES.md`](UNITY_OPPORTUNITIES.md) (what the engine lets us do that the browser could not) and [`BALL_FLIGHT.md`](BALL_FLIGHT.md).
+**Start with [`HOW_TO_USE.md`](HOW_TO_USE.md).** Then [`IMPROVE.md`](IMPROVE.md) (what we want better in Unity), [`UNITY_OPPORTUNITIES.md`](UNITY_OPPORTUNITIES.md) (what the engine lets us do that the browser could not), [`TRAILS_AND_EFFECTS.md`](TRAILS_AND_EFFECTS.md) (every trail, marker and impact effect) and [`BALL_FLIGHT.md`](BALL_FLIGHT.md).
 
 Pulled automatically from every comment in `index.html` at the time of writing. Each line is something that was built, tuned or ruled on during playtesting, in the words written next to the code that does it. **Bold** lines are standing rules (written in capitals in the code). `L` is the line in `index.html`; the name after it is the function it sits in. Where a line here and the code disagree, the code wins.
 
