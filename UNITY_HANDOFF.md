@@ -55,3 +55,9 @@ The goal is that he never has to re-find a problem he already found once.
 The `port/` folder in the prototype repo holds every comment from `index.html`, sorted into 16 files by system (about 1,800 entries). Each entry is a detail that was built, tuned or ruled on during the owner's playtesting. Bold entries are standing rules.
 
 Before porting any system: read its `port/NN-*.md` file end to end, plus the matching `PORT_SPEC_*.md` if one exists, and list back which bold rules you implemented and which you did not. `port/README.md` is the index. The folder is regenerated when the prototype changes, so pull before each system.
+
+## Start here (updated 2026-11-27, late)
+
+Read `port/HOW_TO_USE.md` before anything else. It explains what every file in `port/` is for, the routine to follow for each system, why this is a mobile-first build, and that the prototype is a living reference that will keep changing, not a finished design to freeze. Then `port/IMPROVE.md` for what should be better in Unity, and `port/LOOK.md` with its pictures.
+
+The private `owner/` folder in the Unity project (delivered by the owner, never to be made public) holds his 874 messages, the day-by-day conversation, `PRODUCT.md` (mobile first, retention, monetization) and the full strategy doc. Read `owner/README.md`, then `owner/OWNER_MESSAGES_ONLY.md` in full, then `owner/PRODUCT.md`.
