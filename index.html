@@ -1228,7 +1228,7 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
     </div>
     <div id="ldbar" data-t="LOADING" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 956</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 957</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -4577,6 +4577,8 @@ const G=9.8,DRAG=.0042;
 // The line is fair. A ball counts as fair if any part of it touches the chalk: half the line's width plus the ball's radius,
 // measured across to x, and a little grace because the ball is drawn larger than life at distance.
 const LINE_TOL=.3;
+/* The exit speed (m/s) that puts a ball hit at this direction and launch angle onto the outfield wall at height h, found by trying speeds on the real flight model. 0 if no speed in range does it. */
+function wallV(phiDeg,la,h){try{const a=phiDeg*DEG,e=la*DEG,at=sp=>{const tr=simulate(new V3(0,1,0),new V3(Math.sin(a)*Math.cos(e)*sp,Math.sin(e)*sp,-Math.cos(a)*Math.cos(e)*sp));if(tr.hr)return 99;if(!tr.wall)return -1;for(const q of tr.pts)if(q.t>=tr.wallT)return q.y;return -1;};let lo=36,hi=58;if(at(hi)<h)return 0;for(let i=0;i<8;i++){const mid=(lo+hi)/2;if(at(mid)<h)lo=mid;else hi=mid;}const y=at(hi);return y<90&&Math.abs(y-h)<2.2?hi:0;}catch(x){return 0;}}
 function simulate(p0,v0,spin,opt){spin=spin||{side:0,lift:0};opt=opt||{};const GG=G*(opt.g||1);let tag='',hrY=0,poleT=0,nb=0,hopT=0; // opt.chop: first bounce is a big one; opt.g: a low-gravity pocket; tag: anything unusual that happened to it
   const p=p0.clone(),v=v0.clone(),pts=[];let t=0,land=null,hr=false,hrT=0,wall=false,wallT=0,foul=false,dist=0,grd=false,eyeT=0,seatT=0,seatB=0,patN=0,patOut=false,outT=0,outD=0,foulT,bagPast=false,foulOver=false;const dt=1/120;
   while(t<(outT?outT+7:hr?14:9)){
@@ -4776,7 +4778,9 @@ function tryContact(){flight_pop=false;if(pitch.hbp){swing.done=true;swing.miss=
   // TOPSPUN IT, hit hard: a sharp line drive with heavy topspin, so it comes off on a line and then dives
   // THE PORCH GETS PEPPERED: a well-struck ball pulled toward the tall wall in left often comes off the bat on a rope (a hard, low liner
   // that carries to the wall and bangs off it) instead of a fly ball that would have cleared an ordinary fence.
-  if(!kind&&!flight_pop&&q>.5&&phi<-24&&phi>-46&&la>9&&la<36&&v>=34&&Math.random()<.7){la=rand(16,23);v=clamp(v,rand(40,43),45);phi=Math.min(phi,-28.5);}
+  /* ...AND NOT ALWAYS AT THE SAME HEIGHT. Both tall walls (38 feet in left, 28 in right) now take liners all the way up: the low rope off the bottom third, as before, and a harder, higher drive that bangs off the upper half, sometimes just under the top. The speed for the high ones is worked out for that spot on that wall, so they hit where they are meant to. */
+  if(!kind&&!flight_pop&&q>.5&&phi<-24&&phi>-46&&la>9&&la<36&&v>=34){const r=Math.random();if(r<.26){const la2=rand(20,30),v2=wallV(Math.min(phi,-28.5),la2,rand(5.5,10.4));if(v2){la=la2;v=v2;phi=Math.min(phi,-28.5);}}else if(r<.7){la=rand(16,23);v=clamp(v,rand(40,43),45);phi=Math.min(phi,-28.5);}}
+  else if(!kind&&!flight_pop&&q>.55&&phi>13&&phi<43&&la>10&&la<34&&v>=36){const r=Math.random();if(r<.16){const la2=rand(19,28),v2=wallV(phi,la2,rand(4.2,7.8));if(v2){la=la2;v=v2;}}else if(r<.28){const v2=wallV(phi,la=rand(15,20),rand(1.5,3.8));if(v2)v=v2;}}
   const tsp=!kind&&!flight_pop&&where==='TOPSPUN IT'&&q>.5&&chase<=.3;if(tsp)la=clamp(Math.max(la,rand(9,15)),9,18);
   const pu=flight_pop||la>=50;if(pu&&where==='SQUARED UP'){where='GOT UNDER IT';try{$('tcb').firstChild.className='';$('tmk').classList.remove('pf');}catch(e){}} // a pop-up was never squared up: he got under it
   // backspin and topspin follow where the barrel met the ball: under it = backspin that carries, on top = topspin that dives
@@ -6590,7 +6594,7 @@ function perfFlush(){if(PERF.busy||PERF.n<300||(window.__mmManual&&!DBG.perf))re
     Promise.resolve().then(()=>db.collection('perf').doc(PERF.id).set(r)).then(()=>{PERF.sent++;},()=>{}).then(()=>{PERF.busy=false;});};
   if(PERF.db){go(PERF.db);return;}if(PERF.dbTried)return;PERF.dbTried=true;try{if(window.claude&&window.claude.use)window.claude.use('db').then(db=>{PERF.db=db||null;if(!db)PERF.dbTried=true;else go(db);},()=>{});}catch(x){}}
 try{document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')perfFlush();});addEventListener('pagehide',()=>perfFlush());}catch(x){}
-window.__batVis=()=>bat.visible;window.__qd=ok=>qteDone(ok);window.__QT=QT;window.__BRW=BRW;window.__goOffer=goOffer;window.__LU=LINEUP;window.__batSwap=batSwap;window.__ball=ball;window.__perf=()=>perfReport();window.__perfTick=perfTick;window.__perfFlush=perfFlush;
+window.__wallV=wallV;window.__batVis=()=>bat.visible;window.__qd=ok=>qteDone(ok);window.__QT=QT;window.__BRW=BRW;window.__goOffer=goOffer;window.__LU=LINEUP;window.__batSwap=batSwap;window.__ball=ball;window.__perf=()=>perfReport();window.__perfTick=perfTick;window.__perfFlush=perfFlush;
 let fpsOn=false,fN=0,fT=0,fMax=0,fWork=0;
 {const set=on=>{fpsOn=on;$('fps').hidden=!on;$('fpsbtn').textContent='SHOW SPEED: '+(on?'ON':'OFF');$('fps1').textContent='Show speed: '+(on?'on':'off')+' — tap to change';try{localStorage.setItem('mm_fps',on?'1':'0');}catch(e){}};let on0=false;try{on0=localStorage.getItem('mm_fps')==='1';}catch(e){}set(on0);$('fpsbtn').addEventListener('click',()=>set(!fpsOn));$('fps1').addEventListener('click',()=>set(!fpsOn));} /* the speed read-out can be switched on before the game starts, and it is remembered */
 function fpsTick(ms,work){fN++;fT+=ms;fWork+=work;if(ms>fMax)fMax=ms;if(fT<500)return;
