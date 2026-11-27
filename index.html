@@ -1218,7 +1218,7 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
     </div>
     <div id="ldbar" data-t="LOADING" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 945</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 946</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -6498,13 +6498,13 @@ let last=performance.now();
 function drsWatch(dt){const D=DRS;if(S.state==='title'||S.state==='over')return;if(dt>=.049){return;} /* a one-off stall says nothing about the steady rate */
   D.n++;D.t+=dt;if(D.n<24)return;const avg=D.t/D.n;D.n=0;D.t=0;const pn=performance.now();
   if(D.cap){if(pn-D.capT>20000||avg<.028){D.cap=false;D.lows=0;}return;}
-  if(avg>1/51){D.good=0;if(avg>.0305&&avg<.037&&D.lows>=2&&Math.abs(avg-D.last)<.002){D.cap=true;D.capT=pn;if(D.k!==1){D.k=1;resize();}D.last=avg;return;} /* two cuts changed nothing and it sits right at 30: capped, not struggling */
-    D.last=avg;D.lows++;D.bad=(D.bad||0)+1;if(D.k>.62&&(D.bad>=2||avg>1/40)){ /* (one slow half-second is a moment, not a trend: it takes two in a row to give up resolution, unless it is really struggling) */
+  if(avg>1/46){D.good=0; /* (it was 51 a second. A phone whose browser paces the game at about 54 with one long frame in ten dipped under that all game, and the picture was cut to 62% for nothing: the measured test showed fewer pixels do not buy those frames back. Resolution is now given up only when the game is really running slow, and never below 78%.) */if(avg>.0305&&avg<.037&&D.lows>=2&&Math.abs(avg-D.last)<.002){D.cap=true;D.capT=pn;if(D.k!==1){D.k=1;resize();}D.last=avg;return;} /* two cuts changed nothing and it sits right at 30: capped, not struggling */
+    D.last=avg;D.lows++;D.bad=(D.bad||0)+1;if(D.k>.78&&(D.bad>=2||avg>1/40)){ /* (one slow half-second is a moment, not a trend: it takes two in a row to give up resolution, unless it is really struggling) */
       if(pn-(D.upT||-1e9)<9000){D.ceil=D.k*.955;D.ceilT=pn+40000;} /* it was only just raised and could not hold it: that level is the ceiling for a while, so it does not see-saw */
-      D.k=Math.max(.62,D.k*(avg>1/40?.88:.94));D.bad=0;resize();}}
+      D.k=Math.max(.78,D.k*(avg>1/40?.88:.94));D.bad=0;resize();}}
   else{D.bad=0;if(avg<1/54.5){D.lows=0; /* THE PICTURE COMES BACK: it used to need three straight seconds above 57 a second, which a phone that runs at 55 never gives, so once it dropped it stayed dropped. Now four good half-seconds (not necessarily in a row) bring it up a step. */
       if(D.k<1&&++D.good>=4){D.good=0;let k2=Math.min(1,D.k*1.06);if(D.ceil&&pn<(D.ceilT||0))k2=Math.min(k2,D.ceil);if(k2>D.k+.004){D.k=k2;D.upT=pn;resize();}}}}}
-let qN=0,qT=0,qLvl=0;function qualityWatch(dt){drsWatch(dt);qN++;qT+=dt;if(qN<90)return;const avg=qT/qN;qN=0;qT=0;if(avg<1/42||qLvl>=2||DRS.cap||DRS.k>.7)return; /* features are only switched off once resolution has given all it can, and never on a capped device */qLvl++;
+let qN=0,qT=0,qLvl=0;function qualityWatch(dt){drsWatch(dt);qN++;qT+=dt;if(qN<90)return;const avg=qT/qN;qN=0;qT=0;if(avg<1/42||qLvl>=2||DRS.cap||DRS.k>.79)return; /* features are only switched off once resolution has given all it can, and never on a capped device */qLvl++;
   if(qLvl===1){QS*=.84;rim.castShadow=false;if(SHQ){SHQ=false;shApply();}}else{QS*=.8;composer=null;fxaa=null;}resize();}
 // optional on-screen readout (pause menu): frames per second, the slowest frame in the last half second, and the current quality level
 
