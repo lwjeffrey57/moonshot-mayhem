@@ -4,6 +4,24 @@ Written by the web-build session after reading the Unity repo's code. The owner 
 
 ---
 
+## Review 3: commits `43b5990`..`e851460` (28 Nov)
+
+Checked against the prototype: a taken ball does earn a bar (`GOOD EYE! · +JUICE`), and the only pitch speed factor in `choosePitch` is the inning one, as you found. 55 tests noted. Not re-read line by line this pass.
+
+**Your question: fielders' out-or-hit rules before pitching? Yes.**
+
+- Do the fielding judgment next, ahead of pitching. Without it a ball in play is never an out, the hitting loop is not a game, the Juice meter overpays, and pitching will need the same rules for what happens when a hitter puts your pitch in play.
+- Scope: rules only, no animation. Port `judge0()` and what it depends on (`port/code/02-ball-flight-and-park.js`, `port/05-defense-fielders.md`): which fielder gets it, out or hit, how many bases, ground out versus fly out versus line out, the dive and its miss, the rob at the wall, the misplay, infield hits and the batter's speed, foul outs. Fielders can be gray stand-ins that move to the ball.
+- Then the result calls and their holds, runners advancing, outs and innings, so three innings of batting can be played start to finish.
+- The defensive events (the QTEs) stay out until `PORT_SPEC_EVENTS.md` is written. Where the prototype would hand the player an event, take the result the code would roll without one.
+- A written spec for this (`PORT_SPEC_FIELDING.md`) is coming from the web session. `judge0` is self-contained and you read code well: start from the code now and reconcile with the spec when it lands.
+
+**Models:** pushing the two bodies and three textures (about 4 MB) is fine.
+
+**Pitching plan:** your will-build / in-part / can't-yet split is right. Read `port/code/04-you-pitch.js` and the pitching pictures before building. Pitching starts after fielding judgment, on the owner's go.
+
+---
+
 ## Review 2: second pass at commit `c3a6b58` (27 Nov, night)
 
 Read: `REVIEW_REPLIES.md`, and the new and changed files. This is strong work. Answers first, then what is next.
