@@ -34,7 +34,8 @@ The contact burst uses the same family: blue for Overdrive, orange for Juice, pa
 
 ## Pitch trails (the pitch coming at you, and your own pitch from the mound)
 
-- A normal pitch has a thin white trail, hot style, for the first three-quarters of its flight in the far size and the last quarter in the near size.
+- **A normal pitch coming at the hitter has no trail at all.** (Correction, 27 Nov: an earlier version of this file said it had a thin white one. The code only trails pitches that carry a color, which is the Juice and Overdrive pitches. The Unity session caught this.) Trailed pitches use the far size for the first three-quarters of the flight and the near size for the last quarter.
+- **Your own pitch, seen from the mound, always has a trail:** white normally, gold on a perfect release, the pitch's own color for a Juice pitch.
 - **Every Juice pitch has its own color and its own shape of trail**, so it can be read on the way in:
 
 | Pitch | Color | Shape |
@@ -83,10 +84,11 @@ From high above the park the ordinary trail is too small to read, so this shot a
 
 ## Markers in the field
 
-- **Landing ring:** a thin yellow ring (#ffe53b) on the ground where a ball in the air will come down, shrinking as the ball arrives. On a robbed home run it is drawn under the fielder's body, not at the end of his glove arm.
+- **Landing ring:** a thin yellow ring (#ffe53b, inner radius 0.8 of outer) flat on the ground where a ball in the air will come down. Its radius shrinks steadily from 5 m when the ball is hit to 1.4 m as it arrives (`lerp(1.4, 5, 1 − time/landing time)`). Shown for fly balls and liners that hang longer than 0.45 s and for every ball that will be caught in the air; never for a home run, and never after the catch. On a robbed home run it is drawn under the fielder's body, not at the end of his glove arm.
 
 ## Impact effects
 
+- **Camera shake:** the camera's x and y are jittered each frame by a random amount up to the shake value, which decays by `exp(−7 × dt)`.
 - **Contact:** a brief freeze of the action (longer for better contact, power and Juice), a camera shake, a field-of-view kick, a white flash, a shock ring at the contact point sized by quality, and a burst of sparks in the swing's color. Slow motion for about half a second on a crushed power or Juice swing.
 - **A perfectly timed pitch release** (or a Juice pitch) gets a smaller version of the same: freeze, kick, flash, shock ring and sparks at the pitcher's fingertips. A merely good release gets a hint; a mistimed one gets nothing.
 - **Ball off a wall, pole, batter's eye or light tower:** a spark burst at the point of impact with its own sound; the batter's eye adds an electric zap, the pole a doink, the tower a clang.

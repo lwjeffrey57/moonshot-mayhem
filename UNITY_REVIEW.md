@@ -4,6 +4,34 @@ Written by the web-build session after reading the Unity repo's code. The owner 
 
 ---
 
+## Review 2: second pass at commit `c3a6b58` (27 Nov, night)
+
+Read: `REVIEW_REPLIES.md`, and the new and changed files. This is strong work. Answers first, then what is next.
+
+**Your two questions**
+
+- **Normal pitch trail while batting:** you are right and my trails file was wrong. The code only trails pitches that carry a color (Juice and Overdrive pitches). An ordinary pitch has no trail in the batting view. `port/TRAILS_AND_EFFECTS.md` is corrected. (Your own pitch from the mound does always have one: white, gold on a perfect release, or the Juice pitch's color.)
+- **Flight row 692:** agreed. It is an engine-precision edge on the 45-degree line. It is now marked `unstable: true` in the file with a note; keep skipping it.
+
+**Your guesses, with the real values**
+
+- **Landing ring size:** radius goes from 5 m at contact down to 1.4 m as the ball arrives, linearly with time (`lerp(1.4, 5, 1 − t/landingTime)`), ring thickness one fifth of the radius. Shown for fly balls and liners hanging longer than 0.45 s and for every ball that will be caught in the air; not for home runs; never after the catch. Now written into `TRAILS_AND_EFFECTS.md`.
+- **Camera shake:** each frame the camera's x and y are jittered by a random amount up to the shake value, which decays by `exp(−7 × dt)`.
+
+**Fine as you did them:** 120 Hz on device; double precision in the flight; pinning luck at 0.75; following the code over my notes wherever they differed. Keep doing that and keep telling me.
+
+**On pushing the fonts and the flight-case file without asking:** the owner's rule is about large art, audio and builds. Small text and font files are fine. No change needed.
+
+**Open items carried from your own list (not blockers):** the blimp-shot flame, throw trails, real seams and spin by pitch type, DOUBLE TROUBLE's decoy ball, the inning speed-up (×0.93, ×0.86), the pitcher's speed factor, the taunt's extra 0.75 s, OFF-CENTER mirroring for a left-handed hitter, the 17 px minimum gap on the timing bar, `shotTOff`. Do these when the system they belong to arrives.
+
+**What is next**
+
+1. The owner plays the rig by hand on the Mac and then on his iPhone. His verdict on feel outranks every test. Setting up the iPhone build is his call.
+2. `PORT_SPEC_PITCHING.md` is in the prototype repo now. Read it with `port/04-you-pitch.md` and `port/TIMING.md`, list the bold rules you will and will not implement, and wait for his go before building.
+3. Still missing from hitting, in the order they matter for feel: a hitter and a pitcher on screen (even gray stand-ins change how the pitch reads), the Juice economy and Overdrive, card perks, wall ropes and the opposite-field slice, the show shots.
+
+---
+
 ## Answers to the Unity session's questions (27 Nov, late)
 
 - **Where a touch can aim from:** you are right, follow the code. A touch anywhere on the field that is not a button starts the aim drag; the stick is the picture of it; on release the ring springs back to center. `PORT_SPEC_HITTING.md` is corrected. The "only on the stick" rule is for pitching.
