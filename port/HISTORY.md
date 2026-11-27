@@ -1,0 +1,945 @@
+# Build history
+
+Every change shipped to the prototype, oldest first, in the words of its commit. 917 changes over 8 days. Read this for how the game got to where it is and what was tried, changed and changed back. The current rules are in the numbered files in this folder.
+
+
+## 2026-11-20 (6)
+
+- Add Moonshot Mayhem arcade batting game
+- Add whiff reaction, new stance idle and modelled bat
+- Trim the swing-and-miss reaction
+- Leave player faces blank
+- Punish swings at pitches outside the strike zone
+- Add the Ely character as the default player
+
+## 2026-11-21 (160)
+
+- Use Ely's own animations and fix swing contact detection
+- Drop the helmet and cap on textured characters
+- Put the player model on the fielders and add a mocap fly-ball catch
+- Chalk the plate area to regulation
+- Add left-handed batters
+- Let foul balls finish their flight before the call
+- Fade between batters instead of flipping sides mid-animation
+- Rebuild the playing surface and fix two ball-flight calls
+- Slim the ball's flame trail and keep one batting camera
+- Lay out the outfield wall cleanly and retire the chunky look
+- Retire the mannequin look; Ely is the only player model
+- Add a speed rating to batters
+- Decide extra bases by a runner-versus-throw race
+- Show the pitcher's repertoire on screen
+- Restyle the HUD as an arcade broadcast overlay
+- Bring the HUD closer to the classic arcade layout
+- Add player walk-ups
+- Hide pitch tells, add ground-rule doubles, restore the batter card
+- Walk-ups: batter faces the pitcher, camera shoots from across the plate
+- Add a backstop, keep walk-ups in the batter's box, tidy the HUD
+- Add a catcher and plate umpire to the walk-up shot
+- Add the breakdance walk-up and a motion-captured run for fielders
+- Add no-doubter treatments for big home runs
+- Show exit velocity, launch angle and hit quality while the ball is in flight
+- Don't show the next hitter in the box before his walk-up
+- Add recorded sound effects and make the batter's eye solid
+- Call balls that touch the foul line fair
+- Charge a full bar for every Juice swing
+- Give each pitch a distinct flight path
+- Add selectable batting cameras
+- Reframe the off-centre camera to keep the hitter fully in view
+- Unlock audio on phones
+- Make the strike-zone camera the default; reframe off-centre for righties
+- Only say OFF THE WALL when the ball reached the wall before being fielded
+- Wait for the player models before starting a game
+- Draw fielders larger so they read at distance
+- Add strikeout defeat animations
+- Add pitcher taunts after a strikeout
+- Add the chicken-dance taunt; move arrow and salsa to walk-ups
+- Add the sad-walk walk-up
+- Add a crouched batting stance for four hitters
+- Add an occasional tripping walk-up
+- Add the macarena as a walk-up and a pitcher taunt
+- Add fist pump (pitcher taunt, batter celebration) and golf-chip walk-up
+- Add an occasional friendly-wave walk-up
+- Add push-up and fight-stance surprise walk-ups
+- Add the baseball-milling walk-up
+- Add the golf-drive walk-up
+- Fielders strafe when moving sideways
+- Add the threatening gesture as a pitcher taunt and surprise walk-up
+- Add the standing clap as a pitcher strikeout taunt
+- Add the b-boy step as a pitcher taunt and surprise walk-up
+- Add the backflip as a pitcher taunt and surprise walk-up
+- Add visible baserunners, throws back in, and more routines
+- Open every game with a plain walk-up
+- Stand the bat up in the crouched stance; shorten the throw-in
+- Add a landing ring for balls in the air; fix walk-in bat and fielder poses
+- Add a home-run trot highlight on no-doubters and a release whoosh on pitches
+- Drag the bat in the sad walk-up; use the umpire's Play Ball call at game start
+- Fielders chase fouls, playable foul flies can be caught, add pop-ups, shorten the trot
+- Add double plays with infield throws; rework the home-run trot
+- Fielders play the defeat routines on no-doubt home runs and during the trot
+- Pitcher plays a defeat routine after giving up a no-doubter
+- Fist pump plays once, straight out of the swing, instead of looping at home
+- Thicker, slightly brighter strike zone outline
+- Mobile: batter card and pitch readout sit above the swing buttons; walk-up banner raised and fitted to narrow screens
+- Hit feedback shows timing and where the barrel met the ball; larger walk-up banner on desktop
+- Pitcher: glove on the left hand, ball released from the right
+- Faster loading: parse the character once and clone it; ship a packed animation file
+- Loading bar on the title screen; keep full finger animation; wait for players so the first walk-up isn't skipped; rename FAIR hit quality to OKAY
+- Hitters sometimes give the pitcher the loser sign after touching home on a no-doubter
+- Mobile: hit feedback reduced to one line and one chip; distance ticks up on driven balls; feedback scales with contact quality
+- Umpire calls ball two, ball three and ball four
+- Mobile: larger swing buttons, raised off the bottom edge, with oversized touch targets
+- Mobile: pause is a labelled yellow pill under the field map
+- Title-screen tips, first-game thumb guide on phones, faster aiming, automatic quality drop on slow devices, strike two call
+- Thumb guide: labelled as skippable, replayable from the pause menu on phones
+- Mobile: swing buttons sit at thumb height (about 13% up the screen)
+- Thumb guide shows on every launch while it is being tested
+- Mobile: larger swing buttons with bold labels, green CONTACT, POWER catches fire when Juice is armed or in Overdrive; batter card moved to top-left
+- Title screen: tip card sits directly under PLAY BALL once loading finishes
+- Phone layout also applies in any window 560px wide or less, switching live on resize
+- Mobile: aim pad at bottom-left that mirrors the thumb drag, JUICE moved above POWER, tutorial pad aligned to it with a clear GOT IT button
+- Umpire's emphatic out call on strike three
+- Replace the big crowd pop with the new recording
+- Embed the display font so the logo and buttons never fall back to a thin system font; keep JUICE under the title overlay
+- First-full-Juice hint that spotlights the JUICE button, skip-all-tutorials option, guides appear as soon as the hitter is set
+- Swing buttons: one handler for the whole corner, so a tap anywhere on or near POWER/CONTACT swings
+- Welcome at-bat: slow, straight, middle pitches and a forgiving bat for a new player's first hitter (first three games); no specials in their first inning
+- Tutorial is now three spotlighted steps (aim, swing, Juice) with a clear skip button
+- Bat ring resets to the middle of the zone for every new batter
+- Swing responds faster: tap-to-contact cut from 130 ms to 70 ms, timing ring leads by the swing time
+- Tutorial explains the bat rings and timing ring; contact ring is green to match its button; practice swings between pitches without quick pitches
+- Bat ring resets to the middle of the zone before every pitch
+- Aim sensitivity setting (six levels) on the title screen and pause menu for touch
+- Swing taps are decided by screen position at the document level (pointer and touch events), with a ripple where the tap registered
+- Mute toggle: on the title screen and under the pause button on mobile, remembered per device
+- Optional frame-rate readout from the pause menu, for measuring responsiveness on real devices
+- Phones start on a lighter render setup (no bloom pass, cheaper shadow, 85% resolution) for snappier controls
+- A tap anywhere on the title screen starts the game
+- Bat ring springs back to the middle of the zone when the aim thumb lifts
+- Timing window about 18% wider
+- Juice availability is unmissable: gold pulsing button with a bar count, grey when empty, callout and chime when a bar fills
+- Ring feedback: only the active ring shows mid-swing, misses freeze the ring and mark the ball; early/late timing meter after every swing; trot runner sized like the infielders
+- Title screen on phones: a PLAY button where POWER sits, to build the right-thumb habit
+- Per-game goal scaled to the player's history, with a progress chip; letter grade, stars and title on the final screen
+- Home-run trot: runners already on base keep a lead on the hitter so he never passes them
+- Simpler bat ring: green ring with a filled red power core, no centre dot; timing ring flashes white instead of red
+- Guaranteed wild celebrations early in each game; S-to-F stat grades on player cards; contact zone filled green; milling routine no longer used as a home-run celebration
+- Home-run celebration starts on a camera cut as he touches the plate; larger aim pad
+- Moon setting: starfield, Earth, crater ridges, moon base and rocket; Juice badge counts only usable bars; home-run celebration cuts in from halfway down the third-base line
+- Timing meter shows the Juice extension in red; Juice timing bonus raised from 15% to 35%
+- Remove the bottom-right PLAY button from the title screen
+- Timing meter uses the bat colours, to scale: green CONTACT window, narrower red POWER window, gold Juice extension
+- PERFECT is shown only when the swing is on time and squared up; good timing alone reads ON TIME
+- Timing marker is a slim needle that sits evenly on the meter
+- Timing ring closes onto a fixed ball-sized white target and keeps shrinking past it: bigger is early, meeting it is on time, smaller is late
+- Timing meter: coloured band is the whole window where contact is possible, brightest at the centre; black means too early or late to touch it
+- Two consecutive batters never use the same walk-up routine
+- First batter of every game only sees pitches in the strike zone, so the first at-bat is never a walk
+- Pitch type and speed shown under the timing meter
+- Tutorial timing step: ball marker dead centre of the red core at true size, ring closes exactly onto it
+- Glass bubble space helmets on every player; aim pad restyled as a grey ridged thumbstick
+- Overdrive: three straight hits give the next batter free Juice on every swing for one at-bat, with on-screen explanation; helmet collar fitted to the neck
+- Some doubles cut to a celebration on second base; mitt pop is sharper, scales with pitch speed, and lands before the umpire's call
+- Recorded glove pop for the catcher's mitt and all catches
+- After the hitter's loser taunt, cut to the pitcher's defeat routine
+- Overdrive meter reads OVERDRIVE and shows full while live; a walk carries Overdrive to the next hitter
+- F-rated stats are more punishing: Brickhouse contact and speed, Jackson-Bell speed
+- Tutorial step for the Overdrive bar, and a first-time spotlight when Overdrive goes live
+- Tutorial step 2 lights the CONTACT and POWER buttons and labels each with its part of the bat ring
+- Tutorial step 2 headline: GREEN = CONTACT, RED = POWER
+- Tutorial step 2 is animated: ball in the green lights CONTACT, ball in the red core lights POWER
+- Tutorial step 2: the bat ring moves onto a stationary ball; CONTACT and JUICE use the same outlined white lettering as POWER
+- Rocket on the loading bar; JUICE becomes a blue flaming OVERDRIVE button that is tapped to switch Overdrive on; extra half second to get set after a practice swing
+- Overdrive button is larger with visible blue flames and its own ready callout
+- Bat is held as the barbell in the lift routine; pitcher's first special pitch is guaranteed to the fourth hitter and called out after it is seen; non-Juice power core 10% smaller
+- Juice-ready callout plays once per game
+- Overdrive charges when the Juice meter is full and empties it after use; pitcher Overdrive on a full Heat meter; JUICE PITCH flash; blue trail on Overdrive hits; outfielder chases ground-rule doubles; more opaque helmets
+- A Juice meter that looks full is full: 95% and up snaps to full and becomes Overdrive immediately, checked every frame
+- Tutorial step 2: contact shown first with the power core hidden, then revealed; the stick leans and the ring travels from well off the ball
+- Overdrive ready call has no subheadline
+- Timing ring and target turn green at the perfect moment, in game and in the tutorial
+- POWER button only burns once Overdrive is switched on; Juice is disarmed when Overdrive charges
+- Tutorial labels read CONTACT ZONE and POWER ZONE
+- Contact feedback always agrees with timing: jammed only when late, off the end only when early, just-missed wording when on time; Juice pitch note no longer overwrites swing feedback
+- Tutorial highlight ring is positioned from the Juice/Overdrive button's real size and place
+- Juice and Overdrive only ever engage from a direct press on the button; more Juice pitches as the score climbs
+- Instant press feedback on the swing, Juice and menu buttons
+- Occasional cut to the defeated pitcher after run-scoring hits and triples
+- Juice meter is a building blue flame and is labelled JUICE
+- Juice button is blue; Overdrive is the same blue with flames
+- Lunar ballpark: moon-dust infield and warning track with craters and boot prints, hull-panel walls with hazard stripe, solar-array batter's eye
+- Juice moves a quarter at a time: +1 per hit or walk, -1 per Juice swing, four quarters for Overdrive
+- Pitcher Overdrive: three Overdrive-only Juice pitches (Supernova, Ghost Ball, Black Hole) mixed in for the whole at-bat
+- During walk-ups a touch anywhere skips instantly and no button can be pressed
+- Overdrive duel: batter and pitcher in Overdrive for the same at-bat, with a clash banner, glowing screen edges and a won/lost call
+- The first Overdrive of each game is never a duel
+- Some Overdrive home runs leave the Moon's orbit toward Earth; always the first one of a game
+- Start button reads LOADING until the players are ready, then PLAY BALL
+
+## 2026-11-22 (172)
+
+- Orbit home runs follow their own continuous path from the bat instead of switching from the normal flight
+- Camera rides behind the ball on some no-doubters; tutorial step 2 shows a filled green ring travelling to a ball in the upper right until it is centred, then the power core appears
+- Tutorial step 1: the stick is pushed around and the bat ring moves with it
+- Weightlifting celebration is kept for home plate, not second base
+- Tutorial timing step keeps the bat squared up on the same upper-right pitch as the contact step
+- Tutorial order: left thumb aims, right thumb swings, then zones, timing, Juice, Overdrive
+- Blue flame covers the whole Overdrive button
+- Tutorial opens with a big HOW TO PLAY title, kept as a small header on later steps
+- Swing and Juice buttons styled as domed gamepad buttons in dark wells
+- Tutorial step 1 highlights the strike zone as well as the stick, so the bat ring is seen following it
+- Stick and buttons are only on screen while there is a pitch to hit; a touch anywhere skips cutscenes
+- Tutorial: swing buttons come after zones and timing, with a tapping demo; no Overdrive pill over the button
+- Power core about 12% smaller without Juice
+- Juice-ready pill only appears once the play is over and the Juice button is back on screen
+- Mobile shows the pitcher's meter under the batter's Juice bar; goal chip removed from the HUD
+- Rating grades are large coloured letters beside small labels, on the walk-up banner and batter card
+- Pitcher's meter fills left to right as a red flame
+- Pitcher's meter rises only on strikes and outs and falls only when he throws Juice pitches or spends Overdrive
+- Golf swing routines are walk-ups only, never celebrations
+- Pitcher can randomly go into Overdrive from the second inning on, more often the more runs he has allowed; no pitcher Overdrive in the first inning
+- Orbit shot is guaranteed on a player's first ever Overdrive homer, then random
+- Pitcher sometimes taunts on the mound after a strike, seen from the batting view
+- Pitching changes: a new arm after three runs allowed or to open the third, with a full Juice bar and sometimes already in Overdrive
+- Timing window is 22% tighter on Juice pitches, shown to scale on the timing meter
+- Batter card shows every rating a grade higher in Overdrive (S becomes S+); Overdrive hitters run 8% faster
+- New ball flights: backspin carry, topspin sinker, bloop, chopper, bad hops, off the bag, top of the wall, foul pole, robbed homers, comebackers, low-gravity pocket; named on the result call
+- Overdrive on: blue flames around the screen edges and the CONTACT button burns blue with POWER
+- About a third of home-run trots are replaced by a shot of the defeated pitcher before cutting to the hitter at the plate
+- Tutorial timing step shows the timing gauge in sync with the closing ring
+- Tutorial timing step hides the bat ring: just the ball, the closing ring and the gauge
+- The tap that closes a tutorial never swings, and the first pitch waits a fair beat afterwards
+- Outfielders run to the ball before throwing instead of sliding into the throw; HOW TO PLAY header only on the first tutorial step
+- Juice tutorial step: JUICE is tapped and POWER catches fire
+- Tutorial title sits clear of the NEXT pill
+- Tutorial wording: each swing has its own contact zone
+- Tutorial: animated step showing the Juice bar building to Overdrive, and a new step showing Overdrive switched on
+- Contact wording: GOT MOST OF IT, A TOUCH UNDER, A TOUCH ON TOP
+- Tutorial swing step taps POWER first, then CONTACT
+- Tutorial Overdrive demos get to the point faster
+- Juice-ready pop-up removed; the Juice button glows whenever there is Juice to spend
+- Contact feedback in ballplayer terms: good wood, backspun it, topspun it, got under it, topped it, cued it
+- Tutorial zones demo starts moving almost immediately and runs quicker
+- Tutorial SKIP button is green
+- Batter card keeps showing the hitter who just batted until the next one steps in
+- Loading bar is a building blue flame, styled like the Juice meter
+- Walk-up banner: bats L/R is as large as the grades but in a plain neutral style
+- TOPSPUN IT on hard contact produces a sharp line drive with heavy topspin that dives
+- Per-game goals switched off; the final screen gives a general rating only
+- Robbed homers: fielder stays in front of the wall, yellow ring shown, and only true wall-scrapers can be brought back
+- Pitching change scene no longer uses the fist pump
+- Yellow ring shows on every ball caught in the air and on every ball that lands after 0.45s, not just long flies
+- A ball that reaches the wall on the fly is never caught by an outfielder unless it hung 4.2s; caroms are live balls; robberies need the same hang time
+- Air outs are labelled by launch angle: line drives read LINE OUT wherever they are caught
+- Rebuild the seats behind home plate as a curved bowl with moon dressing; slim the Overdrive screen border
+- Drop the JUST ENOUGH home run tag
+- Add the crushed-ball sound on Juice swings, Overdrive swings and no-doubters
+- Frame rate: weld the character mesh and use a low-detail copy for players that are small on screen or out of view
+- Outfielders field the ball before throwing: set up early, glove down, come up, turn and throw; ball stays in the glove until release
+- Continuous crowd roar on home runs (louder with runs and Overdrive); quicker timing tutorial loop
+- Backstop further back and rounder; the stick rolls a circle before the first pitch to show it moves the bat ring
+- Live scoreboard above the batter's eye; short-circuit effect on balls off the eye or the board; livelier, less repetitive crowd
+- Crowd boos: pitcher taunts, pitching changes, pitcher Overdrive, called third strikes, robbed hits, lost duels
+- Top-tier crowd pop for the biggest home runs; third boo
+- Add the backlog
+- Stick hint moves only the stick; the bat ring stays centred
+- Digital field: dark projected turf with a glowing grid so the green contact ring never sits on green (grass kept behind a switch)
+- Digital infield deck with a fine grid and glowing edges; stick hint is now a yellow glow that moves nothing
+- Loading-screen tips are headed 'TIPS:'
+- Field: black surface with magenta grid lines, purple fine grid on the infield deck
+- Shout call-outs over the player celebrating on second; no grid lines on the infield deck
+- Keep the strike zone clear: no grid or outlines within the infield, and a plate-to-mound path
+- Drop a shout line
+- Bring the grid back across the infield, keeping only a clear lane from the plate past the mound behind the strike zone
+- Crowd follows the action: hush before the pitch, rising 'ohh' on balls in play, deflate on outs; home-run roar steps up when the ball clears the fence, scaled by runs, Overdrive and distance
+- CONTACT button smaller and set lower-left of POWER; all-skin violet infield for the digital park
+- Infield reads as a ballfield again: turf diamond inside the bases, clay-coloured clay; tidy HUD for phones held sideways
+- Pitcher's bar rounds up and a full bar always means Overdrive; thinner plate-to-mound path; trim shout lines
+- Infield back to grey moon dust on the black-and-magenta turf; PLAY BALL turns green when ready
+- No crowd pops between pitches: only the bed moves unless something has happened
+- Remove the plate-to-mound path
+- Outside the walls the ground is lunar regolith: the turf and its grid stop at the park
+- Thinner base paths and a smaller plate circle
+- Crouched stance is right-handed hitters only, so lefties aren't hidden behind the swing buttons
+- Sharp vector outlines for the strike zone, bat ring, power core, timing ring and target; trim a shout line
+- Top-tier crowd pop about a quarter quieter
+- Claim aim touches the instant they land so the browser doesn't hold back the first few pixels of thumb movement
+- Power surge: the stadium lights brown out and flare in fits when the batter's eye or scoreboard shorts
+- Crowd stays up for the whole flight of every ball in play
+- Crowd stays up while the outfielder runs the ball down and throws; the cheer starts when a hit drops in
+- PLAY BALL call in the bold yellow logo style
+- PAUSE stays on screen and works during walk-ups and cutscenes; a tap anywhere else still skips
+- Call-outs sit lower on phones, clear of the batter card
+- Krakens score in the top of each inning (luck early, pulled toward the player's score late); win/loss on the final screen; crushed contact gets a big crowd pop
+- Timing tutorial: the ring reaches green sooner and holds there for half the loop
+- Game always starts 0-0; player is the home side (bottom of the inning, listed second); rocket marker on a PERFECT
+- Crowd bed: a clean seamless loop from the even part of the recording (no identifiable voice), layered at two speeds
+- New 65-second crowd bed cut from the clean stretches of the ambience recording; PERFECT rocket only for squared-up, smoked contact
+- Rename the crowd bed file so devices fetch the new recording instead of a cached copy
+- Every ball in play gets a looped crowd layer that lasts exactly as long as the play, so the park cannot go quiet while the ball is live
+- Organ riffs by situation; golf walk-ups start at the address, not the downswing; outs get a surprised crowd reaction instead of a drop to silence
+- The biggest crowd pop is rarer: orbit shots, grand slams, 500 ft, Overdrive 450+, and go-ahead homers in the last inning
+- Timing bar: green PERFECT target hash; blue-flame rocket on Overdrive homers; pitch release is a short snap instead of a long whoosh
+- Louder, brighter mitt pop on pitches; clearer pitch-release sound; Juice pitches get a sound; audio wish list in the backlog
+- First baseman covers the bag on infield grounders; caret under the player's timing marker
+- Mitt pop louder and clearer: stronger snap, and the crowd dips briefly under it
+- Seams on the ball, with a different spin for each pitch
+- Timing bar: the target is a labelled green gate, your swing is a dot with a caret
+- Timing bar back to the green target hash and the player's hash with a caret; no PERFECT label unless the swing was perfect
+- Celebrations pump the crowd up past the level of the play
+- Ordinary home runs: louder roar with fresh waves of cheering breaking over it, so it isn't flat noise
+- PERFECT line moves up out of the rocket's way
+- Crowd reactions to outs: several variants, never the same one twice running
+- Timing bar never contradicts the verdict: PERFECT sits on the target, anything else is drawn clear of it
+- Earthrise over centre field through a gap in the upper deck; contact-point ball icon by the timing bar; daylight between the timing marks; Shift alone engages Overdrive; drop the TOPSPIN SINKER tag
+- Bigger contact-point ball icon
+- Contact icon shows the barrel laid across the ball where it met it
+- Pitched ball is drawn barely moving on past the plate, so late contact never looks like it happened behind it; contact icon with proper seams and a bigger barrel
+- Fielder's gloves and catcher's mitt built from shaped leather pieces; smaller barrel on the contact icon
+- Real fielder's glove model for close-ups (CC BY, credited); sculpted catcher's mitt; Overdrive heartbeat; pitcher's red flame border, stacked with the blue in a duel; boo on a walk
+- Ship the glove model as text so it can be served alongside the page
+- Triples get a celebration on third base
+- Catcher's mitt back to the simple round version
+- Overdrive 'in the zone' audio: the crowd is muffled until contact; big crowd reactions wind down in a long tail instead of cutting to neutral
+- Wider opening in the upper deck with the rocket and crater rim in view; crowd stays up through the throw on ground outs; bigger pop when the runner beats it out
+- Outfielders run down long-hang fly balls; liners snared in the infield always draw a crowd reaction; runners hold at third while the camera is on the hitter admiring a homer
+- Pitching change: the outgoing pitcher trudges off before the new arm comes in
+- The crowd moves: stands bounce and brighten with the noise, camera flashes sparkle across them
+- Vanguard model for the pitcher, fielders and catcher; pitcher Overdrive comes round more often; longer short-circuit; smaller PLAY BALL call
+- Overdrive can be switched back off until a pitch is thrown; tunnel-vision speed lines in Overdrive; batter's-eye carom comes back to the field and the chase camera lets go before impact
+- Infield hits play out as a race at first base with a SAFE call; stronger Overdrive tunnel vision for either side, louder heartbeat
+- Playing surface is lunar: dark cratered basalt outfield, dust infield, no neon grid; new pitcher throws a warm-up pitch on a change
+- Tunnel vision lifts at contact; the pitcher answers an Overdrive with one bar or more, so mid-count duels happen
+- Juice pitches show the timing ring only for the last third of the flight; a comebacker off the pitcher drops him on the mound
+- Exo Gray model for the umpire, loaded last so nothing waits on it
+- Hit by pitch: the hitter goes down, gets back up and limps to first with two bars of Juice
+- Fix: timing ring and pitch target were switched off on every pitch by a misplaced comment; Juice pitches are harder through a tighter timing window instead
+- Sound files download as soon as the page opens, so the real crowd and the umpire's call are ready at PLAY BALL; quieter stand-in; drop INNING 1 from the opening call
+- Timing bar: the target is white, your swing is green
+- Remove the hiss crowd, the 8-bit jingle and the synth stand-ins for sounds that have recordings
+- Hit by pitch is a gamble: fired up, shaken up or shrugged off, with ratings changed for the game; never while the hitter is in Overdrive; gentler tunnel vision for the hitter's own Overdrive
+- Green outfield wall
+- Backlog: shareable score post for marketing
+- Whole playing surface is moon-grey regolith, with the infield, base paths, mound and track marked out in chalk
+- Pitcher Overdrive is revealed with a cut to the mound after the hitter's entrance; his Overdrive shakes the screen on every beat
+- Thicker chalk outlines on the playing surface
+- Outfield dives (three in ten are caught); more outfield range on balls that hang; umpire foul call on some fouls; whiter, sharper strike zone
+- Name tags over fielders while the ball is in play; nine-box grid in the strike zone
+- Phones: batter card rides above the hitter's head during the at-bat; strike-zone grid lines are dark
+- Names as plain outlined lettering with numbers (hitter and fielders), centred over heads; fix the strike-zone grid not drawing; scoreboard raised
+- Overdrive home runs: the crowd erupts at contact
+- Strike-zone grid lines greyer and fainter
+- Dark backing behind the strike zone with the ball drawn on top of it; no name over the hitter being controlled
+- Overdrive homer crowd ladder, believable dive misses, sharper chalk and wall line, tags under outfielders, clean pitcher cuts
+- Pace the pitcher's Overdrive: cap per game, gap between uses, likely after three runs or the first inning
+- Foul-pole screens and beacon masts, duel on countering pitcher Overdrive, tighter Juice-pitch timing, home-run shouts, HUD clean-ups
+- Remove the 'Overdrive spent, refill the meter' message
+- Infielder gets drilled, fielder routes via the landing circle, HBP card, HUD clean-ups, tutorial camera fix, four-pitch walks nearly gone
+- Field surface pass (lit regolith grain, baked shade, soft player shadows, rolled bands), diving catches made off the ground, call-out clean-ups, crowd tremble
+- Call-outs shown on a pitcher close-up end with the close-up
+- Second-base shout: HEATING UP! replaces THAT'S HOW!
+- Countering the pitcher's Overdrive mid-delivery calls the pitch off: he comes set again
+- Field shadows switch, crowd camera rumble, tutorial pose fix, liners off the wall, Overdrive liners drill infielders, call-out timing
+- Overdrive button throbs and flashes while charged
+- No-doubter call-out: CRANKED! replaces FORGET IT!
+- Outfielders chase a ball hit past them instead of meeting it at the wall
+- Overdrive homer that takes out a satellite
+- Backlog: TikTok and Reels highlight plan
+- No-doubter call-out: add ABSOLUTE TANK!
+- No-doubter call-outs: pick from all four
+- Camera cuts to the mound when a comebacker drops the pitcher
+- More batter celebrations (pitcher taunts thrown back), satellite shot smaller, farther, seen from above the park
+- Satellite shot: drop the SATELLITE DOWN line
+
+## 2026-11-23 (151)
+
+- Left-handed pitchers (mirrored delivery), a fourth arm, a different starter each game
+- Backlog: quick time events
+- Backlog: on-screen d-pad for quick time events
+- Brawl after a hit-by-pitch, crowd camera shake fixed, fielders stay inside the side walls, pitcher Overdrive label
+- After a hit-by-pitch or brawl: camera in front of the runner, ratings banner; card arrows no longer overlap; PLAY BALL higher
+- Quick time events (plate, double play, stretching, tagging up), walk-off ending, retaliation HBP, lasers off the wall, scoreboard and Earth moved
+- Quick time events: longer codes, clock scaled to the code with room for one slip; left-handed hitters now appear in brawls and base plays
+- A grounder that rolls foul before the bag is a foul ball; past the bag fair, it stays fair
+- Quick time events: runner lands on the bag, d-pad keys light up; HBP only on the first pitch and more often; homers give two quarters of Juice; tunnel vision tightens with strikes; MOONSHOT! call-out
+- Mash-the-arrows quick time events, fielder blown back on a made kick, charge stops at the pitcher, bat dropped on a hit-by-pitch, result call above the runner
+- Celebration shout: YOU'RE SEEING IT!
+- Brawl starts and flows faster with harder hits; crowd-pleaser celebrations more often; liners off infielders more often; walks rare against pitcher Overdrive
+- GO button to send runners (stretch, tag up, send home), one big TAP button for mash events, the throw drifts in during quick time events
+- Send the runner home from first on a double; ABSOLUTE NUKE! and ABSOLUTE BOMB! call-outs
+- TAP button: accepts touches, moved up to the middle of the screen
+- GO button moves to the left on phones, higher, as an advance-the-runner control
+- D-pad: bigger, higher, reads a touch anywhere on it instantly; pitcher Overdrive label higher, larger, on two lines
+- D-pad centred low for two thumbs; hit-by-pitch: body-thud sound, DRILLED and ON PURPOSE lines removed
+- GO offered on every base hit (incl. first to third), SAFE/OUT calls above the players, HBP text below the batter, brawl zooms and shakes harder each blow, friendlier Overdrive timing
+- Liners off infielders much more often; pitcher Overdrive closes in every pitch; after a brawl he starts halfway to first and walks it
+- A failed quick time event knocks the runner back off his feet
+- Umpire's out call on a failed quick time event; safe call noted as needed
+- Crowd keeps buzzing through a hit-by-pitch and builds into the charge; organ riffs play more often and rotate through all nine
+- The first home run of a game is answered: the next batter is hit by the first pitch and charges the mound
+- Bat rings swell after the Overdrive flash clears, with a bigger overshoot
+- Landing ring no longer buried by the shadow layer and drawn bolder; left click is POWER on desktop; OFF THE POLE wording; arrow in the ratings banner
+- Overdrive: bat rings (and the real sweet spots) grow by 55% instead of 20%
+- Field shadows on by default on phones too
+- Hot dog vendor heard in the stands between pitches
+- D-pad: larger, reads fingers on touchstart, touches outside the arrows count, wrong arrow costs time instead of resetting
+- Quick time events: a made play is usually a cleats-up slide that sends the fielder flying (flying kick otherwise)
+- Overdrive: bat rings and sweet spots grow by 85%
+- Brawl: the run to the mound cuts straight to the side-on fight camera, no in-between shot
+- Keyboard focus taken on every click (quick time event keys on PC), clickable arrows on PC, runner runs through first, runners no longer fade with the batter, per-pitch Juice trails, original landing ring restored
+- Backlog: more Juice pitch types
+- Seven new Juice pitches with their own paths, colours and trails; emoji arrows on the quick time event indicator
+- Hit-by-pitch without a brawl cuts away as he gets up and starts him halfway to first; a homer on a Juice swing gives a bar back
+- Home-plate shout: PIMPED IT!
+- PIMPED IT! on the admire shot (never twice for one homer); power-surge flicker carries through the trot
+- Ratings change after a hit-by-pitch or brawl: green rising arrows and vignette, or red falling arrows and vignette
+- No-doubter call-out: LIFT OFF!
+- Backlog: motion capture notes (parked)
+- Start each game with half a Juice bar
+- New Moonshot Mayhem logo; hurricane kick walk-up, blocked blows, extra hit reaction and a breather for the winner in the brawl
+- Light towers rebuilt: lattice masts, framed lamp banks, lens streak; PLAY BALL clear of the batter card
+- Rocket rebuilt: shaped body with painted panels, checker band, portholes and COMETS lettering, boosters, swept fins, lattice gantry with beacon
+- Rocket moved onto open ground in front of the crater rim: no longer inside the rock
+- Laser show on some home runs (kept going through the trot); brawl calls sit above the fighters; home-run show ideas in the backlog
+- Laser show: pencil-thin full-strength beams, and the park dims under them
+- Tutorial step 2: the ring reaches the ball in half the time, stick and CONTACT highlight kept in step
+- Brawl: remove the 'lying breathless' clip (the figure floated); winner goes straight to his taunt
+- Infield pocked with craters (about 125, with lit and shadowed rims), kept clear of the strike-zone lane, the bags and the plate
+- Stands joined to the walls: ledge closes the gap, foul-side walls and seats are solid, barely-out homers stop on the ledge
+- Overdrive homer that smashes a light tower and darkens the park through the trot; brawl's first blow lands as he arrives
+- Outfield upper deck and roof removed (one switch): a single low bowl with lights and flags on its rim, the Moon standing clear above it
+- Pitcher's meter is labelled JUICE; the break dance comes up about three times in ten at home plate
+- Field surface uses the real moon-surface colour and normal maps, lit from the side
+- Moonwalk home from third on some trots; the Blue Marble photograph replaces the painted Earth
+- Star-field photo on the sky, many more infield craters, dish antennas and beacon masts replace the rim flags
+- Each pitcher in the bullpen wears his own body (two new models, loaded in the background); multi-material meshes supported
+- Bat finish is a wrapped texture (taped grip, grained ash, crisp navy-and-gold band) instead of per-vertex colours
+- Six more pitcher bodies, a ten-arm bullpen, bodies loaded on demand
+- Faster mouse aim with a sensitivity setting; advance buttons hidden while paused
+- Pitcher bodies: drop tracks for joints a body lacks (they spun the whole body), fit hip height to each body
+- Home-run horn, lasers only once the ball clears the wall, QTE defender wears the fielders' body
+- Hitters wear their own bodies at the plate and on the bases; stars drawn as sharp points
+- Bat fit on every body (top-hand IK, head clearance), high-res star field, spinning batted ball, exo grey as hitter and pitcher
+- Rings grow at once on Juice and Overdrive
+- Overdrive contact: the timing window burns as a blue flame
+- Sky: real all-round Milky Way panorama
+- Overdrive homer into lunar orbit, more comebackers off the pitcher in Overdrive, surface lit like the players
+- QTE: stop-the-needle mini-game (green by runner speed, gold gamble for Juice); blue rings in Overdrive
+- PC title: tips instead of the controls list; more infield craters
+- Top hand keeps its grip angle when it is brought to the handle
+- Touch aim: every input sample, flick acceleration, a short motion lead
+- Brawl ratings callout in green/red on a plate; showdown difficulty from hit location, distance and runner speed; new shout
+- Games open with Overdrive charged until the player has used it once
+- Camped outfielder catches the deep fly; drilled fielders go down at once with knockback and impact; those plays scored as errors
+- Juice button burns while there is a charge; games open at three bars
+- Six more bodies, lights shot as a line drive seen side-on, no-repeat Overdrive homer shows, HBP call under the batter, louder pulse per pitch, QTE dings
+- Pitcher waits while Overdrive is ready and unpressed, with a pointer; flair celebration at the plate more often
+- Badges: 23 feats, unlock toast, badge case on the title screen
+- Winning a showdown is worth a bar of Juice (two for gold)
+- Orbit shot callout in blue fire; bat ring centre marker setting (none/dot/crosshair/ring)
+- Hide-rings option, difficulty levels, badge feats as homer calls, phone batter card by the fielders, title options in rows
+- Orbit callout above the Moon
+- Homers stopped by the scoreboard, batter's eye or pole read PROJECTED distance
+- Overdrive rings: bright outlines so they never vanish against the zone; badge plate is the feat callout, bigger
+- One typeface: painted park lettering uses the display face; backlog: theme, player cards
+- Needle and mash showdowns: tap anywhere, press judged where the needle was seen, smoother needle
+- A new badge takes over the big callout; second hitter always has Overdrive charged; scoreboard and batter's eye badges
+- Badge callout as a gold oval plate; callout and plate never overlap; show badges at the moment of the show; 20 s Overdrive wait for first-timers; lefty card above the shortstop
+- No quick pitch after switching Overdrive on: two seconds to settle, pitcher steps off if already in his delivery
+- Badge plates show during the orbit shot (they were blocked); badges reset; Montoya back to the house body; GO button up a little less long
+- Overdrive effects on phones: no per-frame repaints (glow fades instead of redrawing, flames blurred once)
+- Centre marker drawn as a crisp overlay at screen resolution; bolder crosshair
+- GO button is a forward-lunging arrow with the risk colour as its edge
+- Faster load: smaller animation file, sky fetched after the players; build number on the title screen
+- Breathing resolution and effect warm-up; live distance over the ball on the trail camera; badge plate as the call with its reason; thin crisp crosshair; GO pill back
+- A badge plate interrupted by a callout comes back at most once
+- Overdrive rings: smaller contact ring, lighter core fill, strike zone stays readable
+- Scoreboard and batter's-eye shows almost never on consecutive homers; trail camera with the distance counter on most homers
+- Scorebug: the home side at the plate carries the hot colour
+- Mouse aim worked out once per frame (raw reports were choking PCs); badge plates call the feat once per game
+- One bold callout style; comic bursts for brawl hits; Overdrive grounders always take out the infielder
+- Baked lighting on the outfield wall; every badge plate the same size; compact comic bursts above the fighters
+- Lit pads on the side walls and backstop, painted light over the stands, count on ball and strike calls, smaller badge plates
+- Yellow batter name, badge plates lower, no 'headed for the lights' call, bad hops a little more often
+- Achievement wording, louder horn, pitcher Overdrive call clear of the top bar, stitches on the logo moon, PIMPED IT a second later
+- Jumbotron bezel, sheen and halo; crawling ribbon board down both lines; GOT HEEEM achievement
+- WORE IT achievement, shown under the batter on a hit-by-pitch
+- Laughing emoji on the GOT HEEEM achievement
+- Outfield boxes removed; stronger painted light on the stands
+- Halo board round the outfield rim: crawls, and reacts to homers and Overdrive
+- Close-up callouts shrink to fit above the head; aerial homer camera; bigger player card; quick-fading timing bar on grounders; MAX AURA; OVERCHARGED DUEL; halo board team names; orbit callout layout
+- Crowd: darker at rest, brighter when excited, a wave of light on big moments; rhythmic clapping between pitches; the eight Lunar League clubs on the halo board
+- Tutorial timing step loops in 1 s instead of 1.5 s
+- Loading screen shows the loading bar or PLAY BALL, never both
+- GO button: bold white text with a black outline
+- Steady centre marker and hidden system cursor through the at-bat; ball marker ring on the ground that widens with height; SHOWBOAT achievement; bad hop only called when it beats the fielder
+- Landing marker with the new look and old logic; head room on close-ups; pitcher Overdrive tag; lit batter's eye; BRAWLER; walk-ups not skippable at once; bolder player card; closer aerial shot
+- SHOWBOAT plate sits under the batter while he admires it
+- STUNT ON 'EM! celebration shout
+- Runners lead off; orbit shot cuts straight to space; top-down aerial; walk-up lens; card over the infielder; RIPPED and STUNT ON 'EM; brighter landing marker; bat burns while Juice is on
+- Halo board reacts to the game: rotating idle programmes and takeovers for hype moments
+- Play callouts ride higher, clear of the fielders and their name tags
+- No batter plate behind the title or end-of-game screens
+- Batter plate: smaller for right-handers on phones, nearer the edges on PC
+- Batter plate sits above the pitcher's head and never reaches across to him; hidden while a result is called
+- Out call sits above the fielder; foul flies past the pole finish their flight; no camera glide through the ground after far shots; Earth photo retried; halo messages held
+- No ratings shown while a hit batter is down or fighting; MOON HOP!; grandstands are solid buildings with back and end walls
+- Salute celebration; raffle and park gags on the halo board; bigger PLAY BALL over the first walk-up; pitcher Overdrive tag rides above his highest point
+- Pitcher tag reads PITCHER / OVERDRIVE ACTIVE
+- Career home-run distance tree: seven rungs, progress bar in the achievements case
+- PLAY BALL button burns, with bold white outlined lettering
+- 5 HUNNID achievement name
+- Batter plate gets its own look: Comets blue with a white edge and orange stripe
+- No fist pump in the box after a no-doubter
+- Salsa celebration; no shadow-boxing in the box after a no-doubter
+- Scoreboard redesigned; walk-ups keep coming after the first time through; bigger lead off second; PC batter plate lower right
+- Grandstand ribbon shows the halo board's programme; PC left-hander plate lower left
+- Orbit shot: the ball is watched leaving the park before the cut to space
+- Scoreboard frame without the bulbs
+- Home-run horn on every homer
+- Left-handers' pitches break and spin the mirrored way; phone batter plate a little lower for right-handers
+- Runners walk out to their lead; phone batter plate a little lower for left-handers
+- Aerial shot held longer with lasers, fireworks and a board surge; number and position on the batter plate; throwing errors; DOINK achievement; timing read-out moved up on admire shots
+- Phone batter plate raised clear of the pitcher's head
+- Painted light on the mountain ranges; PRIME TIME achievement; TOMAHAWKED! contact call
+- First initials for hitters and pitchers; neutral surnames for human pitchers, single names for aliens; lit cyan surround on the batter's eye
+- Mountains back to pale rounded moon hills, with only gentle painted light
+
+## 2026-11-24 (153)
+
+- BUILD 513: first two rosters - every Comet and Kraken in his own body, with names, numbers and ratings
+- BUILD 514: SHOWDOWN wording, batter's-eye playing surface experiment, walk-up card matches the batter plate, steadier batter's-eye frame
+- BUILD 515: moon surface restored, stand corners closed at the foul poles, batter's-eye frame joins the homer show, walk-up trivia, every batter walks up, 600 ft homers followed all the way, P1/CPU labels
+- BUILD 516: advance buttons and QTEs no longer depend on the walk-up setting (reset to on), Shook It Off callout, League-owned lore trivia, halo board works the crowd
+- BUILD 517: grandstand roof, wider scoreboard, lit foul poles, moon-surface mountains, tape-measure shots, Juice for taking a ball, trivia-first walk-up card moved clear of the hitter on wide screens
+- BUILD 518: League propaganda and sponsor lore on the halo board, more trivia (favourites, sponsors, character), robbed-hitter reaction, bigger HBP/brawl outcome calls, plates stay off QTEs, QTE call fits phones
+- BUILD 519: The Bulkhead (30 ft wall in left), Zapp Cola Cove in right with splashdown homers, face portraits on the walk-up card and scoreboard, sponsor line on the card, bigger trivia text, BRAWLER plate above the charging hitter
+- BUILD 520: the Cove is lava
+- BUILD 521: walk-up card waits for its portrait, field camera while a send is on offer after a drilled fielder, BRAWLER plate once ever and quick to clear in a fight
+- BUILD 522: lore rewritten darker (everyone but Abernathy hates the Commissioner), portraits on a deep-space backdrop, redder lava, Earth shot comes round sooner
+- BUILD 523: the Comets rocket lifts off on home runs, superstitions in the trivia
+- BUILD 524: five aerial home-run shots, contract lore, pitcher tag higher, ground layers no longer flicker from above
+- BUILD 525: interceptor flyover celebration and chase-camera aerial, ratings and trivia share the card, more trivia
+- BUILD 527: left-field porch with seats on the Bulkhead, right-field Arcade wall with cove counter and giant bottle, robbed reaction past first base, one walk-up per at-bat, ratings and today's line on the card, wider PC placard
+- BUILD 528: LOCKED IN - two hits in a row gives that hitter Overdrive ready every at-bat until he makes an out
+- BUILD 529: right field is a lava bay behind a 28 ft arcade wall with a concourse on top; the left-field porch juts in further and runs straighter
+- BUILD 530: moondust suspensions in the trivia
+- BUILD 531: left-field porch taken out (plain tall Bulkhead on the normal fence line), foul-pole lattice starts at the top of the wall
+- BUILD 532: scorched shoreline blends the lava bay into the regolith, dark arcade tunnels, arcade wall relit
+- BUILD 533: right-field wall is brick from the ground to the rail
+- BUILD 534: arcade arches are fenced with steel screens
+- BUILD 535: a live volcano feeds the lava bay beyond right field; fans behind the arcade screens are easier to see
+- BUILD 537: more interceptor aerial shots, solar panels on the cove shore, distance counter turns yellow sooner and burns blue from 520 ft, SCOREBOARD! callout
+- BUILD 538: trivia trimmed to ten stand-alone lines per hitter
+- BUILD 539: Abernathy renamed Zephra (alien body, one name)
+- BUILD 540: distance counter runs white, yellow, orange, red, then blue fire; mobile callouts and pitcher tag moved higher
+- BUILD 541: S+ is a Power-only rank, reached through Overdrive or a brawl won
+- BUILD 542: LOCKED IN eruption in blue flame on the hitter's base (or at the plate after a homer); the pitcher erupts in red when he goes into Overdrive
+- BUILD 543: flyover comes in above both ridges and pulls up before the one behind the plate
+- BUILD 544: needle QTE - gold is a sure thing, green is a chance that depends on the send
+- BUILD 545: Kowalski renamed Gormak (alien body, one name)
+- BUILD 546: MASHED! joins the barreled-contact calls
+- BUILD 547: Jackson-Bell renamed Crash; Moonball MVP trivia
+- BUILD 548: Vanta (crypto body) joins the Comets, Okafor is Blitz, Archer is Arkon, batting order keeps similar bodies apart, portraits evenly lit, robbed reaction off; shipping notes
+- BUILD 550: TURNED ON! callout, humans go by first names, Ely without helmet and with his forearm blades
+- BUILD 551: MOONSHOT homers out to about 1,100 ft on Juice/Overdrive, volcano set back clear of them, Razor (was Rico), GOT ALL OF IT!, ratings on the walk-up card nine times in ten
+- BUILD 553: LOCKED IN flame tied to the celebration and after any QTE, never left on the next hitter; Vrel and Draak join the Comets (Liv and Eddie to the Krakens); cove shots always on the chase camera; contact read-out lower; right body on the runner after a hit-by-pitch
+- BUILD 554: flyover chase camera pulled back and raised
+- BUILD 555: every rating carries a plus or a minus
+- BUILD 556: ratings are the headline of the player cards, distance-counter flames grow and deepen past 530 ft, Draak carries the bat more upright
+- BUILD 557: contact read-out is placed directly under whatever callout is showing
+- BUILD 558: a homer followed out of the stadium by the chase camera lands, bounces and rolls to a stop on the Moon
+- BUILD 559: contact read-out goes under every kind of callout (play call, hitter's shout, orbit call, pitcher tag)
+- BUILD 560: contact read-out appears with the callout and is placed from where the callout settles, not chasing its pop-in
+- BUILD 561: hitters' own bodies are fetched from the title screen, built first, and dressed on the spot if needed, so the early hitters are never Ely stand-ins
+- BUILD 562: a runner is fitted with the hitter's body on demand, so the man limping to first after a hit-by-pitch is always the man who was plunked
+- BUILD 563: chase camera shot ends just after the ball first hits the ground outside the stadium
+- BUILD 564: distance counter shows the final figure the instant the ball touches down
+- BUILD 565: chase-camera distance counter heats from white through yellow, orange and red to deep blood red, growing and shaking past 530 ft
+- BUILD 566: crosshair is on by default on touch screens
+- Backlog: note Tripo 3D as a future asset source
+- BUILD 567: Zapp Cola bottle reads ZAPP COLA and is painted with light (highlights, fill line, lava glow, steel cap)
+- BUILD 568: contact read-out measured from the lettering's real bottom edge, so it never sits inside a shout or callout
+- BUILD 569: contact read-out also stays clear of achievement plates; 160-case overlap sweep clean
+- BUILD 570: contact read-out is one block at the foot of the screen - timing bar, then the ball-on-barrel picture with the words beside it, then the pitch
+- BUILD 571: TURNED ON!, TOMAHAWKED! and PERFECT! become the big callout on a ball that earns it; PLAY BALL lower and smaller
+- BUILD 572: contact read-out back in its mid-screen position under the callout
+- BUILD 573: pitching v1 - the player pitches to three Krakens in the top of the 2nd and 3rd (two-tap or meter delivery, four pitches, CPU hitter)
+- BUILD 574: pitching gets a skip option, hot/cold zones and a K zone with the catcher behind it, pitch ratings, stamina, Juice pitches and achievements; callout on every fire-trail ball; secondary lead at second
+- BUILD 575: DRILL HIM button when pitching (once a half: he takes his base, the next batter is rattled); stadium art notes
+- BUILD 576: perfect-release window widens with a pitch's control (fatter target circle), wider again on Juice pitches and with a full bar
+- BUILD 577: the Bulkhead is one wall from the dirt to the top (no yellow line half-way up) and ends short of the 379 marker
+- BUILD 579: Bulkhead 38 ft with the yellow line down its end and more liners off it; first-time pitcher Overdrive explainer and a longer settle; pitching view mirrors for lefties and the CPU batter gets a walk-up; Overdrive homer callouts burn blue
+- BUILD 580: the left-field wall is The Porch
+- BUILD 581: no sponsor boards beside The Porch (one showed cut in half), thicker yellow line along its top
+- BUILD 583: pitching - batter always in the box, true pitch speed and ball size, release ring on the real zone, simple skip prompt, Comets pitcher stays on the mound; plain Porch; Xenon; callouts higher on phones
+- BUILD 584: an outfielder who is under a ball that hops the wall is charged with an error; QTE needle judged and stopped at the exact moment of the press
+- BUILD 585: pause menu cut to five buttons with SETTINGS one tap down; SKIP TO PITCHING; 330 back on The Porch
+- BUILD 586: first-time pitching guide (four cards, each pointing at its control), replayable from Settings
+- BUILD 587: sharp-contact callouts are quick, smaller and higher so they clear the fielder
+- BUILD 589: balls put in play while pitching use the real physics, fielders and cameras; aim on the strike zone itself with hot/cold zones on it; Juice pitch menu (more in Overdrive); batter ratings and threat on the pitching HUD; tap to pitch; meter line at three quarters; first-time explainers for Showdown and Locked In
+- BUILD 590: Overdrive line drives hit right at an outfielder knock him down
+- BUILD 591: pitching view on phones is in tight over the pitcher's shoulder so the strike zone is large
+- BUILD 592: phone pitching layout rebuilt - slim batter strip, round pitch chips, one info box, nothing overlapping (checked automatically)
+- BUILD 593: movement arc from the hand to the target while choosing and aiming a pitch
+- BUILD 595: phone pitching stripped down and made two-thumbed - thumb pad with the pitches beside it on the left, round PITCH button on the right, no panels; spotlight tutorial; real hit-by-pitch animation for a drilled batter; no umpire behind the zone
+- BUILD 599: two-thumb phone pitching, perfect-release payoff, faster-looking pitches, steady contact read-out, logo under PLAY BALL
+- BUILD 602: aim-tap-tap phone pitching with batting stick, pause fix while pitching, crowd roar loop fix, early pitcher Overdrive for new players
+- BUILD 605: pitch wheel, hold-to-aim stick, pitcher Overdrive toggle, controls hidden after release and when paused
+- BUILD 606: pitching target springs back to the middle with the stick
+- BUILD 607: pitching rhythm is pick, aim, tap, tap
+- BUILD 610: hands-on pitching guide on phones, pitch must be picked each time, lower pitching camera, coloured pitch wheel
+- BUILD 614: sharp vector pitch path and target, slim hands-on pitching guide, selected-pitch look, strikeout celebrations, first pitcher Overdrive explained and forced
+- BUILD 615: Apollo site and THE EAGLE HAS LANDED Overdrive moonshot, pitching placard, pulsing pick-a-pitch, empty box between hitters
+- BUILD 617: pitching guide held and blacked out like the batting one, pitch selection sticks between pitches
+- BUILD 618: whole pitch wheel lit during the pick-a-pitch step of the guide
+- BUILD 619: pitching guide shows off each pitch and its path in turn until one is tapped
+- BUILD 621: foul balls shown when pitching, green dial, gamepad-press pitch keys, wheel nearer the stick, first pitcher Overdrive always forced
+- BUILD 622: Krakens can hit tape-measure shots off your pitcher, followed by the chase camera
+- BUILD 623: pitch keys stay the same size when picked, pressed or pulsing
+- BUILD 625: each pitch has its own default spot, spinning baseball in the target, aim step of the guide is a demo
+- BUILD 626: pitching guide is a hands-off demo like the batting one; stand-in pitcher never shown while you pitch
+- BUILD 627: fastball is already picked for the first pitch
+- BUILD 628: your pitcher is never left invisible; stand-in after a short wait, pitcher-body status on the speed line
+- BUILD 629: pitch speeds on the wheel and dial; pitching guide down to three steps
+- BUILD 630: Comets pitcher's body requested at load; the first hitter's walk-up waits for him
+- BUILD 631: no waiting before pitching; stand-in pitches until the Comets pitcher's body arrives
+- BUILD 632: a proper take: the hitter stays loaded and watches it in, with a check swing on close pitches
+- BUILD 633: more of the swing-and-miss reaction is shown
+- BUILD 635: marker shows where each pitch finished; pitch wheel ringed in the guide; pitching read-out kept off the zone
+- BUILD 637: umpire behind the plate with a strike-call animation when pitching; pitch speed and call beside the zone; playtest Juice after skip-to-pitching
+- BUILD 638: pitch wheel shown through a window in the guide's blackout
+- BUILD 639: timing step of the pitching guide uses the curveball with a quicker ring
+- BUILD 640: newest show first (Apollo shot on the first Overdrive drive), smaller pitch-location marker, wider seams and faster spin on the target ball
+- BUILD 641: when pitching, a swing that misses or fouls says whether the batter was early or late
+- BUILD 642: breaking pitches break more the further the stick is pushed in the direction of the break
+- BUILD 643: Show speed option before the game; a tap cuts the home-run chase camera short
+- BUILD 644: built-in performance recorder that saves a per-session summary to the page's shared database
+- BUILD 645: the big dial is never dimmed in the pitching guide
+- BUILD 646: smaller spinning baseball in the pitching target
+- BUILD 647: Apollo shot forced only the first time ever, never twice running; last Overdrive show remembered across games
+- BUILD 648: pitch wheel moved up and toward the stick
+- BUILD 649: heavy model builds wait for quiet moments; fielders not drawn from the mound
+- BUILD 650: remove the YOU PITCH / FACE THREE BATTERS callout
+- BUILD 653: Comets catcher when pitching, TAP! on the release button, wind-up starts on the first tap
+- BUILD 654: guide's TAP! press lands on the same frame the ring meets the circle
+- BUILD 656: dial always reads TAP! and stays one size; picked pitch glows; no green pitch key
+- BUILD 658: clean hand-over between hitters after an out when pitching; wheel nearer the stick; bigger, livelier Juice button
+- BUILD 659: defensive showdown at the bag when a Kraken stretches a hit; Juice button on the wheel beside CH
+- BUILD 661: out call made in the field before the cut back to the mound; every pitch starts on the fastball
+- BUILD 662: no NOW BATTING callout when pitching; the hitter's walk-up plays on its own
+- BUILD 663: Kraken hitters get the full walk-up (shot, card, routine) when the player pitches
+- BUILD 664: flight frozen at the catch while the out call is up, so the ball never carries through the fielder
+- BUILD 665: Drill Him moved below SL and CH
+- BUILD 666: a Kraken's walk-up waits for his body, so the routine is always seen
+- BUILD 667: cut straight from the play to the next hitter's walk-up
+- BUILD 668: Kraken bodies prioritised and requested at load; fielders hold their pose while a play is called; model load status in performance reports
+- BUILD 669: pitch keys are spinning baseballs
+- BUILD 670: performance reports say whether slow frames were held up on the main thread
+- BUILD 671: infielder throws to first on ground outs when pitching; no empty beat at the start of a Kraken walk-up
+- BUILD 674: on-device test of post-processing cost; wider pitch keys with a yellow selected ring; dial reads PITCH then TAP!
+- BUILD 675: Kraken walk-up shot only starts once his body is in (mound view until then)
+- BUILD 676: smaller PITCH button
+- BUILD 677: Vanguard removed; Parker is the Krakens' defensive body and the stand-in
+- BUILD 678: Kraken hitters put more balls in play and punish mistakes; no strike-zone grid in the walk-up shot
+- BUILD 679: defensive play at the plate
+- BUILD 680: on-device test now compares shadow-map updates (every frame vs every third); phones never ran the bloom pass
+- BUILD 681: Kraken hitters get a portrait on their walk-up card
+- BUILD 682: blue eruption on your pitcher when his Overdrive is switched on
+- BUILD 684: hidden Overdrive flame and showdown animations no longer run all game; HUD arm added to the on-device test
+- BUILD 685: no leftover Overdrive or showdown flames when pitching starts
+- BUILD 686: remove the INTO THE LAVA / COVE SHOT read-out
+- BUILD 687: download queue with retries for model files; shorter wait before a Kraken walk-up
+- BUILD 688: home-run celebration shouts centred on phones, never off the screen edge
+- BUILD 689: celebration shouts truly centred (box sized to its lettering)
+- BUILD 690: pitching guide step 1 frames the strike zone and the wheel in one panel
+- BUILD 691: pitcher Overdrive flames go out when the Overdrive ends
+- BUILD 692: pitching Juice button moved left and down, clear of the stick and the wheel
+- BUILD 693: Overdrive home-run shouts centred (their blue flicker no longer overrides the centring)
+- BUILD 694: next Kraken hitter prepared during the wind-up, flight and call, so the cut after an out goes straight to his walk-up
+- BUILD 695: Overdrive edge effects forced off (not paused) when inactive; per-frame check while pitching
+- BUILD 696: GONE FOREVER! home-run callout
+- BUILD 697: Locked In flame lasts the whole celebration and follows the hitter
+
+## 2026-11-25 (131)
+
+- BUILD 702: pitch wheel on desktop, Juice prompt, smaller advance button with odds, Locked In flame ends with the celebration, seams spin via SVG, new home-run callouts
+- BUILD 703: recorded umpire calls (strike, ball, strike three, out, safe) wired in for batting, pitching and plays at the bag
+- BUILD 704: new brawl blows and reactions, mound cutaway on the charge, kip-up after HBP, receiver dive, cartwheel
+- Wall-leap robbery catch, goalkeeper ready pose for fielders, plate take-out, step-up walk-up, short-step brawl cutaway
+- MURKED HIM! knockout call when the batter wins the brawl
+- BEAT IT OUT! mash race to first on routine infield grounders, SAYONARA! homer call, old strike one/two calls back alongside the long strike, sharp-contact calls need 95+ mph
+- Kraken order grows to six (Korvo, Skarr, Nyxa) and each trip to the mound picks up where the last stopped
+- Strike three: the recorded STRIKE THREE call only one time in five
+- Kraken walk-ups: the crowd reaction from the last play dies down as the next hitter walks up
+- Tripo light towers replace the lattice masts; Tripo video board out in left shows the man at the plate (both 1024 px textures, loaded after the players)
+- Tripo props stored as base64 text like the player models (artifacts do not serve .glb)
+- Ball call re-cut from the umpire recording (the old cut was silence); PITCH/TAP button nudged right
+- Expose the GLB reader for testing props
+- No SQUARED UP (or PERFECT) on a pop-up: it reads GOT UNDER IT
+- Pitching defence: throw out a Kraken tagging up from third, or going first to third on a single
+- No boos when a Kraken makes contact or gets a hit: a smaller crowd reaction instead
+- Pitching: release ring holds on the target (gold pulse on a perfect), Krakens chase nasty pitches just off the plate, tunneling rewarded, sharp leaned breaking balls get ugly whiffs; CAN OF CORN! on a camped-under fly or pop
+- Pitching feedback: no moving yellow circle after the throw; the marker where the pitch finished is ringed green on a perfect release, labelled, and stays up about 2.5 s
+- NO, STAY button beside the advance button, the pair centred; swing controls step aside while the call is up
+- Release ring freezes where you tapped it (green perfect, white good, red way off) for ~2 s; eight new achievements
+- Aiming cursor is just the spinning ball (no rings): the timing ring only appears once PITCH is pressed
+- One feedback circle: the frozen timing ring re-centres on where the pitch finished (a dot marks the spot), no second ring
+- Pitching: only pitching achievements while the Krakens bat; smaller ball cursor that goes once PITCH is pressed; TAP! button stays up through the delivery; Krakens chase nasty stuff far more at 0-2
+- Target circle back once PITCH is pressed and kept with the frozen timing ring through the result, so you can see how far off you closed it
+- No pitching controls during a defensive play at the bag
+- Frozen timing ring, target circle and landing dot placed from the same numbers in the same frame: always concentric
+- PITCH button pulses gently when ready (softer than the picked pitch)
+- Juice button joins the pitch wheel (top-left of PITCH, on the same arc as the pitches); PITCH burns orange with Juice on, blue in Overdrive
+- Perfect release: one green ring exactly on the target, no white circle; otherwise a clear gap (early outside, late inside)
+- Juice moves out to the top right, clear of the pitch path; selected pitch ringed red; perfect shows only the green ring and a green dot
+- Nastier pitching: bigger, later break on your pitches and more response to leaning the stick; a mistimed release is usually a meatball down the middle
+- Your curveball: more depth and a real angle (sweeps across as it drops) instead of a straight vertical line
+- Textures of newly loaded bodies and props are uploaded to the GPU at quiet moments (no first-draw freezes mid-play); first pitching half of a game starts with one bar of Juice
+- Curveball back near the original arc, with the break later and sharper so it bites down through the zone
+- Bold dark-edged seams on the aiming ball; takes: check-swing take on every ball just off the plate, freeze on strikes taken and balls way out
+- Fix take selection crash (pitch variable out of scope)
+- Curveball: apex at the top-right of the zone, sharp late break down and to the left; previous seam look restored; overhead interceptor chase shot removed
+- Breaking balls buried below or off the zone start their break from the top/edge of the zone (no line to the sky); leaning makes them sharper
+- Pitch path drawn as a perspective ribbon with ghost balls; strikeout callouts picked by how he went down (FROZE HIM!, BY YOU!, BLEW HIS DOORS OFF!, BUCKLED HIM!...); long callouts shrink to fit
+- Breaking-ball preview drawn as its break: from the apex it falls and hooks into the spot (perspective no longer squashes the bend flat)
+- MAKE THE PLAY showdowns while pitching: diving catches, wall robberies, screamers at infielders and foul flies just out of reach freeze in slow motion for a needle or mash QTE (45% of eligible plays)
+- Revert the ribbon/ghost-ball and stylised-hook pitch paths: back to the plain line
+- Breaking-ball path drawn like the broadcast trackers: climbs over the zone, crests, drops into the spot (fastball line unchanged)
+- Hitters sit on a pitch you keep repeating in the same spot (game-long memory); curveball back to its original trajectory
+- Fastball line flat (no hump); slider back to its sweeper path
+- Juice label outlined without the dark box; no crosshair in the timing tutorial step; release tap judged from the touch timestamp, whole screen taps; no PAINTED RELEASE line; YOU'RE SHOVING!; stamina bar hidden; straight to the next pitch after a foul
+- Locked In after a homer: cut to him burning at the plate, the call after the fire; YOU'RE ON THE MOUND intro; thicker caps on the walls down the lines; YOU'RE COOKING!, HASTA LA VISTA!, CRANKED!
+- Tripo rocket on the pad (ship still lifts off, gantry stays); walk-up skippable after a third of a second
+- Tripo dugouts behind each line; TWO BAGGER! callout
+- Steal mechanic: STEAL button between pitches with a runner on and a base open (one try per hitter, QTE at the bag, count carries on)
+- Tripo radar dishes beyond the fence
+- Fix brick: a catch showdown left switched on after its play swallowed every touch; frame loop survives a bad frame
+- Difficulty scales the crosshair, the squared-up zone and the perfect-timing window; SMELL YA! homer call
+- Curveball restored to its exact original break size and timing
+- Props unpack at quiet moments in the heavy-work queue; performance reports log what was loading before each long frame
+- Rocket moved left, clear of the Apollo-site shot
+- Big-slice flight variant on squared-up opposite-field balls (same landing, real physics)
+- Steal goes on the pitch: armed before the delivery, catcher throws down, then the showdown; steal button lower left; Cove sign moved right and back
+- Tripo lander at the Apollo site; pull pitcher-Overdrive shot back so the callout clears his head
+- NOW BATTING banner on walk-ups, TUNNELED! callout, more oppo slice on lofted balls, steal button above Juice for righties
+- Tripo satellite for the Overdrive homer, split in three so it still breaks apart
+- Strikeout celly cut on the mound, pitch wheel closer to the stick, smaller/higher NOW BATTING, dugouts out in front of the wall
+- MAKE THE PLAY! arrow QTE on routine infield grounders while pitching
+- Mission control prop, pitcher card on the mound intro, K callouts and celly whitelist, runner-first steal cut, steal button above placard, changeup seams, wheel tweaks
+- HE'S STEALING! QTE while pitching (fast runners), arrows-only guard for MAKE THE PLAY
+- Steal can be called through the wind-up, until release
+- No pitching controls during Kraken walk-ups after the mound intro
+- Mountain ranges get a leaning face and a back slope so they are solid from above
+- Meatball cursor slides to the middle with its ring, K celly holds until the walk-up, arc hidden after PITCH, tutorial FB highlight, solid batter on walk-up, NOW BATTING hidden on pause
+- Tripo soda can and fuel collectors beyond the fence; 3D arc also hidden after PITCH
+- Three-tap pitching trial: PITCH, power bar, then the location ring (PD3 flag)
+- Post-brawl ratings card sits under the result call, above the runner's head
+- Three-tap trial reworked: power is a thick ring that swells to the outer line, then the timing ring shrinks; slower, green at max
+- Fix three-tap double-counted touch; smooth one-piece ribbon board; plain backstop behind the zone; NOW BATTING never waits long
+- Fastball default each pitch, selected key stays with TAP, bold power target ring, fuel collectors in the Cove lava
+- MAKE THE PLAY fires as the ball is fielded; brawl card shows just the three ratings; homer calls a touch lower
+- Saucer abduction Overdrive homer (Tripo UFO, chrome re-skin), MAX POWER! call, TAG HIM OUT! mix, steal cut straight to the catcher, stale badge plates dropped, full brawl card with three ratings
+- Locked In at the plate: he celebrates in the fire, it lights sooner, and never over an empty box or the next hitter
+- Pitching tutorial shows the power tap; green PERFECT!/MAX POWER!; K celly holds to the walk-up; steal QTE skips the second runner shot; bigger before/after ratings on the HBP card; saucer badge fix
+- Habitat domes, batter's eye set back, video board set back, power tap on PC verified, props step aside for homers, catcher faces third, mound shot while the next hitter loads
+- Lava runs on past right field and behind the stand, plinth under the batter's eye, pitcher-OD and Locked In explainers every game (playtest), arrow keys cycle pitches, first baseman faces the throw
+- Brawl winner celebrates straight off the last blow
+- Seam roll carries over when the pitch is changed (no jump)
+- Halo board carried round both foul poles: no step in left, a curved gantry in right
+- Steal button never shows or responds while an explainer is up
+- Performance: build the whole roster on the title screen (short hold on PLAY BALL), no heavy work at the start of an at-bat or mid-pitch, fewer far props on phones
+- Pitcher Overdrive explainer waits for its moment instead of being lost; also shown when a reliever arrives in Overdrive or the pitcher answers yours
+- One loading screen: the rocket bar stays up until the roster and park are built, then PLAY BALL starts at once
+- Steal + swing: ball in play cancels the steal (hit and run), a foul sends him back, a call never carries to the next hitter
+- Video board on a gantry, right-field corner seats, no steal button in a Showdown, leftover Overdrive flames cleared, ratings card shows new grades with double arrows
+- Explainers can never trap the game: tap-to-skip no longer swallows GOT IT, a touch anywhere closes the card, watchdog releases a stray hold
+- Explainer cannot trap the game: close listeners on window and document for press and release, 12 s auto-dismiss, and it only appears during the Overdrive routine or with the hitter set
+- Hit and run: grounder goes to first, runner takes his base, no force or double play; tap ends any homer shot or plate celebration
+- Brawl loser stays down, run-through at first on MAKE THE PLAY, no glow/trail after a catch, ratings marks agree with the arrows, Locked In explainer waits for the celebration, tighter perfect window
+- Ely boogie celebration (K celly, homers at the plate, doubles/triples); phone resolution recovers after a dip
+- Pitcher Overdrive pointer card sits above the button it points at, above the dimming, and the tap on OVERDRIVE closes it
+- No Overdrive in hand for the first pitching half; it is handed back with the bars afterwards
+- Mound hold only after a strikeout celly with the pitcher present (fixes black screen after outs); build tag always on screen for playtests
+- GET OFF ME, BALL! homer callout
+- NUKED! homer callout
+- SMELL YA, BALL! homer callout
+- Locked In at the plate: batter is solid and celebrating (clip picker never found a clip, model was left faded), scoring runners out of the shot
+- Juice explained after three pitches (not in the first tutorial), Juice button not lit in tutorial step 1, no landing ring after an infield catch
+- YOU WENT YA YA! homer callout
+- Skip-to-pitching clears the bases on return, so no phantom runner or steal button
+- Performance: no runner suits built for the Krakens (24 fewer model builds left over into the first innings)
+- Locked In fire toned down so the celebrating batter is visible
+- STROKED! callout for well-hit balls
+- LINEA! callout for line drives
+- Unselected pitch keys dimmed, power ring has a too-late (overthrown, wild), no screen flames for pitcher-only Overdrive
+- Locked In still plays when the homer shot is skipped or the runner is held
+- Power tap: phone latency compensation, wider MAX window, instant POWER % feedback
+- Difficulty: LEGEND and MOONSHOT tiers above All-Star; All-Star tightened; break scales with tier
+- Restart clears any GO!/NO, STAY offer, steal call or pitching prompt
+- Pitching: honest results (execution decides outcomes), hold PITCH for power and release, then tap the spot
+- Groundwork (not wired to any UI): scenario runner, date-seeded daily scenario generator, goal check
+- Performance: pitcher bodies (bullpen and your own) are built on the loading screen too
+- Performance: regroup model triangles so each material is one draw (one body was 448 draws); total draws 746 -> 298 in the batting view
+- Groundwork (no UI): streak with freezes, weekday challenge kinds, pitching scenarios
+- First-player pass fixes: pitching hint matches hold-for-power, mound Overdrive card renamed, explainers wait longer before giving up
+- BELTED! callout for well-hit balls
+- YOU'RE GOING OFF! and YOU'RE ON ONE! hot-streak callouts
+- YEETED! homer callout
+- TORCHED! crushed-contact callout
+- Infielder who wears one gets in front of the ball first; only balls hit near him
+- Four more hot-streak callouts; OPPO TACO! on opposite-field homers
+- More callouts: GO, BALL!, GET OUT, BALL!, FLEX ON 'EM!, HIT PARADE!, RAMPAGE!, YOU'RE ON A TEAR!
+- Swing and miss stops at the follow-through: no stagger or extra steps
+- Locked In fire goes up during the celly on the bag, with LOCKED IN! as the call
+- LOCKED IN! over his head at second, third or the plate; replaces other calls while he burns
+- MOON HOP! call rides above the ball; mouse wheel steps the pitches; model-parse labels in perf reports
+
+## 2026-11-26 (94)
+
+- Home screen, playable Daily Challenge with streak, profile, settings panel; no-dice send needle; knocked-out pitcher calls; abduction back to random
+- Big-inning ramp: pitching bears down from the fourth run of an inning
+- Arcade card on the home screen
+- Resume roster building when back at the menu
+- 47 new achievements (105 total), player strip and trophies on the menu, SAT ON IT! callout
+- Homers bounce off towers and props; throw visibly beats the runner when he is out at first
+- Batting Practice and Home Run Derby modes
+- The Gauntlet: target-hitting challenge mode
+- Cleaner home menu; XP and levels; profile week view and records; reset progress; restart keeps the mode
+- App foundations: release switch, sound levels, organ and vibration toggles, interruption pause, versioned saves
+- Menu: Arcade card renamed Play Ball
+- Six new celebrations from the Drive folder, shown newest-first in playtest
+- Floating celebration, crawl to first after a hit-by-pitch, outfielder turn-and-run
+- A homer that hits a prop ends its flight there
+- Galactic difficulty, one tier past Moonshot
+- Intergalactic difficulty, one tier past Galactic
+- Steal against the pitcher: show the runner breaking and HE'S STEALING! before the throw prompt
+- Loading order: hitters, then fielders, then Kraken hitters, then bullpen
+- LOCKED IN achievement now fires; audit hooks
+- Master limiter and 3 dB trim; floating celebration no longer forced first
+- Derby: distance points, target bonuses with callouts, batting-practice pitches
+- No-doubter contact sound layered over the big whoosh (placeholder audio)
+- Loading screen may run to 17 s so no bodies are left to unpack mid-game
+- Derby: mostly dead-centre fastballs, tightening every ten home runs
+- The Gauntlet: no fielders, and a launch ramp in each target field
+- Edge of the ball is a strike; Derby with one chosen hitter and no baserunning; pitch prompt wording; Gauntlet timing places the ball
+- Pitching: good pitches off the plate get chased; celebration unlock ladder and signature celebration
+- Overall ratings and tiers on player cards; My Squad with batting-order swaps; HOSE HIM! on outfield throws
+- Player card perks (seven live), duel line, TAP! power cue, sound button while pitching, tutorial shows power zone first
+- MAKE THE CATCH! defensive event; big home-run shows scale with power; one pitching system on every device; BEAST MODE!; Oppo Taco perk name
+- Froze-him reaction from the mound; tier gems on in-game placards; Locked In explainer only when that hitter is up
+- WIP BUILD 880 (not published): OD show once-per-game rule, tutorial step 2 red-first, miss replay holds longer, Derby changes, new perks and achievements
+- BUILD 881: OD shows once per game, tutorial step 2 red-first, longer miss replay, Derby/practice without fielders or count, more perks and achievements, do-si-do celly, two new stances
+- BUILD 882: pitcher has his own Juice bar, more chases on nasty pitches off the plate, ZIG-ZAG and CORKSCREW paths made distinct
+- BUILD 883: shrug and do-si-do pitcher reactions, six new clips loaded, perk callouts removed
+- BUILD 883: CHANGE SIDES? prompt, stacked buttons, green KEEP HITTING
+- BUILD 884: new home screen (carousel, progress card, tab bar), pitch wheel order FB SL CB CH, THROW HIM OUT! on infield grounders, bearing-down callout removed
+- BUILD 885: Juice pitch keys on fire (blue in Overdrive), Bad-Ball Hitter perk
+- BUILD 886: baseball marker with speed and pitch type after a pitch not put in play, break flattens when aiming against it, flaming PLAY button
+- BUILD 887: change pitcher from the pause menu (five-arm bullpen, lefties and righties)
+- BUILD 888: Kraken hitter perks, leg kick tied to the power bar, lava fills the right-field corner, strike zone stays up with the pitch read-out, callouts shrink to fit, HBP card picture
+- BUILD 889: Gauntlet call graphic over the pitcher, chevron ramps, camera kick only for perfect-perfect, BACKSPIN no-doubter calls
+- BUILD 890: Weekly Challenge mode (first draft)
+- BUILD 891: My Squad as a ballfield, baseball-card view, faceted tier gems
+- BUILD 892: brow-shade look on no-doubters, sword stance for Draak
+- BUILD 893: models no longer unpack during plays, stances and brow-shade look actually load, baseball in the timing circle, livelier Juice pitch lines, pitcher perks, drunk walk-up, tutorial frame covers the change-up key
+- BUILD 894: My Squad rebuilt on the reference layout (tabs, position tags, portrait cards, bullpen row)
+- BUILD 895: redrawn rating badges, one shape per tier
+- BUILD 896: hitter's plate while pitching: BATTER: label, badge fixed, tidy row
+- BUILD 897: two-step Juice guide (JUICE button spotlight, then the wheel of Juice pitches)
+- BUILD 898: Juice pitch button lettering drawn with one stroke instead of stacked shadows (orange band on iPhone)
+- BUILD 899: rating badge left of the name on the hit-by-pitch / brawl card
+- BUILD 900: home screen mode titles never clip, build tag moved off the HOME tab
+- BUILD 902: Rokoko lefty stance converted and on Vanta, player photos saved for cards, LOADING: n% in the bar, brighter timing-circle ball
+- BUILD 903: all lineup photos taken up front on the menu for the cards
+- BUILD 904: Vanta's captured stance faces the pitcher, bat waggle, YESSIR! callout
+- BUILD 905: Vanta back to the standard lefty stance (captured stance removed)
+- BUILD 906: fielders use the captured step-and-throw
+- BUILD 907: memory cut for phones (shared animation data, smaller character textures), fielder-ready pose on comebacker QTE, faster pitch cycle in tutorial, mouse-wheel click toggles Juice
+- BUILD 908: Gauntlet only: timing shifts with pitch location, pitch-to-look-for prompt, pitches favour the called side
+- BUILD 909: man at the bag catches the throw on infield quick-time plays
+- BUILD 910: first baseman's captured stretch on throws to the bag, ball finishes in the glove
+- BUILD 911: throw goes into the first baseman's mitt; pitching aim stays put when the stick is released
+- BUILD 912: steal button never covers sound or pause
+- BUILD 913: new pitcher's card with portrait, a very late swing still swings
+- BUILD 915: stair aisles down both foul-line stands; pitching stick springs back again, with a grace window when the pitch is started
+- BUILD 916: grandstand crowd redrawn in the outfield bowl's style (sections, aisles, cross-walkways) on both decks
+- BUILD 917: launch-angle and exit-velo perks, TAP! cue on the release ring
+- BUILD 918: no bat in hand during the Locked In celebration at the plate
+- BUILD 919: no bat in hand for any home-run celebration at the plate (bat-lift excepted)
+- BUILD 920: right-field Arcade becomes a deep standing-room deck
+- BUILD 921: Gauntlet free takes on the wrong pitch, lit zone third per call
+- BUILD 922: a very late swing still swings, up to 1.3 s after the mitt
+- BUILD 923: late swings after the mitt never hold up the next pitch; drop the mitt callout
+- BUILD 924: homers into the seats land, spray and hop before the crowd has them
+- BUILD 925: pitcher intro card sits above his head; lighter Overdrive overlays in a Showdown
+- BUILD 926: scenery textures always retried, and the loading screen holds for them
+- BUILD 927: the box waits for a hitter's own body instead of sending up the stand-in
+- BUILD 928: tower lamps sit on the new tower heads; right field is seats plus a patio balls bounce on
+- BUILD 929: MAKE THE CATCH is a leaping snag with the ball in the glove
+- BUILD 930: out at first shows the ball in the mitt before the runner reaches the bag
+- BUILD 932: six new ordinary pitches and per-pitcher arsenals; flip at first on a ball fielded by the bag
+- BUILD 933: Bring a Friend — invite codes, signing bonus and a reward ladder (first pass)
+- BUILD 934: remove the tagline from the loading screen
+- BUILD 935: triples alley — a 420 ft corner in right-centre and a straight Arcade wall to the pole
+- BUILD 936: right-field patio widened to the halo board line
+- BUILD 937: a walk-up never starts over an empty batter's box
+- BUILD 938: skips always work, including while the game holds for a hitter's body
+- BUILD 939: wall balls stay where they hit (fixes balls jumping round the park since 935)
+- BUILD 940: player bodies, textures, props and animations are kept on the device after the first download
+- BUILD 941: pitching change — banner above the card, card above his head, camera a step back
+- BUILD 942: one-off phone measurement of frame pacing (120 Hz steps, and a lower-resolution comparison)
+- BUILD 943: no empty batter's box while a body downloads
+- BUILD 944: the speed read-out shows whether performance reports are being sent
+
+## 2026-11-27 (50)
+
+- BUILD 945: player body meshes are held once, not twice or three times
+- BUILD 946: stop cutting picture resolution to chase the browser's frame pacing
+- BUILD 947: no resolution drop during home runs, celebrations or Overdrive; faster recovery
+- BUILD 949: pitch info line, Showdown follows the pitcher's reveal, outfield misplay animation, distance at the landing spot
+- BUILD 950: Juice pitches look and break like Juice pitches; per-pitcher Juice sets
+- BUILD 951: pitching polish — real flames on Juice keys, timing ring clears fast, baseball markers, hot/cold zones count more
+- BUILD 952: stray thumbs ignored while aiming, tired arms are harder to time, pitcher change intro, blue perfects for Juice
+- BUILD 953: Juice button further left on the pitching wheel
+- BUILD 954: rating badge sits next to the batter's name on his placard
+- BUILD 955: THROW HIM OUT is played from behind the thrower, then the throw, then the catch at first
+- BUILD 956: the behind-the-thrower shot for outfield throws too; Make the Catch hides the ball until the inputs are in
+- BUILD 957: liners off the tall walls at every height
+- BUILD 958: a homer in flight is drawn over the halo board and upper decks, so it never blinks out on the chase camera
+- BUILD 959: rating numbers centered on each badge shape; tier words removed everywhere
+- BUILD 960: a comebacker in the air at the pitcher is a Make the Catch on the mound
+- BUILD 961: no freeze at the top of the delivery; badge numbers a hair left
+- BUILD 962: wall balls come to the outfielder's glove; scoreboard legs clear of the halo board
+- BUILD 963: crow hop and infield lead-in on throws, seed trails on throws, throw callouts, rob circle under the fielder, stay down after a diving catch, TOO EARLY/TOO LATE on a timing miss
+- BUILD 964: sharper rating badge outlines
+- BUILD 965: hard-hit balls reach the lines; outfielder holds the ball during the advance/stay choice
+- BUILD 966: ROB HIM! offered on every reachable homer while pitching
+- BUILD 967: homers clang off the light towers; chase camera watches the carom
+- BUILD 968: late swing also comes through on strike three and ball four; no silent late cuts
+- BUILD 969: outfield throw shown after the go/stay decision, before the cut; CUE SHOT
+- BUILD 970: steal still goes on strike three; shorter go/stay window
+- BUILD 971: throws squared to the target and released from the hand; joy jump never the first celebration
+- BUILD 972: Scouting Report (0-2 weak-spot target) and Sign Stealer (two-strike read vs Overdrive) perks
+- BUILD 973: blimp cut on no-doubters that stay in the park
+- BUILD 975: dive glove meets the ball, ball rides in the glove; set-and-throw outfielders; ball in the pitcher's hand; release punch; crow hop before the outfield throw inputs
+- BUILD 976: no catcher's crouch in the make-the-play events
+- BUILD 977: restart/quit leaves the mound cleanly; fielder's stance and catch at the bag; one ball size in the close-ups
+- BUILD 978: lost defensive plays are called out and held longer
+- BUILD 979: pitching Juice loop - outs and perfect normal strikes build the meter
+- BUILD 980: drilled hitters charge the mound; YOU GOT WHOOPED!
+- BUILD 981: pitcher grades and control on the power meter; drill payoff; blimp shot small ball with flame; pitcher card higher
+- BUILD 982: per-pitcher stamina, drained after an inning, change-pitcher chip
+- BUILD 983: umpire call matches the play on defensive races to the bag
+- BUILD 984: four uneven test relievers; velo rating moves pitch speed more
+- BUILD 985: weaker pitches get hit harder
+- BUILD 986: a tired arm loses break, velocity and gets hit harder
+- BUILD 987: center marker shown on the swing-and-miss replay
+- BUILD 988: walked batter leaves the box at once; go/stay buttons higher
+- Add Unity port handoff note
+- Add CLAUDE.md with standing rules for the web build
+- BUILD 989: low control means a faster ring, tighter window and a racing power meter
+- Handoff: parity rules for the Unity port
+- Add hitting port spec: controls, on-screen elements, feedback rules
+- Unity review 1: hitting port
+- Review and spec: timing circle, pitch marker, filled rings, default camera, ball visibility
+- Add port/: every decision recorded in the prototype, sorted by system

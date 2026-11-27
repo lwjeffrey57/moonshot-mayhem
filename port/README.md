@@ -20,3 +20,4 @@ Use: before porting a system, read its file end to end and treat every bold line
 - [`14-audio.md`](14-audio.md): Audio (63 entries)
 - [`15-performance-loading.md`](15-performance-loading.md): Performance, loading, memory (85 entries)
 - [`16-stadium-and-other.md`](16-stadium-and-other.md): Stadium, presentation and everything else (415 entries)
+- [`HISTORY.md`](HISTORY.md): every change shipped, oldest first (917 entries)
