@@ -1230,7 +1230,7 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
     </div>
     <div id="ldbar" data-t="LOADING" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 972</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 973</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -4889,7 +4889,7 @@ function tryContact(){flight_pop=false;if(pitch.hbp){swing.done=true;swing.miss=
   if(play.type==='hr'&&MX.clip){const ft=play.dist*3.281,big=tb||ft>=500,r=Math.random(),early=earlyShow(S.hrs),kind=DBG.trail||tr.cove||(ft>=600&&!flight.orbit)?'':DBG.admire||(early?'show':big?(r<.34?'show':r<.5?'admire':''):ft>=440?(r<.3?'admire':''):'');wildTrot=early;
     if(!flight.orbit&&tr.cove){flight.trailCam=true;flight.admire=false;flight.coveCam=true;} /* a ball bound for the lava is always followed in */
     if(!kind&&!flight.orbit&&ft>=385&&(ft>=600||DBG.trail||Math.random()<.82))flight.trailCam=true; /* 600 ft and up is always followed the whole way, out of the park and down onto the Moon */ /* most homers that stay on the ball are now watched from behind it, with the distance running up above it */
-        if(!kind&&!flight.orbit&&!flight.coveCam&&(DBG.aerial||(ft<600&&hrCamLast!=='aerial'&&Math.random()<.45))){flight.aerial=true;flight.trailCam=false;}hrCamLast=flight.aerial?'aerial':'';if(tr.outT&&!flight.orbit&&!flight.trailCam){tr.seatT=tr.outT;play.endT=Math.min(play.endT,tr.outT);}else if(tr.outT&&!flight.orbit)play.endT=Math.min(play.endT,tr.outT+(flight.apollo?2.6:.75)); /* the chase camera sees it hit the ground and kick up once, and that is the end of the shot: no waiting for it to roll to a stop */ /* THE BLIMP SHOT: now and then, once it is over the wall, the homer is seen from high above the whole park */
+        if(!kind&&!flight.orbit&&!flight.coveCam&&(DBG.aerial||(ft<600&&hrCamLast!=='aerial'&&Math.random()<.45))){flight.aerial=true;flight.trailCam=false;}if(!kind&&!flight.orbit&&!flight.coveCam&&!flight.aerial&&!tr.twT&&!tr.eyeT&&!tr.outT&&!tr.poleT&&ft>=400&&ft<570&&(DBG.sky||(hrCamLast!=='sky'&&Math.random()<.3))){flight.sky=true;flight.trailCam=false;} /* THE BLIMP CUT: on a no-doubter that stays in the building, the picture sometimes jumps straight off the bat to high above the park and the whole flight is watched from up there, the ball drawing its line across the field into the seats */hrCamLast=flight.aerial?'aerial':flight.sky?'sky':'';if(tr.outT&&!flight.orbit&&!flight.trailCam){tr.seatT=tr.outT;play.endT=Math.min(play.endT,tr.outT);}else if(tr.outT&&!flight.orbit)play.endT=Math.min(play.endT,tr.outT+(flight.apollo?2.6:.75)); /* the chase camera sees it hit the ground and kick up once, and that is the end of the shot: no waiting for it to roll to a stop */ /* THE BLIMP SHOT: now and then, once it is over the wall, the homer is seen from high above the whole park */
     flight.noSb=hrShowLast==='board'&&Math.random()<.92;flight.noEye=hrShowLast==='eye'&&Math.random()<.92; /* the scoreboard light-show almost never comes up on two homers running: the second one just sails by */ // some no-doubters are watched from right behind the ball
    
     lasWant=!!(kind&&(DBG.laser||Math.random()<.45)); // a no-doubter: now and then the lasers come on, but never before the ball has actually cleared the wall
@@ -6386,7 +6386,7 @@ function step(dt){if(S.wuPend){if(S.state!=='ready')S.wuPend=0;else if(!bodyMiss
     if(tr.ramp&&!flight.rampd&&tf>=tr.ramp.t){flight.rampd=true;try{tone('sawtooth',180,900,.35,.4);tone('triangle',520,1560,.3,.3,.05);burst(fxS,_p.set(tr.ramp.x,1,tr.ramp.z),26,7,.6,[.4,1,.55],3,2);shake=Math.max(shake,.3*FX);buzz([20,20,60]);pop('LAUNCHED!','OFF THE RAMP','hot',true);}catch(e){}}
     if(tr.hopT&&!flight.orbit&&tf>=tr.hopT&&tf<tr.hopT+1.3&&!(flight.play.endT<tr.hopT)){const el=$('hopc');if(!flight.hopd){flight.hopd=true;el.classList.remove('go');void el.offsetWidth;el.classList.add('go');buzz(12);}
       _sh.copy(ball.position).project(camera);if(_sh.z<1){const w=canvas.clientWidth||innerWidth,h=canvas.clientHeight||innerHeight,ew=el.offsetWidth*.6+8;el.style.left=clamp((_sh.x*.5+.5)*w,ew,w-ew).toFixed(0)+'px';el.style.top=clamp((-_sh.y*.5+.5)*h-22,MOB?210:110,h-120).toFixed(0)+'px';}} /* MOON HOP!: rides just above the ball for a moment */
-    const dc=camera.position.distanceTo(ball.position);ball.scale.setScalar(Math.max(1,dc*.05));
+    const dc=camera.position.distanceTo(ball.position);ball.scale.setScalar(Math.max(1,dc*(flight.sky&&dc>90?.3:.05)));
 
     ballShadow.visible=!flight.orbit;ballShadow.position.set(p.x,.03,p.z);ballShadow.scale.setScalar(.2+Math.min(1.2,p.y*.03));
     const dead=!!flight._res||(flight.play.type==='out'&&tf>=flight.play.endT-.02); /* ONCE IT IS CAUGHT (or the play is called) the ball's glow and trail are gone: a glowing disc beside the fielder after a diving catch looked like the ball had popped loose */
@@ -6485,6 +6485,7 @@ function updateCamera(rdt){
     else if(K===4){camPos.set(ball.position.x*.55,Math.max(96,ball.position.y+62),ball.position.z*.55+62);camLook.copy(ball.position);}
     else{const a=.4+e*.2;camPos.set(Math.sin(a)*40,268-e*5,-62+Math.cos(a)*40);camLook.set(0,0,-62);} /* high enough that the interceptors crossing underneath are seen whole, with the park all round them */
     camera.position.lerp(camPos,e<.08?1:.3);} /* a slow sweep high over the stadium, the ball a streak below */
+  else if(flight&&flight.sky&&!flight.done&&now-flight.t0>.22){const k=clamp((now-flight.t0-.22)/4,0,1),bp=ball.position;camPos.set(bp.x*.3,lerp(150,132,k),lerp(48,36,k));camLook.set(bp.x*.5,0,Math.min(-62,bp.z*.5-40));pcutT=now;pcutH.set(0,2.3,0);}
   else if(flight&&flight.trailCam&&!flight.done&&now-flight.t0>.25&&!(flight.tr.eyeT&&now-flight.t0>flight.tr.eyeT-.25)){const tr=flight.tr, // (the chase camera lets go just before a ball hits the batter's eye, so the carom and the short circuit are watched from the field)
    i=Math.min(tr.pts.length-1,Math.floor((now-flight.t0)*120)),q=tr.pts[Math.min(tr.pts.length-1,i+6)],p0=tr.pts[i];
     _a.set(q.x-p0.x,q.y-p0.y,q.z-p0.z);if(_a.lengthSq()<1e-6)_a.set(0,0,-1);_a.normalize(); // riding just behind and above the ball, looking where it is going
