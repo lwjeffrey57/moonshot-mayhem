@@ -34,6 +34,8 @@ What this means in practice: portrait first; controls sized and placed for thumb
 | `data/ASSETS.md` | Models (base64 FBX, decode and import), textures, clips and their lengths. |
 | `data/flight_cases.json` | 1,428 ball flights from the prototype to test your flight against. |
 | `ui/style.css`, `ui/markup.html` | Exact sizes, positions, colors and animations of every HUD element and menu. |
+| `IMPROVE.md` | What the owner wants better, his open questions, and what is provisional. |
+| `UNITY_OPPORTUNITIES.md` | Where the browser held the prototype back and what to do with a real engine, with the guardrail: improve look, sound, motion and speed, never the rules. |
 | `BALL_FLIGHT.md` | How a batted ball behaves and why variety matters. |
 | `HISTORY.md` | Every change shipped, oldest first. Use it to see what was tried and reversed. |
 | Root: `PORT_SPEC_*.md` | Requirements for a system, written by the web session before you start it. |
