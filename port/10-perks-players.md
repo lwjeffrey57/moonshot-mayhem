@@ -1,0 +1,42 @@
+# Players, ratings, perks, cards
+
+From the prototype's `index.html`. Bold = standing rule. See `README.md` in this folder.
+
+- `L1446 cardTick` switched off: no name over the hitter you are controlling. The card stays in its usual place with his grades.
+- `L1455 cardTick` the pitcher's fire border waits until the hitter is in the box; the batter card goes away once the ball is in play
+- `L2064 draw` (with the pitcher's card up, the call sits above the CARD, which sits above his head)
+- `L2999 sbTick` set off to the right of center, so it is not sitting behind the batter card on a phone
+- `L3650 showCard` one arrow by the name says his ratings are up or down for the game; the letters stay clean so nothing overlaps on a phone
+- `L3859 gradeMod` **EVERY PLAYER HAS AN OVERALL AND A TIER**. The overall is his ratings rolled into one number (power and contact count double speed); the tier is the band it falls in: Ruby 90+, Diamond 85+, Gold 80+, Silver 75+, Bronze below. It shows as a gem on his card.
+- `L3861 gradeMod` **PLAYER CARD PERKS**: one signature perk per hitter, always on while he is in the game. Each is tied to who he already is, and most have a cost. on: the perk has a real effect in the game today. The two marked soon are shown on the card but do nothing yet.
+- `L3872 gradeMod` **THE BIGGEST SHOWS BELONG TO THE BIGGEST BATS**. A hitter with D power or worse can still get one out with Juice, but the orbit, satellite, saucer and Apollo shots are rare for him (about one in eight of the chance a normal hitter has); a slugger gets them more often than anyone.
+- `L3910 perkSay` (perks work silently: no callout in the game. They are still counted, for the achievements.) /* one line when a perk actually changed what happened, so the player learns what it does
+- `L3919 statGrade` The batter card. In Overdrive every rating is shown one grade higher (an S becomes S+), lit blue with an up-arrow: power and contact are
+- `L3920 statGrade` boosted by the Overdrive swing itself, and he runs 8% faster.
+- `L3928 setBatter` LOCKED IN: the Overdrive a hot hitter was lent is his alone. When his turn ends the team's own bar is put back exactly as it was.
+- `L3931 setBatter` Juice armed for one hitter never carries over to the next
+- `L3933 setBatter` PLAYTEST: the second hitter after a skipped-to pitching half comes up with Overdrive ready
+- `L3934 setBatter` a locked-in hitter comes up with Overdrive ready, every time, until he makes an out (it is still the player's call to switch it on)
+- `L3936 setBatter` every game, the second hitter comes up with Overdrive charged, whatever the leadoff man did: nobody plays a game without meeting it
+- `L3937 setBatter` The pitcher has Overdrive too: when his Heat meter is full, every pitch of the next at-bat is a Juice pitch. Then his meter starts over.
+- `L3940 setBatter` **PITCHING CHANGE**: the defense goes to the bullpen when the man on the mound has given up three runs, or (half the time) to open the third inning.
+- `L3941 setBatter` At most two a game. The new arm comes in fresh: two of three bars, or (from the second inning on, a little under half the time) a full bar and already in Overdrive.
+- `L3943 setBatter` (a reliever who arrives already in Overdrive gets the same explainer, once he is on the mound and the hitter is in)
+- `L3943 setBatter` a full bar always means Overdrive: he arrives either in it, or with two of three bars
+- `L3944 setBatter` He can also just snap: from the second inning on there is a chance each new hitter that he goes into Overdrive whatever his meter says,
+- `L3945 setBatter` and the more runs he has given up the likelier it is (3% with no runs, about 30% once eight are in). Never in the first inning.
+- `L3946 setBatter` not announced yet: once the hitter is in the box the game cuts to the mound for the reveal (podReveal)
+- `L3947 setBatter` every hitter starts with the ring in the middle of the zone (or under the mouse)
+- `L3950 setBatter` otherwise the card keeps showing the man who just hit until the next one actually steps in
+- `L3953 setBatter` Walk-ups: the first time each hitter comes up, a short intro animation with his card. Any swing button skips it.
+- `L3959 setBatter` ten each, and every one has to be funny cold: nothing that needs the backstory to land
+- `L3969 setBatter` FACES: the first time a hitter is at the plate a small head shot is taken of his model (one tiny off-screen render, once per player), and it
+- `L3970 setBatter` goes on his walk-up card and on the big board from then on.
+- `L3971 setBatter` **PLAYER PHOTOS ARE KEPT**. The head shot taken the first time a player comes to the plate is saved on the device, so his cards (My Squad, the big baseball card) carry his picture from then on, in every later session.
+- `L3974 faceGrab` (the Kraken at the plate gets his head shot taken too, for his card)
+- `L3993 faceShot` **EVERY PLAYER'S PHOTO IS TAKEN UP FRONT**. While the menu is showing, each hitter in the lineup who has no picture yet is stood in front of the camera in turn (his body is built first if it has not been), photographed, and put away again. One player every second or so, only on the menu, so nothing is felt in a game. The cards have real faces without anyone having to bat first.
+- `L4020 startWalkup` his ratings and his day so far (hits for at-bats, homers)
+- `L4021 startWalkup` four times in five the card shows his ratings and his day; one in five, something about him
+- `L4021 startWalkup` now and then the card skips the ratings and tells you something about him instead
+- `L4024 startWalkup` **CARD AND PORTRAIT ARRIVE TOGETHER**: the first time a hitter comes up the card waits a beat for his head shot (it never waits more than a second)
+- `L4183 toReady` they trade three blows, and the third one puts somebody on the ground. Who wins is a coin flip. Win and the hitter's ratings go up

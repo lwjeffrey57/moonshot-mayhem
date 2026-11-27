@@ -1,0 +1,89 @@
+# Performance, loading, memory
+
+From the prototype's `index.html`. Bold = standing rule. See `README.md` in this folder.
+
+- `L1367 achImg` (a player's texture: from the device if it is there, else downloaded and kept; on any trouble the plain address is used as before)
+- `L1370 achJson` (old copies of files that have since changed are thrown out)
+- `L1371 achJson` **THE REAL SCENERY, EVERY TIME**: the Earth, the Moon's surface and ridges, and the sky each start as a painted stand-in and swap to the real picture when it arrives. A download that failed used to leave the stand-in up for the whole session (only the Earth was tried again). Now every one is retried until it lands, and the loading screen holds for them (they are small and come down alongside the players, so that normally adds nothing; it never waits more than SC_MAX for them).
+- `L1375 scLoad` Frame-rate savers for the character model, with nothing taken out of the game:
+- `L1376 scLoad` weld(): corners that are exactly identical become one shared vertex (same picture, about a quarter of the vertices to animate).
+- `L1377 scLoad` liteGeo(): a low-detail copy, used only while a player is small on screen or out of view; close-ups always get the full model.
+- `L1379 scLoad` **ONE DRAW PER MATERIAL**: some of the player models arrive with their triangles filed in hundreds of little alternating runs, one material then
+- `L1380 scLoad` the other (one body had 224 runs for 2 materials), and every run is a separate draw, twice over with the shadow pass: 448 draws for one man,
+- `L1381 scLoad` more than the rest of the park put together. The triangles are re-filed so each material's are together: the same picture from 2 runs.
+- `L1390 fbxParse` **A BODY'S MESH IS HELD ONCE, NOT TWICE**. Every player body kept its vertices in ordinary memory as well as on the graphics chip (about 90 MB across the roster), and nothing reads the ordinary copy once the chip has it. Each array is now let go the moment it has been handed to the chip. The sizes needed for culling and for measuring a model are worked out first, while the numbers are still there.
+- `L1404 weld` **A BODY'S WELDED MESH** (and its low-detail twin) is what is drawn; the raw mesh it was made from is never drawn and never read again, so its numbers are let go at once. The two drawn meshes let theirs go once the graphics chip has them.
+- `L1406 weldX` **THE SAME BODY FILE IS USED BY A HITTER AND BY A FIELDER OR PITCHER**: it was being unpacked twice and held twice (in memory and on the graphics chip). The big multi-material meshes, which are drawn exactly as they come, are now shared between the two.
+- `L1678 gtShow` **ONE FRAME ROUND WHAT MATTERS**: the strike zone, and in the first step the strike zone and the pitch wheel together in a single rounded panel (two separate outlines crossed each other and looked a mess)
+- `L1680 gtShow` (measured from the pitch keys themselves, so the lowest one, the change-up, is wholly inside the frame)
+- `L1700 gtTick` the button goes down on the very frame the ring lands on the circle and turns green: one beat, seen in both places at once
+- `L2032 draw` or on whatever base he ended up on) the flame is held at full height and follows his body every frame; when the routine ends it dies down.
+- `L2076 draw` shadow-lite: the shadow map is redrawn every third frame, not every frame (the shadows it holds are a twentieth of a second old at most)
+- `L2109 tex` **THE LUNAR LEAGUE**: eight clubs, each named for where on the Moon it plays, each with its own color. (The start of the lore: only the Comets
+- `L2110 tex` and the Krakens are playable so far.)
+- `L2112 tex` the sky and its stars: they travel with the camera, like anything infinitely far away
+- `L2119 tex` **FIELD SHADOWS** (a quality switch): every player throws a real shadow across the whole field instead of sitting on a soft dark oval
+- `L2124 tex` the backdrop is stretched right round the park, so it needs a lot of pixels to stay sharp; phones get half
+- `L2133 tex` The real sky: a photograph of the whole Milky Way, all the way round (ESO / S. Brunier). It replaces the painted one when it arrives,
+- `L2134 tex` turned so the galaxy climbs out of the horizon and arcs over the outfield.
+- `L2135 tex` fetched only once the players are in (or after eight seconds): at start-up it would be competing with them for the connection
+- `L2136 tex` held under the glow threshold, so the bright heart of the galaxy doesn't flare like a floodlight
+- `L2138 tex` The stars are real points of light, not paint on the backdrop: each is drawn at its own fixed size on screen, so they stay pin-sharp on any display.
+- `L2145 tex` a scattering of sharp sparkle over the photograph's own stars
+- `L2146 tex` Earth, hanging over center field
+- `L2157 tex` tried again (up to five times) if the download fails: a dropped connection used to leave the painted stand-in Earth up for the whole session
+- `L2157 tex` the real thing (the Apollo 17 'Blue Marble' photograph) replaces the painted Earth once it has loaded
+- `L2162 tex` ───────────────────────── field
+- `L2164 tex` THE PORCH: from the left-field pole round to left-center the wall is 30 feet high (9.1 m). A ball has to clear all of it to be a home
+- `L2165 tex` run; anything lower clangs off it and stays in play. THE COVE: a stretch of right field where the seats give way to an open lava vent.
+- `L2166 tex` (the first PAT_D meters behind the wall are a short bank of seats climbing PAT_H; from there to the back rail it is an open patio)
+- `L2166 tex` **THE ARCADE DECK**: the top of the right-field wall is a deep standing-room deck (it was a seven-meter walkway). A ball that just clears the wall comes down among the fans on it; only a longer one carries the back rail into the lava.
+- `L2167 tex` THE PORCH: in left field the Porch also juts IN toward the plate by seven meters (a short porch, 302 ft down the line), with the seats
+- `L2168 tex` sitting right on top of it. It steps back out to the normal fence through an angled jog in left-center.
+- `L2169 tex` (the jutting porch was tried and taken out: left field is the plain tall Porch on the normal fence line. Set these to 7 and 15 to bring it back.)
+- `L2170 tex` **TRIPLES ALLEY**: right of dead center the fence is two straight walls instead of a curve. It runs out from center (400 ft) to a deep corner in right-center (ALLEY_R, 420 ft, where the brick Arcade begins) and from there the Arcade runs dead straight to the right-field pole. Set ALLEY_R to 0 for the old smooth curve.
+- `L2173 tex` (the outward normal of the wall at that angle: a ball comes off a straight wall square to the wall, not straight back at the plate)
+- `L2173 tex` the porch face runs nearly straight across left field (7 m in at the pole, 15 m in by left-center) and then jogs sharply back out
+- `L2175 tex` **TRANQUILITY BASE**: the old Apollo landing site, way out beyond left-center. A lander, a flag and a pool of work-light, all painted (no real
+- `L2176 tex` lights: it costs nothing). An Overdrive moonshot can come down right on it.
+- `L2177 tex` playtesting: the most recently built animation is the first one a game shows. Set false before release.
+- `L2188 tex` (everything added so far is the lander itself: the Tripo model takes its place when it arrives)
+- `L2196 tex` a thin beacon so the site can be picked out from the ballpark
+- `L2197 tex` just beyond where the ball comes down, and off to the right of its path: it lands in the pool of light and bounces on past the lander
+- `L2630 ribbon` painted light, kept low so it is still a dark backdrop to pick the ball up against: a faint glassy sheen on every panel, the frame
+- `L2635 ribbon` (the frame is real geometry below: a lit cyan surround, not a grey line)
+- `L2637 ribbon` **A PROPER SURROUND**: a dark metal frame with a glowing cyan inner edge all the way round, corner beacons, and a soft pool of its glow on the
+- `L2988 sbTick` **THE BOARD SPANS WIDER**: a wing on each side in club colors (Krakens left, Comets right), framed like the main face, so it reads as one
+- `L3010 sbTick` no row of bulbs: a clean frame with a thin lit edge
+- `L3381 burst` are already here when PLAY BALL is tapped. Before, nothing was fetched until that tap, and with the player models also downloading the
+- `L4434 startGame` loading bar on the title screen: one step per file fetched, the last for building the hitter
+- `L4446 glbLoad` **PROPS WAIT THEIR TURN**: each one is unpacked at a quiet moment, in the same queue as the player bodies, never the instant its download lands
+- `L4471 propsLoad` **THE LAMPS ARE THE NEW TOWER'S OWN**: the old dark frame, hood and struts behind the head are gone (they poked out round it), and the light now sits on the face of the new head, one glowing disc on each of its fifteen lamps. Same material as before, so a LIGHTS OUT homer still darkens it.
+- `L4505 playersDone` **ONE LOADING SCREEN**: the rocket stays up until the whole roster and the park are built (ten seconds at the very most), and only then does PLAY BALL appear. No second wait after pressing it.
+- `L5250 sensLabel` · every sample the browser has is used, including the ones it would otherwise bundle into the next frame;
+- `L5264 touchSettle` Chrome and Edge can hand over mouse movement the moment it happens rather than once per drawn frame: the ring is then never a frame behind the hand.
+- `L5266 touchSettle` so a report now only notes where the mouse is; the aim is worked out from the newest position once per frame, which is just as immediate.)
+- `L5297 touchSettle` instant press feedback: the button dips and flashes on the same frame the touch lands
+- `L5512 setupClip` grip axis in the bottom hand's frame, taken from the stance so both hands sit on the handle
+- `L5518 setupClip` contact = the frame the bat is square to the pitch: pointing straight out over the plate, at hitting height
+- `L5554 updateClip` **NO STAND-IN AT THE PLATE**: if the next hitter's own body has not arrived yet, the box stays empty and the game waits for it (his download goes to the head of the line) instead of sending the stand-in up and changing him mid at-bat. Six seconds at most; after that the stand-in bats, as before.
+- `L5846 setupFielder` motion-captured run, played on the spot (the game moves him): hold the hips' sideways and forward position at its first frame
+- `L5898 retarget` (the performance reports showed 200-450 ms frames in the first minute, with the batter standing in the box). That work is now queued and
+- `L6006 loadPlayers` switched again while loading
+- `L6059 loadPlayers` (on the loading screen they are dressed back to back; once a game is on, one at a time with a breather between)
+- `L6103 loadPlayers` ───────────────────────── per-frame updates
+- `L6321 step` checked every frame, so the bar and the button switch the instant the meter fills
+- `L6488 step` wider angle from the open side: hitter fully in frame, and the pitch's break is easier to read
+- `L6612 qualityWatch` features are only switched off once resolution has given all it can, and never on a capped device
+- `L6614 qualityWatch` optional on-screen readout (pause menu): frames per second, the slowest frame in the last half second, and the current quality level
+- `L6617 qualityWatch` Runs quietly in every game. It notes how long each frame took and how much of that was the game's own work, grouped by what was going on
+- `L6627 perfDev` WHO HAD THE MAIN THREAD? At the end of each frame a message is posted to ourselves. If nothing else is running it comes straight back; if
+- `L6629 perfDev` echo was held up on the main thread; a slow frame with a prompt echo was lost in the graphics chip or the display. That tells the two apart.
+- `L6634 perfDev` every scene is the real-time shadow: the whole cast of characters is drawn a second time, every frame, into the shadow map. So on a touch
+- `L6635 perfDev` device the game tries it both ways, twenty seconds at a time (every frame, against every third frame), counts the dropped frames each
+- `L6639 perfDev` switched off, and the dropped frames are counted. This arm is only measured and reported, never kept: if it is the cause, the
+- `L6655 perfTick` (a frame that long is the tab coming back, not the game)
+- `L6656 perfTick` the first seconds are loading, not play
+- `L6676 frame` one bad frame never stops the game: the loop always comes back
+- `L6701 frame0` Field shadows: on by default everywhere (it draws every player a second time, so the game switches them off by itself if frames get slow); the choice is remembered.
+- `L6728 hev` what the game was loading or building lately: written into the performance report beside every long frame

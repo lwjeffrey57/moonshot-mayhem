@@ -1,0 +1,278 @@
+# You pitch (pitching duel)
+
+From the prototype's `index.html`. Bold = standing rule. See `README.md` in this folder.
+
+- `L1534 pdCan` **THE JUICE MENU**: with JUICE on, the four pitches give way to the trick pitches (the ones the Krakens' arms throw at you), and with the bar
+- `L1535 pdCan` full (Overdrive) the three wildest join them. Each costs a quarter bar.
+- `L1540 pdCan` WHAT THE PITCH IN YOUR HAND DOES, in a few words, where the how-to line used to sit once you know how to throw. With Juice switched on it says what that costs and how to back out.
+- `L1542 pdCan` **THE PITCHING JUICE LOOP** (the same shape as at the plate: spend it, earn it back by playing well). SPEND: a Juice pitch costs one bar, every time. EARN: a strikeout is a full bar; any other out is half a bar (a double play, a full one); a strike thrown with a perfectly timed release on your NORMAL stuff is a quarter of a bar. A Juice pitch earns nothing for being a strike, so the meter is built with the regular arsenal and spent on the nasty one: roughly one Juice pitch every hitter or two when you are pitching well, none when you are not.
+- `L1547 pdEarn` THE PITCHER'S THREE RATINGS, as letter grades like a hitter's: VELO is his best fastball, BREAK and CONTROL the average across everything he throws. They are read straight off his pitches, which is where they act: velo is how fast each pitch gets there, break how far its path bends in the preview and in flight, control how wide the release window is, how fast the power meter runs and how far a miss scatters.
+- `L1548 pRate` (the same grades his card shows when he comes in)
+- `L1549 pdTell` (while you are holding a pitch: its name and what it does, once the how-to is old news)
+- `L1549 pdTell` (the first few pitches of a game keep the how-to line)
+- `L1550 pdTell` EACH ARM HAS HIS OWN JUICE PITCHES too (three or four of the six); Overdrive adds the three Overdrive-only ones to his set.
+- `L1552 pdList` FOUR Juice pitches for a bar of Juice; the whole set is saved for pitcher Overdrive
+- `L1555 pdBtns` on a phone a pitch button is also the throw button, the way CONTACT and POWER are the swing: tap the pitch to start it, tap again to release
+- `L1556 pdBtns` clear air between the dial and the keys, even when one is pressed, picked or pulsing
+- `L1556 pdBtns` round the dial, clockwise from the top right
+- `L1560 pdDom` the pad is the catcher's view turned round: left on the pad is left as the PITCHER sees it, which is the plate's +x side
+- `L1562 pdDom` **AIM ON THE STRIKE ZONE ITSELF**. With a mouse the target goes where the pointer is, out at the plate. With a finger it is dragged like a
+- `L1563 pdDom` trackpad (the target moves as the finger moves, from wherever it touched), so the thumb never has to sit on top of the zone.
+- `L1566 pdDom` **A STRAY THUMB DOES NOTHING**: with the stick held, a touch anywhere that is not a button (a missed PITCH, say) neither moves the target nor lets it spring home
+- `L1568 pdDom` (a tap that never dragged, or one made while the stick is held, leaves the target exactly where it is)
+- `L1568 pdDom` a plain tap (or click) with the spot already chosen starts the delivery: no need to reach for THROW
+- `L1570 pdDom` **THE THUMB PAD** (phones): the left thumb rests on it. Where the thumb is on the pad is where the pitch goes in the zone, and a tap right
+- `L1571 pdDom` where the thumb already was throws it: no reaching across the screen. (A tap somewhere else on the pad just moves the target there.)
+- `L1572 pdDom` **THE STICK WORKS LIKE THE BATTING ONE**: push it and the target moves that way from where it was; let go and the cap springs back (the target stays put).
+- `L1578 pdDom` (pdEv: ONE TOUCH IS ONE TAP. The control under the finger also hears this touch; with three taps it was counting it twice, so the power tap threw the pitch as well)
+- `L1578 pdDom` while the ring is closing the WHOLE SCREEN is the button: the release tap counts wherever the thumb lands, the instant it lands
+- `L1584 pdCur` the thicker the yellow circle, the easier the perfect release
+- `L1586 pdCur` **THE MOVEMENT ARC**: while a pitch is being chosen and aimed, a line shows the path it will take from the hand to the target (how much it
+- `L1587 pdCur` drops, which way it breaks, how late). It is the flight of a well-released pitch: a poor release will not follow it.
+- `L1595 pdArc` (the path and the target are drawn as crisp vector lines over the picture now, at the screen's full resolution: this is where the eyes live)
+- `L1596 pdArc` the aiming cursor is just the spinning ball (no rings round it); the timing ring only appears once PITCH is pressed
+- `L1597 pdArc` the curveball is EXACTLY the original: the original break size (1.25, not 1.5) and the original break timing (no late-break factor)
+- `L1597 pdArc` the fastball line runs straight and flat: no hump
+- `L1597 pdArc` **YOUR CURVEBALL**: more depth (it drops further), more angle (it sweeps across as it falls, 1-to-7 rather than straight down) and more hump out of the hand
+- `L1600 pdArc` so a curve dragged into the dirt falls the whole height of the zone and out of it late, instead of aiming at the sky. Leaning harder makes it sharper.
+- `L1601 pdApex` (the curveball keeps its original big arc)
+- `L1602 pdApex` (PDK: the break comes later and harder on your own pitches: straight for longer, then gone)
+- `L1602 pdApex` seen from behind the mound through a long lens a real break looks like nothing: every pitch you throw moves half as much again, and the preview shows exactly that
+- `L1604 pdSvg` **ONCE PITCH IS PRESSED THE PATH GOES**: only the timing ring is left to watch
+- `L1604 pdSvg` (the path only while aiming and timing)
+- `L1606 pdSvg` (in the guide the line is kept inside the strike-zone window, clear of the caption above it)
+- `L1608 pdSvg` **A BREAKING BALL IS DRAWN THE WAY THE BROADCAST TRACKERS DRAW IT**: it climbs out over the top of the zone, crests, then falls off the table into the spot (the bigger the break, the higher the crest and the steeper the drop)
+- `L1613 pdSvg` (a Juice pitch is drawn from much nearer the hand and with nearly three times the points, so its zig-zag, corkscrew, loop or hop is all there on the line instead of a flat streak)
+- `L1614 pdSvg` (a Juice pitch's path is drawn in dark blue and heavier, so it never reads as just another red line)
+- `L1615 pdSvg` A MEATBALL: the target itself slides to the middle of the plate the instant it is released, and the frozen red ring goes with it (same numbers, so still concentric)
+- `L1617 pdSvg` **THE POWER RING**: it swells out from the target to the outer line (everything he has) and back; the tap stops it, and the timing ring takes over from the outside in
+- `L1618 pdSvg` (green while it is in the MAX window, red once it is past the line and coming back)
+- `L1618 pdSvg` TAP! (or LET GO! if the button is held): shown at the moment the ring reaches full power, on every pitch of the first half you pitch in a game, and in a new player's first three games
+- `L1618 pdSvg` (the ring turns red once it is past the line and coming back: too late)
+- `L1621 pdSvg` **IT IS EITHER PERFECT OR IT IS NOT**: perfect is one green ring exactly on the target (the white circle steps aside); anything else leaves a clear gap: early outside it, late inside it
+- `L1622 pdSvg` **WHERE IT CROSSED**: a baseball drawn at the ball's real size against the zone, so one that just nicks the edge is seen nicking it
+- `L1622 pdSvg` the frozen ring is placed from exactly the same numbers as the target circle, in the same frame, so the two are always concentric
+- `L1623 pdSvg` (the timing circle stays: the ring closes onto it, and the baseball sits inside it)
+- `L1623 pdSvg` (with PCI_BALL the rings around the target are gone: the spinning ball IS the cursor)
+- `L1624 pdSvg` **A BASEBALL SITS IN THE TARGET, SPINNING THE WAY THIS PITCH SPINS**: its seams run across the face you see from the mound, opposite to the way the pitch breaks (a fastball's backspin rolls down toward you, a curve's topspin rolls up and away, a slider's goes sideways)
+- `L1625 pdSvg` (once PITCH is pressed the ball is small, well inside the timing circle, so the circle and the closing ring are both in plain view)
+- `L1625 pdSvg` once PITCH is pressed the ball goes: the timing ring closes on the spot by itself
+- `L1627 pdSvg` a changeup is thrown with backspin tilted to the arm side, like a two-seamer: it sinks because it is slow, not because it has topspin
+- `L1627 pdSvg` the roll carries on from where it was when the pitch is changed: it used to jump to a new place in its turn (each pitch spins at its own rate), which read as a hitch
+- `L1630 pdArcOff` **ON A PC THE MOUSE WHEEL STEPS ROUND THE PITCHES**: one notch, one pitch (a free-spinning wheel or a trackpad is held to about nine steps a second)
+- `L1631 pdPick` pressed like a button on a gamepad: it keeps its own color
+- `L1631 pdPick` (the first Overdrive has to be switched on before anything else)
+- `L1632 pdPick` the speed it leaves his hand at, the same way the hitters' radar reads it
+- `L1633 pdPick` EACH PITCH KEY IS A BASEBALL, its seams rolling the way that pitch spins (the same rule as the ball in the target): down toward you for a fastball, up and away for a curve, across for a slider. The roll is a plain CSS animation, so it costs next to nothing.
+- `L1637 pdBallSvg` **THE PITCH WHEEL ON EVERY DEVICE**: on a computer the same wheel, the same PITCH / TAP! dial and the same guide as on a phone. The mouse aims (no stick); keys 1-4 pick, click or Space pitches, Shift is Juice / Overdrive, D drills.
+- `L1638 pdBallSvg` on a phone nothing is chosen until the player chooses it, every pitch: even the fastball has to be picked
+- `L1640 pdUI` the scorebug and the little diamond show the Krakens' at-bat while the player pitches
+- `L1644 pdUI` who he is and how much of a threat: his ratings, graded the same way as your own hitters
+- `L1646 pdUI` the thicker the yellow band, the easier the perfect release (better control, or a Juice pitch)
+- `L1649 pdUI` **THE JUICE NUDGE**: at the start of every at-bat, and with two strikes, a bar in the tank is pointed out (once it has been used on this batter, it stops nagging)
+- `L1651 pdUI` PITCH to start the delivery, then it reads TAP! while the ring closes: the pitch's name and speed are on its key
+- `L1657 pdUI` ON A PHONE THE GUIDE IS HANDS-ON, like the batting one: one control is lit, the card says what to do with it, and it moves on only when the player has done it.
+- `L1658 pdUI` **ONE SWITCH FOR RELEASE**. Off (the default) is playtest mode: the build tag shows, tutorials and explainers replay every game, the newest animation is forced to play first and the pause menu can skip to pitching. On, all of that is gone. It is on for a link that ends in #release, or once localStorage mm_release is '1'; the App Store build sets it for good.
+- `L1662 pdUI` SAVE DATA HAS A VERSION, so an update can carry progress forward instead of wiping it. Everything the game keeps lives under keys that start with mm_. saveSnapshot() / saveRestore() move the whole lot as one piece of text (what an iCloud save will use).
+- `L1664 pdUI` v0 -> v1: anything unreadable is dropped, so one bad value can never stop the game loading
+- `L1668 saveRestore` QC: the pitching guide runs the first time you pitch in EVERY game. Set false before release.
+- `L1670 saveRestore` **THE PITCHING GUIDE RUNS LIKE THE BATTING ONE**: the game is held, everything is blacked out except the strike zone and the controls, and each control is SHOWN AT WORK (the wheel turning through its pitches, the stick steering the ball, the dial and the ring). Nothing has to be done: a tap anywhere is NEXT.
+- `L1711 pdTut` (a step about something this screen does not have is skipped)
+- `L1714 pdTut` the card goes in whichever half of the screen the spotlight is not in
+- `L1719 pdStart` **YOU'RE ON THE MOUND**: the first time you pitch in a game the picture goes to your man on the hill, clapping into his glove, before the first hitter walks up
+- `L1719 pdStart` (and never with Overdrive in hand: a full bar carried over from the plate was putting OVERDRIVE READY and its explainer in front of the very first hitter. It is handed back with the bars after the half.)
+- `L1719 pdStart` THE FIRST TIME YOU PITCH IN A GAME you start with one bar of Juice, not a full meter: it is earned on the mound (the bars the batting side had are given back afterwards)
+- `L1719 pdStart` **THE PITCHER HAS HIS OWN JUICE BAR**. On the mound the meter is his and only his: it starts at one bar the first time you pitch, keeps whatever he earned from one pitching half to the next, and never shows what the hitters had (their bar is put away untouched and handed back afterwards).
+- `L1723 pdStart` what the mound needs goes to the head of the download line: your pitcher first, then the three Kraken hitters in order
+- `L1723 pdStart` an Overdrive that was switched on at the plate does not come to the mound switched on: it is ready, and it is the player's call again
+- `L1723 pdStart` (skipping here mid-homer left the camera shaking on the mound)
+- `L1723 pdStart` (stamina is set to full at the start of a game and carries from one inning to the next)
+- `L1723 pdStart` the fastball is already picked for the first pitch
+- `L1724 pdStart` YOUR defense: quicker off the bat, more range, longer reach than the one you hit against
+- `L1726 pdStart` the Comets' own pitcher: if his body is still on its way, he takes the mound the moment it arrives (never left as the Krakens' starter)
+- `L1727 pdStart` a solid white frame round the zone: hairlines alone vanish on a phone
+- `L1727 pdStart` a dark pane behind the zone, so its squares read cleanly against the catcher
+- `L1727 pdStart` (nine squares behind the lines carry the hitter's hot and cold zones: red where he is dangerous, blue where he is not)
+- `L1729 pdStart` **THE STICK IS HELD, NOT SET**: how far the thumb is pushed is where the target sits in the zone, and letting go before the pitch is picked sends it back to the middle. (Once the ring is closing the spot is locked.)
+- `L1730 pdStart` **EVERY PITCH HAS ITS OWN HOME IN THE ZONE**: where it naturally ends up if the stick is left alone. The curve sits low, the slider low and away, the change down and in, the heater up. Pick a different pitch and the target jumps to that pitch's spot, so it never looks like the same ball down the middle. The stick aims from there, and lets go back to there.
+- `L1732 pdHomeXY` **LEAN ON THE BREAK**: push the stick the way a breaking pitch already moves (down for the curve, across for the slider) and it breaks more, up to 70% more at full push. The red line shows it bending deeper as you pull. A fastball is not changed.
+- `L1733 pdBm` **AND THE OTHER WAY**: pull against the break (up on a curve, back across on a slider) and it flattens out, down to 40% of its usual movement. The line on screen bends or straightens as you move.
+- `L1736 pdHome` (where the target was when the thumb came off: see pdTap)
+- `L1736 pdHome` (the spring waits a beat before it starts, so a thumb that comes off as the other one goes down has not moved the target)
+- `L1736 pdHome` let go and the target springs back to the middle with the stick's cap, the way the batting ring does
+- `L1737 pdOdEnd` the blue flames go out with the Overdrive: they were being left on the screen edge, into the next batter and even back into the player's own at-bats
+- `L1738 pdHitter` never a long empty pause: two and a half seconds at most for the first man, barely a second after that, none if his download has failed
+- `L1739 pdHitter` the man on deck is dressed while this one bats, so he is ready the moment he is called
+- `L1740 pdHitter` **THE BOX STAYS EMPTY UNTIL THE NEW MAN IS IN HIS OWN BODY**: the retired hitter was coming back into view for a moment and then changing into the next one
+- `L1740 pdHitter` if he is already in his own body he is there on the first frame of his walk-up: no empty beat and no pop-in
+- `L1740 pdHitter` pitcher Overdrive lasts for the one batter
+- `L1741 pdHitter` the Kraken at the plate wears his own body (fetched in the background; until it is here the stand-in bats)
+- `L1743 pdHitter` **HE GETS A WALK-UP TOO**: a couple of seconds of his routine and his name before the first pitch
+- `L1745 pdHitter` the first man of the half walks in; the rest bring a routine, never the same one twice running
+- `L1749 pdHitter` every hitter you face is a one-on-one: his card says who has the edge before the first pitch
+- `L1750 pdHitter` his body is not in yet: the picture stays on the mound, and cuts to his walk-up (card and all) the moment he is there to walk. No empty shot, no pop-in.
+- `L1754 pdTap` **LETTING GO OF THE STICK AS YOU START THE PITCH IS NOT A MISTAKE**. The stick still springs back when it is let go, but if the thumb came off within the last four tenths of a second before the pitch was started (or comes off any time after), the pitch goes where it was aimed: the target is put back on that spot and stays there.
+- `L1757 pdTap` the wind-up starts on this tap, not after the release: the pitcher answers the thumb at once
+- `L1759 pdTap` **JUDGED WHERE THE THUMB SAW IT**: a phone shows the ring about three frames behind the game and takes a moment more to report the touch. Without this a tap made exactly as the ring met the circle was being read as late.
+- `L1759 pdTap` **THE SECOND TAP IS THE POWER**: stop the bar at the top for everything he has
+- `L1760 pdTap` **JUDGED WHERE YOU SAW IT**: the tap is timed from the moment the finger actually landed (the browser's own stamp), not from the next frame, and
+- `L1761 pdTap` from what was on the glass then (the screen is about a frame behind the game, a little more on a phone). The ring is frozen at exactly that size.
+- `L1764 pdTap` the meter: first tap here sets power on the way up, the next sets accuracy on the way down
+- `L1768 pdTap` DRILL HIM: once a half the pitcher can put one in the hitter's ribs on purpose. He takes his base, the crowd lets you hear about it,
+- `L1769 pdTap` and the next man up is rattled (he makes less contact and chases more). A message pitch: it costs a baserunner.
+- `L1770 pdTap` THREE TAPS (PD3, a trial): PITCH, then POWER (a bar beside the zone runs up to the top and back down: stopped at the top is everything he
+- `L1771 pdTap` has, lower is a softer, flatter pitch the hitter sees better), then LOCATION (the ring, as before). Set PD3 to false for the two-tap game.
+- `L1773 pdTap` **HOLD FOR POWER**: press and hold PITCH and the ring swells; LET GO as it reaches the line. (A quick tap still works the old way: tap again to set it.)
+- `L1774 pdRel` a tap, not a hold: the next tap sets the power
+- `L1776 pdRel` (the power swell and the timing ring are both a touch slower than the old two-tap ring: up, tap, down, tap, in a rhythm)
+- `L1777 pdRel` **CONTROL SETS THE POWER METER TOO**: a pitch he commands (a painter's change-up) fills slowly and is easy to stop at the top; one he does not (a wild man's breaking ball) races. Control already sets how wide the release-timing window is and how far a miss scatters.
+- `L1778 pdRel` **A TIRED ARM HAS LESS OF EVERYTHING**. Below 45% stamina it fades in, and at empty: the break is 45% flatter (and the preview shows the flatter path, so what you see is what you throw), the ball is about 14% slower (the speed on the button drops with it), a miss scatters nearly twice as far, the release window narrows, and anything he does get hit comes off 30% harder.
+- `L1782 pdPwSet` TOO LATE: the ring was already on its way back in. He has overthrown it: less on the ball AND it will not go where it was aimed. (Early is only soft: less power, no wildness.)
+- `L1782 pdPwSet` (a generous top: anything within about a tenth of a second of the line is MAX)
+- `L1782 pdPwSet` every power tap is answered at once, so it is never in doubt that the touch was taken
+- `L1782 pdPwSet` (the power rings go the instant it is set; only a full-power stop leaves a green flash behind)
+- `L1786 pdDrill` **HOW FORGIVING THE RELEASE IS**: the better a pitch's control, the wider its perfect window (and the fatter the yellow circle that shows it).
+- `L1787 pdDrill` A Juice pitch is easier still to release perfectly, and easiest of all with the Juice bar full (Overdrive).
+- `L1788 pdWin` (A TIRED ARM IS HARDER TO TIME: from 70% stamina down the perfect window narrows, to six-tenths of its size when he is gassed)
+- `L1788 pdWin` (.82: the perfect window is about a fifth tighter than it was, so a PERFECT is earned. GOOD is unchanged.)
+- `L1789 pdThrow` (the delivery carries on from exactly where his stride had got to)
+- `L1789 pdThrow` (he is already most of the way through his delivery when the release is tapped: the ball is out of his hand a beat later, not a full second later)
+- `L1791 pdThrow` (your pitch stays picked for the next one; a Juice pitch has to be chosen again)
+- `L1793 pdThrow` **A BAD RELEASE IS PUNISHED**: most of the time it is a MEATBALL, flat and right down the middle; otherwise it still drifts up and over the plate
+- `L1794 pdThrow` **VELO IS FELT**: the rating now moves the ball's speed more than twice as much as it did (a 76 fastball is about 93, a 100 is about 108; it used to be 98 against 104). An average-velocity arm is unchanged.
+- `L1795 pdThrow` the same speeds the player faces when he bats
+- `L1795 pdThrow` (same side and same phases as the preview: the pitch goes down the path that was drawn)
+- `L1796 pdThrow` **A PERFECT RELEASE PAYS OFF**: the ring bursts gold, the screen kicks, a rising chord, the crowd reacts, and the pitch leaves a gold streak
+- `L1797 pdThrow` **THE CAMERA KICK IS FOR PERFECT-PERFECT**: full power AND a perfect release. A perfect release alone gets only a faint nudge.
+- `L1799 pdThrow` (shown on the location marker when the pitch gets there)
+- `L1800 pdThrow` **THE TIMING RING GOES QUICKLY**: long enough to see whether the release was perfect, early or late (three quarters of a second), then it is out of the way and the eye is on where the pitch actually goes
+- `L1800 pdThrow` **THE RING STAYS WHERE YOU STOPPED IT**: frozen at the size it was when you tapped (still big = early), green for perfect, white for good, red for way off
+- `L1801 pdThrow` a Juice pitch is felt as well as seen (on phones that can vibrate)
+- `L1804 pdPitFix` nothing makes the player wait: if his own body is not in yet when the first pitch is due, the stand-in takes the mound until it is
+- `L1804 pdPitFix` YOUR pitcher is the Comets' own man. While his body is still arriving the mound is left empty for a moment rather than show the stand-in; if he is not there after two and a half seconds the stand-in pitches, because a pitcher nobody can see is worse
+- `L1807 pdOdGuide` forced from this moment, whether or not the explainer gets to show
+- `L1809 pdOdGuide` JUICE IS EXPLAINED AFTER A FEW PITCHES, not in the first tutorial: once three have been thrown and there is a bar to spend, a card and a spotlight point at the JUICE button. Any touch closes it.
+- `L1811 pdOdGuide` (the Juice guide runs on its own clock: see jzGuideStart)
+- `L1814 pdOdGuide` **SCOUTING REPORT** (a pitcher's in-play perk): ahead 0-2, he is shown the hitter's weak spot as a gold target in the zone. Put the pitch on it and the hitter is as good as beaten: it counts as far colder than any cold zone. One target per pitch, in one of his cold squares when he has one, otherwise down and away.
+- `L1820 pdWeak` **THE BALL IS IN HIS HAND**: while you pitch, from the stretch through the wind-up to the instant of release, the ball sits in your pitcher's throwing hand (out at the base of his fingers, at the same small size it has in flight), instead of appearing from nowhere as it leaves.
+- `L1822 pdBallHand` (no finger bones on this body: out along the hand from the wrist, and into the palm)
+- `L1823 pdBallHand` CHANGE PITCHER? A gassed pitcher brings up a chip over the wheel, before each hitter he faces in that state, until the player has used the bullpen a few times and knows where it is. One tap opens the bullpen. It never stops the game: ignore it and you pitch on.
+- `L1827 pdTick` **THE PUNCHOUT CUT**: the pitching controls are off the screen while he celebrates on the mound
+- `L1827 pdTick` HIS CARD goes up under the call: name, arm, ratings and what he throws
+- `L1827 pdTick` (the walk-up flag goes back on even while his card is still waiting for his body: without it the stick and the pitch wheel sat on top of the walk-up)
+- `L1828 pdTick` belt and braces: no Overdrive, no flames, checked every frame while the player pitches
+- `L1828 pdTick` (no strike-zone grid hanging in the walk-up shot)
+- `L1828 pdTick` the yellow aiming circle is gone once the ball is thrown
+- `L1832 pdTick` every new pitch starts clean: back on the fastball, target back on the fastball's spot (in Overdrive, a pitch has to be picked)
+- `L1832 pdTick` the target goes back to the middle after every pitch
+- `L1833 pdTick` **THERE IS ALWAYS A MAN IN THE BOX**: a hitter left faded out (or culled by the long lens) by whatever was going on when pitching began is put back
+- `L1833 pdTick` (the PITCH / TAP! button stays up through the delivery and the flight, the pitch keys go as before)
+- `L1833 pdTick` once the pitch is made the controls are gone until the next one
+- `L1833 pdTick` the crowd's roar is a loop that the batting side shuts off before each pitch; pitching never did, so it roared on for good
+- `L1834 pdTick` NO PITCHING CONTROLS DURING A WALK-UP, whatever path led here
+- `L1834 pdTick` **HIS WALK-UP DOES NOT START UNTIL HE IS THERE TO DO IT**: the card is up, and the routine begins the moment his own body is in (four seconds at the very most, then the stand-in walks)
+- `L1835 pdTick` the guide comes up once the first batter is in and the controls are live
+- `L1836 pdTick` ONE CIRCLE: held at the size it was tapped at, on the spot you aimed while the ball is on its way, then centerd on where it actually finished
+- `L1837 pdTick` (the ring waits, open, until the power is set; nobody taps and it goes with nothing on it)
+- `L1840 pdTick` THE RING CLOSES ON THE TARGET ITSELF, out at the plate: it shrinks onto the yellow circle there, centerd on it exactly
+- `L1844 pdTick` **TAP! FOR THE RELEASE TOO**: as the closing ring comes onto the target the same green TAP! goes up that marks full power, a beat ahead so the thumb can answer it
+- `L1848 pdTick` the turbo whoosh goes with the ball leaving his hand, not with the tap
+- `L1848 pdTick` **OUT OF THE HAND LIKE OFF THE BARREL**: a perfectly timed release (or a Juice pitch) gets what a squared-up ball gets: a beat of freeze, the camera kick, the flash, a shock ring and sparks at his fingertips. A good release gets a little of it; a mistimed one gets none, and you feel the difference.
+- `L1849 pdTick` a smaller ball out of your pitcher's hand: it reads as quicker
+- `L1849 pdTick` every pitch leaves a streak: seen from behind the mound through a long lens, the streak is what reads as speed
+- `L1855 pdTick` What the hitter does with it. Decided as the ball leaves the hand; shown when it gets there.
+- `L1860 pdDecide` TUNNELING: this pitch comes out on the same line as the last one (they look alike halfway to the plate) but finishes somewhere else entirely
+- `L1862 pdDecide` (the call comes once the ball is on its way)
+- `L1863 pdDecide` a nasty pitch that finishes just off the plate (a slider away, a curve in the dirt, painted heat) looks like a strike for most of the way: he chases it far more often than one that is obviously out
+- `L1864 pdDecide` SHARP BREAK: a breaking ball thrown with the stick leaned the way it breaks (more break) and finishing on or near the edge is the one that gets the ugly swing: missed by a foot
+- `L1867 pdDecide` 0-2: he is protecting, and a nasty one just off the plate gets him
+- `L1868 pdDecide` **HE SEES IT COMING**: the same pitch in the same spot again and again and the hitters start sitting on it (the memory runs across the game,
+- `L1874 pdDecide` **HONEST RESULTS**: how well the pitch was thrown (exq, 0 to 1) decides most of what happens to it. Release, power and where it finished all count.
+- `L1875 pdDecide` A pitch thrown right, to a good spot, is never taken deep and rarely hit hard; one left over the middle without a clean release gets hurt.
+- `L1878 pdDecide` A GOOD PITCH OFF THE PLATE GETS CHASED; A SLOPPY ONE GETS TAKEN. How well it was thrown (release, power, how close to the edge it finished) and how good the pitch itself is (its break or its velocity rating) raise or lower the chance he swings at a ball. Thrown right, the edge is where strikeouts come from; thrown badly, the same spot is ball one.
+- `L1882 pdDecide` **NASTY STUFF JUST OFF THE PLATE GETS SWUNG AT**: a slider, curve, change-up or Juice pitch that finishes a ball or so off the edge pulls a swing far more often than a fastball there, and a perfect-perfect one (perfect release at full power) most of all
+- `L1888 pdDecide` (and when he does chase the nasty one off the plate, he mostly comes up empty)
+- `L1889 pdDecide` how his swing was timed: out in front of the slow stuff, behind the heat, and fooled worst when the speed has just changed
+- `L1891 pdDecide` **THE STUFF COUNTS WHEN HE HITS IT**: each pitch is rated on its own (its better of velocity and break, plus its command). A below-average pitch that gets hit is hit up to 30% harder (more homers, more extra bases, more singles); a top-shelf one, up to 14% softer. The swing-and-miss side already used these ratings; this is the contact side.
+- `L1891 pdDecide` **THE HOT AND COLD SQUARES MEAN IT**: in his red squares he makes more contact and it is hit harder (more extra bases and homers); in the blue ones he misses more, and what he does hit is weaker. Nothing is certain either way: a great pitch can still get him out in the red, and a bad one can still leave the park from the blue.
+- `L1892 pdDecide` a pitch executed that well is never taken deep
+- `L1897 pdAdvance` a man on second scores on a single about half the time
+- `L1899 pdAdvance` THE STRIKEOUT CALL, like the hitting calls: picked for how he went down, never the same one twice running
+- `L1901 pdAdvance` THE BULLPEN: five arms, each a different pitcher. Velocity, control and break for each pitch (FB, SL, CB, CH), and which hand he throws with: a lefty's stuff breaks the other way. Change him from the pause menu while you are on the mound; the choice is remembered.
+- `L1907 pdAdvance` FOUR TEST ARMS, uneven on purpose, so the ratings can be felt against each other: all gas and no idea where it is going; all command and nothing on it; one filthy pitch and nothing else; and a man who is just not very good.
+- `L1914 staffApply` **EVERY ARM HAS ITS OWN TANK**: bringing in a new pitcher brings in his stamina, and the man coming out keeps what he had left
+- `L1914 staffApply` **CONTROL IS FELT IN THE HANDS**: on a pitch he does not command, the release ring closes up to 28% faster, the window to hit it is narrower, and the power meter races; on one he owns, the ring is a touch slower than before and the window is wide.
+- `L1915 staffApply` **A NEW ARM GETS AN ENTRANCE** (his card comes up with it, as on your first trip to the mound):: the same cut to the mound, drifting in on him, that opens your first trip out there
+- `L1916 staffApply` how long each of your pitches takes to get there
+- `L1921 pdKCall` **MAKE THE PLAY**: while you pitch, a ball that is right on the edge of being caught (a diving catch, a home run that can be taken back at the wall,
+- `L1922 pdKCall` a screamer right at an infielder, a foul fly just out of reach) sometimes stops the action in slow motion and hands it to you: win the
+- `L1923 pdKCall` showdown and he makes the play, lose it and it gets by him. Never on routine outs, and only now and then, so it is never expected.
+- `L1951 pdResolve` (who is standing on first: the man who just reached, unless he made the out)
+- `L1956 pdResolve` ONLY the real celebrations: never a brawl clip (taking a punch, lying winded), which had him floating flat in the air
+- `L1956 pdResolve` playtest: this game's first strikeouts show the newest celebrations, one after another, before the usual mix
+- `L1956 pdResolve` (held on him until the next thing is actually called: the wait before it is longer when the release read-out is still up, and the cut used to run out a fifth of a second early)
+- `L1956 pdResolve` FROZE HIM: a good pitch he could only watch, and for a beat he sags in the box, seen from the mound with the next pitch already yours to throw. About half the time at most, never twice close together, never the same reaction twice running.
+- `L1959 pdResolve` **A FOUL BALL IS SHOWN**: it comes off the bat and is followed far enough to see it land foul, then it is back to the mound
+- `L1964 pdResolve` PUT IN PLAY: from here it is the real game. The ball is launched off his bat with the same physics as any batted ball, the fielders go
+- `L1965 pdResolve` and get it (or do not) by the same rules, and the same cameras follow it. How hard and how squarely he hit it comes from the pitch.
+- `L1968 pdResolve` **HE CAN TAKE YOU DEEP THE WAY YOU TAKE HIM DEEP**: a ball he squares up (a hung pitch most of all) now and then becomes a tape-measure shot, out of the park and onto the Moon
+- `L1973 pdResolve` **THE COMEBACKER IS ALWAYS YOURS**: a ball hit back at the pitcher in the air used to vanish into him as he stood there. Now it is a MAKE THE CATCH on the mound, with your own pitcher going up for it.
+- `L1973 pdResolve` **MAKE THE CATCH**: a line drive right at an infielder is, half the time, the player's to catch
+- `L1975 pdResolve` the long ones are followed from behind the ball with the distance running up, just like yours
+- `L1977 pdResolve` a Kraken puts it in play: the park reacts, but well short of what it does for a Comet (no boos for contact)
+- `L1978 pdResolve` A ball the player's defense has dealt with (or not): the result goes on the Krakens' side of the ledger, and it is back to the mound.
+- `L1979 pdResolve` **THE CALL IS MADE OUT IN THE FIELD, WHERE THE PLAY WAS**. The result goes up while the camera is still on the fielder; it holds there for a
+- `L1980 pdResolve` second and a half, the callout is taken down, and only then does the picture go back to the mound for the next man. The call is never
+- `L1984 pdFinish` (where the ball was fielded: the throw is staged from there)
+- `L1984 pdFinish` MAKE THE PLAY comes up the instant the infielder has the ball: no wait for a throw or a call first
+- `L1984 pdFinish` a grounder: the throw across the diamond is seen all the way to the bag, the out is called when it gets there, and the call has its moment
+- `L1984 pdFinish` **THE PLAY IS OVER THE MOMENT IT IS CALLED**: the clock of the flight is held at the catch, so the ball can never be seen carrying on past (or through) the man who caught it while the call is up
+- `L1987 pdFinish` (who is standing on first: the man who just reached, unless he made the out)
+- `L1990 pdFinish` **MAKE THE PLAY**: a routine grounder to an infielder is sometimes the player's to finish. The arrows, short and with plenty of clock; now and then a tougher hop (a longer code, less time). Boot it and he is safe on the error.
+- `L1995 pdFinish` TAGGING UP: a deep fly with a man on third and fewer than three out, and he tags and goes. The player makes the throw home (the first chance each game, then a bit under half the time)
+- `L2000 pdFinish` **HE GETS GREEDY**: on a single or a double with the next base open, the Kraken sometimes tries to stretch it, and the player gets the play at the bag (the first chance each game always, then about two in five)
+- `L2001 pdFinish` **THE PLAY AT THE PLATE**: a run that came in on a single or a double is sometimes a close one, and the player gets the tag (once a game at the first chance, then about one in three). Win it and the run comes off the board.
+- `L2004 pdFinish` **FIRST TO THIRD**: a single with a man on first, and he keeps going round second. The player throws to third
+- `L2007 pdFinish` **HE'S STEALING**: with a quick man on first and second open, he sometimes takes off between pitches and the throw down is the player's. Mostly the burners (a slow man almost never goes), once per runner, so it stays an event.
+- `L2009 pdFinish` THE PUNCHOUT CUT holds on the mound until the next man's walk-up is actually on the screen: never a flash of the pitcher's view with an empty box in between
+- `L2010 kCelOn` **WHILE THE NEXT MAN IS STILL ON HIS WAY** (his body loading), the picture is on your pitcher on the mound, never the pitcher's view of an empty box
+- `L2011 pdStealTry` (Crash behind the plate: they run half as often)
+- `L2013 pdEnd` **AN INNING IS A FULL DAY'S WORK** (for now): whoever finished the half comes off it drained. Send him back out and his timing windows are narrow; the bullpen is fresh.
+- `L2013 pdEnd` (the batting side gets back the bars it had)
+- `L2015 pdEnd` the Kraken pitcher is back on the mound and the next Comet takes his own body back
+- `L2026 draw` FROM THE MOUND THE FIELDERS ARE ALL BEHIND OR BESIDE THE CAMERA, yet they were still being drawn in full detail because they are close to it: the pitching view drew three to four times the triangles of the batting view. They are switched off until a ball is in play.
+- `L2049 draw` YOUR pitcher erupts in blue flame the moment you switch his Overdrive on
+- `L2336 ribbon` mound: a smooth dome using the same surface shader, with the pitching rubber on top
+- `L3205 ik` THE KEPLER KRAKENS in the field (the pitcher and the bullpen are in BULLPEN). name, initial ('' for the aliens, who go by one name), number,
+- `L3233 runPose` something real to read out of the hand, the way a hitter does. Never shown before release.
+- `L4192 pdBrawlEnd` (winning the fight fills the meter: your pitcher comes out of it with Overdrive in hand)
+- `L4425 pcIntro` (one line: who he is and NOW PITCHING are on his card, which sits right under this banner)
+- `L4522 gameRating` **LEAVING THE MOUND CLEANLY**: restarting or quitting while you are pitching used to leave the game in pitching mode (the aim stuck out by the zone, the last hitter's hot and cold squares still up, the batting controls dead), and it stayed that way through further restarts.
+- `L4524 newGame` **A NEW GAME STARTS CLEAN**: any GO! / NO, STAY offer, steal call or pitching prompt left over from the game that was restarted is taken down
+- `L4528 newGame` ───────────────────────── pitching
+- `L4541 newGame` More Juice pitches. Each has its own path, its own color and its own trail shape. Whatever the ball does on the way, it still
+- `L4568 payHeat` a Juice pitch costs him less than it used to, so his bar actually fills
+- `L5012 finishPlay` the player is pitching: this one belongs to the Krakens
+- `L5319 cornerTap` PITCHING: any touch or key skips the hitter's walk-up at once
+- `L5349 toMenu` **BACK AT THE MENU**: any pitcher or hitter not yet built is built now, while nothing is happening (the phone reports showed bullpen arms still being unpacked in the middle of games)
+- `L5353 toMenu` **THE PAUSE MENU IS SHORT**: resume, skip to pitching, settings, restart, quit. Everything adjustable lives one tap down, under SETTINGS.
+- `L5359 toMenu` PLAYTEST: back from a skipped-to pitching half with three bars of Juice, and Overdrive ready for the second man up
+- `L5377 interrupt` other bodies for the mound: every pitching change brings a different-looking arm (each material: color map, normal map)
+- `L5521 setupClip` when in the windup to start loading, so he is set just after release
+- `L5612 updateClip` (he is always solid for his walk-up: a fade left over from a play at a bag while pitching had him see-through)
+- `L5739 addHat` Which body the man on the mound should be wearing (by his place in the bullpen), and the swap itself. Only ever done between hitters.
+- `L5755 setupPitcher` release = the frame the throwing hand is moving fastest toward the plate
+- `L5899 retarget` let through one job at a time, only while nothing is being asked of the player: the title, a result, a trot, a pitching change. A job that
+- `L5906 safeMoment` out of patience, but NEVER in the middle of a pitch, a release or a quick time event: it waits for the next beat instead
+- `L6040 loadPlayers` pitcher in the bullpen wears his own. A body that has not arrived yet (or fails) just means he comes in wearing the usual one.
+- `L6042 loadPlayers` Bodies are fetched only when a pitcher who wears one is due (the man on the mound, and the next arm in the bullpen), never all at once.
+- `L6078 loadPlayers` **IN THE ORDER THE GAME NEEDS THEM**: your nine hitters, then the eight Kraken fielders (they are on screen from the first pitch, and the phone reports showed their bodies being unpacked in the middle of games), then the Kraken hitters you pitch to, then the bullpen
+- `L6078 loadPlayers` (and every arm in the bullpen plus your own pitcher: a pitching change, or the first trip to the mound, was still unpacking a body in the middle of the game)
+- `L6083 loadPlayers` YOUR pitcher's body is asked for the moment the game loads, not a few seconds in: on a phone on a cold cache it was still on its way when the player first took the mound, and the stand-in pitched
+- `L6083 loadPlayers` the Krakens' hitters and the Comets' pitcher, for the pitching half-innings: fetched a little later, they are not needed until the first inning is over
+- `L6452 step` (pitching: once a hitter's turn is over the box is EMPTY until the next man walks up; the retired hitter is not left standing there)
+- `L6618 qualityWatch` (batting, pitching, the home-run chase camera...), keeps the worst individual frames with what was on screen at the time, and saves a small
+- `L6713 shTick` the arrows and a near miss still counts. Every finger that comes down is read at once (touchstart), with nothing waiting on a tap or a release.
+- `L6730 hev` PLAYTEST: the build number is on the screen at all times, tiny, at the bottom, so a screenshot always says which build it is. Remove before release.
+- `L6748 scnStart` **A PITCHING CHALLENGE**: straight to the mound, with the outs and runners as described
+- `L6898 pcardTick` **HOW FAR, RIGHT WHERE IT CAME DOWN**: a homer that lands in the seats or on the patio gets its distance beside the spot for a moment (not on the chase camera or the Overdrive shows, which have their own read-out). It rides the picture and holds nothing up.

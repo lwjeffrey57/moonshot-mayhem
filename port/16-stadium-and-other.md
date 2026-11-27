@@ -1,0 +1,419 @@
+# Stadium, presentation and everything else
+
+From the prototype's `index.html`. Bold = standing rule. See `README.md` in this folder.
+
+- `L1350 (top level)` ───────────────────────── renderer / scene
+- `L1383 packGroups` (only when the runs cover the whole mesh exactly: otherwise it is left alone)
+- `L1389 fbxParse` (not the small house body or the bat: those are re-cut and re-dressed per wearer, which reads their numbers again)
+- `L1500 flyY` below its bottom edge (measured, so a two-line or oversized call pushes them down by exactly as much): never across it, never a gap.
+- `L1677 gtShow` the window in the blackout is always the strike zone
+- `L1686 gtEnter` (the timing step is shown with the curveball, down in the zone where the ring is easy to follow)
+- `L1686 gtEnter` from the aim step on the fastball is the pitch on the dial
+- `L1690 gtTick` each pitch in turn, a second apiece: its key lights, the dial names it, the ball moves to its spot and the red line bends its way
+- `L1691 gtTick` the cap moves by itself; the ball and its line follow
+- `L1692 gtTick` one loop: the green dial is pressed, it becomes PITCH! and the ring closes on the target, PITCH! is pressed as the ring turns green
+- `L1697 gtTick` **THE POWER TAP**: the dotted ring swells out to the bold circle; the button goes down as they meet, and it flashes green
+- `L1703 gtTick` (the ball in the target keeps spinning through every step)
+- `L1705 gtTick` nothing on the screen is live during the guide: every touch is NEXT
+- `L2037 draw` on a base hit it waits for any send to be settled first: never before or during the quick time event, always after it, on the base he ends up on
+- `L2039 draw` **HE IS SHOWING OFF ON THE BAG**: the fire goes up round him right there, in the middle of his routine (it used to wait for the routine to end and then had nothing left to show but the word)
+- `L2057 draw` a message earned by a play stays up for a good few seconds after the moment has passed, so the board is felt, not flickered
+- `L2060 draw` a smooth pulse about twice a second, never a hard strobe
+- `L2061 draw` the ribbon board crawls, like a real park's (moving a texture costs nothing)
+- `L2063 draw` call is SHRUNK to fit (down to 40%); it is never slid down across him. Only if there is no usable gap at all does it go to the foot of the screen.
+- `L2069 draw` shrunk if the gap under the top bar is tight. That is where the eyes already are.
+- `L2075 draw` call-outs sit just above the head of whoever the close-up is on
+- `L2078 draw` no atmosphere: distance only fades far-off stands a little
+- `L2209 ribbon` back point of home plate, where the foul lines meet
+- `L2211 ribbon` never sits on a green background. The grass version is kept for other parks: set DIGI to false.
+- `L2213 ribbon` ── Playing surface. One shader paints the whole field from two field-wide maps (color: mowing pattern, wear, shade;
+- `L2214 ribbon` mask: where it is dirt) multiplied by tiling close-up detail, so it holds up at the plate and from the upper deck.
+- `L2217 ribbon` moon dust, not clay (digital park: slate deck panels)
+- `L2221 ribbon` mask: red = dirt, green = inside the park at all
+- `L2222 ribbon` two mowing directions crossing, like a big-league diamond cut
+- `L2240 ribbon` the mound stands proud of the field: lit on one shoulder, shaded on the other
+- `L2244 ribbon` craters and boot prints in the dust: small on the infield skin, a few bigger ones on the warning track
+- `L2251 ribbon` where a crater may not go: the lane from the plate out past the mound (it sits behind the strike zone), the bags, the plate area
+- `L2254 ribbon` the outfield is rolled mare basalt: dark, flat, pocked with old craters
+- `L2258 ribbon` foul ground either side of the plate
+- `L2264 ribbon` long evening shadow from the third-base stands
+- `L2272 ribbon` Regolith close-up, drawn as a height picture (bright = high): soft swells, pebbles, little craters with raised rims, fine grain.
+- `L2333 ribbon` the real moon-surface maps arrive a moment after the page: until both are in, the painted surface stands in
+- `L2343 ribbon` regulation layout: 4 ft x 6 ft boxes set 6 in off the plate and centerd on it, 4 in chalk,
+- `L2348 ribbon` foul line picks up at the front of the box
+- `L2366 ribbon` green pads and the ad panels are spaced evenly in the gaps between them (nothing overlaps).
+- `L2390 ribbon` at the foot; and every thirty meters a pool of warm floodlight washes down it, with dimmer stretches in between.
+- `L2393 ribbon` the stretches between the lights sit a shade darker...
+- `L2394 ribbon` ...and the pools of light lift them back
+- `L2414 ribbon` the yellow home-run line is real geometry, so its edge stays crisp at any distance
+- `L2423 ribbon` the upper deck and its roof are open from left-center (25 degrees) round to right-center (15 degrees): the Earth hangs over the scoreboard,
+- `L2424 ribbon` and the rocket on its pad and the crater rim stand in the opening to its left. The deck is kept in right field and down both lines.
+- `L2425 ribbon` UPPER: the outfield's upper deck and its roof. Switched off: the outfield is one low bowl, so the crater rim, the rocket, the
+- `L2426 ribbon` Earth and the stars stand clear above it and the place reads as the Moon at a glance. (The decks down the foul lines stay.)
+- `L2457 ribbon` fans in team colors and bubble helmets, bright enough to read through the screen
+- `L2479 ribbon` (the back rail stands on the top terrace)
+- `L2505 ribbon` **THE COVE COMES RIGHT UP TO THE PARK**: the lava fills the right-field corner to the foot of the grandstand, where there used to be a wedge of bare regolith
+- `L2505 ribbon` **THE LAVA RUNS ON**: round past the right-field corner and away behind the grandstand, a sea of it out to the foot of the ridge
+- `L2507 ribbon` SOLAR FARM: the League collects the heat and the light. Rows of collector panels stand on the regolith along both shores of the bay,
+- `L2508 ribbon` tilted toward the park, each on its own post.
+- `L2513 ribbon` THE SHORE: the lava does not stop at a ruled line. Along both sides of the bay an uneven band runs out over the regolith: a thread of
+- `L2514 ribbon` glow at the lava's edge, then black cooled crust, then scorched grey dust thinning away to nothing. One small see-through texture.
+- `L2527 ribbon` PAINTED LIGHT, like everything else in the park: dark cola glass with the floodlights running down it as two long highlights, a
+- `L2528 ribbon` paler empty neck above the fill line, the lava's orange glow climbing up from the foot, a shaded cream label and a bright steel cap.
+- `L2530 ribbon` the empty neck and the line of the drink
+- `L2533 ribbon` the label, twice round the bottle so it reads from the plate and from the air
+- `L2536 ribbon` (the bottle's skin runs the other way round it: drawn mirrored here so it reads the right way on the model)
+- `L2545 ribbon` a pool of lava-light round its foot and a glint on its shoulder
+- `L2546 ribbon` THE VOLCANO: the bay has a source. One of the peaks on its far shore is live: black basalt with rivers of lava running down its
+- `L2547 ribbon` flanks into the bay, and a glow over the crater. (A cone and one painted texture.)
+- `L2550 ribbon` slow bends, like something flowing, not forks of lightning
+- `L2557 ribbon` set back beyond the near ridge and made bigger to suit: the longest shots (1,134 ft is 346 m) come down well short of its foot, never into it
+- `L2561 ribbon` luxury boxes between the decks
+- `L2564 ribbon` **THE HALO BOARD**: a ring of LED all the way round the top of the outfield stands. It crawls, and it reacts to the game: gold for a home
+- `L2569 ribbon` it over for anything worth shouting about, each with its own colors, and the hype ones strobe.
+- `L2578 ribbon` the 50/50 raffle, Moon style: the numbers are different every time it comes round
+- `L2583 ribbon` PROPAGANDA: the League owns the board, the park, the air and the players, and says so cheerfully between pitches...
+- `L2607 ribbon` with no upper deck, the rim of the bowl carries the lights and the flags
+- `L2609 ribbon` No flags: there is no wind up here. The rim carries comms gear instead: dish antennas turned toward Earth, and whip masts with a blinking beacon.
+- `L2624 ribbon` a flat cap along the top of the bowl
+- `L2647 ribbon` beyond the park: the lunar surface, crater-rim ridges on the horizon, and a small moon base with a rocket on the pad
+- `L2649 ribbon` The ranges are pale, rounded lunar hills: bright moon-white at the crest fading to grey at the foot (the look the owner prefers), with
+- `L2650 ribbon` only gentle painted light on top: soft swells of light and shade, a brighter crest line, and a faint warm wash at the foot from the park.
+- `L2656 ribbon` **THE RANGES HAVE A BACK**: each was a single upright sheet, which showed as a paper cut-out from above. Now the face leans back from its foot to the crest and a second slope falls away behind it, so from the air it is a ridge with two sides. Two extra strips of triangles in all.
+- `L2658 ribbon` MTN_MOON: the ranges wear the same lunar surface as the field (the same photographed maps, lit from the same side), brighter at the
+- `L2659 ribbon` crest and falling to shadow at the foot. Set it to false for the plain painted hills.
+- `L2672 ribbon` well below the field's own ground sheet: from the blimp the two were close enough to flicker through each other in bands
+- `L2673 ribbon` moon base: habitat domes with lit windows
+- `L2676 ribbon` the rocket: a proper launch vehicle on its pad. A smooth-nosed body with painted panels, a checker band, portholes and the club's
+- `L2677 ribbon` name down its side (shading is painted on, brighter on the side that faces the park), two strap-on boosters, swept fins, engine
+- `L2683 ribbon` navy and gold hoop near the base
+- `L2688 ribbon` painted-on shading: bright where it faces the park, falling away round the back
+- `L2692 ribbon` (the vehicle itself is its own group, so it can lift off the pad on a home run and leave the gantry standing)
+- `L2695 ribbon` body profile from the engine skirt up to the tip of the nose (radius, height)
+- `L2714 ribbon` on open ground well in front of the crater rim (whose near face comes in to about 380 m): nothing of it stands inside the rock
+- `L2715 ribbon` THE FLYOVER: three League interceptors in a vee, thrusters lit, in over the ridge beyond center field, down across the park toward the plate and away over
+- `L2741 ribbon` (behind the plate the sections are the wedges themselves, with an aisle on every seam, so that picture has no aisles of its own)
+- `L2748 ribbon` node at every crossing and a soft bloom round it; the mast is a rounded, shaded tube (highlight down one side, dark at the edges) with a
+- `L2761 ribbon` **THE GRANDSTAND ROOF**: a cantilevered canopy over the back rows of the upper deck, all the way round from pole to pole. Ribbed underneath
+- `L2768 ribbon` P(offset,height) -> array of points along the stand
+- `L2784 ribbon` (superseded: the aisles are now part of the seating picture itself, the same as the outfield bowl)
+- `L2792 ribbon` the walkway between the decks
+- `L2806 ribbon` wire screen on the fair side, this one projects a lattice of light. A ball that hits it is a home run.
+- `L2853 ribbon` (the aisles between the wedges are the same dark navy as every other aisle in the park)
+- `L2871 ribbon` it shows exactly what the halo board in the outfield shows: one program running right round the park
+- `L2874 ribbon` ...and it carries on down both lines, across the face of the grandstand's upper deck: one continuous ribbon of light round the park
+- `L2877 ribbon` **ONE RIBBON, ONE CURVE**: it was an arc behind the plate bolted to flat boards down the lines, with a hard corner where they met and another
+- `L2878 ribbon` a third of the way along. Now the whole run is one line, re-stepped evenly and eased, so it sweeps round the park with no kinks.
+- `L2881 ribbon` (it hangs a couple of meters proud of the deck face, so the eased line never dips behind a corner of the stand)
+- `L2883 ribbon` **THE CORNERS ARE CLOSED**: where the grandstand down each line used to stop short of the outfield bowl (open Moon showing through at the
+- `L2895 ribbon` airlock tunnels into the lower deck, one per section
+- `L2904 ribbon` mission control: the press box behind the plate
+- `L2919 ribbon` where the light sits on the new tower's head: center x, center y, width, height, and how far forward its face is
+- `L2920 ribbon` Each tower: a tapering steel lattice mast (two crossed panels with a see-through truss painted on them), a service platform, and a
+- `L2940 ribbon` the soft bloom, and a long thin streak across it like a lens flare
+- `L2943 ribbon` big moments take it over for a few seconds ('HOME RUN / 455 FT'), then the score comes back.
+- `L2948 sbRR` **THE BIG BOARD**. A deep-space face with a faint star-burst and scan lines; team slabs in club colors; lit lamps for the count and the outs;
+- `L2949 sbRR` the man at the plate with his grades. Messages (HOME RUN and the rest) get their own splash: rays, a metal-gold headline, a glowing strap line.
+- `L2989 sbTick` long video board across right-center.
+- `L3002 sbTick` **LIT LIKE A PS2 JUMBOTRON**: a bright bezel with a row of bulbs, a soft halo of its own light behind it, and a glassy sheen with scan
+- `L3003 sbTick` lines across the face. All painted textures on flat panels, so it is free to draw.
+- `L3022 sbTick` the stadium lights during a short: floodlight glows, the light on the players, and a dimming veil over the picture
+- `L3026 zapTick` a homer that shorted the park out: the lights keep flickering for as long as he is shown rounding the bases
+- `L3040 zapTick` ───────────────────────── ballplayers (sculpted lathe limbs, painted textures)
+- `L3056 zapTick` a soft dark oval under every player and the ball
+- `L3072 jerseyTex` script wordmark wraps the front seam
+- `L3087 pantsTex` players are plain mannequins for now; set true to paint eyes, brows, mouth and hair
+- `L3093 faceTex` short hair round the back and sides
+- `L3159 applyPose` two-bone IK (world-space target) so both hands stay on the bat
+- `L3186 ik` **THE BATTING ORDER IS THE PLAYER'S**: My Squad can swap any two spots, and the order is remembered by name.
+- `L3206 ik` body (index into the extra-bodies list), range (how much ground he covers), jump (how quickly he reacts). Every one wears his own body.
+- `L3232 runPose` The ball has seams, and each pitch spins its own way (a fastball's backspin, a curve tumbling forward, the slider's tight 'dot'):
+- `L3239 runPose` in its own late-drawn group, so it is painted on top of the zone backing and the ring fills instead of being tinted by them
+- `L3240 runPose` (which way the seams turn and how fast: a sinker's tilted two-seam spin, a cutter's bullet tilt, a splitter that barely turns over, a sweeper's side spin, a hard topspin curve, a lazy lob)
+- `L3244 runPose` **A STRIKE IS ANY PART OF THE BALL TOUCHING THE ZONE**: the ball's center may be a ball's radius outside the edge and still be a strike, the way the replay graphic shows a hair of it clipping the corner
+- `L3246 zoneHit` drawn as thin bars: WebGL lines are always one pixel wide
+- `L3252 zoneHit` a dark, see-through backing behind the strike zone, so the white ball stands out against the pale ground when it gets there.
+- `L3253 zoneHit` It is drawn before the ball (which is moved to the end of the draw order below), so it darkens the background and never the ball.
+- `L3259 zoneHit` fills the middle of the green zone whenever the red core isn't drawn
+- `L3260 zoneHit` CONTACT zone filled green from the power core out to the ring
+- `L3268 zoneHit` a group is drawn in its own turn: after the rings and their fills
+- `L3300 standPt` (the outfield upper deck is gone: these flashes go to the lower bowl too)
+- `L3331 sharpInit` the classic nine boxes, drawn faint so they guide the eye without covering the ball
+- `L3376 burst` ───────────────────────── audio (all synthesized)
+- `L3388 loadSfx` real stadium ambience takes over from the filtered noise
+- `L3390 loadSfx` seamlessly; two copies at slightly different speeds overlap so the pattern never audibly comes round again
+- `L3515 organPlay` dead and the whole park drops into half-darkness (with the surge flickering what is left) for as long as he is rounding the bases.
+- `L3516 organPlay` The lights are back for the next hitter.
+- `L3526 lampTick` the dead bank keeps spitting sparks
+- `L3527 lampTick` LASER SHOW. Some home runs set the park's lasers off: a dozen colored beams from the roof line sweeping the sky and the field, strobing
+- `L3530 laserBuild` pencil-thin and the same width end to end: a laser, not a spotlight
+- `L3531 laserBuild` a dark veil drawn over the park but under the beams: the house lights go down, the lasers do not
+- `L3541 laserTick` full strength, with a hard blink now and then
+- `L3543 laserTick` A vendor working the aisles: now and then, between pitches when the park is quiet, you hear him calling. Never over a roar or the organ.
+- `L3561 organTick` of the riffs that fit the moment, the least-played one
+- `L3571 organTick` An ordinary home run's roar is a loop of the steady middle of a cheer, which on its own is flat, like noise. So while it runs, fresh
+- `L3572 organTick` waves of cheering break over it every second or so (the opening shout of the big cheer, at a slightly different pitch each time).
+- `L3673 setMob` the same tips in a computer's words (mouse and keys), plus the base-running ones
+- `L3683 nextTip` testing: show the guide on every launch; set false to go back to once per device
+- `L3751 shoutLk` (whatever call was still on screen makes way for it)
+- `L3760 shoutTick` at the plate after a homer: he lets everybody know
+- `L3776 oppoHR` a homer that left the park the other way
+- `L3776 hotCall` three hits in a row and counting: one of these, never the same one twice running
+- `L3924 cardStats` the rest of the game, but only Power can go past S. Contact and Speed top out at S.
+- `L3985 faceShot` **EVERY PORTRAIT EQUALLY WELL LIT**: each head shot is brightened to the same average level, however dark his suit or wherever he was standing
+- `L4000 mugTick` (a shot that failed is tried again, a few times)
+- `L4005 walkLabel` Every hitter walks up his first time through the order. After that he still gets one a good part of the time (decided once per at-bat),
+- `L4008 walkWant` the plain walk to the plate: either straight in, or stepping in, tapping the plate and getting set
+- `L4013 startWalkup` now and then a surprise replaces his usual routine: he eats dirt on the way in, chips a golf shot with the bat,
+- `L4014 startWalkup` gives the pitcher a friendly wave, drops and does push-ups, or squares up like he wants a fight. Each has the same small chance.
+- `L4016 startWalkup` the game always opens with a plain walk to the plate; the silliness starts with the second hitter
+- `L4029 endWalkup` re-synced to it before every pitch. On contact they are sent toward where the play will leave them.
+- `L4038 runBuild` dressed on a stand-in, so the man himself is not disturbed if he is on base right now
+- `L4039 runnerWear` he carries his own speed round the bases with him
+- `L4067 startTrot` the break dance is the house favorite: three times in ten, never twice running
+- `L4067 startTrot` sometimes he turns and gives the pitcher the 'loser' sign instead // his own routine once he has touched home
+- `L4068 startTrot` men already on base stay ahead of him: when the highlight cuts in, each is at least three-quarters of a base in front of the man behind, and they keep that lead home
+- `L4165 toReady` nobody else needs to bat: that was the ballgame
+- `L4166 toReady` ring back to the middle of the zone before every pitch (or under the mouse)
+- `L4171 toReady` the pitcher you knocked out: one of six calls, never the same one twice running
+- `L4175 toReady` The Krakens' arms. name, number, 'L' = left-hander, which body he wears, first initial. The human ones have everyday surnames; the aliens go
+- `L4176 toReady` by a single name, the way it is said where they come from (no initial).
+- `L4179 toReady` how a pitcher's and a hitter's name are written out: initial and surname
+- `L4428 pcIntro` the outgoing pitcher is still walking off
+- `L4437 loadStep` WARM-UP: everything that is normally built or compiled the first time it is needed (the lasers, the Moon seen from orbit, every effect's
+- `L4440 loadStep` here (no loader library). Until they arrive the park keeps its own lattice masts; nothing waits for them.
+- `L4446 glbLoad` (stored as base64 text, like the player models; achBytes hands back the bytes)
+- `L4459 propReflect` (set further back: it was standing through the halo board)
+- `L4473 propsLoad` the head of the Tripo tower sits right behind the bank of lamps, which stays (it is what goes dark on a LIGHTS OUT homer)
+- `L4474 propsLoad` **THE TRIPO ROCKET**: its triangles are stored vehicle-first, so the ship is one mesh (it still lifts off) and the pad and gantry another (they stay)
+- `L4477 propsLoad` THE TRIPO SATELLITE, cut in three where the wings meet the bus, so it still comes apart when a ball goes through it
+- `L4481 propsLoad` Tripo mission control: the press box behind the plate
+- `L4485 propsLoad` the saucer: its yellow skin is read only for light and shade, and re-drawn as chrome with a green rim
+- `L4486 propsLoad` Tripo habitat domes: a little settlement out on the plain beyond the park
+- `L4487 propsLoad` the Tripo dugout, one behind each line, in place of the three plain boxes
+- `L4489 propsLoad` the Tripo lander at the Apollo site (flag, work-lights and beacon stay)
+- `L4491 propsLoad` where the face of the screen is
+- `L4494 propsLoad` **IT STANDS ON SOMETHING**: a steel gantry from the ground up to its base (two braced towers and a deck), so from the air it is a board on a structure and not a board hanging in space
+- `L4504 playersDone` (called again while it is waiting: the long-stop timer. Let it through now)
+- `L4508 playersDone` ── A goal for every game, set from how this player has been doing, and a grade when the ninth out is made.
+- `L4524 newGame` stat changes from getting hit last only for the game
+- `L4525 newGame` per-game goals are switched off for now: pickGoal() is still here to bring them back
+- `L4525 newGame` a different starter each game, so left-handers start some of them
+- `L4529 newGame` brk = how far the pitch moves off a straight line (sideways, vertical) by the time it reaches the plate; k = how late that
+- `L4530 newGame` movement comes (higher = sharper, later break); arc = hump in the flight. The pitch always finishes at its target spot, so
+- `L4533 newGame` rides in almost flat with a little late hop
+- `L4534 newGame` big looping 12-to-6 hump that drops off the table
+- `L4535 newGame` looks like a fastball, then darts sideways late
+- `L4536 newGame` floats, then dies and fades at the end
+- `L4537 newGame` breaks the opposite way to the slider and sinks
+- `L4539 newGame` hard left-right cuts with sharp corners, flat (no up and down): nothing like the corkscrew's round spiral
+- `L4540 newGame` a tight, fast drill-bit spiral: many small round turns
+- `L4542 newGame` arrives at the plate exactly when the timing ring says it will: only the look of the flight is bent, never the timing.
+- `L4543 newGame` stops dead in mid-air, then goes again
+- `L4544 newGame` two balls, one real: the fake peels off and fades late
+- `L4545 newGame` comes in flat, then jumps late
+- `L4546 newGame` floats, then finds another gear
+- `L4548 newGame` no spin, dances all the way in
+- `L4549 newGame` a towering lob that falls out of the sky
+- `L4552 newGame` vanishes in mid-flight and reappears late
+- `L4555 newGame` a fastball that runs in on the hands and sinks
+- `L4556 newGame` a fastball with a short, late cut away
+- `L4557 newGame` fastball out of the hand, then the bottom falls out late
+- `L4558 newGame` a big, wide, frisbee slider that sweeps right across the plate
+- `L4559 newGame` a harder curve with a sharper, later bite
+- `L4560 newGame` the blooper: a slow rainbow lobbed up and dropped in
+- `L4569 payHeat` said after the pitch has been seen, never before: the first one of the game gets the big call
+- `L4571 payHeat` Welcome at-bat: a new player's first hitter of the game sees slow, straight pitches down the middle and gets a more forgiving bat,
+- `L4572 payHeat` for their first three games on this device. Early success matters more than realism here.
+- `L4958 addRuns` WALK-OFF: the home side bats last, so the moment the Comets go in front in the final inning the game is over. The park comes apart.
+- `L4962 addRuns` The Krakens bat in the top of the 2nd and 3rd, off-screen (the game always starts 0-0): their runs go up as the inning turns over, so the player always knows the score to beat
+- `L4964 addRuns` final inning nearly always matters (anything from two behind to three ahead; kinder in a new player's first few games).
+- `L5016 finishPlay` a routine grounder with the bases empty: now and then it is a race
+- `L5021 finishPlay` the man on first is forced at second, then the relay gets the hitter
+- `L5028 finishPlay` a liner that gets snared always draws a real reaction, wherever it is caught
+- `L5031 finishPlay` a deep fly with a man on: he tags up and goes
+- `L5035 finishPlay` (the hitter's reaction after being robbed is switched off for now)
+- `L5036 finishPlay` (the next hitter is not brought in until the reaction is completely over)
+- `L5044 finishPlay` The badge feats double as the call, ONCE EACH: the first time a feat happens its badge name is what goes up. After that (and once every
+- `L5045 finishPlay` feat that applies has had its turn) the call is the ordinary one again.
+- `L5046 finishPlay` the feats are called by their badge plate (icon and all) the first time they happen; the text call stays the ordinary one
+- `L5047 finishPlay` **THE NUMBER IS HONEST**: it is how far the ball would have gone had nothing been in its way. When something was (the scoreboard, the
+- `L5055 finishPlay` he showed the pitcher up: the next man may pay for it
+- `L5082 finishPlay` Triples always get one, on third (they are rare, and a triple is the most exciting play there is short of a homer).
+- `L5084 finishPlay` the lift uses the bat as the barbell, so it is kept for home plate
+- `L5102 satBreak` drawn up inside, and the ship leaves with it. (The Tripo model came out plain yellow, so it is re-skinned here as brushed chrome.)
+- `L5110 ufoTick` up the beam, into the ship, and gone
+- `L5115 satTick` little point of light that is the ballpark, settles into orbit and goes all the way round. No caption: the picture says it.
+- `L5119 revBuild` a: where the park is; b: the way the ball heads off
+- `L5126 revAt` climbs off the surface over the first sixth of the lap, then holds its height
+- `L5140 odPick` BADGES. Earned once, kept on the device. Each has a name (ballplayer talk), what it takes, and an icon. badge(id) is called from wherever the feat happens.
+- `L5146 odPick` **THE DISTANCE TREE**: every home run's feet are added to a career total, kept on the device. Seven rungs, from a thousand feet to a million.
+- `L5154 callOnce` the first applicable feat whose call has never been shown, or nothing
+- `L5155 callOnce` A badge is UNLOCKED once, for good. But its plate is also the game's way of calling the feat, so it comes up again the first time that
+- `L5166 bdgLabel` a plate that could not be shown within a few seconds of the feat is dropped (it is still in the trophy case): it never turns up batters later
+- `L5166 bdgLabel` (plates DO show during the orbit shot: that is exactly when IN ORBIT should drop in)
+- `L5189 endGame` ───────────────────────── input
+- `L5237 pointerAim` mouse: the ring travels further than the hand, measured from the middle of the zone, so the corners are a short flick away
+- `L5239 pointerAim` the arrow would sit apart from the ring, so it is hidden while hitting
+- `L5242 pointerAim` the ring goes back to where the mouse is, not to the middle, when a new pitch is set up
+- `L5262 touchSettle` already had every sample, the moment it happened
+- `L5265 touchSettle` (A gaming mouse reports up to a thousand times a second. Working the aim out on every one of those reports choked the game on computers,
+- `L5275 touchSettle` let go and the ring springs back to the middle, like a stick
+- `L5296 touchSettle` because some mobile browsers drop pointer events for a second finger. A ripple shows exactly where the tap registered.
+- `L5305 cornerTap` with the buttons away, a touch anywhere skips the cutscene
+- `L5310 cornerTap` the same tap arriving as both touchstart and pointerdown
+- `L5315 cornerTap` The game's own handlers cancel the default action of a click, and that default is also what gives the page keyboard focus. When the
+- `L5316 cornerTap` game is embedded in another page, a mouse-only player would never get focus, so no key reached it. Every click now takes focus explicitly.
+- `L5319 cornerTap` (holding for the Kraken hitter's body: a tap ends the hold)
+- `L5324 cornerTap` a tap anywhere on the title screen starts the game; the option buttons keep their own jobs
+- `L5326 cornerTap` with the rings hidden there has to be something to aim with: the dot comes on
+- `L5369 interrupt` ───────────────────────── rigged batter mesh (Mixamo skeleton), dressed in code and driven by the rig above
+- `L5371 interrupt` player looks you can switch between on the title screen
+- `L5375 interrupt` hitters who are not the house model: LINEUP[..].body is 1-based into this list
+- `L5383 interrupt` (14: the Comets' own pitcher, for the half-innings the player pitches)
+- `L5383 interrupt` one look for now; add entries here to offer more on the title screen
+- `L5395 paintAtlas` jersey front (torso strip runs shoulders→hips; belt and pant tops are painted in)
+- `L5421 paintAtlas` pants: plain (256,512) and outer-side with piping (512,512)
+- `L5431 paintAtlas` curled-finger pose for holding a bat
+- `L5432 dress` assign every triangle to a uniform region and project its UVs into the atlas
+- `L5452 bulk` thicken the mannequin into a ballplayer build (bind-pose space, cm)
+- `L5474 clipBat` push-ups: bat lies flat under his hand, across his body
+- `L5475 clipBat` crouched stance: the hands sit differently, so run the bat through both hands and stand it up more
+- `L5481 clipBat` clean and jerk: the bat is the barbell, gripped in both hands and centerd between them
+- `L5492 clipBat` near the handle (so it is meant to be holding it), the arm is bent and swung just enough to put that hand back on the bat, above the bottom hand.
+- `L5496 gripIK` G: where the top hand grips; Tg: where on the handle it belongs
+- `L5497 gripIK` the hand keeps the grip it had: only the arm moves to carry it there
+- `L5497 gripIK` Tg is now where the hand joint itself must go
+- `L5503 gripIK` nearest a foot bone may get to the middle of the plate (the box's inside line is at 0.35 m)
+- `L5510 setupClip` pose the skeleton from one clip at a time while measuring
+- `L5517 setupClip` another body: the bat sits in the bottom hand exactly as it does in the house model's, and the top hand is brought to the handle (gripIK)
+- `L5523 setupClip` keep him in the batter's box: measure where his feet are in the stance and at contact, and back him off the plate if needed
+- `L5533 setupClip` intros stay in the batter's box: work out how far each clip sits (or finishes) from where he stands in his stance
+- `L5536 setupClip` these two play on the spot: the game moves him, so the kick lands him on the bag instead of carrying him past it
+- `L5538 setupClip` loc: where the routine sits relative to the model's own origin
+- `L5542 batterOpacity` the glass helmet has its own shared material: just hide it when he fades
+- `L5544 updateClip` his body has arrived but has not been dressed yet: dress it now rather than send the stand-in up
+- `L5546 updateClip` everything below is worked out right-handed; a lefty is mirrored at the end
+- `L5547 updateClip` The next hitter is announced as soon as a play ends, but the man on screen is still the one who just swung.
+- `L5551 updateClip` (while the player pitches there is always a man in the box)
+- `L5561 updateClip` the man who just doubled is on show at second, whatever the box is doing
+- `L5562 updateClip` (the Kraken at the plate loads up for your pitch too)
+- `L5568 updateClip` follow-through done → flow back to the stance
+- `L5570 updateClip` play the miss and the first beat of the reaction, then ease back to the stance
+- `L5574 updateClip` THE TAKE. He does not just go limp the instant the ball is past him: he stays loaded and watches it into the mitt, and on a pitch
+- `L5576 updateClip` THE TAKE: a ball just off the plate gets the full take (hands start, he checks it and brings the bat back); a strike he lets go, or one way out of the zone, gets the freeze: it locked him up
+- `L5591 updateClip` (it lets go the moment you start the next pitch)
+- `L5591 updateClip` robbed: he is found where he was when it was caught, a few strides past first base, and that is where it sinks in
+- `L5593 updateClip` (the same going down and getting up when the player drills a batter on purpose)
+- `L5593 updateClip` goes down, then (after the cut) gets back up (now and then with a kip-up)
+- `L5594 updateClip` (the kip-up starts from where the fall left him lying)
+- `L5596 updateClip` (the knockout blow: he goes down and STAYS down. That clip ends with him getting back to his feet, so it is stopped while he is on the floor)
+- `L5601 updateClip` (it was only ever looking for clips that do not loop, found none, and left him standing there, faded out)
+- `L5605 updateClip` the fist-pump is no longer used in the box after a no-doubter: he holds the finish and flips the bat
+- `L5605 updateClip` never the shadow-boxing routine here: no punching in the box after a no-doubter
+- `L5606 updateClip` **HAND OVER THE BROW**: on a no-doubter he now often shades his eyes and watches it go, right there in the box
+- `L5615 updateClip` which stance this hitter uses
+- `L5630 updateClip` on third he faces down the line toward the plate
+- `L5632 updateClip` stand him on the plate facing the way he came in, up the third-base line toward home
+- `L5636 updateClip` watch it go: turn the head toward the ball
+- `L5649 updateClip` two meshes (leather and dark trim), so eight of them on the field cost almost nothing. Units are the hand bone's (centimeters).
+- `L5651 gloveGeo` [geometry, x,y,z, sx,sy,sz, rotZ] pieces merged into one geometry
+- `L5660 mkGlove` matte leather, dark enough that the stadium bloom doesn't make it glow
+- `L5672 mkGlove` the simple round mitt (the sculpted one, mittGeo below, is kept but unused)
+- `L5676 mkGlove` back with finger channels, and leather shading painted into the vertices (dark pocket, seam ring, darker web).
+- `L5685 mittGeo` finger channels across the back of the hand
+- `L5691 mittGeo` the rolled edge joining front to back
+- `L5694 mittLace` lacing wrapped round the rim
+- `L5712 prepModel` dress + bulk a Mixamo mannequin; returns its skeleton helpers and measurements
+- `L5716 prepModel` clips may come from another Mixamo character
+- `L5721 prepModel` a body built to another scale is brought to the house height; ordinary differences in build are left alone
+- `L5724 prepModel` one mesh wearing several materials keeps its geometry (and its material groups) exactly as it came
+- `L5724 prepModel` a textured character keeps its own UVs and look
+- `L5725 prepModel` a model in several parts keeps a material per part
+- `L5759 setupPitcher` textured characters go bare-headed for now
+- `L5768 setupPitcher` A code-built figure can "drive" a rigged model: its joints are fitted to the model's proportions once,
+- `L5851 setupFielder` sideways shuffle (a left strafe, mirrored for moving right), also played on the spot
+- `L5862 setupFielder` the hang-dog reactions (the hitters' strikeout clips) for when a no-doubter leaves the park
+- `L5900 retarget` has waited twenty seconds goes anyway.
+- `L5902 heavyOK` (the game is holding for this very body: unpack it now)
+- `L5905 heavyOK` while the player pitches, the next man is got ready during the wind-up, while the ball is in the air and while the play is being called: never left until the moment he is due
+- `L5906 safeMoment` (first: the body the game is waiting on right now goes to the head of the line)
+- `L5908 safeMoment` arriving: two dozen multi-megabyte files were being asked for at once. Now at most three are in flight at a time, one that fails is tried
+- `L5909 safeMoment` again (four attempts, backing off), and the body the game is actually waiting for can be moved to the head of the line.
+- `L5927 dlBoost` The finish is a painted texture wrapped round the bat by height (not colors per vertex, which gave ragged edges): a taped handle,
+- `L5949 dlBoost` (a picture that fails is tried again as well)
+- `L5951 dlBoost` GPU WARM-UP: every texture a newly arrived body or prop brings is handed to the graphics chip one at a time, at quiet moments, the moment it
+- `L5956 makeSkins` a textured character: its own color, normal, specular and glow maps; the away team gets its red armor recolored teal
+- `L5969 makeSkins` drop the forearm energy blades: their texture island is a thin diagonal strip in the top-left of the sheet
+- `L5970 makeSkins` every player uses the same two meshes (full and low detail), built once
+- `L5981 makeSkins` the Comets' version keeps the forearm blades the model came with
+- `L5990 loadPlayers` the simple built-in figures are only a fallback: keep them out of sight while the models load
+- `L5996 loadPlayers` evenly spaced keys are stored as a count
+- `L5999 loadPlayers` clips made for this body, where we have them
+- `L6002 loadPlayers` The other team's body: its own model and textures, fetched alongside. If it isn't here within a few seconds of everything else
+- `L6003 loadPlayers` (a slow connection), the defense is built from the hitters' model instead, so the game is never held up for it.
+- `L6008 loadPlayers` Every clip made on this body is stored as its joints' own angles. Another body's joints rest at different angles and its hips sit at a
+- `L6009 loadPlayers` different height, so a clip is converted for it once: each joint turns by the same amount from ITS OWN rest pose, and the hips ride at its own height.
+- `L6010 loadPlayers` measured exactly as the file was read, before anything has moved a joint: that IS its rest pose
+- `L6015 loadPlayers` joint angles are copied as they are (these bodies share one joint layout); only the hips' height is fitted to the body's own legs
+- `L6016 loadPlayers` a body with fewer fingers has no joint for some tracks: left in, the mixer would turn the WHOLE BODY with them
+- `L6017 loadPlayers` (joint angles are shared as they are; only the hips' height track is copied, because it is refitted to this body's legs)
+- `L6021 loadPlayers` the character file is read once; every other player is a copy of it
+- `L6022 loadPlayers` space helmets: a clear glass bubble on a metal collar, on every player, so faces and animation stay fully visible
+- `L6027 loadPlayers` (no bubble helmet on this body any more: his own head and armor are the look)
+- `L6032 loadPlayers` shared full and low-detail meshes, as for the hitters
+- `L6033 loadPlayers` the clips are fitted to his skeleton, as for every other body
+- `L6039 loadPlayers` The mound's wardrobe. Body 0 is the defense's usual one; the others are fetched quietly once the game is up, and from then on each
+- `L6052 loadPlayers` arrives, one at a time, only between plays.
+- `L6075 loadPlayers` EVERY BODY THE GAME WILL NEED IS BUILT WHILE THE TITLE SCREEN IS UP, one after another (the nine hitters, then the six Krakens). Unpacking a
+- `L6077 loadPlayers` stops and whatever is left is done at quiet moments, as before.
+- `L6081 loadPlayers` (no longer in the first moments of an at-bat: that is when the player starts to aim, and the freeze was felt there)
+- `L6082 loadPlayers` hitters' own bodies are built before anything else in the queue, so the next man up is himself and not a stand-in
+- `L6083 loadPlayers` started straight away: the first few hitters' bodies are fetched while the title screen is still up
+- `L6142 updateBatter` keep the knob within reach of the lead shoulder
+- `L6322 step` the stick and buttons are only on screen while there is a pitch to hit
+- `L6336 step` on a computer the key pill itself swells and flashes: nothing is written across the hitter
+- `L6338 step` a beat to settle, then the pitch
+- `L6348 step` after the boos the place keeps buzzing while he is down, and it builds as he gets up: never silence, and never louder than the charge that may follow
+- `L6356 step` a good two and a half seconds to settle back in: no quick pitch out of his routine
+- `L6357 step` a new arm who came in hot is revealed like any other: once the hitter is set in the box
+- `L6365 step` (the bat came through after the ball was already in the mitt: say so, so the cut is never silent)
+- `L6367 step` (a LATE cut after the pitch never holds the game up: the pitcher does not wait for it)
+- `L6371 step` and the ball spins the mirrored way out of a left hand
+- `L6375 step` closes at a steady speed onto the target, then keeps shrinking: smaller than the ball = late
+- `L6376 step` flashes white at 'now': red is reserved for the power core
+- `L6388 step` (ball four: the man in the box is gone from it at once. The one seen from here on is him going down to first, and the next figure in the box is the next hitter walking up.)
+- `L6399 step` a hit ball spins: backspin in the air, tumbling forward along the ground
+- `L6405 step` every ball that is going to be caught in the air gets the ring, under the spot where it will be caught: liners, pop-ups, foul outs, robberies
+- `L6407 step` fly balls and liners (not home runs): a ring on the grass that tightens as the ball comes down
+- `L6411 step` drilled him: the pitcher goes down in a heap on the mound
+- `L6417 step` into the reservoir: a geyser of coolant, and the count goes up
+- `L6422 step` MOON HOP!: rides just above the ball for a moment
+- `L6427 step` FROM THE BLIMP the ball stays its ordinary small size and the flame does the work: every one of these is drawn with the full fire trail (doubled up so it reads from that height), tracing the same flight it left the bat on
+- `L6436 step` (no horn, lasers or rocket for a home run the visitors hit)
+- `L6437 step` THE FLYOVER: three interceptors over the park on about a quarter of homers and every grand slam
+- `L6438 step` LIFT-OFF: on a good share of homers (and every grand slam) the Comets rocket beyond left field goes up
+- `L6465 step` the rings answer the press at once: no wait for the flash to clear
+- `L6468 step` bright outlines, so both rings stand out against the dark strike zone; the core is a deep blue you can still see
+- `L6477 step` (the same size as the ball that was in the timing ring)
+- `L6482 step` the strike zone stays up while the pitch read-out is showing, so the ball's spot is seen against it: in the zone or off it. Nothing waits for it.
+- `L6493 applyCam` keep the control pills off the hitter
+- `L6601 drsWatch` a one-off stall says nothing about the steady rate
+- `L6606 drsWatch` two cuts changed nothing and it sits right at 30: capped, not struggling
+- `L6608 drsWatch` it was only just raised and could not hold it: that level is the ceiling for a while, so it does not see-saw
+- `L6611 drsWatch` (and it comes back quicker: two good half-seconds and a bigger step)
+- `L6616 qualityWatch` ───────────────────────── PERFORMANCE RECORDER ─────────────────────────
+- `L6619 qualityWatch` summary to the page's shared database every so often, with nothing asked of the player. No names, nothing personal: device type and numbers.
+- `L6638 perfDev` filters make that compositing dearer. For twenty seconds at a time every endlessly-looping CSS animation is paused and filters are
+- `L6640 perfDev` expensive effects get redesigned by hand.
+- `L6673 perfFlush` the speed read-out can be switched on before the game starts, and it is remembered
+- `L6710 shApply` before the pitch the shadow picture is spent on the plate and the infield, where it is seen close up; once the ball is in play it opens out to the whole park
+- `L6712 shTick` The d-pad takes a touch anywhere on it: the direction is whichever way the finger is from the middle, so there are no dead gaps between
+- `L6715 shTick` fingers are read on touchstart, the earliest moment the browser reports them; a mouse (or anything that is not a finger) uses pointerdown
+- `L6739 scnHash` Sunday..Saturday: each weekday has its own kind of challenge
+- `L6761 streakSave` what the streak IS today, before playing: alive (played yesterday or today), saved by freezes (missed days covered), or broken
+- `L6763 streakView` record today's play (stars 0-3). Returns the updated record plus what happened, for the result screen.
+- `L6765 streakPlay` (a replay the same day: only the best stars are kept)
+- `L6769 streakPlay` (only the last few weeks of stars are kept)
+- `L6773 streakPlay` HOME SCREEN (carousel). The old menu buttons still exist, hidden, and do the work: each new control presses the one it stands for.
+- `L6989 profClose` two taps within four seconds: stats, streak, achievements, XP and settings all go

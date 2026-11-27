@@ -1,0 +1,102 @@
+# Events (QTEs), baserunning offers, steals
+
+From the prototype's `index.html`. Bold = standing rule. See `README.md` in this folder.
+
+- `L1925 cqSetup` ROB HIM! is offered EVERY time a homer is low enough for your outfielder to get a glove on: the biggest moment a fielder has is never left to a coin flip
+- `L1928 cqSetup` (a homer that only just clears, with an outfielder who can get to the wall: it is yours to bring back)
+- `L1933 cqStart` the showdown has the screen to itself: plates and calls wait until it is over
+- `L1940 cqEnd` (losing one of these is now SAID, in the big lettering, with what it cost: it used to be a small line of text and then straight on to the next hitter)
+- `L1942 cqTick` **A SHOWDOWN CAN NEVER OUTLIVE ITS PLAY**: left switched on after the ball was dead it swallowed every touch for the rest of the game
+- `L1943 cqTick` the play hangs in slow motion while you make it
+- `L3522 lampTick` the dark comes down a beat after the smash, so the shower of sparks is seen first
+- `L4148 lazyAct` **SIGN STEALER** (a hitter's in-play perk, Razor and Crash): down to his last strike against a pitcher in Overdrive, he is shown where the next pitch will finish: a gold ring on that spot from the wind-up until the ball gets there. He still has to time it.
+- `L4278 qteParts` (practice and the derby are swings only: no sends, steals or plays at the bag)
+- `L4279 qteOK` the double play decides for itself; the rest are the player's call (the GO button)
+- `L4281 qteOK` which means a quick time event at the bag; leave it and he stays put. On a computer: G or Enter.
+- `L4283 qteOK` HOW RISKY IS IT? One number for every send: 1 is a fair fight, under 1 favours the runner, over 1 favours the throw. It comes from where the
+- `L4284 qteOK` ball was fielded (shallow is a short throw: hard; deep: easy), which side (a ball in left is right behind a man going to third), how far
+- `L4292 goOffer` THE OUTFIELDER HOLDS THE BALL while you decide: no throw is shown until you send the runner, hold him, or let the offer run out
+- `L4292 goOffer` the odds under the button: a rough chance of beating the throw, from his speed, how deep the ball went and which bag
+- `L4292 goOffer` PACE: a second and a half and a bit to decide (a first-timer gets longer). No answer is a NO: he holds, the outfielder throws it in, and the game moves on.
+- `L4292 goOffer` up for a little over two seconds; a player who has never taken one gets the full three
+- `L4293 goOffer` THE STEAL: with a man on first (second open) or on second (third open) and fewer than two out, a STEAL button is up while the pitcher is
+- `L4294 goOffer` getting set. Press it and he goes on the pitcher's move: one try per hitter, and how hard it is depends on the runner's legs and the base.
+- `L4295 stealKind` (no stealing in a Showdown: nothing competes with it)
+- `L4295 stealKind` (a player who has never used Overdrive is being shown its button: nothing else asks for a tap then)
+- `L4295 stealKind` the call can be made right through the wind-up, until the ball leaves his hand
+- `L4297 stealGo` **THE STEAL BUTTON NEVER COVERS SOUND OR PAUSE**: if sitting on top of the placard would put it over either, it goes underneath the placard instead.
+- `L4299 stealUI` (a call never carries over to another hitter)
+- `L4299 stealUI` THE STEAL BUTTON SITS ON TOP OF THE BATTER'S PLACARD, on whichever side that is: clear of the hitter, the plate and the swing buttons
+- `L4300 stealUI` **THE PITCH WAS NOT PUT IN PLAY AND HE IS RUNNING**: the catcher comes up throwing (seen from behind the plate), the ball goes down to the bag, and then it is the showdown there
+- `L4302 stealRun` **FIRST THE RUNNER**: a beat of him breaking for the bag, THEN the catcher coming up to throw, then the play at the base
+- `L4304 stealTick` once the picture is on the catcher the runner is out of it: the next time he is seen is the play at the bag
+- `L4307 goStay` **HE JUST GOT LOCKED IN**: holding the runner does not skip it. The fire goes up on his base now, and then the game moves on.
+- `L4307 goStay` (he holds up: the throw comes in, then the game moves on) /* he holds up: the game moves straight on
+- `L4309 qteStart` (none of the pitching controls show during a play at the bag)
+- `L4309 qteStart` a plate that is up when the event starts is taken down and comes back afterwards
+- `L4309 qteStart` (a throw in from the outfield is as often HOSE HIM!; a steal is the catcher's throw, so never that)
+- `L4309 qteStart` a grounder to an infielder cuts to the runner: THROW HIM OUT! MAKE THE PLAY! is kept for the comebacker, when the ball is the pitcher's own
+- `L4309 qteStart` the plays at a bag are called either way, turn and turn about
+- `L4309 qteStart` (MAKE THE CATCH is staged where the fielder is standing, facing the plate)
+- `L4310 qteStart` your own steal has already shown him breaking: straight to the play at the bag. A steal AGAINST you while you pitch has shown nothing yet, so it gets the full heads-up: HE'S STEALING! and the runner coming, before THROW HIM OUT!
+- `L4310 qteStart` the clock: enough to punch the whole code in at a brisk pace with room for one slip, and no more
+- `L4311 qteStart` (MAKE THE PLAY: the first baseman is turned to the infield, where the throw is coming from, not to the runner)
+- `L4313 qteStart` THROW HIM OUT is about the THROW: after the runner is shown coming, the picture goes BEHIND the man with the ball, looking over his shoulder at first base, and the inputs are made there. Then he throws, and only then does it cut to the bag for the catch and the call. (The model used for the close-ups plays the thrower first and the first baseman after the cut; the real first baseman stands at the bag in the background until then.)
+- `L4314 qteStart` (every throw you make on defense: the grounder to first, and the throws in from the outfield to second, third and the plate. Not the catcher's throw on a steal.)
+- `L4314 qteStart` (fielded right by the bag, or somewhere odd: the shot is staged from shortstop)
+- `L4314 qteStart` (an outfield throw with no sensible spot on record: staged from medium right-centre)
+- `L4314 qteStart` (never right against the fence: the camera stands behind him and needs the room)
+- `L4316 qteStart` the man making the play at the bag is a fielder, so he wears the fielders' body, whoever is pitching
+- `L4317 qteStart` **AT THE BAG HE IS A FIELDER WAITING FOR THE THROW**: down in the ready position, glove out, for every play at a base. The boxer's stance is gone from the field.
+- `L4317 qteStart` (a ball he has to field: he waits in a fielder's ready crouch, not the fighting stance used for a play at the bag)
+- `L4318 qteStart` the men who are really standing there step out of the picture for the close-up; they are put back afterwards
+- `L4320 qteStart` (the real fielder standing where the throw is staged from steps out: the close-up model is him)
+- `L4321 qteStart` (the real first baseman: he is put back in the picture for the shot from behind the thrower)
+- `L4326 qteShow` the other kind: no code, just hammer the arrows until the bar is full
+- `L4331 qteKey` **JUDGED WHERE YOU SAW IT**: by the time a tap arrives the needle has moved on (the screen is a frame or two behind, and a finger takes time to land). The press is scored against where the needle was that long ago, and the needle is put back there so the picture agrees.
+- `L4332 qteKey` the browser stamps the press with the moment the finger or key actually went down: the needle is put back to exactly where it was drawn then (one frame of display earlier), not to a guess
+- `L4334 qteKey` NO DICE: stop it on green and he is safe, every time. A long-shot send is harder because its green band is narrower, not because a good stop can still be called out.
+- `L4334 qteKey` **THE SMALL MARK IS THE SURE THING**: land on gold and he is safe, every time. The wide green band only gets him a chance (better on an easy send, worse on a long shot): close, but the throw can still beat him.
+- `L4336 qteKey` a clear ding, a step higher with every arrow you get right
+- `L4337 qteKey` a wrong arrow costs a third of a second off the clock; your progress stays
+- `L4339 qteKey` **THE CROW HOP**: once the inputs are in he hops toward the base he is throwing to, plants, and lets it go
+- `L4340 qteDone` (the inputs are in: he throws. The catch and the call follow)
+- `L4340 qteDone` rv: the RUNNER wins the collision. When the player is the fielder, winning means the runner does not.
+- `L4342 qteDone` **MAKE THE CATCH, MADE**: he goes up for it. A leaping snag, timed so the glove is at the top of the jump as the liner gets there; the ball sticks in the pocket and he comes down with it.
+- `L4342 qteDone` (missed it: he stays in his ready position until it hits him, then goes down. The catcher's crouch is never shown here.)
+- `L4342 qteDone` THE MAN AT THE BAG STRETCHES FOR THE THROW, safe or out: a step toward it off the bag foot, the glove out, and he sticks it (a captured first baseman's stretch, started a beat in and played quick so the glove meets the ball). A liner he has to catch himself keeps the ordinary catch.
+- `L4342 qteDone` a race to the bag: no contact, he just runs through it
+- `L4343 qteDone` AT THE PLATE he can just run the catcher over: lowers the shoulder and goes through him
+- `L4344 qteDone` more often than not he goes in feet first, cleats up; otherwise the flying kick. Either way the fielder is sent flying
+- `L4344 qteDone` **THE OUT AT THE BAG IS A BASEBALL PLAY**: he reaches for the throw, takes it in the glove and has the tag down. (It used to be a boxer's jab.)
+- `L4349 qteTick` **THE INFIELDER'S LEAD-IN**: seen from behind him, he fields the grounder, takes two shuffles toward the bag with the arm coming back, and the picture holds there, cocked, for the inputs. Then he lets it go.
+- `L4350 qteTick` (the outfielder: he comes up with it and takes one long crow hop toward the base, arm back, and the picture holds on him cocked for the inputs. The infielder: two quick shuffles.)
+- `L4351 qteTick` (down in the fielder's ready position for the ball: never the catcher's squat)
+- `L4355 qteTick` ("ok" means SAFE when you are the runner and OUT when you are the defense: the ball is early whenever the call is out)
+- `L4355 qteTick` THE PICTURE MATCHES THE CALL at first base: when he is out the throw is in the glove a clear beat before his foot comes down, and when he is safe it is still in the air as he crosses the bag
+- `L4356 qteTick` **MAKE THE CATCH**: no ball hanging in the air while the inputs are made. It comes in only once they are in: into the glove at the top of his leap, or off him.
+- `L4356 qteTick` (a line drive comes straight at him from the plate)
+- `L4356 qteTick` (beating out a grounder: the throw comes across the infield)
+- `L4358 qteTick` **THE BALL GOES INTO THE MITT**: its path ends at the fielder's actual glove hand, wherever the stretch has put it that instant, and once it is there it stays in the pocket and moves with the glove.
+- `L4359 qteTick` (the throw ends in his glove, out in front of the bag where the stretch puts it, not at the bag behind him)
+- `L4360 qteTick` (caught: it rides in the glove for the rest of the play)
+- `L4364 qteTick` **STOP THE NEEDLE**. Green is safe and its width is the runner's speed; the thin gold strip, set well away from it, is the gamble: safe AND two bars of Juice, with red on both sides of it.
+- `L4368 qteTick` it gets quicker every time it turns round
+- `L4371 qteTick` (when he is out he is a clear step short as the ball goes into the mitt, THEN he runs through the bag)
+- `L4371 qteTick` **A RACE TO FIRST**: he runs THROUGH the bag and on down the line at full speed, the way every hitter does, instead of pulling up at it and running on the spot
+- `L4371 qteTick` a made kick carries him through the fielder and onto the bag, and no further
+- `L4373 qteTick` missed: it goes off him and he goes down
+- `L4375 qteTick` **THE CALL MATCHES THE PLAY, WHICHEVER SIDE YOU ARE ON**: winning this on DEFENSE means the runner is OUT, and the umpire, the badges and the lettering now all say so. (The umpire used to shout SAFE whenever the player won, which is right when you are the runner and exactly wrong when you just threw him out.)
+- `L4375 qteTick` bang-bang at first: no collision, just the call
+- `L4376 qteTick` on defense, beaten: he comes in hard, the fielder goes flying and he has the base
+- `L4378 qteTick` winning the showdown is worth a bar of Juice; gold on the needle is worth two
+- `L4378 qteTick` no Juice is promised when the meter is already full
+- `L4379 qteTick` tagged hard: he goes back off his feet the way the fielder does when the kick lands
+- `L4381 qteTick` the kick sends him back off his feet, well clear of the bag
+- `L4383 qteTick` (a play you LOST on defense is held most of a second longer, so the call and what it cost are read before the game moves on)
+- `L4384 qteTick` back to the mound: the next man is called up as after any play
+- `L5015 finishPlay` a foul ball sends him back: no steal on a foul, and he may be sent again
+- `L5166 bdgLabel` never over a quick time event (the arrows need the whole picture) or across a hitter's reaction close-up: the plate waits its turn
+- `L5359 toMenu` (the skip took the runners off the field; the bases are cleared to match, or the game still thought a man was on and offered a steal with nobody there)
+- `L6320 step` belt and braces at the plate too: no Overdrive, no blue flames; no Showdown, no Showdown dressing. They were being left up into the next at-bat (and they are not cheap on a phone)
+- `L6719 shTick` In the one-button showdowns (mash, needle) the whole screen is the button: a touch or click anywhere counts, the instant it lands.

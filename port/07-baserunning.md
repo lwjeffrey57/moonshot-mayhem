@@ -1,0 +1,76 @@
+# Runners, trots, celebrations
+
+From the prototype's `index.html`. Bold = standing rule. See `README.md` in this folder.
+
+- `L2029 draw` LOCKED IN erupts exactly when the picture cuts to him celebrating: at the plate once his home-run celebration starts, or on his base
+- `L2030 draw` after a hit. It belongs to that shot only: the moment the game moves on (next hitter, walk-up, a pitch) every trace of it is gone.
+- `L2031 draw` **THE LOCKED-IN FIRE BURNS FOR THE WHOLE CELEBRATION AND GOES WHERE HE GOES**. While his celebration is playing (at the plate after a homer,
+- `L2033 draw` if his celebration is over before the fire has gone up, there is no fire: it is never lit over an empty box or the next man
+- `L2035 draw` when his routine ends the flame is gone at once: it was dying down for another second and a half where he had been standing, over the next man's walk-up
+- `L2042 draw` a homer with no trot: the picture was on the ball and the fireworks while he caught fire unseen. Now it cuts back to him at the plate for it, a beat after the ball is gone
+- `L2043 draw` the celebration was skipped: no fire, just the word
+- `L2045 draw` (after a homer the call waits until his celebration and the fire are over: see below)
+- `L3745 stickHint` Celebrating on second: he shouts, in big letters over his head. Two lines per celebration, the second one about the runs he drove in if any.
+- `L3854 celPool` ratings shown as grades: S is elite, F is a liability. The same scale for power, contact and speed.
+- `L3857 celPool` better than a D). The one exception is the very top: a full S has no sign, because S+ is the Power rank that has to be earned.
+- `L4006 walkLabel` so the walk-ups keep coming all game without every single at-bat waiting for one.
+- `L4007 walkWant` one walk-up per trip to the plate: after the pitcher's own show on the mound the at-bat just starts
+- `L4017 startWalkup` new players: the second hitter always brings one of the surprise walk-ups
+- `L4018 startWalkup` never the same walk-up twice in a row
+- `L4023 startWalkup` NOW BATTING never waits long: if the last play's call is still up two thirds of a second into the walk-up, the call steps aside for it
+- `L4028 endWalkup` ── Baserunners you can see. Purely visual: the game's base state (S.bases) is still the truth, and the runners are
+- `L4032 basePos` A baserunner can wear any hitter's body. Each body is dressed once per runner and kept; putting one on is just a switch.
+- `L4039 runnerWear` his body is here but this runner has not been fitted with it yet: fit it now, so the man going to first is the man who was at the plate (never a stand-in)
+- `L4042 dressRunner` runners get their own copy of the uniform material: the hitter's fades in and out as batters change, and that was fading the men on base with him
+- `L4060 setupRunners` ── Home-run trot, shown as a highlight cut on no-doubters: rounding second, then touching home and a fist pump on the plate.
+- `L4061 setupRunners` rounds second and third, then halfway down the line it cuts to him at the plate, already celebrating // one continuous run: round second, round third, home // rounding second, then the last steps home; the fist pump fills the rest
+- `L4067 startTrot` the flair (Xenon's walk-up) is a house favorite at the plate too: about one homer in four
+- `L4067 startTrot` (the joy jump is never the first celebration of a game)
+- `L4071 startTrot` Variety: about a third of the time the trot itself isn't shown. The camera stays on the pitcher wearing it, then cuts to the hitter at the plate.
+- `L4073 startTrot` **THE MOONWALK**: some trots end with him turning his back on the plate at third and gliding the last stretch home backwards. He touches
+- `L4074 startTrot` the plate, and whatever celebration was coming follows on from there.
+- `L4087 updateTrot` infielder-sized on the bases, easing to the hitter's own size as he comes down the line to the plate
+- `L4088 updateTrot` heading follows the path, so it swings round at the bag
+- `L4091 updateTrot` back to the plate, gliding home; watched side-on from the infield
+- `L4094 updateTrot` cut on the action: the frame his foot hits the plate, the camera jumps to a new, low angle and the celebration starts on the cut
+- `L4097 updateTrot` the batter's own model takes over for the celebration
+- `L4099 updateTrot` the clip turns right; runners turn left
+- `L4103 syncRunners` a man who has moved up (or back) a base is still the same man, in the same body
+- `L4106 sendRunners` n bases for men on; o.batter = base the hitter is headed for; o.jog = trot
+- `L4116 updateRunners` the close-up has its own runner; the real ones wait out of shot
+- `L4121 updateRunners` while the camera is still on the hitter admiring his shot, nobody comes home past him: runners wait at third until he is on his way
+- `L4125 updateRunners` THE LEAD: with a pitch coming, a man on base stands a few steps off it toward the next one (so the runner on second is no longer hidden
+- `L4126 updateRunners` dead behind the pitcher: you see him, in his own body, off the bag). When he goes he starts from there; if he stays he steps back.
+- `L4127 updateRunners` the man on second takes his lead, then shuffles off another couple of steps as the pitcher starts his delivery (a secondary lead)
+- `L4127 updateRunners` stepping out to his lead (or back to the bag): he walks it, he does not slide
+- `L4129 updateRunners` beating the throw: he runs through the bag the way a hitter does, a few strides down the line into foul ground, easing up
+- `L4136 updateRunners` drilled, and making a meal of it: he goes to first on his hands and knees
+- `L4142 updateRunners` ── The throw back in after a hit is fielded (visual only): the fielder winds up and the ball flies to the base ahead of the lead runner.
+- `L4143 updateRunners` **A ROUTINE IS WIRED UP THE FIRST TIME IT IS PLAYED, NOT WHEN THE BODY IS BUILT**. Every body used to have all eighty-odd walk-ups, celebrations, brawl moves and reactions connected to its skeleton up front, though a game uses a handful. That was most of the memory a body cost and much of the time it took to build.
+- `L4145 updateRunners` **ON A COMPUTER, A CLICK OF THE MOUSE WHEEL TOGGLES JUICE**: the batting Juice button when you hit, the Juice pitches when you are on the mound. It presses the same on-screen button, so nothing about Juice itself changes.
+- `L4173 toReady` a new inning, or the sides have just changed: the man leading off ALWAYS gets his walk-up, whatever the setting
+- `L4174 toReady` **NO WALK-UP OVER AN EMPTY BOX**: if his own body is still downloading, his card, his music and his walk wait for it (a short quiet beat on the field) instead of playing with nobody there
+- `L4182 toReady` THE BRAWL. Some hit-by-pitches don't end with a trot to first: the hitter charges the mound. He runs out, the pitcher squares up,
+- `L4387 hbpRunEnd` The pitcher's Overdrive is revealed with a cut to the mound, after the hitter's own entrance is over: he flexes, the screen goes red, then the news.
+- `L4429 pcIntro` Starting before the player models have arrived left an empty batter's box and skipped the first walk-up, so Play Ball waits for them.
+- `L4976 advance` The pitcher's bar rounds up: anything that looks full IS full, and a full bar is Overdrive for the next hitter. In the first inning
+- `L4978 advance` When the pitcher is allowed Overdrive: a new player's first three games keep it out of the first inning entirely; after that it can
+- `L4979 advance` come as soon as the lineup has turned over once (the fourth hitter of the game).
+- `L4982 advance` ...and how often: he can't come straight back with another (at least four hitters between them), and there is a cap per game, lower for
+- `L4983 advance` new players. The first one of a game is likely once you have put up three runs or reached the second inning; after that they are rarer.
+- `L5053 finishPlay` in practice, the Derby and the Gauntlet there is no celebration: the ball lands and the next pitch is coming
+- `L5056 finishPlay` the biggest ones get the trot (skipped in fast mode)
+- `L5077 finishPlay` Plays that turn into a quick time event: a single with a man on second or a double with a man on first (the runner now on third can be sent home), a double he tries to stretch into a triple, a single he tries to stretch into a double.
+- `L5078 finishPlay` offered on every base hit that leaves somebody a base to take: the lead runner first, otherwise the hitter
+- `L5081 finishPlay` Some doubles get a show of their own: once the play is over, cut to him standing on second doing one of the home-run celebrations.
+- `L5552 updateClip` if the next hitter has a walk-up coming, the box stays empty after the last man fades out; he first appears in his intro
+- `L5583 updateClip` walk-up: his intro clip takes over; he stays facing the pitcher, so it plays as a taunt
+- `L5600 updateClip` GETTING LOCKED IN at the plate: he is never just standing there with a fire on him, he celebrates in it
+- `L5902 retarget` (a brief grace only: under half a second. It was six, and on a slow connection that was an empty batter's box before every walk-up. If his body is not there by then he takes this one at-bat in the stand-in body and changes into his own the NEXT time he comes up, never in the middle of an at-bat.)
+- `L6068 loadPlayers` every wearer gets his own copy of the materials: the hitter fades in and out, the runners must not
+- `L6069 loadPlayers` (the six Krakens never run the bases as these runner figures, so no runner suits are cut for them: 24 fewer builds, which were still being worked through, a freeze at a time, during the first innings)
+- `L6076 loadPlayers` body freezes the picture for a quarter of a second, and that was happening during walk-ups and between pitches. Once the game starts this
+- `L6089 loadPlayers` walk-ups) is built when it arrives, or after a few seconds with the stand-in umpire if it hasn't.
+- `L6452 step` **NO BAT IN HIS HANDS FOR ANY CELEBRATION AT THE PLATE AFTER A HOMER** (with one he looked like the next man up). The one exception is the bat-lift routine, where the bat is the barbell.
+- `L6604 drsWatch` **NOT DURING THE SHOW**: a home run in flight, the trot, a celebration, either side's Overdrive. Those are the busiest pictures in the game and they are short; a dip there is the moment, not the phone struggling, and going soft right as the fireworks start is the worst time to do it. (Still allowed if it is truly crawling, under 30 a second.)
+- `L6957 celOpen` ── MY SQUAD: the nine hitters and the pitcher as cards, each with his overall and tier, and the batting order to arrange. ──

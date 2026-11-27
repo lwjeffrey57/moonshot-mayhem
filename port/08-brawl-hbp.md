@@ -1,0 +1,44 @@
+# Hit by pitch and brawls
+
+From the prototype's `index.html`. Bold = standing rule. See `README.md` in this folder.
+
+- `L1467 hbpPop` **THE CENTER MARKER, RAZOR SHARP**: an SVG laid over the canvas at the exact point where the middle of the bat ring is on screen. White with a black edge.
+- `L3923 cardStats` S+ IS A POWER RANK ONLY, and it has to be earned in the moment: Overdrive lifts every rating a grade, a brawl won lifts Power a grade for
+- `L4039 runnerWear` always the body of the man who is actually batting (after a hit-by-pitch or a brawl the model at the plate may not be his) /* the man leaving the box wears the hitter's body (the house body if his isn't ready)
+- `L4190 brawlNeed` **YOU DRILLED HIM, AND HE IS COMING**: the same brawl as when you are the one who gets hit, from the other side. The Kraken hitter charges the mound and your pitcher has to stand in. Win it and the next hitter is rattled and you get two bars of Juice; lose it and nobody is rattled, and you get nothing. The first one of a game always happens; after that, three times in ten.
+- `L4197 brawlStart` the first blow is a quick one: fists are flying the moment he gets there
+- `L4198 brawlStart` the first two blows: sometimes one is blocked (the eventual loser's are blocked more often); reactions are drawn from all three hit clips
+- `L4200 brawlStart` (only reactions the man taking the blow actually has)
+- `L4202 brawlStart` THE CUTAWAY: for the first part of the charge the camera is on the pitcher, waving him on; it cuts back for the last strides, so the two arrive and the punches start without a pause
+- `L4204 brawlStart` every call in the brawl sits in the strip of sky above the two heads, never on a body
+- `L4205 brawlShoutPos` its bottom edge sits above both men's heads; never off the top, never down across them
+- `L4205 brawlShoutPos` low enough that the burst behind the word is wholly on screen
+- `L4214 brawlTick` every blow hits harder than the one before
+- `L4217 brawlTick` THE WINNER GOES STRAIGHT INTO HIS CELEBRATION off the last blow: never back to his fighting stance first
+- `L4220 hbpStart` a ball off the body, not off leather: a dull, dead thump with a short slap on the front of it, then the air going out of him (no mitt pop)
+- `L4226 hbpStart` Getting hit is a gamble for both sides. The hitter takes his base either way, but how he takes it is a roll of the dice:
+- `L4227 hbpStart` 35% it fires him up (all three ratings up for the rest of the game, two bars of Juice), 40% it shakes him up (ratings down, one bar),
+- `L4228 hbpStart` 25% he shrugs it off (no change, one bar). So plunking a man can hand the hitters a better player than the one who got hit.
+- `L4231 hbpEnd` after a brawl he was out at the mound, not in the box: he picks it up halfway down the line, and takes his time
+- `L4233 hbpEnd` won the fight: Power reads a grade higher for the rest of the game (the only road to S+ outside Overdrive)
+- `L4236 hbpEnd` the same big outlined call as FIRED UP and SHAKEN UP, in yellow: same place, same size, same time on screen
+- `L4239 hbpEnd` He heads for first with the camera in front of him, and the walk-up banner comes back to show what getting hit (or the fight) did to his ratings.
+- `L4240 hbpEnd` (a grade that just went UP is never shown with a minus on it, and one that went DOWN never with a plus: the mark would argue with the arrows)
+- `L4240 hbpEnd` just the NEW grade, in red with two down marks (or green with two up): the change at a glance
+- `L4240 hbpEnd` just the three ratings as they now stand, each with an up or down mark
+- `L4241 hbpEnd` his rating badge sits to the left of his name on this card, clear of the three ratings
+- `L4242 hbpEnd` his picture is on this card too, the same as on his walk-up card
+- `L4242 hbpEnd` HIS NEW RATINGS GO UP UNDER THE RESULT CALL, above his head as he makes his way to first: nothing across him, nothing over his legs
+- `L4246 hbpEnd` **QUICK TIME EVENTS**. At a play that could go either way the picture slows, then stops, and a short arrow code comes up. Enter it before
+- `L4247 hbpEnd` the clock runs out (arrow keys, or the d-pad on a phone; a wrong arrow starts the code over) and the runner goes in with a flying
+- `L4248 hbpEnd` scissor kick that takes the fielder out; run out of time and he is tagged. Each move has its own code, so it can be learned.
+- `L4250 hbpEnd` dp: a double-play ball. The man from first is already out at second. Kick: the relay never happens, hitter safe. Miss: two outs.
+- `L4252 hbpEnd` Each scenario: the move's name and its own arrow code, which base it happens at and which way the runner comes in from (u points from
+- `L4253 hbpEnd` the base back toward him), the heads-up call, and what a made or missed code does. pa: the plate appearance is still open (the
+- `L4254 hbpEnd` scenario came off an out), so the normal end-of-at-bat handling runs afterwards.
+- `L4262 hbpEnd` ON DEFENSE (the player is pitching): the same close-up at the bag, but now the player is the man with the ball. Win it and the runner is out; lose it and he takes the base.
+- `L4266 hbpEnd` BEAT IT OUT: a routine grounder in the infield with nobody on. It is a race to the bag: hammer the bar and he legs out an infield single.
+- `L4268 hbpEnd` a sharp line drive at an infielder while you pitch: the picture cuts to him set and waiting. Win it and he has it; lose it and it goes off him and he goes down.
+- `L4273 hbpEnd` STEALING: called by the player from the batter's box, between pitches. Same showdown at the bag; the count carries on afterwards.
+- `L5054 finishPlay` the first homer of the game always gets answered: the next man wears the first pitch, and (it being the first of the game) charges the mound
+- `L5626 updateClip` mirror the batter and his bat across the plate (not while he is away from it, in a brawl or a play on the bases: there he is placed directly)

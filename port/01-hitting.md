@@ -1,0 +1,210 @@
+# Hitting: swing, contact, timing, feedback
+
+From the prototype's `index.html`. Bold = standing rule. See `README.md` in this folder.
+
+- `L1469 markDom` **WHERE YOU HAD IT, ON EVERY SWING AND MISS**: the frozen ring that shows a miss now carries your center marker too (your own choice of dot, crosshair or small ring; the crosshair if you play with none), sitting exactly where the middle of the barrel was
+- `L1469 markDom` (not in the timing step of the guide: only the timing circle shows there)
+- `L1469 markDom` steady for the whole at-bat: it never blinks off after a swing or between pitches
+- `L1470 markDom` and the system pointer stays hidden for that whole time too, so there is one aiming mark, not two swapping
+- `L1471 markDom` the ORIGINAL marker shapes and proportions (thin cross, small dot, small ring), just drawn sharp
+- `L1474 markDom` about ten centimeters across in the park, never under 18 px
+- `L1476 markDom` **THE TAPE MEASURE**: on the camera that rides behind a home run, the distance runs up live in big numbers just above the ball.
+- `L1499 flyY` **THE CONTACT READ-OUT SITS DIRECTLY UNDER THE CALLOUT**: whenever a callout is up, the timing line and the ball-on-barrel bar are placed just
+- `L1501 timPlace` while the read-out is up it is re-placed every frame, and the instant a callout or the read-out itself is triggered: it is never seen in the wrong place first
+- `L1503 timPlace` **PITCHING ON A PHONE**: the read-out has one fixed slot above the strike zone, never on it. A callout uses the same slot, and when one is up the read-out gives way.
+- `L1505 timPlace` **PLACED ONCE, THEN IT DOES NOT MOVE**. If a later callout lands on it, the callout wins and the read-out is taken off for good: it never slides about or fades back in.
+- `L1511 timPlace` The read-out goes under the LOWEST of whatever is showing in the upper part of the screen.
+- `L1512 timPlace` (a callout that has only just been triggered counts even while it is still fading in)
+- `L1514 timPlace` never less than the lettering's real bottom edge once it is on screen (tilted, outlined lettering hangs below its box)
+- `L1514 timPlace` (plus the tilt and outline of the lettering, which hang below its box)
+- `L1514 timPlace` measured from where the callout will SETTLE, not from its pop-in animation, so the read-out does not chase it
+- `L1515 timPlace` a clear gap: the callout's pop-in overshoots its resting size for a few frames
+- `L1516 timPlace` (no callout showing any more: the read-out STAYS where it was put for the rest of its time on screen. It used to jump back down to its usual spot when a quick callout cleared, straight onto the fielders.)
+- `L1517 timPlace` ───────────────────────── PITCHING ─────────────────────────
+- `L1519 timPlace` TWO-TAP (the default): THROW starts a ring closing on the target, and a second tap as it meets the yellow circle releases the ball. On
+- `L1520 timPlace` the money it goes exactly where it was aimed, with full break; a little off and it drifts; badly off and it hangs over the plate.
+- `L1521 timPlace` METER (the other style): tap to start, tap at the top for power, tap on the yellow line coming down for accuracy.
+- `L1522 timPlace` The hitter is the computer: what he does comes from where the ball ends up, how well it was thrown, what he saw last pitch and his ratings.
+- `L1524 timPlace` **THE KRAKENS HAVE PERKS TOO**. One each, named on his card when he comes up, and each changes how he hits against you.
+- `L1527 timPlace` six in the Kraken order: each trip to the mound picks up where the last one stopped
+- `L1528 timPlace` the Comets' pitcher and what he throws. Each pitch is rated for VELOcity, CONTROL and BREAK (out of 99); STAMINA is how long he lasts.
+- `L1532 timPlace` **ONE PITCHING SYSTEM EVERYWHERE**: power, then timing, on a phone and on a computer alike. The old meter option is gone (a browser that had it saved was still pitching the old way).
+- `L2210 ribbon` DIGI: the turf is a projected 'digital' surface (dark, with a glowing grid) instead of green grass, so the green contact ring
+- `L2678 ribbon` bells, and a lattice service gantry with swing arms and a blinking beacon. All flat-lit, a few dozen triangles' worth of detail.
+- `L2788 ribbon` each end, so from any angle (a foul ball, a liner down the line, the camera swinging round) it has thickness like the outfield bowl.
+- `L3231 runPose` ───────────────────────── ball, reticle, fx
+- `L3262 zoneHit` POWER sweet spot reads as a hot core inside the bat ring, not a second ring
+- `L3269 zoneHit` on a touch screen the crosshair is ON unless the player turns it off: a thumb on the stick needs to see exactly where the middle of the barrel is
+- `L3270 markSet` the marker is drawn by the page itself, over the picture (markDom), so it is pin-sharp at the screen's own resolution however the 3D picture is scaled
+- `L3272 markSet` the original thin ring, kept clear of the shadow layer so it cannot be buried
+- `L3274 markSet` **THE BALL MARKER**: a bold yellow-and-black ring on the ground straight under any ball in the air. The higher the ball, the wider the ring;
+- `L3275 markSet` as the ball comes down it closes in, and it is at its tightest when the ball is at the ground. It turns slowly so it catches the eye.
+- `L3277 markSet` solid black backing with hard edges, then pure bright yellow segments on top: drawn large so the edges stay crisp when it is seen at a slant
+- `L3281 markSet` (the new look, the old logic: this marker IS the landing ring. It sits where the ball will come down and tightens as the ball drops.)
+- `L3282 markSet` the old ring still does the thinking; this one is what is drawn, in its place
+- `L3283 markSet` **WHERE THE PITCH WAS**: an actual baseball (white, red seams), a size up from the old dot, drawn where the ball crossed the plate. It shows after every pitch that is not put in play: a miss, a take, a called strike.
+- `L3287 markSet` **A BASEBALL IN THE TIMING CIRCLE**: the spot the pitch is coming to is marked with a ball, something for the eye to put the crosshair on. It is drawn smaller on the harder difficulties, in step with the smaller hit box. (A trial: one line to remove.)
+- `L3288 markSet` (as bright as it goes: pure white with a thin outline and vivid seams, fully solid. Nothing is drawn between it and the timing circle.)
+- `L3288 markSet` (bright and nearly solid, so it stands out against the grey Moon and the tint over the zone)
+- `L3288 markSet` marks where the pitch was after a miss
+- `L3290 markSet` Sharp outlines. The 3D picture is drawn below the screen's full resolution on phones, which softens thin lines; the strike zone and
+- `L3291 markSet` the rings are where the eyes live, so their outlines are redrawn on top as vector shapes at the screen's native sharpness.
+- `L3292 markSet` They only trace what the 3D scene already shows (same place, size and color each frame); nothing about aiming or timing changes.
+- `L3294 markSet` The crowd moves. Three cheap tricks, all driven by one 'energy' number that every cheer and roar pushes up and that drains away
+- `L3295 markSet` over a couple of seconds: the stands bounce (the crowd picture is nudged up and down, in two halves out of step with each other),
+- `L3296 markSet` they brighten, and camera flashes sparkle across them. One extra draw call in total.
+- `L3353 sharpTick` the target the yellow ring closes onto: a fixed white circle the size of the ball. Ring bigger than it = too early; ring meets it = swing; ring smaller = late.
+- `L3687 nextTip` shown as: left thumb aims, right thumb swings, then the mechanics (zones, timing), then Juice and Overdrive
+- `L3794 timeBar` at least 17 px of daylight between the two marks /* the picture never contradicts the verdict: a PERFECT sits exactly on the target, and anything else is drawn visibly clear of it */
+- `L3795 timeBar` the target is white; your swing is green (red if it missed the window)
+- `L3795 timeBar` odz: Overdrive contact, the window you hit it in burns blue
+- `L4050 dressRunner` The hitter's own body. Each one is measured for the swing once and kept; a new hitter stepping in while the box is empty just switches rigs.
+- `L4153 tipTick` **THE CAPTURED THROW IS LINED UP WITH ITS TARGET**: measured in the clip, the stride, chest and arm path all point about 33 degrees to the right of the model's own forward. The thrower is now turned by that much, so his feet and shoulders are square to the base he is throwing to and the ball leaves along that line.
+- `L4153 tipTick` **THE FIELDERS' THROW IS THE CAPTURED ONE**: a step, a high release and a follow-through, filmed and converted from a phone capture. (The stock throw is still loaded; mm_throwcap=0 brings it back.)
+- `L4531 newGame` none of this changes where you have to swing, only what the ball does on the way in.
+- `L4547 newGame` swings way out wide and comes back
+- `L4570 payHeat` on a swing the line under the timing meter says it instead, so the swing feedback isn't overwritten
+- `L4574 payHeat` DIFFICULTY (a setting, first pass). PRO is the game as it has always been. ROOKIE: bigger rings, a wider timing window and slower pitches.
+- `L4576 payHeat` GALACTIC: one past Moonshot. About 8% quicker again, a timing window and bat ring a sixth tighter, a smaller middle-middle and more break.
+- `L4576 payHeat` TWO TIERS ABOVE ALL-STAR for the player who has outgrown it. Each one is faster (dur), with a tighter timing window and bat ring (ring), a smaller middle-middle for squared-up and perfect (mid), and more break on everything (brk). MOONSHOT is meant to be beaten by very few.
+- `L4576 payHeat` mid: THE CROSSHAIR IS 'MIDDLE-MIDDLE'. The harder the game, the smaller it is drawn, the closer to dead center the barrel has to be to count as squared up, and the tighter the timing has to be to count as perfect
+- `L4577 payHeat` **A BIG INNING GETS HARDER TO KEEP GOING**. Once the Comets have four runs in an inning the pitching bears down, and it bears down more with every run after that: quicker pitches, a tighter timing window and bat ring, a smaller middle-middle and more break. It lasts for that inning only. Hits in a rout stay earned, and the inning ends.
+- `L4801 tryContact` Overdrive: the timing window is nearly twice as wide, and a Juice pitch takes much less of it away
+- `L4801 tryContact` (nS: when contact was actually made, which sets the direction in the Gauntlet; n: how close to this pitch's own perfect moment, which sets the quality. Outside the Gauntlet the two are the same number.)
+- `L4802 tryContact` chasing: how far outside the strike zone the pitch is (0 in the zone → 1 well off the plate)
+- `L4804 tryContact` Overdrive: the power core is 85% bigger and the contact ring 55% (it used to be 85% too, and swallowed the whole strike zone); Juice alone is a fifth
+- `L4804 tryContact` the power core is 10% smaller without Juice; Juice gives the old size back, then its usual boost
+- `L4806 tryContact` where the barrel was relative to the ball, in sweet-spot radii: u>0 = swung under it, e>0 = ball out toward the end of the bat
+- `L4808 tryContact` jammed means late and off the end means early, so the words always agree with the timing
+- `L4812 tryContact` EVERY SWING AND MISS shows it: the zone frozen where the player had it, and the ball where it actually crossed
+- `L4812 tryContact` freeze the ring and mark where the ball was: it has to be inside
+- `L4813 tryContact` **ON THE BALL BUT MISSED**: the ring was over it, so the only thing wrong was the timing. Said plainly and a size bigger: TOO EARLY! / TOO LATE!
+- `L4815 tryContact` **THE GAUNTLET ONLY** (the game's own hitting is untouched): there you are asked to pull it or go the other way on purpose, so a swing that is a little early or a little late is still driven. Contact stays full strength out to about half the window either side and then falls away to the same weak edge as everywhere else.
+- `L4818 tryContact` where the barrel met the ball: under it, on top of it, off the end, in on the hands // the rocket is for perfect-perfect only: on time, squared up, and smoked
+- `L4821 tryContact` launch: where the barrel met the ball, pitch height, and how square it was
+- `L4823 tryContact` spray: timing first, then pitch location (inside pulls, outside goes the other way) and bat-path scatter
+- `L4824 tryContact` (in the gauntlet the timing decides the field: where the pitch was and the luck of the bat path count for much less, so early is pulled and late goes the other way every time)
+- `L4826 tryContact` card perks that change how the ball comes off the bat
+- `L4827 tryContact` off the end, off the handle, beaten into the ground or popped up
+- `L4829 tryContact` The big-league pop-up: getting under the ball, or being badly off on timing, can send it straight up.
+- `L4832 tryContact` More ways for a ball to come off the bat. kind is what gets named on the result call.
+- `L4835 tryContact` the flare that drops in front of the outfield
+- `L4836 tryContact` beaten into the ground, one big bounce
+- `L4837 tryContact` a Moon special: it just keeps hanging
+- `L4838 tryContact` **DOWN THE LINE**: a well-struck ball that was headed for the gap side of the corner now and then hooks or slices all the way to the line. Ropes into the corner, doubles that kick around down there, grounders past the bag, and homers that wrap the pole were close to impossible before (the only way to the line was to be so early or late that the contact was weak). Not in the Gauntlet, where the timing alone picks the field.
+- `L4840 tryContact` TOPSPUN IT, hit hard: a sharp line drive with heavy topspin, so it comes off on a line and then dives
+- `L4841 tryContact` **THE PORCH GETS PEPPERED**: a well-struck ball pulled toward the tall wall in left often comes off the bat on a rope (a hard, low liner
+- `L4842 tryContact` that carries to the wall and bangs off it) instead of a fly ball that would have cleared an ordinary fence.
+- `L4843 tryContact` ...AND NOT ALWAYS AT THE SAME HEIGHT. Both tall walls (38 feet in left, 28 in right) now take liners all the way up: the low rope off the bottom third, as before, and a harder, higher drive that bangs off the upper half, sometimes just under the top. The speed for the high ones is worked out for that spot on that wall, so they hit where they are meant to.
+- `L4848 tryContact` backspin and topspin follow where the barrel met the ball: under it = backspin that carries, on top = topspin that dives
+- `L4852 tryContact` **THE TAPE-MEASURE SHOT**: a barreled power swing now and then catches it so flush that it carries clean out of the stadium and comes down
+- `L4853 tryContact` on the Moon beyond (more often with Juice behind it). The chase camera rides it the whole way.
+- `L4854 tryContact` **PLAYTEST RULE, NEWEST FIRST**: the first well-hit ball in Overdrive each game is the newest show in the park, the shot to the Apollo site.
+- `L4856 tryContact` never the Apollo shot twice running
+- `L4856 tryContact` forced once, the first time ever (newest first); after that it is one of the shows in the rotation
+- `L4859 tryContact` Earth has been hit at, catches a pocket of even thinner gravity, and comes down the best part of a quarter of a mile away (up to 1,134 ft).
+- `L4865 tryContact` **THE BIG SLICE**: a ball squared up to the opposite field now and then leaves the bat nearer center and bends hard toward the line (the same
+- `L4866 tryContact` real flight physics, just far more sidespin), coming down about where the straight one would have. If it would slice foul, the straight one stands.
+- `L4869 tryContact` **THE EAGLE HAS LANDED**: an Overdrive moonshot is sometimes dead on line for the old Apollo site. Its speed and direction are trimmed until it comes down right there.
+- `L4874 tryContact` a liner that would die at the foot of the wall carries a touch further and bangs off it instead: more balls off the wall, fewer dropping at its base
+- `L4875 tryContact` a hard liner headed for the deep outfield keeps going on a rope, a laser off the wall
+- `L4877 tryContact` A BALL OFF THE WALL IS ALWAYS SEEN HITTING IT and coming back down onto the grass before the picture moves on
+- `L4877 tryContact` a bad hop is only called when it beat the fielder: if he still made the play, nobody mentions it
+- `L4877 tryContact` a ball a fielder should have handled and didn't is scored as his error
+- `L4878 tryContact` Overdrive hits burn blue, Juice hits orange
+- `L4879 tryContact` Some Overdrive home runs don't come down: the ball leaves the Moon's orbit, headed for Earth. Always the first one a player ever hits; after that, about a third of them.
+- `L4882 tryContact` its own flight from the moment it leaves the bat: one smooth climb out over the wall and away, never the normal arc
+- `L4888 tryContact` a line shot: it leaves the bat on a rope and is still climbing when it smashes into the lights, never dropping onto them
+- `L4889 tryContact` **HE WAS GOING AND THE BATTER PUT IT IN PLAY**: the steal is off, it is a hit and run, and he advances with the ball like any runner. (The call used to stay armed, GOING! still on the screen, and fire on the next hitter's first pitch.)
+- `L4905 tryContact` (the counter reaches its number where the ball first comes down, not where it stops rolling)
+- `L4908 tryContact` picture of it: the ball against the barrel, red dot = the sweet spot
+- `L4911 tryContact` a high pitch hammered down on a line with topspin: TOMAHAWKED!
+- `L4912 tryContact` an inside pitch pulled hard: he TURNED ON it
+- `L4914 tryContact` word goes up as the big call (in place of a random CRUSHED!/SMOKED!), and the read-out at the foot of the screen keeps the plain detail.
+- `L4917 tryContact` timing, then where the barrel met it
+- `L4918 tryContact` No-doubters: sometimes stay on the hitter instead of the ball. 'admire' = he holds his finish, watches it and drops the bat;
+- `L4919 tryContact` 'show' = the same, then his own walk-up routine as a celebration. Decided here because we already know where the ball lands.
+- `L4922 tryContact` a ball bound for the lava is always followed in
+- `L4923 tryContact` 600 ft and up is always followed the whole way, out of the park and down onto the Moon
+- `L4923 tryContact` most homers that stay on the ball are now watched from behind it, with the distance running up above it
+- `L4924 tryContact` **THE BLIMP CUT**: on a no-doubter that stays in the building, the picture sometimes jumps straight off the bat to high above the park and the whole flight is watched from up there, the ball drawing its line across the field into the seats
+- `L4924 tryContact` the chase camera sees it hit the ground and kick up once, and that is the end of the shot: no waiting for it to roll to a stop
+- `L4924 tryContact` **THE BLIMP SHOT**: now and then, once it is over the wall, the homer is seen from high above the whole park
+- `L4925 tryContact` the scoreboard light-show almost never comes up on two homers running: the second one just sails by
+- `L4925 tryContact` some no-doubters are watched from right behind the ball
+- `L4927 tryContact` a no-doubter: now and then the lasers come on, but never before the ball has actually cleared the wall
+- `L4928 tryContact` after the flip has been seen
+- `L4928 tryContact` PIMPED IT waits a second: you see the bat flip first, then the word
+- `L4928 tryContact` pimp: said here, so the home-plate shout will not say it again
+- `L4930 tryContact` only on a ball that was really hit: 95 off the bat or better
+- `L4930 tryContact` a quick call, high on the screen: it is up for under a second and gone before the picture reaches the man chasing the ball
+- `L4930 tryContact` a ball that leaves a fire trail always gets a call: the trail says it was hit hard
+- `L4931 tryContact` never the same call twice running
+- `L4933 tryContact` A NO-DOUBTER HAS ITS OWN CRACK, laid over the big whoosh: you hear it is gone before you see it
+- `L4934 tryContact` an Overdrive homer always gets the rocket, burning blue
+- `L4936 tryContact` how hard the place erupts once it clears the fence: more for every run it drives in, for Overdrive, and for the long ones
+- `L4939 tryContact` grand slams and orbit shots go straight to the top
+- `L4940 tryContact` The ladder for a home run: loud from contact (louder still in Overdrive), a step up as it clears the fence, another if he celebrates.
+- `L4941 tryContact` highest tier, and it has to be earned: orbit shots, grand slams, 500 ft and up, Overdrive homers of 450+, and the homer that takes the lead in the last inning
+- `L4942 tryContact` every ball in play: a looped crowd layer that lives exactly as long as the play does, so the park cannot go quiet while the ball is live
+- `L4950 tryContact` a ground ball with a man on first and fewer than two out: is there time to go to second and back to first?
+- `L4951 tryContact` a clean feed and pivot is not guaranteed
+- `L4996 afterPA` the Krakens' half: the player pitches to three of them (or, where that cannot run, the old roll of the dice)
+- `L5001 strike` the mitt pops first, then the umpire
+- `L5003 strike` **STRIKE THREE WITH THE RUNNER GOING**: he still goes. The steal used to be dropped on a strikeout, as if it had never been called; now the throw to the bag and the play there follow the strikeout, and then the next hitter comes up.
+- `L5004 strike` the strikeout sulk: one of the defeat routines, with the camera on him (skipped when walk-ups are off, for pace)
+- `L5008 strike` sometimes he lets the hitter know about it: a taunt on the mound, seen from the normal batting view (the camera only goes to him after a strikeout)
+- `L5039 finishPlay` a homer on a Juice swing gives one bar back
+- `L5064 finishPlay` squared up: RIPPED! leads, and what it went for drops to the line underneath
+- `L5209 doSwing` (a skip: straight to whatever comes next)
+- `L5214 doSwing` first tap skips the walk-off, the second skips the new arm
+- `L5215 doSwing` (a skip is a skip even while the game is holding for his body to download: the hold is dropped and play goes on)
+- `L5215 doSwing` a walk-up cannot be skipped in its first third of a second (it was a second and a half, which felt like the tap was being ignored): a thumb already resting on the buttons was skipping them before they were ever seen
+- `L5217 doSwing` ANY homer, any camera (the chase, the orbit shots, the saucer): a tap ends it there and then
+- `L5217 doSwing` a tap cuts the chase camera short (nothing on screen says so: it is there for the player who has seen enough)
+- `L5218 doSwing` (his Locked In moment at the plate is short and is not skipped by the tap that cut the homer shot short)
+- `L5219 doSwing` (waiting for the next hitter's body before his walk-up: a tap skips the wait and the walk-up, and the at-bat starts)
+- `L5221 doSwing` between pitches the buttons still swing the bat: a practice cut, no cost, so the first tap always teaches what the button does
+- `L5223 doSwing` **A SWING IS NEVER IGNORED**. If the tap comes just after the ball is already in the mitt (he was that late), the bat still comes through and the read-out says so, instead of the button seeming dead. The call that was made stands.
+- `L5224 doSwing` (strike three and ball four included: the late cut still comes through and still says WAY LATE. It used to be swallowed on exactly those pitches, the ones where it stings most.)
+- `L5229 doSwing` every Juice swing costs a full bar, hit or miss
+- `L5293 touchSettle` Swing buttons. Handled at the document, by where the finger lands, not by which element the browser says was hit:
+- `L5294 touchSettle` anything from the buttons down to the bottom edge of the screen counts, so a low or sloppy tap still swings.
+- `L5468 bulk` motion-captured swing: the clip drives the skeleton, the bat rides the bottom hand
+- `L5473 clipBat` sad walk: barrel down and trailing behind him, dragging
+- `L5478 clipBat` a hitter whose hands sit oddly on this body carries the bat more upright in his stance (it eases back into the swing's own line as he starts it)
+- `L5479 clipBat` THE WAGGLE: a hitter with one keeps the barrel moving while he waits, tipping it toward the pitcher and back in a small loop (the hands hold still; phone capture does not pick up wrist roll, so the bat's own motion is added here). It stops the instant he starts his swing.
+- `L5484 clipBat` THE BAT NEVER GOES THROUGH HIS HEAD OR NECK, on any body: if the barrel's line would pass inside either, it is tipped just far enough to clear.
+- `L5491 clipBat` A body with broader shoulders or shorter arms than the one the swing was made on ends up with its hands apart. Whenever the top hand is
+- `L5540 setupClip` **THE MISS STOPS AT THE FOLLOW-THROUGH**: the clip's stagger and extra steps afterwards are never reached; he finishes the swing, holds it a beat and comes back to his stance
+- `L5540 setupClip` // seconds of the swing-and-miss clip shown after the miss before he resets
+- `L5575 updateClip` close enough to tempt him he starts his hands, checks the swing, and brings the bat back. Then he relaxes into his stance.
+- `L5605 updateClip` a single fist pump straight out of the swing, or his routine
+- `L5616 updateClip` **MORE STANCES**: a hitter can have a stance clip of his own (wide and squatted, or a second upright one). It takes the place of the standard stance while he waits; the swing itself is the same swing.
+- `L5622 updateClip` lean the upper body so the barrel meets the height you aimed at
+- `L5916 dlBoost` bat.txt: a modelled bat that replaces the code-built one. Re-oriented so the knob sits at the hands and the barrel runs up +Y.
+- `L5928 dlBoost` ash with long grain, a crisp navy band edged in gold with the club mark, a darker barrel end.
+- `L6060 loadPlayers` Hitters' bodies: fetched a couple of hitters ahead, then measured for the swing and dressed as runners in quiet moments (never during a pitch).
+- `L6123 updateBatter` contact key follows the aim ring so the barrel goes where you point
+- `L6333 step` button; anyone else gets a couple of seconds, once per charge. Pressing it (or swinging) ends the wait at once.
+- `L6367 step` bat is back; give him another half second to get set before the windup // practice cut finished: bat is back, he can swing for real
+- `L6374 step` the ring runs ahead by the swing time, so 'tap when it finishes closing' is exactly on time
+- `L6384 step` **THE DERBY HAS NO COUNT AND NO UMPIRE**: a pitch you let go is nothing at all, a swing that misses is an out and nothing more is said
+- `L6452 step` he lets go of the bat when the pitch gets him: nobody gets up swinging it
+- `L6472 step` mid-swing, only the ring that counts for this swing
+- `L6479 step` a setting: play with only the center marker. The zones still decide every swing, and the miss replay still shows them
+- `L6481 step` the timing step of the guide shows only the timing circle, no bat ring or crosshair
+- `L6860 shotCall` (and a band of light standing along the wall in that field, so the target reads from the batter's box, where the ground is seen nearly edge-on)
+- `L6861 shotCall` **THE GAUNTLET HAS NO FIELDERS, AND IT HAS RAMPS**. One ramp stands in each target field. Only the one in the called field is raised and lit; the others lie flat. A ball that comes down short and rolls or skips onto the live ramp is launched off it, and what it travels after that counts.
+- `L6863 shotCall` (just beyond the infield, where a ground ball is still moving)
+- `L6865 shotRampBuild` chevrons on the ramp's face, pointing up it: dull green while the ramp is off, yellow, flashing and running when it is on
+- `L6876 shotOff` **THE CALL IS A PICTURE**: a little field over the pitcher's head with the target area lit red, an arrow showing how to hit it there (flat for on the ground, looping for in the air), and a few words. It replaces the line of instructions.
+- `L6883 shotGfx` **THE GAUNTLET ONLY**: WHERE THE PITCH IS DECIDES WHEN TO HIT IT (the game's own hitting is untouched). An inside pitch has to be met out in front, so its perfect moment comes a touch earlier; a pitch away can travel, so its perfect moment comes a touch later (up to about three hundredths of a second at the edges). The timing circle closes at that adjusted moment, so what you see is still the truth. The direction the ball goes is still set by when you actually made contact, which means an inside pitch hit right is pulled and a pitch away hit right goes the other way; trying to pull the one away costs you contact. mm_loctime=0 turns it off.
+- `L6889 shotIn` +1 = on the inside edge for this hitter, -1 = on the outside edge
+- `L6891 shotWant` the pitch that suits the call: 1 inside (to pull it), -1 away (to go the other way), 0 over the middle
+- `L6892 shotWant` ...and the pitcher mostly gives you one you can do it with: seven times in ten the pitch is on the side of the plate the call needs.
+- `L6894 shotAim` THE PITCHER'S INTRO CARD SITS ABOVE HIS HEAD, never across his body: its bottom edge follows the top of his head on screen (and it stops short of the scoreboard).
+- `L6908 shotPitch` (off a ramp: it is a grounder or a fly by what it did before the ramp, and its distance is where it finally came down)
+- `L6911 shotPitch` **GETTING THE RIGHT PITCH IS PART OF IT**: a take costs nothing unless the pitch was a strike in the third the call is asking for. The call stays up until you swing or let your pitch go by.
+- `L6923 shotStart` ── BRING A FRIEND. Every player has an invite code. A friend who enters it gets a signing bonus; once that friend has finished a full game it counts for the inviter, who climbs a ladder of rewards (XP and trophies for now; the cosmetic prizes get attached here when cards and skins exist). Counting needs a shared record: here it is the page's shared database when the viewer has one (it silently does nothing otherwise). The store app's own server takes over this one job at launch: invCount() and invReport() are the only two functions that talk to it. ──
+- `L6992 profClose` typing a name never swings the bat or starts a game

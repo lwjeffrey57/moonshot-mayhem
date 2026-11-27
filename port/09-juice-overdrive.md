@@ -1,0 +1,45 @@
+# Juice, Overdrive, Locked In
+
+From the prototype's `index.html`. Bold = standing rule. See `README.md` in this folder.
+
+- `L2020 eruptTick` (sf: the Locked In fire is turned well down, so the man celebrating in it can be seen: it was whiting him out)
+- `L2026 draw` an Overdrive homer: every callout for it burns Overdrive blue
+- `L2027 draw` LOCKED IN: he erupts in blue flame. A pillar of fire shoots up round him, a ring blows out along the ground, embers pour off it, the
+- `L2028 draw` screen flashes and the call goes up. About a second and a half, then he is simply a man on base again (with Overdrive waiting).
+- `L2046 draw` (the LOCKED IN explainer no longer comes up here: it waits until that hitter is back at the plate himself, so it can never be read as being about the next man)
+- `L2048 draw` ...and the pitcher does the same in red when he switches his own Overdrive on, in the middle of his routine on the mound
+- `L2565 ribbon` run, Overdrive blue when you switch it on, danger red when the pitcher is in his. One canvas, repainted only when the message changes.
+- `L3548 vendorTick` a rally going) and now and then just because. Never over a roar, the organ or anybody's Overdrive.
+- `L3599 heartTick` his Overdrive rattles the picture on every beat: the pitcher has the edge here, and it should feel like it
+- `L3600 heartTick` either side's Overdrive brings the pulse up
+- `L3604 heartTick` his Overdrive: the pulse pounds harder with every pitch of the at-bat
+- `L3686 nextTip` the first time the Juice meter is full: point at the JUICE button
+- `L3750 shoutLk` **LOCKED IN! OVER HIS HEAD**: the one call while he burns, wherever he is doing it (second, third or the plate). It sits clear above him, never across his face.
+- `L3810 overCheck` a bar that looks full IS full: anything from 95% up snaps to full and becomes Overdrive on the spot
+- `L3812 overCheck` never over a celebration: it waits for the next hitter
+- `L3875 lkxExplain` **A SECOND PERK FOR EVERY HITTER**: a situation he is built for. Each is small (a slightly bigger ring or a slightly harder ball) and only in its spot.
+- `L3885 lkxExplain` **A THIRD PERK FOR EVERY HITTER, ALL ABOUT HOW THE BALL COMES OFF THE BAT**: the angle it leaves at and how hard. Each shapes that hitter's contact toward the kind of ball he is known for.
+- `L4184 toReady` (and he gets two bars of Juice); lose and they may go down. Either way he takes his base. A new player's first hit-by-pitch is always one.
+- `L4438 loadStep` shader) is done once while the title screen is up, so the first homer, the first Overdrive and the first orbit shot do not stutter.
+- `L4525 newGame` three bars: a hit in the very first at-bat fills the fourth and unlocks Overdrive
+- `L5039 finishPlay` LOCKED IN is announced where he stands: on the base he just took, or at the plate when the hit was a homer
+- `L5039 finishPlay` every hit is worth one quarter; // a Juice hit doesn't refill the bar it just spent
+- `L5090 finishPlay` A satellite for the Overdrive homer that never makes it to Earth. Built big (it is a long way off) from a gold-foil bus, two solar wings and a dish.
+- `L5101 satBreak` THE SAUCER: the other thing an Overdrive homer can meet on its way to Earth. The ball flies in under it, is caught in the tractor beam,
+- `L5114 satTick` INTO ORBIT: some Overdrive homers never come down. The camera cuts to the Moon seen from space; the ball climbs off the surface from the
+- `L5133 revOff` The Overdrive homer shows are dealt like cards: none comes up again until every one has been seen, and the first of a new deal is never the last of the old one.
+- `L5134 revOff` the last Overdrive no-doubter show is remembered ACROSS games too: the same one never runs twice running, even if the second is in a new game
+- `L5176 hrFeetAdd` the very first Overdrive homer a player ever hits always leaves orbit; after that it is about one in three
+- `L5192 juiceTap` one press, one toggle, even if the browser reports the touch twice
+- `L5195 juiceTap` the first Overdrive of a game is always yours alone: he can't answer it, and if he was in his own he backs off
+- `L5196 juiceTap` after that, the pitcher answers. HE IS SEEN ANSWERING: the picture cuts to him catching fire with his callout first (his usual Overdrive reveal), and only THEN does the Showdown banner come up, back at the batting camera. It used to go straight from your tap to the Showdown banner, which came out of nowhere.
+- `L5198 juiceTap` **NEVER A QUICK PITCH AFTER THE TAP**: the hitter gets a good two seconds to settle. If the pitcher had already started his delivery he steps off and starts again.
+- `L5201 juiceTap` changed your mind: tap again before the pitch is thrown and it switches back off, still fully charged
+- `L5288 touchSettle` Shift on its own switches Overdrive on, the same as tapping the button on a phone
+- `L5309 cornerTap` the button rows and everything under them, plus the JUICE column
+- `L6152 batAura` Juice toggled on: the bat burns the whole time, between pitches too
+- `L6332 step` **OVERDRIVE IS READY AND HE HASN'T PRESSED IT**: the pitcher waits. A player who has never used it gets twenty seconds (every at-bat) and a pointer at the
+- `L6387 step` laying off a ball is rewarded: a quarter bar of Juice for every one taken
+- `L6465 step` Overdrive lights the whole screen for a moment as it comes on: the rings wait for that to clear, then swell where you can see it
+- `L6466 step` Juice and Overdrive make both rings bigger, and they visibly swell into it (overshoot, then settle) so nobody misses that it happened
+- `L6468 step` OVERDRIVE: the rings turn blue, the power core a deeper blue

@@ -1,0 +1,143 @@
+# Ball flight and the ballpark
+
+From the prototype's `index.html`. Bold = standing rule. See `README.md` in this folder.
+
+- `L2010 kCelOn` (only straight out of a strikeout celebration, with your own pitcher standing there to look at. After a ball in play this shot found an empty mound and nothing but the dark batter's eye behind it: a black screen.)
+- `L2054 draw` **THE BATTER'S EYE JOINS THE SHOW**: on a homer its neon surround runs through the colors, quicker and pulsing while the lasers are on, then settles back to cyan
+- `L2103 poleTick` **ONE TYPEFACE EVERYWHERE**: everything painted into the park (scoreboard, wall distances, signs) is lettered in the same face as the screen
+- `L2279 ribbon` EXPERIMENT: the playing surface inside the walls drawn like the batter's eye (dark glass solar panels, blue grid, a sheen on every panel).
+- `L2357 ribbon` foul lines past the dirt, warning track, wall
+- `L2362 ribbon` (on the Porch the first row sits on top of the wall)
+- `L2365 ribbon` Outfield wall: one texture laid out along the wall's real length, so the five distance markers sit on their own
+- `L2370 ribbon` k: horizontal squash so lettering keeps its proportions on the wall
+- `L2372 ribbon` padded outfield wall in ballpark green (still panelled and riveted)
+- `L2381 ribbon` (no boards on the first stretch: The Porch stands in front of most of it, and the one board that was left showed cut in half at its end)
+- `L2388 ribbon` BAKED LIGHT (the way a PS2 park is lit: painted into the wall, so it costs nothing to draw and looks the same on a phone as on a PC).
+- `L2389 ribbon` Each pad bulges (bright where it faces the lights, dark in the seams); the whole wall is brightest near the top and falls into shadow
+- `L2400 ribbon` THE PORCH (left field): thirty feet of riveted hull plate on top of the padded wall, with the out-of-town scores lit along it.
+- `L2401 ribbon` ONE WALL from the dirt to the top: the plate stands just proud of the padded fence and covers it, so there is no second yellow line half-way up
+- `L2401 ribbon` a thick band, standing clear of the wall: on a phone a thin line this far away broke up into dashes
+- `L2412 ribbon` the yellow line turns the corner: down the end of the Porch to meet the line on the normal fence
+- `L2428 ribbon` the top of the wall runs straight into the first row: no gap for a ball to drop down
+- `L2429 ribbon` the seats stop either side of the Cove
+- `L2430 ribbon` THE STANDS ARE LIT TOO, the same painted way: a see-through layer over each bank of seats, bright pools where the floodlights land,
+- `L2442 ribbon` **RIGHT FIELD IS THE COVE**: no seats at all from right-center round to the pole. The wall there is 28 feet of moon-brick with arches through
+- `L2444 ribbon` lava, a whole bay of it running out to the foot of the ridge. A ball hit over the wall and the walkway goes INTO THE LAVA.
+- `L2445 ribbon` brick from the ground to the rail: the face stands just proud of the padded wall and covers it
+- `L2453 ribbon` ...and they are FENCED, the way the arches at the real bayside park are: a steel screen across every one, a kick-rail along the bottom, and a few fans standing behind it watching for free. Nothing rolls in there.
+- `L2469 ribbon` painted light, the same recipe as the other walls: bright along the top, shadow at the foot, a pool of floodlight every few bays, and a warm bounce low down from the lava behind
+- `L2476 ribbon` the back of the porch is a finished wall too: the same brick and arches as the front (drawn the right way round), from the top terrace down to the lava
+- `L2480 ribbon` **RIGHT FIELD, THE BALLPARK-BY-THE-BAY WAY**: a few rows of seats right behind the wall, then an open PATIO out to the back rail over the lava. A ball that reaches the patio BOUNCES on it, and a good hop carries the rail into the cove. Nobody on the patio is a flat cut-out (those look like sheets of paper when a home-run camera goes over them): the seats are a raked bank like every other stand, and the people walking about are little solid figures, all of them one mesh.
+- `L2523 ribbon` further right and further back: it stood right behind the right-center light tower and was never seen
+- `L2604 ribbon` roof over the upper deck: back wall, canopy, white fascia, columns, lights, flags
+- `L2625 ribbon` the cut ends of the deck: a dark end wall with a magenta light bar down its edge
+- `L2629 ribbon` (set a couple of meters back and lifted, so its frame stands behind and above the top of the wall instead of cutting into it)
+- `L2636 ribbon` a dark plinth from the wall-top up to the foot of the batter's eye: no seats or fans under it
+- `L2638 ribbon` wall-top below. Lit like a piece of the stadium, and the panel itself stays dark so the ball still shows against it.
+- `L2646 ribbon` the batter's eye is a dark solar array: still a clean backdrop to pick the ball up against
+- `L2730 ribbon` **THE GRANDSTAND WEARS THE OUTFIELD BOWL'S LOOK**. Same idea, drawn finer because these seats are closer: bright block-color fans in neat rows, cut into sections by dark aisles running up the stand and a cross-walkway half-way up each deck, so it reads as stadium seating from pole to pole and behind the plate. (It was a dimmer picture of fans in bubble helmets, with grey stairways laid over it.)
+- `L2743 ribbon` the few rows of seats on top of the right-field wall: the same raked bank of fans as every other stand
+- `L2744 ribbon` the backstop is an arc behind the plate (BK_A meters back at its deepest) that runs smoothly into the two foul-side walls
+- `L2747 ribbon` **THE FOUL POLES ARE LIT LIKE THE REST OF THE PARK** (painted, no real lights): the lattice is glowing neon tube with a bright core, a hot
+- `L2753 ribbon` The walls down the lines are padded and lit the same way as the outfield wall (painted-in light: a bulge on every pad, bright at the
+- `L2754 ribbon` top, shadow at the foot, a pool of floodlight every 24 m). Navy here, so the eye still reads green as "the home-run wall".
+- `L2763 ribbon` top, so it reads as a building and not a tilted sheet of seats.
+- `L2776 ribbon` A THICK TOP on the walls down the lines: a meter and a half of padded cap in the wall's own blue with a dark back edge, seen from both sides, so from overhead it is a wall and not a sheet of paper
+- `L2780 ribbon` **STAIR AISLES ALL THE WAY DOWN THE LINES**. The bowl behind the plate is cut into sections by stairways on both decks; the long stands out to the foul poles were one unbroken sheet of seats. They now have the same grey stairs with a yellow nosing every dozen meters, lower deck and upper, tapering toward the top the way the others do.
+- `L2787 ribbon` THE GRANDSTAND IS A SOLID BUILDING, not a sheet of seats: a back wall from the top row down to the ground, and a closed end wall at
+- `L2793 ribbon` end walls: the stepped side profile, filled in
+- `L2807 ribbon` the lattice starts at the top of the wall on each side (both corners have tall walls now), not down behind it
+- `L2813 ribbon` behind home plate: a curved backstop, and a bowl of seats that fans around it in wedge sections with stair aisles between,
+- `L2830 ribbon` **A BALLPARK BACKSTOP**: plain dark padding with stitched seams, the way the wall behind the plate is in a real park. Nothing is written
+- `L2881 ribbon` (easing back to the deck face at both ends, so it meets the boards round the foul poles exactly: it used to stop two meters proud of them, a visible step)
+- `L2884 ribbon` foul pole) a curved section of seats now wraps round the pole and joins the two, with the board carried round its face and a solid
+- `L2885 ribbon` back. Seen from the blimp, on a fly ball down the line or a pop-up, the seats run unbroken from the plate round to center field.
+- `L2893 ribbon` RIGHT FIELD: the section stops at the foul pole, where the Cove begins, with a solid end wall facing the lava
+- `L2942 ribbon` The scoreboard: a big LED board above the batter's eye in center field. Normally the line score (runs, inning, outs, count, who is up);
+- `L3001 sbTick` (the right-hand legs are set further in and the whole board a little further forward: since right field's wall became straight the halo board runs closer here, and the far leg was standing through it)
+- `L3015 sbTick` A ball off the batter's eye (a solar array) or the scoreboard shorts it out: the panel flickers, arcs crawl over it, sparks rain down.
+- `L3514 organPlay` LIGHTS OUT. An Overdrive homer that goes into a light tower: the bank shatters in a shower of sparks, arcs crawl over it, that tower stays
+- `L4439 loadStep` **PROPS MADE IN TRIPO** (a light tower and a video board): small GLB files, one mesh and one 1024 px texture each, read by a tiny reader
+- `L4448 glbLoad` **NOTHING A HOMER CAN HIT IS HOLLOW**. Every prop out beyond the fence (light towers, the big board on its gantry, mission control, the soda can, the domes, the dishes...) has a solid box round it. A home run that reaches one comes off it and drops, instead of passing through.
+- `L4450 propBoxes` (boxes are drawn in a little, so nothing bounces off thin air at a corner; nothing in the infield counts)
+- `L4450 propBoxes` a light tower is a thin mast with a wide head: the mast's box is narrow, so a ball going past below the lamps is not turned back by empty air
+- `L4482 propsLoad` Tripo: the giant soda can beyond the fence in left-center, and the fuel collectors standing out in the lava of the Cove
+- `L4488 propsLoad` Tripo radar dishes out beyond the fence, turned toward the park
+- `L4637 simulate` opt.chop: first bounce is a big one; opt.g: a low-gravity pocket; tag: anything unusual that happened to it
+- `L4645 simulate` comes down onto the bank of seats beyond the wall
+- `L4647 simulate` The walls down the lines and the seats behind them are solid. A ball that reaches the wall below its top comes back off it; one that
+- `L4648 simulate` clears it comes down among the fans and stays there. (Everything beyond those walls is foul ground.)
+- `L4654 simulate` how far outside the chalk it is as it reaches the fence
+- `L4656 simulate` the screen that runs up the fair side of the pole: it catches the ball and drops it, and it is a home run
+- `L4656 simulate` the pole is fair: it clangs off and drops
+- `L4657 simulate` a foul fly past the pole keeps going: it finishes its flight and drops into the seats, it is never frozen in mid-air
+- `L4657 simulate` out of play down the line: foul only if it never came down fair
+- `L4660 simulate` catches the top of the wall and hops over
+- `L4661 simulate` bounced in play and hopped the wall: ground-rule double
+- `L4662 simulate` **THE BALL STAYS WHERE IT HIT**: it is set back just inside the wall along its own line from the plate (BUILD 935 set it back along the wall's normal instead, which moved it sideways round the park, as far as foul ground). Left and center come off the wall exactly as they always did; only the two straight walls in right use the wall's true face.
+- `L4664 simulate` the batter's eye is a solid slanted wall behind the center-field fence: the ball caroms off it
+- `L4667 simulate` distance is where it would have come down
+- `L4668 simulate` comes off the panel up and back toward the field
+- `L4669 simulate` **THE LIGHT TOWERS ARE SOLID**: a homer that carries all the way to one no longer passes through it. It clangs off the mast (or the bank of lamps on top), and drops.
+- `L4672 simulate` (the distance called is where it would have come down)
+- `L4676 simulate` it comes down among the fans: stopped at head height on the lower deck, or by the upper deck and its facade where there is one
+- `L4677 simulate` beyond the back row there is nothing: it has left the ballpark and comes down on the Moon // the first meter and a half behind the wall is the ledge in front of row one: it stops there too
+- `L4680 simulate` low-gravity bounces) and rolls to a stop, and that is where its flight ends.
+- `L4684 simulate` **INTO THE SEATS, AND SEEN TO BE**: it does not vanish the instant it reaches the crowd. It lands, kicks up off the seats (or the deck) in one short hop and THEN somebody has it. (Not the lava: that swallows it whole.)
+- `L4685 simulate` **THE PATIO IS A FLOOR, NOT A CROWD**: the ball bounces on it (up to four times). A hop that clears the back rail goes on down into the lava and is a cove shot; one that does not comes off the rail and dies on the deck.
+- `L4691 simulate` fair or foul is settled by where it first lands, measured from the chalked lines
+- `L4698 simulate` The rule on a ball that comes down fair in front of the bag: it is judged where it is when it passes first or third (or where it is
+- `L4699 simulate` touched). Roll foul before the bag and it is a foul ball; get past the bag fair and it is fair for good, wherever it goes after that.
+- `L4707 simulate` how much more ground an outfielder covers on a ball that hangs: nothing extra on liners (under 3.2 s in the air), up to 55% more on a towering fly
+- `L4709 simulate` Dives. A ball that drops just beyond an outfielder's reach (within about three and a half meters) makes him leave his feet for it.
+- `L4715 judge` a fly ball that hangs up and comes down a stride or so beyond where he could get to is caught on the run: if he is in the circle, he has it
+- `L4717 judge` the catch is made while the ball is still clearly off the ground (knee height on its way down): it must never be seen to touch down first
+- `L4720 judge` a dive that comes up empty is only shown when the ball stays in front of the wall: he has to be able to get up and run it down
+- `L4721 judge` in plain sight, so the play is held open long enough for that (no carom plays: they made him appear to jump to the wall)
+- `L4722 judge` he picks it up only when he could really have run to it from where the dive left him
+- `L4728 judge0` a ball that only just clears can be brought back: an outfielder who can get to that spot on the wall in time sometimes goes up and takes it away
+- `L4731 judge0` he makes the catch standing in front of the wall, not in it
+- `L4734 judge0` ground-rule double: the nearest outfielder still goes after it until it hops the wall
+- `L4737 judge0` **IF HE WAS RIGHT THERE, IT IS HIS ERROR**: an outfielder who gets under the ball and still lets it bounce over the wall did not just stand
+- `L4739 judge0` fielder and never as the game forgetting to catch it.
+- `L4740 judge0` (he WEARS it: the ball comes down on him and he goes over, the way an infielder does on a comebacker. The picture says "error" before the words do.)
+- `L4744 judge0` it rolled foul short of the bag: fair only if somebody got to it first
+- `L4748 judge0` a foul fly that stays in the park can be caught: inside the side walls and in front of the backstop
+- `L4753 judge0` otherwise the nearest man gives it a courtesy run for as long as the ball is in the air
+- `L4757 judge0` A ball that is going to reach the wall on the fly burns the outfield: nobody catches it unless it hung up there long enough (4.2 s) to run down.
+- `L4759 judge0` in Overdrive the pitcher never gloves one: anything back through the box takes him out
+- `L4759 judge0` sometimes the comebacker gets through the box
+- `L4761 judge0` the comebacker he didn't handle: it goes off him
+- `L4763 judge0` a ball headed for the wall burns the outfield, UNLESS the man is camped under it with time to spare: then it is his
+- `L4763 judge0` a ball that hangs up there gets run down: past 4.2 s an outfielder covers up to half as much ground again
+- `L4765 judge0` now and then a rocket eats an infielder up: it is on him too fast, goes off him and he goes down. Rare, so it keeps its charm,
+- `L4766 judge0` except in Overdrive: a liner hit right at an infielder by a hitter in Overdrive always goes through him.
+- `L4767 judge0` OVERDRIVE: no infielder ever handles one. Liner or grounder, the first man it reaches wears it and goes down
+- `L4768 judge0` **OVERDRIVE LINERS FLATTEN OUTFIELDERS TOO**: a line drive hit right at one (he barely has to move for it) goes off him and he goes down
+- `L4770 judge0` the pitcher only handles what comes straight back at him
+- `L4772 judge0` once it has come off the wall it is a live ball, not a catch
+- `L4773 judge0` named by how it came off the bat, not by who caught it: under 20 degrees is a line drive wherever it is caught
+- `L4776 judge0` field it, a second to set and release, then the throw to first
+- `L4777 judge0` the throw has to beat the runner to first: quicker men (and lefties, a step closer) get there sooner
+- `L4778 judge0` a routine grounder is not always an out: about one in twelve, the throw sails or pulls the first baseman off the bag and the runner is safe on the error
+- `L4782 judge0` Extra bases are a race: the runner against the fielder picking the ball up, setting, and throwing to the bag.
+- `L4783 judge0` An average runner needs about 8.2 s to reach second and 11.6 s to reach third; a ball fielded cleanly in front of an outfielder is a single.
+- `L4784 judge0` a carom takes longer to pick up and turn with
+- `L4787 judge0` show the ball come down (and carom off the wall) before the call; long flies used to be cut off in mid-air
+- `L4789 judge0` A ball that gets past the outfielder (smoked into the gap, or all the way to the wall) is chased, not met: it arrives first, hits the
+- `L4793 judge0` wall: it reached the fence before anyone got to it
+- `L4963 addRuns` and, as the home side, always bats last. Arcade rules: plenty of luck early, and their last turn is pulled toward the player's score so the
+- `L5033 finishPlay` ROBBED: after a home run taken back at the wall, a diving catch or a great running grab, the picture goes back to the man who hit it
+- `L5034 finishPlay` for his reaction (one of the dejected routines). Always for a robbery at the wall, most of the time for the others.
+- `L5070 finishPlay` if he hasn't got to the ball yet (a ball to the wall, say), he runs the rest of the way first and only then throws: no throwing on the move
+- `L5135 revOff` **THE BIG OVERDRIVE SHOWS NEVER GO STALE**: each one (orbit, light tower, satellite or saucer, off the Moon) plays at most once in a game, and never the same one two Overdrive homers running, even across games. When none is left for this game, the homer is followed by the trail camera like any other.
+- `L5251 sensLabel` · a quick flick travels further than a slow drag of the same length (up to 1.7x), so the far corners are a flick away while fine aim stays fine;
+- `L5301 cornerTap` (an explainer is up: every touch belongs to it. The tap-to-skip was swallowing the tap on GOT IT whenever a card came up during a cut-scene, and the game was stuck behind it)
+- `L5840 setupFielder` **THE LEAP AT THE WALL** (a home run taken back): measured the same way. The moment of the catch is when his glove hand is highest.
+- `L6395 step` **OFF THE WALL AND INTO HIS HANDS, IN ONE PIECE**: a ball played off the fence used to be a few metres from the outfielder when the play ended, and then it was simply in his glove. Over the last half second it now comes to him: it rolls or hops across from wherever the carom had taken it and is in the glove as he gathers it.
+- `L6415 step` over the fence: the roar that has been building steps up
+- `L6416 step` the moment it lands among them: a spray off the seats and a thud, then the hop
+- `L6435 step` the instant it is over the wall, and not a frame sooner: the horn (on a good share of them) and, when it was a no-doubter, the lasers
+- `L6460 step` **A HOMER IN FLIGHT IS NEVER HIDDEN**: once it is out past the fence the ball is drawn over whatever is between it and the camera (the halo board, an upper deck), so it does not blink out on the chase camera as it goes over them
+- `L6460 step` **A HOMER NEVER PASSES THROUGH A LIGHT TOWER**: the one in its way steps out of the picture while the ball goes by (the flight and the distance count are untouched)
+- `L6480 step` **STEP 2, RED FIRST**: only the red POWER core travels to the ball (POWER button lit), then the green CONTACT circle appears around it (CONTACT button lit). The green ring is never the thing being dragged.

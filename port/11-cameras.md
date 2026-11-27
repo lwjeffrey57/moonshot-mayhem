@@ -1,0 +1,84 @@
+# Cameras
+
+From the prototype's `index.html`. Bold = standing rule. See `README.md` in this folder.
+
+- `L2050 draw` the flyover: in over the far ridge (above it), down across center field toward the plate and away over the grandstand, in under five seconds. It comes AT the hitter's camera, so it is seen from the field as well as from the air.
+- `L2062 draw` CLOSE-UPS: the call sits in the gap between the top bar and the head of whoever is on camera. If the gap is too small for it, the
+- `L2260 ribbon` the big ones, where the batter's camera sees them straight away
+- `L2641 ribbon` the glowing edge sits clear in front of the dark frame (they used to share one plane and flickered against each other as the camera moved), and the frame clear of the panel
+- `L3999 mugTick` (photographed unmirrored: a lefty's mirrored body threw the camera off his face)
+- `L4079 startTrot` after the hitter's 'loser' taunt, the camera cuts to the pitcher wearing it: seconds since that cut, or -1
+- `L4169 toReady` the scene: the man who got knocked out trudges off, then a cut to the mound for the new arm, then the hitter comes up as usual
+- `L4453 propBounce` **THE FLIGHT ENDS WHERE IT HITS**: the ball comes off the ironwork, drops for a beat and the play is over. The camera does not go on following it down. (It is still a home run, with its full distance.)
+- `L5116 satTick` first the ball is watched leaving the park (from the plate, looking out over the field: a view that is always clear), then the cut to space
+- `L6339 step` the pitcher waits for a practice cut to finish: no quick pitches
+- `L6445 step` fireworks + crowd camera flashes during a homer
+- `L6484 step` Batting cameras. Each is a position and a look-at point; 'side' ones sit on the open side of the plate, away from the hitter.
+- `L6502 updateCamera` THE JUMP: from up the line ahead of him, a step toward the mound, as he breaks
+- `L6503 updateCamera` **THE THROW DOWN**: from just behind the catcher as he comes up and fires
+- `L6504 updateCamera` **AFTER A STRIKEOUT**: cut to him celebrating on the mound, framed loose enough that the call sits above his head
+- `L6506 updateCamera` (the first half second of a ball in play is still seen from the mound: the swing, and the ball coming off the bat)
+- `L6506 updateCamera` aimed lower: the plate sits higher on the screen, with only a couple of rows of the backstop crowd above it, and the room goes to the controls
+- `L6506 updateCamera` an upright phone: in tight over the pitcher's shoulder, so the strike zone is big in the middle of the screen
+- `L6506 updateCamera` mirrored for a left-handed hitter, so the pitcher never stands between the camera and the man at the plate
+- `L6506 updateCamera` from behind and just to the side of your pitcher, long lens, the zone in the clear beside him; a ball in play is watched from behind the plate
+- `L6507 updateCamera` (the chase shot riding over the interceptors is gone: it clipped through the ridges)
+- `L6507 updateCamera` the interceptor shots come up most: the chase camera behind them (5) and the straight-down view with them crossing underneath (0)
+- `L6507 updateCamera` held for a good five seconds
+- `L6508 updateCamera` **THE SHOW IS TIMED TO THE SHOT**: the lasers come on as the camera goes up, fireworks burst over the bowl through it, and the scoreboard takes a power surge near the end
+- `L6511 updateCamera` FIVE DIFFERENT SHOTS FROM THE AIR, never the same one twice running: straight down over the mound, the blimp circling the bowl, from
+- `L6512 updateCamera` behind the rocket on its pad (which lifts off), a crane rising behind home plate, and riding high above the ball itself. All of them
+- `L6513 updateCamera` stay well above every roof, tower and ridge.
+- `L6515 updateCamera` well back and above: all three ships, their trails and the park ahead of them in one picture
+- `L6515 updateCamera` riding just behind and above the interceptors as they cross the park
+- `L6517 updateCamera` from high over the first-base side, looking across the whole park to the rocket going up beyond left field
+- `L6520 updateCamera` high enough that the interceptors crossing underneath are seen whole, with the park all round them
+- `L6521 updateCamera` a slow sweep high over the stadium, the ball a streak below
+- `L6523 updateCamera` (the chase camera lets go just before a ball hits the batter's eye, so the carom and the short circuit are watched from the field)
+- `L6525 updateCamera` riding just behind and above the ball, looking where it is going
+- `L6527 updateCamera` **OFF THE TOWER**: the chase camera stops short and watches the ball come off the steel and drop, instead of spinning round with it
+- `L6528 updateCamera` **THE CAMERA NEVER GOES THROUGH THE BUILDING**: while it is over the seats, the board or the back wall it is held above them (higher still over the scoreboard in center), so a ball leaving the park is watched over the rim, not through it
+- `L6529 updateCamera` (and it keeps looking out along the flight, not down at its feet)
+- `L6530 updateCamera` from just outside the park, watching it climb away toward Earth
+- `L6531 updateCamera` from off to the side, toward the foul line (clear of the scoreboard): the rope is seen side-on, climbing all the way into the lights
+- `L6531 updateCamera` from the outfield grass, looking up at the tower as it comes in
+- `L6532 updateCamera` from high over the park, clear of every deck and roof, looking up and out at it
+- `L6533 updateCamera` from high over the park, clear of every deck and roof (the old spot just outside the wall could sit inside the stands)
+- `L6534 updateCamera` from behind the plate, a little up: the ball climbing out over the outfield bowl and away
+- `L6537 updateCamera` a quick cut to the man who just got locked in, from the infield side of his base
+- `L6538 updateCamera` ...then the pitcher, from the plate side
+- `L6540 updateCamera` strikeout: close on the hitter from the pitcher's side
+- `L6543 updateCamera` the race: from foul ground past the bag, the runner coming up the line and the first baseman stretching for the throw
+- `L6545 updateCamera` (from its laid-out box, not its on-screen box: it does not bounce with the call's slam-in)
+- `L6545 updateCamera` the result call sits above his head, never across him
+- `L6546 updateCamera` calls sit above the players' heads, never across them
+- `L6548 updateCamera` (on a phone the shot is framed, by measurement, so the thrower and first base both sit in the clear band between the row of prompts and the arrow pad) /* over his throwing-side shoulder, first base and the runner in front of him
+- `L6553 updateCamera` one cut only: from the run straight to the side-on fight camera the moment he gets there
+- `L6553 updateCamera` and the camera crowds in a step closer with each one
+- `L6553 updateCamera` framed with headroom above the fighters: that strip is where every call goes
+- `L6553 updateCamera` after the knockdown it pulls back to keep the man on the ground in the picture
+- `L6554 updateCamera` from the pitcher's side, low, on the man who got hit
+- `L6556 updateCamera` (not while a send is on offer: then the picture stays on the field, the ball and the runners, so the decision can be read)
+- `L6556 updateCamera` the infielder who wore one: from the plate side of him, low
+- `L6558 updateCamera` the pitcher who wore the comebacker: cut to the mound from the plate side, low
+- `L6560 updateCamera` walking toward the camera, which backs away with him
+- `L6561 updateCamera` his Overdrive: the shot sits further back and looks a little higher, so the call has clear sky above his head
+- `L6561 updateCamera` **THE NEW ARM, WITH HIS CARD**: the camera stands a step further back and looks up a little, which puts his head lower in the picture: room above it for his card and, above that, the PITCHING CHANGE banner. Nothing overlaps and nothing covers him.
+- `L6563 updateCamera` from the pitcher's side, across the plate: his front three-quarter, with the stands behind him
+- `L6565 updateCamera` follow him down when he is on the ground, so the name card doesn't cover him
+- `L6566 updateCamera` The camera stands closer to him with a wider lens: he is the same size in the picture, but the backstop and the seats behind him
+- `L6567 updateCamera` fall well back, so he has room around him instead of a wall at his shoulder.
+- `L6570 updateCamera` stay on the hitter: low, from the pitcher's side, creeping in
+- `L6576 updateCamera` coming back from a far-off shot (the Moon from space, the blimp): cut straight to the fireworks, never glide up through the ground or the stands
+- `L6577 updateCamera` hold the shot on the fielder while he throws; no chasing the ball back in
+- `L6582 updateCamera` hard cut from the hitter to the ball
+- `L6587 updateCamera` close-ups are framed with the man a little lower in the picture, so there is clear space above his head for the call
+- `L6589 updateCamera` the whole picture trembles, like a broadcast camera on a deck that 50,000 people are jumping on: the frame shakes, not the stands (applied after the camera is aimed, or the aim would undo it)
+- `L6592 updateCamera` the lens punches in with the pitch
+- `L6596 updateCamera` Keeps the game responsive on slower phones: if frames are slow for a while, drop a quality level (never goes back up).
+- `L6597 updateCamera` **SMOOTH FIRST**: the picture's resolution breathes with the phone. The moment frames start running long it gives up a few percent of
+- `L6598 updateCamera` sharpness (which nobody sees in motion) so the frame rate holds; when there is headroom again it creeps back up. A steady rate is what
+- `L6599 updateCamera` reads as "smooth". If the device is simply capped (Low Power Mode holds everything to 30 a second) shrinking the picture cannot help,
+- `L6600 updateCamera` so it is left at full sharpness and nothing else is taken away either.
+- `L6606 drsWatch` (it was 51 a second. A phone whose browser paces the game at about 54 with one long frame in ten dipped under that all game, and the picture was cut to 62% for nothing: the measured test showed fewer pixels do not buy those frames back. Resolution is now given up only when the game is really running slow, and never below 78%.)
+- `L6682 frame0` the tutorial always sits over the normal view from behind the plate, never over whatever close-up the camera happened to be in

@@ -1,0 +1,106 @@
+# HUD, callouts, layout rules
+
+From the prototype's `index.html`. Bold = standing rule. See `README.md` in this folder.
+
+- `L1355 (top level)` **DOWNLOADED ONCE, KEPT ON THE DEVICE**. Every published build made the browser fetch every player body again (about 60 MB of them), and on a phone they then arrived minutes into the game, each one a freeze as it was unpacked. Bodies, props and the animation set are now stored in the browser's own database after the first download, keyed by the file's name and fingerprint: a later visit (or a later build) reads them from the device in a second or two and only fetches a file that has actually changed. If the database is unavailable (private browsing, no space) everything simply downloads as before.
+- `L1480 dftDom` the instant it touches down the counter shows the final distance, exactly the number in the call
+- `L1481 dftDom` **THE NUMBER HEATS UP LIKE A DAMAGE COUNTER**: white, then yellow, orange, red, and from there darker and darker, through crimson to a deep
+- `L1482 dftDom` blood red by 1,134 ft. Past 530 it also grows and shakes, with fire behind it.
+- `L1487 dftDom` The pitcher's Overdrive tag rides above him: its bottom edge is kept over the highest point he reaches (arms up, mid-taunt, mid-flip), found
+- `L1488 dftDom` from his actual joints each frame, and it shrinks if there is not room under the top bar. It never sits on him.
+- `L2050 draw` the launch: a shudder on the pad, then away on a pillar of fire, gone in ten seconds; a fresh vehicle rises out of the pad afterwards
+- `L2104 poleTick` text. A painted texture that has lettering on it is painted again once that face has finished loading, so none is left in a stand-in font.
+- `L2406 ribbon` plain green for now: no lettering, no scores. Only the distance down the line, painted at its foot like every other marker.
+- `L2431 ribbon` falling away to shadow between them and up toward the back rows. One small texture, drawn once per bank: nothing to slow a phone down.
+- `L2716 ribbon` the grandstand. A few dozen flat-lit triangles each and a glowing trail: nothing a phone will notice.
+- `L2921 ribbon` framed bank of individual lamps, with a soft glow and a wide lens streak. A handful of flat panels per tower: nothing for a phone.
+- `L3403 unlockAudio` older iPhones: a looping silent <audio> element moves the page onto the media channel, which ignores the ringer switch
+- `L3528 lampTick` in time. It keeps going for as long as the hitter is shown rounding the bases, then fades. Twelve thin tubes: nothing for a phone.
+- `L3603 heartTick` two thumps. The low sine is the chest-felt part on headphones; the higher triangle and the click are what a phone speaker can actually play
+- `L3653 pop` **A NEW BADGE IS THE CALL**: if a feat has just earned one, its badge (icon and name, in gold) goes up as the big callout in place of the
+- `L3654 pop` ordinary one, which drops to the line underneath. If several were earned at once the proudest leads and the rest follow as plates up top.
+- `L3656 pop` **CALLOUT AND BADGE PLATE NEVER SHARE THE SCREEN**: a callout always wins. A plate that is up when one arrives is taken down and comes back afterwards.
+- `L3657 pop` it comes back ONCE, and only if it had been up for under a second: never again and again through a run of callouts
+- `L3660 pop` **A LONG CALL IS SHRUNK TO FIT**: no callout ever runs off the edge of the screen
+- `L3661 pop` NOW BATTING waits for the callout to clear
+- `L3662 setMob` narrow a desktop window to preview the phone layout
+- `L3682 nextTip` thumb guide before the very first pitch on a phone
+- `L3695 tutShow` ring drawn around the button as it actually is (JUICE and OVERDRIVE are different sizes); 4 = the ring's border
+- `L3699 tutShow` two highlights: the stick (lifted above the dimming, with its own ring) and the strike zone, where the bat ring follows it
+- `L3703 tutShow` caption sits above the lit zone
+- `L3705 tutShow` spotlight the strike zone itself: project its corners to the screen
+- `L3709 tutShow` both steps use the same pitch, up and in the right half of the zone // room for the bat ring to start well off the ball and travel to it
+- `L3710 tutShow` step 3 keeps the bat where step 2 left it: squared up on that same pitch // bat dead center for the demo; the ball marker is placed on that exact point (4 = the spotlight's border)
+- `L3712 tutShow` Step 2 demo, in step with the button highlights: the ball never moves. The bat ring starts off it, slides until the ball is in the green
+- `L3713 tutShow` (CONTACT lights), then until the ball is in the red core (POWER lights): move the circle to the ball.
+- `L3715 tutShow` Step 2 demo. The ball sits still in the upper-right of the zone. The stick leans and the green ring (filled, no red showing yet) travels to it
+- `L3716 tutShow` until the ball is dead center: CONTACT. Then the red core appears around the ball where it already is: POWER.
+- `L3719 tutAnim` the stick is pushed around, and the bat ring up the screen moves with it
+- `L3725 tutAnim` the button is tapped: both swing buttons and the screen catch blue fire
+- `L3731 tutAnim` timing step: just the ball, the closing ring and the gauge // held on the pitch from step 2
+- `L3733 tutAnim` the stick starts pushing almost at once, and the ring is on the ball about a third of a second later
+- `L3734 tutAnim` RED FIRST: only the red POWER core travels to the ball; then the green CONTACT circle appears around it. The green ring is never the thing being dragged.
+- `L3735 tutAnim` the stick leans the way the ring is travelling
+- `L3737 tutAnim` First batter of a game, before the first pitch: if the stick hasn't been touched yet, it gets a soft yellow glow to say 'move me'.
+- `L3738 tutAnim` Purely a highlight: nothing here moves the stick or the bat ring, and it is gone the moment a thumb lands on it.
+- `L3748 stickHint` **NO CALL OVER A PLAYER'S HEAD IS EVER WIDER THAN THE SCREEN**: whenever its words change, the lettering is shrunk until the whole line fits with a margin each side
+- `L3764 shoutTick` over his head, but never hanging off the edge of the screen: on a phone the lettering is nearly the full width, so it sits centerd
+- `L3769 shoutTick` over his head, but never hanging off the edge of the screen: on a phone the lettering is nearly the full width, so it sits centerd
+- `L3784 tutNeed` no more guides on this device (HOW TO PLAY in the pause menu still works)
+- `L3788 tutNeed` Timing meter. x is real time and everything is to scale. A colored band is the whole window in which that swing can touch the ball
+- `L3789 tutNeed` (green = CONTACT, the narrower red = POWER), brightest in the middle where timing is best and fading toward the edges; a Juice swing adds
+- `L3790 tutNeed` gold to both ends of the one you used. A marker in the black means the swing was too early or too late to make contact at all.
+- `L3798 flash` OVERDRIVE: fill the Juice meter all the way and it is charged. The meter burns and reads OVERDRIVE READY and the JUICE button becomes the
+- `L3799 flash` OVERDRIVE button, but nothing is spent until the player taps it. Tapped, every swing of that at-bat is a free Juice swing; when the at-bat
+- `L3800 flash` ends (a walk aside) the meter is emptied and has to be filled again.
+- `L3801 flash` **OVERDRIVE DUEL**: batter and pitcher both in Overdrive for the same at-bat. If the hitter switches his on while the pitcher's Heat is at least
+- `L3819 hud` Overdrive is all or nothing: the bar is simply full while it is live
+- `L3823 hud` Juice only ever moves a quarter at a time: four quarters, four bars // counted exactly the way a Juice swing is paid for, so the badge never promises a bar that isn't there
+- `L3825 hud` the big OVERDRIVE READY call says it; no pill over the button
+- `L3828 hud` the heads-up waits until the Juice button is actually on screen (the play is over and the next pitch is being set up), and is given once a game
+- `L3830 hud` no pop-up: the button itself bounces once, and glows for as long as there is Juice to spend
+- `L3835 hud` POWER only burns once Juice is armed or Overdrive has actually been switched on
+- `L3837 hud` **THE READ-OUT AFTER A PITCH YOU DID NOT HIT**: the baseball where it crossed, with its speed and what it was, right beside it
+- `L3838 hud` **MY ZONE WAS HERE, THE BALL WAS THERE**: after a miss the picture holds this long (it used to be gone in three quarters of a second), and the pitcher does not start his next windup until it has
+- `L3840 hud` Flavour first: the first home run and the first strikeout of every game always get the full, ridiculous treatment
+- `L3841 hud` (the first two of each for a player's first three games), so nobody plays a whole game without seeing what this game is.
+- `L3842 hud` routines that are walk-ups only, never celebrations
+- `L3843 hud` **CELEBRATIONS ARE EARNED**. Eight come with the game; one more unlocks at each level after that, the showiest last. In playtest mode everything is open (the ladder is still shown, so it can be judged); in the release build only what the player has reached is in the mix. The player can also pick one as their SIGNATURE: it is the first home-run celebration of every game.
+- `L4411 infoOnce` (it WAITS for its moment instead of being lost: a skipped cut-scene, a pause or another card used to swallow it for good)
+- `L4486 propsLoad` (on a phone: two domes and two dishes, not four and three. 25,000 fewer triangles in every outfield view)
+- `L4503 warmUp` the loading screen stays up until every body is built, or this long at most. It was ten seconds, and the phone reports showed bodies left over at that point being unpacked in the middle of games; seventeen gives a phone room to finish. A fast machine still gets PLAY BALL the moment the work is done.
+- `L5156 callOnce` feat happens in each new game (marked BADGE rather than BADGE UNLOCKED). After that, in the same game, the ordinary callouts take over.
+- `L5158 badge` while the player pitches, only pitching achievements: a Kraken homer off the scoreboard is not yours
+- `L5158 badge` (BRAWLER too: once it has been earned, charging the mound gets the CHARGING THE MOUND! call instead)
+- `L5158 badge` a first hit is only worth a plate the first time ever
+- `L5160 badge1` career milestones: a plate the first time only
+- `L5161 badgeQuiet` earned on a menu screen: straight into the trophy case, and the screen itself says so
+- `L5245 setAim` aim sensitivity (touch): how far the ring moves per unit of thumb travel. 3 is the default; saved on the device.
+- `L5252 sensLabel` · the ring runs a fiftieth of a second ahead of the thumb along its current motion, which cancels most of the screen's own delay.
+- `L5256 touchAim` sp: thumb speed in pixels per millisecond
+- `L5260 touchSettle` the thumb has stopped: the ring comes to rest exactly where the thumb put it
+- `L5271 touchSettle` Phones hold back the first few pixels of a finger's movement while they decide whether the touch is a tap or a scroll. Claiming the touch
+- `L5272 touchSettle` the instant it lands tells the browser not to wait, so the ring answers the very first nudge of the thumb. Nothing else about aiming changes.
+- `L5360 toMenu` the thumb guide again, on demand
+- `L5364 toMenu` **INTERRUPTIONS**: a phone call, a notification pulled down, the app sent to the background or the phone locked all pause the game where it stands. Coming back never resumes by itself (you would be mid-pitch with your thumb elsewhere): the pause menu is waiting, and the sound is woken up.
+- `L5678 mittGeo` W: where the web sits (radians, up and to the thumb side); TH: thumb lobe
+- `L5897 retarget` **HEAVY WORK WAITS FOR A QUIET MOMENT**. Turning a downloaded body into a model freezes the picture for a fifth of a second or more on a phone
+- `L5907 safeMoment` **DOWNLOADS GO THROUGH A QUEUE**. The phone reports showed bodies failing outright ("Load failed") and whole sessions with no extra body ever
+- `L5945 dlBoost` **ON A PHONE THE PLAYERS' SKINS ARE LOADED SMALLER**. Fifty-odd character textures at 1024 x 1024 came to roughly 300 MB on the graphics side alone (and as much again decoded), which with everything else was enough for a phone to shut the page down mid-game. On touch devices the color maps are brought down to 768 and the surface maps (bumps, shine) to 512: about 180 MB less, on a screen where the difference is hard to see. Computers keep the full size.
+- `L5952 dlBoost` exists, instead of the first time it is drawn (which on a phone was a 200-700 ms freeze in the middle of play, often between pitches)
+- `L5993 loadPlayers` **ONE COPY OF EVERY ANIMATION, SHARED BY EVERY BODY**. Each player body used to be given its own copy of all the animation data (a hundred-odd clips, for some twenty bodies), and the plain lists it was made from were kept as well: hundreds of megabytes, enough for a phone to shut the page down. The numbers are now packed once, the first time a clip is asked for, and every body's clip points at the same packed data.
+- `L6045 loadPlayers` phones: half-size textures, no bump map, so nine extra bodies fit in memory
+- `L6356 step` the reveal's callout goes with the close-up: it never hangs over the batter afterwards
+- `L6610 drsWatch` **THE PICTURE COMES BACK**: it used to need three straight seconds above 57 a second, which a phone that runs at 55 never gives, so once it dropped it stayed dropped. Now four good half-seconds (not necessarily in a row) bring it up a step.
+- `L6628 perfDev` the browser is busy with something of the page's (styles, layout, painting the HUD, a timer) it comes back late. A slow frame with a late
+- `L6632 perfDev` **THE PHONE STUTTER, TESTED ON THE PHONE ITSELF**. The reports say one frame in fourteen is dropped on an iPhone whatever is on screen, with the
+- `L6633 perfDev` page's own thread idle: the time is going in the graphics chip. Phones already run without the bloom pass, so the cost that is the same in
+- `L6636 perfDev` way, and keeps the lighter one if it is clearly smoother. The verdict is remembered on the phone and sent with the report.
+- `L6637 perfDev` A THIRD ARM: the HUD. The picture is a WebGL canvas with the whole HUD composited on top of it every frame; pulsing glows, blurs and
+- `L6647 perfAB` **A ONE-OFF MEASUREMENT ON EACH PHONE** (about a minute and a half of play, once): the phone reports show one frame in ten running long whatever is on screen (few triangles or many, shadows or not, HUD animations or not) with the game's own work at 3 ms. Two things are recorded to find out why: how frame times fall against a 120 Hz screen's 8.3 ms steps, and whether drawing 40% fewer pixels (in 15-second turns) makes any difference. Nothing is changed for good.
+- `L6665 perfReport` nearly every frame at about 33 ms and none faster: the phone is holding the page to 30 a second (Low Power Mode does this)
+- `L6698 frame0` Phones start on a lighter setup so the controls stay snappy: no bloom/edge-smoothing pass, a smaller and harder-edged shadow, slightly lower resolution.
+- `L6731 hev` ── SCENARIOS (groundwork for the Daily Challenge and Campaign runs; nothing in the game calls this yet) ────────────────────────────── scnStart(spec) starts a batting situation from a plain description; dailySpec(date) builds the day's description from the date alone, so every phone gets the same one with no server; scnCheck() says whether the goal has been met, missed, or is still open.
+- `L6901 hrFtTick` (only while the picture is still on the ball: it goes the moment the game cuts away)
+- `L6935 invGame` the friend's first finished game is what makes the invite count
+- `L6946 invOpen` ── XP AND LEVELS: everything you play pays XP. Levels are a number and a title on your profile; nothing in the game gets easier or harder with them. ──

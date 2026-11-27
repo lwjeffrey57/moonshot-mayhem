@@ -1,0 +1,63 @@
+# Pitching against you (the CPU pitcher)
+
+From the prototype's `index.html`. Bold = standing rule. See `README.md` in this folder.
+
+- `L1456 podCls` (the Kraken pitcher's red flames have no business on screen while the player is the one pitching)
+- `L1457 podCls` it closes in with every pitch he throws, ball or strike: no waiting him out
+- `L1460 podCls` hit by a pitch: no ratings on screen while he is down or fighting. They come back with the outcome (the ratings banner as he takes his base).
+- `L1460 podCls` (also while a play's result is being called: the plate and the callout never share the screen)
+- `L1463 podCls` while the camera is close on the pitcher, call-outs drop to a smaller line along the bottom so the words never sit on him
+- `L1464 podCls` Hit by a pitch: the call sits just under the man on the ground (never across him), as high as that allows, and always wholly on screen.
+- `L1491 podTagPos` comes down slowly, so it does not bob with every gesture
+- `L1494 podTagPos` AN ERUPTION OF FLAME round a player: a pillar of fire shooting up, a ring blown out along the ground and embers pouring off it, for about
+- `L1495 podTagPos` a second and a half. L holds where and when; the colors say whose it is.
+- `L1496 podTagPos` The flyover's height along its run: it comes in ABOVE both ridges beyond center field (the far one tops out near 235 m, the near one near
+- `L1497 podTagPos` 190), drops to 116 m over the park, and pulls up again before the ridge behind the plate. It never passes through rock.
+- `L3805 duelCheck` the pitch waits for the banner
+- `L3806 duelCheck` he was already into his delivery: that pitch is called off and he comes set again, so the hitter gets a fair look
+- `L3809 duelEnd` no banner: the result of the at-bat says who won it
+- `L4180 toReady` **HIT BY PITCH**. He wears it: down in a heap, a beat on the ground, back to his feet, then he limps to first with an extra bar of Juice for his trouble.
+- `L4389 podReveal` half a second into his routine he erupts in red flame
+- `L4392 podReveal` (if you are in Overdrive too, the Showdown banner waits until his reveal is over and the picture is back at the plate)
+- `L4393 podReveal` **THE FIRST TIME EVER**: the game stops and says what this is, so nobody is left wondering what just happened
+- `L4395 podReveal` **A ONE-TIME EXPLAINER**: the first time something big and new happens (the pitcher's Overdrive, a Showdown, a hitter getting LOCKED IN) the
+- `L4396 podReveal` game stops, says what it is in three lines, and waits for GOT IT. Each is shown once per device.
+- `L4398 podReveal` PLAYTEST: the pitcher-Overdrive and Locked In explainers come up once every game, not once ever. Set to false before release.
+- `L4399 podReveal` THE JUICE GUIDE, in two steps like the other tutorials. Step one: the card, everything dimmed, and the JUICE button alone lit with an arrow on it. Tap it and the light glides over to the pitch wheel, now showing the four Juice pitches, with a second card. Tap anywhere else at either step and the guide simply goes away. It keeps its own clock, because the game's is held while a card is up (which is why the light never appeared on a phone before).
+- `L4413 podExplain` only during his own Overdrive routine, or once the hitter is set in the box: never over a homer, a trot or any other cut-scene
+- `L4415 podExplain` (a pointing card lets the touch through to the button it points at)
+- `L4415 podExplain` (not on the very touch that was already on its way when it appeared)
+- `L4416 podExplain` on the window as well as the page, for the press and the release: whatever else is listening, this hears it first
+- `L4417 podExplain` and it never stays up more than twelve seconds, touched or not
+- `L4585 choosePitch` **THE DERBY STARTS AS BATTING PRACTICE AND TIGHTENS EVERY TEN HOME RUNS**: at first nine pitches in ten are a slow fastball dead center. Each level takes a few of those away, spreads the rest a little wider, adds a few miles an hour, and from level 3 mixes in the odd change-up.
+- `L4587 choosePitch` **THE FIRST SIX PITCHES OF A DERBY ARE LITERALLY MIDDLE-MIDDLE**: the ball crosses exactly where the crosshair already sits, dead straight, so the only thing to get right is the timing
+- `L4589 choosePitch` THE DERBY: batting-practice fastballs, right down the middle
+- `L4592 choosePitch` the pitcher has a meter too: strikes and outs build Heat, and he spends a bar of it to throw a special pitch
+- `L4593 choosePitch` The pitcher has Juice too. Nobody sees it in the first three at-bats of a game; the fourth hitter on is guaranteed the game's first
+- `L4594 choosePitch` special pitch within his first two pitches, so the player learns early that it exists. After that it follows the Heat meter.
+- `L4596 choosePitch` The more runs on the board, the angrier he gets: his Heat builds a little on every pitch and he reaches for a Juice pitch more often.
+- `L4597 choosePitch` It stays a dice roll each pitch, so there is never a pattern to sit on.
+- `L4598 choosePitch` his meter itself only moves on strikes, outs and what he spends
+- `L4599 choosePitch` new players don't see special pitches in their first inning // the Heat is only deducted once the pitch has been seen (payHeat), so the meter doesn't give it away
+- `L4600 choosePitch` (his ordinary pitches come from his own arsenal; Juice pitches are as before)
+- `L4603 choosePitch` behind 2-0 or 3-0 he comes after the hitter: a four-pitch walk almost never happens
+- `L4603 choosePitch` the first hitter of every game only sees strikes: nobody's first at-bat is a walk
+- `L4607 choosePitch` Now and then one gets away from him (far more often when he is in Overdrive and throwing with bad intentions): it is headed for the hitter.
+- `L4608 choosePitch` Never to the first three hitters of a new player's early games, and at most twice a game.
+- `L4609 choosePitch` never while the hitter is in Overdrive
+- `L4612 choosePitch` a left-hander's pitches break the other way: his slider runs toward the third-base side, his screwball and changeup fade toward first
+- `L4620 pitchPos` past the plate the ball is drawn barely moving on (about a foot, not four): a swing that is late but still inside the timing window meets it at the plate, never visibly behind it. Timing itself is untouched.
+- `L4629 pitchPos` ───────────────────────── batted-ball physics + fielding
+- `L4631 pitchPos` The line is fair. A ball counts as fair if any part of it touches the chalk: half the line's width plus the ball's radius,
+- `L4632 pitchPos` measured across to x, and a little grace because the ball is drawn larger than life at distance.
+- `L4634 pitchPos` The exit speed (m/s) that puts a ball hit at this direction and launch angle onto the outfield wall at height h, found by trying speeds on the real flight model. 0 if no speed in range does it.
+- `L4986 heatUp` CAN OF CORN: a lazy fly or a pop-up he was camped under for a good while before it came down
+- `L5740 pitcherModel` while the player pitches it is always the Comets' own man on the mound
+- `L5741 pitcherModel` the close-up at the bag keeps the fielder's body until it is over
+- `L5744 pitcherModel` a body that has been on the mound once is kept, dressed and ready: going back to it costs nothing
+- `L6160 updatePitcher` **THE LEG KICK IS THE POWER BAR**. While the power ring swells his leg comes up with it: full power is the full kick, and a pitch thrown with less stops the leg where the bar was stopped. Then the throw goes as it always has (the first instant of it carries him from that kick into the delivery).
+- `L6162 updatePitcher` **NO FREEZE AT THE TOP**: once the power is set he keeps moving. As the timing ring closes he comes down out of the kick and strides, arriving at the point of release just as the ring meets the circle, so the tap and the ball leaving his hand are the same moment.
+- `L6162 updatePitcher` (while the ring is still closing he winds and holds at the top)
+- `L6174 updatePitcher` off the mound toward the third-base dugout, head down, at the pace his feet are moving
+- `L6179 updatePitcher` on the cut to him after the 'loser' taunt, his defeat routine starts over so the camera catches all of it // he just gave up a no-doubter: head down on the mound
+- `L6181 updatePitcher` pitching change: the new man throws one warm-up pitch for the camera (wind-up, release with the usual snap, the pop of the mitt)

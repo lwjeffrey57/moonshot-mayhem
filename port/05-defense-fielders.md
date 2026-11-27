@@ -1,0 +1,106 @@
+# Defense and fielders
+
+From the prototype's `index.html`. Bold = standing rule. See `README.md` in this folder.
+
+- `L2068 draw` **AN OUT IS CALLED OVER THE MAN WHO MADE IT**: the call sits above the fielder's head and his name tag (never on them), centerd on him,
+- `L2246 ribbon` rays of thrown-out dust round the big ones
+- `L2255 ribbon` The infield is unmistakably the Moon: pocked all over, from pebble-sized pits to a few you could lose a glove in.
+- `L2273 ribbon` The shader both tints with it and lights it from one side (an emboss), so the dust has grain that catches the light.
+- `L2338 ribbon` the mound catches shadows too
+- `L2344 ribbon` foul lines running off the plate's back point but not chalked inside the boxes, and a catcher's box behind
+- `L2395 ribbon` a thin sheen where the padding catches the lamps
+- `L2439 ribbon` THE WAVE: when the place erupts a band of light rolls round the stands, the way a crowd getting to its feet catches the lamps
+- `L2451 ribbon` the tunnels are DARK: black mouths, a shade lighter toward the floor, with the stone of the arch catching the floodlights on one side
+- `L2631 ribbon` catching the lamps along its top edge, and the floodlights glancing off the two outer columns of panels (never the middle)
+- `L2749 ribbon` collar every few meters catching the lamps.
+- `L2762 ribbon` and catching the floodlights along its front edge, with a white fascia and a line of lamps under the lip. It gives the big stand a
+- `L2831 ribbon` on the stretch behind the catcher (it sits right behind the strike zone when the player pitches); small wordmarks only out at the ends.
+- `L3033 zapTick` power surge: the whole park browns out and flares in fits until the breakers catch
+- `L3202 ik` Fielders are drawn larger than life so they read at distance (taller, not bulkier): outfielders most, since they are furthest away.
+- `L4066 startTrot` his own routine about a third of the time, the 'loser' sign at the pitcher now and then, otherwise anything from the whole book (dances, flexes, the pitcher's own strikeout taunts thrown back at him), never the same one twice running
+- `L4155 updateThrow` (he stands set, ball in hand, a third of the way into his motion; the moment you decide, the arm comes through: the ball is out about half a second later)
+- `L4157 updateThrow` (it leaves from his hand, not from the middle of his chest)
+- `L4157 updateThrow` (a long throw, and some of the short ones, come out with the flame on them)
+- `L4159 updateThrow` outfield throws show only the release and the first part of the flight; infield throws (full) are followed all the way to the bag
+- `L4160 updateThrow` **A SEED, NOT A LOB**: thrown on a line, a smaller ball, with the thin white smoke behind it and, on the strong ones, the same skinny flame a hard-hit ball carries
+- `L4419 podxClose` THE NEW PITCHER GETS A CARD TOO, with his picture, the way a hitter does when he walks up: number, name, which hand he throws with. His head shot is taken off his own model once it is on the mound.
+- `L4427 pcIntro` (he then throws one warm-up pitch, in updatePitcher, so it is plain there is a new arm out there)
+- `L4550 newGame` thrown only while the pitcher is in Overdrive
+- `L4554 newGame` **MORE ORDINARY PITCHES**. Nobody throws all of them: each pitcher has his own arsenal (two to four pitches, always with a fastball). x:1 = only thrown by a pitcher who has it.
+- `L4563 renderRep` the pitcher's repertoire: movement, name, typical speed this inning; the pitch just thrown is highlighted
+- `L4575 payHeat` ALL-STAR: smaller rings, a tighter window and more velocity. (More to come: how often he throws Juice, how often he goes into Overdrive, the defense.)
+- `L5018 finishPlay` **FIELDED RIGHT BY THE BAG** (the first baseman's ball): there is no throw across the diamond to race. The picture shows what happens instead: a short underhand flip to the man covering.
+- `L5019 finishPlay` HIT AND RUN: he was off with the pitch, so on a grounder there is no play on him. The throw goes to first for the one out and he takes his base: never forced at second, never doubled up.
+- `L5024 finishPlay` the first baseman takes his own grounders to the bag: no throw to nobody
+- `L5026 finishPlay` on a grounder nothing is called until the throw gets there
+- `L5027 finishPlay` a grounder isn't an out until the throw beats him: the crowd stays up through the throw and reacts when it lands
+- `L5061 finishPlay` an infield hit is a race to the bag: shown from first base, and nothing is called until the throw gets there
+- `L5062 finishPlay` when the throw will reach the bag
+- `L5066 finishPlay` beat the throw: the place jumps
+- `L5075 finishPlay` practice and the Derby have nobody in the field, so a hit or a homer ends the at-bat here (it used to be tallied only when a fielder made an out)
+- `L5279 touchSettle` the arrow keys step round the pitch wheel; Space throws and taps
+- `L5376 interrupt` the Krakens' defense (fielders, catcher, the man at the bag) and the stand-in while another body loads. It was the pale 'Vanguard' armor; that model is gone from the game.
+- `L5647 updateClip` Gloves, built from shaped leather pieces rather than one blob: a fielder's glove (four finger stalls, thumb, a dark web between
+- `L5648 updateClip` thumb and forefinger, heel pad and wrist strap) and a catcher's mitt (round, thick-rimmed, with a deep dark pocket). Each glove is
+- `L5675 mkGlove` The catcher's mitt, sculpted as one surface: a fat rolled rim, a deep dished pocket, a thumb lobe with the web beside it, a rounded
+- `L5698 mittLace` The real fielder's glove (a free model, see CREDITS.md): leather body, lacing, trim and eyelets as one mesh with painted colors.
+- `L5699 mittLace` Shown when a player is close to the camera; the simple code-built glove stands in when he is small on screen.
+- `L5709 gloveTick` the player this glove belongs to (looked up until his model is ready)
+- `L5769 setupPitcher` then each frame the model's bones copy the figure's joint rotations. Used for the fielders' ready and running poses.
+- `L5791 retargetFig` fly-ball catch clip (a catcher's pop-up): we only use the part where he is already standing under the ball
+- `L5793 retargetFig` Catcher and plate umpire. They only appear in the walk-up shot: from the batting camera a catcher would sit right in front of the strike zone.
+- `L5804 setupPlateCrew` hands on knees, peering over the catcher
+- `L5808 setupPlateCrew` **YOUR CATCHER IS A COMET**. When the player pitches, the man behind the plate wears a Comets body (Brickhouse's), not the Krakens' fielder
+- `L5809 setupPlateCrew` armor. He is built the first time he is needed, once that body is in; until then the usual catcher stands in.
+- `L5816 updatePlateCrew` (he was turning the wrong way for a throw to third: his body went toward first while the ball went to third)
+- `L5818 updatePlateCrew` the catcher and the umpire are behind the plate while the player pitches too
+- `L5819 updatePlateCrew` (no umpire while the player pitches: he stood right behind the zone and muddied it)
+- `L5821 updatePlateCrew` (only touched when the frame actually changes: standing still costs nothing)
+- `L5831 setupFielder` where the hips start and where the glove ends up, relative to the model's origin, so the glove meets the ball
+- `L5834 setupFielder` the dive: a full-stretch lunge to one side (mirrored for the other), played with its own travel. Measured: where the glove is at the
+- `L5835 setupFielder` moment of the catch and where he ends up when he is back on his feet, both relative to where he took off.
+- `L5836 setupFielder` (the receiver's dive has the glove at full stretch, still in the air, at 1.1 s; by 1.3 his hand is already on the ground, which is where the ball used to be 'caught')
+- `L5836 setupFielder` half the outfield dives like a receiver (flat out, and stays down); the clip's own lean decides which way it is mirrored, so it always goes toward the ball
+- `L5839 setupFielder` (measured from where the model itself stands, not from where its hips start in the clip: one of the two dives starts with the hips a full stride off the model's origin, and the glove was that far from the ball)
+- `L5845 setupFielder` he takes it with his right hand: a glove goes on that hand for the leap
+- `L5856 setupFielder` BURNED: the ball is over his head. He drops, spins round and goes straight back after it (outfielders only; played on the spot, the game moves him)
+- `L5864 setupFielder` (outfielders have it too, for the fly ball they lose and wear)
+- `L5903 heavyOK` **NOT WHILE A PLAY IS BEING SHOWN**. The phone reports had most of the quarter-second freezes landing on the result of a play (a throw across the diamond, a catch) and on home-run trots, which is exactly where they are seen. A body is now built there only if it has already waited nine seconds; the first instant of a walk-up (a camera cut, with a card over the picture) is used instead.
+- `L6053 loadPlayers` (the loading screen waits for the fielders to be dressed too, inside its ten-second limit)
+- `L6084 loadPlayers` fielders are built one at a time so the page doesn't freeze while seven more models are prepared
+- `L6196 updateFielders` the play has been called (the player is pitching): everyone holds exactly as they were at that moment. Before, the man who made the play wheeled round and started back to his spot while the call was still up.
+- `L6201 updateFielders` on a ball on the ground he gets there a beat early, to set his feet and get down for it
+- `L6202 updateFielders` stop where the clip starts him, so its own drift carries the glove to the ball
+- `L6206 updateFielders` he lunges along the line he was running; of the two ways to do that (the clip, or its mirror image) take the one that leaves his chest toward the infield
+- `L6211 updateFielders` he has to be at the take-off spot when the dive starts
+- `L6212 updateFielders` ROBBED: he faces the wall, runs along it the way he came, goes up and takes it off the top of it, and comes down on his back
+- `L6214 updateFielders` a ball higher than his glove can reach: he gets up that much higher
+- `L6219 updateFielders` A ball that is going to drop and then carry on (to the wall, into the gap): he runs at the landing circle first, the way a
+- `L6220 updateFielders` fielder reads it, and only then plays the hop. Not a bee-line to where it will end up, as if he knew.
+- `L6231 updateFielders` moving mostly across the field (not in or back) over a shortish distance: shuffle sideways, still facing the plate
+- `L6234 updateFielders` going back on one: the turn-and-run clip does the spin (it ends facing dead away from the plate), and he is eased onto his real line as it plays
+- `L6244 updateFielders` no fielder ever goes into or through the wall
+- `L6245 updateFielders` ...nor through the side walls down the lines: a ball that hops out of play is left for the umpire
+- `L6248 updateFielders` **HE MADE THE CATCH**: he stays down with it where he landed until the play is over. (He used to snap from flat on the ground to standing in a ready crouch the instant the clip ran out, which read as a teleport.)
+- `L6250 updateFielders` back on his feet where the dive left him
+- `L6251 updateFielders` up, and after the ball wherever it has rolled to
+- `L6253 updateFielders` **THE MAN WHO IS ABOUT TO WEAR ONE GETS IN FRONT OF IT FIRST**: he breaks from where he was playing to the spot the ball crosses, so it really does hit him (he used to stand at his position and fall over while the ball went by yards away)
+- `L6259 updateFielders` a ground ball to another infielder: the first baseman breaks for the bag, sets up on it and gives a target
+- `L6266 updateFielders` hold the follow-through until the play is over
+- `L6268 updateFielders` **HE HAS IT AND HE IS SET**: from the moment he picks the ball up he stands turned to his target at the start of his throwing motion and stays there. (He used to drop back into the fielder's ready crouch between fielding it and throwing it.)
+- `L6269 updateFielders` a no-doubter: the outfielders sag as it goes over; during the trot everyone does
+- `L6271 updateFielders` (an outfielder's misplay: he is under it, it hits him a beat before it would have landed, and he goes down)
+- `L6271 updateFielders` it takes him off his feet and carries him back a stride and a half
+- `L6274 updateFielders` the leap is made with the glove on the other hand
+- `L6281 updateFielders` the set position between pitches: up on the balls of his feet, swaying (posed 30 times a second, which is plenty for a man standing still)
+- `L6282 updateFielders` the clip opens with a slow stagger: skipped, so he is going down the instant it hits him
+- `L6288 updateFielders` stride rate follows how fast he is covering ground
+- `L6293 updateFielders` A thin flame ribbon behind the ball: small particles laid end to end along its path, a hot core that
+- `L6294 updateFielders` dies quickly and a cooler tail that lingers, so the trail tapers instead of ballooning.
+- `L6343 step` **THE OFFER RAN OUT WITH THE BALL STILL IN HIS HAND**: the outfielder now throws it in, and is watched doing it, before the game moves on. The throw always comes after your decision (or your no decision), never behind the next shot.
+- `L6396 step` **INTO THE GLOVE**: over the last sixth of a second the ball is drawn to the diving (or leaping) fielder's actual glove hand, and once caught it stays in it
+- `L6407 step` (never after the catch: on a liner snared in the infield the ring was jumping out to where the ball WOULD have landed)
+- `L6419 step` it drops in: the cheer starts now, not when the fielder finally gets to it
+- `L6426 step` **ONCE IT IS CAUGHT** (or the play is called) the ball's glow and trail are gone: a glowing disc beside the fielder after a diving catch looked like the ball had popped loose
+- `L6439 step` MAKE THE CATCH cuts in while the liner is still on its way to him
+- `L6683 frame0` models that finish loading while a guide is up still get put in their stance (otherwise the catcher stands unposed right in front of the camera)

@@ -49,3 +49,9 @@ The goal is that he never has to re-find a problem he already found once.
 3. **Never "improve" a tuned number.** If something in the prototype looks wrong, ask; it was probably tuned on purpose.
 4. **Say what cannot be machine-checked** (input latency, camera feel, animation timing) so his playtesting is spent only there.
 5. When the prototype changes, the web session notes it in the repo history; re-read the affected area before building on it.
+
+## The full record: `port/` (added 2026-11-27)
+
+The `port/` folder in the prototype repo holds every comment from `index.html`, sorted into 16 files by system (about 1,800 entries). Each entry is a detail that was built, tuned or ruled on during the owner's playtesting. Bold entries are standing rules.
+
+Before porting any system: read its `port/NN-*.md` file end to end, plus the matching `PORT_SPEC_*.md` if one exists, and list back which bold rules you implemented and which you did not. `port/README.md` is the index. The folder is regenerated when the prototype changes, so pull before each system.

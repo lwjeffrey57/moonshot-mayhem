@@ -1,0 +1,67 @@
+# Audio
+
+From the prototype's `index.html`. Bold = standing rule. See `README.md` in this folder.
+
+- `L2443 ribbon` it, and its top is a concourse: a broad walkway with a rail on both sides and a crowd standing along it. Beyond it there is nothing but
+- `L2568 ribbon` What the board says. Quiet moments rotate through a few programs (the league, the matchup, the park, a crowd prompt); the game takes
+- `L2572 ribbon` **THE BOARD WORKS THE CROWD**: a different chant every time it comes round
+- `L2729 ribbon` the crowd near the plate, close enough to read: rows of fans in bubble helmets (it is the Moon, after all)
+- `L3305 crowdFx` a quiet crowd sits a shade darker under the lamps; an excited one is far brighter than before
+- `L3311 crowdFx` a few sparkles at rest, a storm of them when the place erupts
+- `L3316 crowdFx` Name tags over the fielders' heads while the ball is in play (not during cutscenes): the man making the play is highlighted.
+- `L3377 burst` the hiss stand-in is kept very low: it is only ever heard if the crowd recording is late
+- `L3378 burst` Recorded sounds (sfx/*.mp3). Each one replaces a synthesized sound once it has loaded; if a file is missing the synth version plays.
+- `L3380 burst` The sound files start downloading the moment the page opens (three at a time, the ones the first seconds of a game need first), so they
+- `L3389 loadSfx` the bed is 65 seconds of even ballpark crowd with the identifiable moments (claps, cracks, surges, single voices) cut out, looped
+- `L3396 sfx` Phones: sound may only start from a tap, the context can be suspended or interrupted (calls, switching apps), and on iPhone
+- `L3397 sfx` Web Audio follows the ringer switch unless the page is in 'playback' mode. unlockAudio runs on every tap or key press.
+- `L3420 audioInit` **LOUD, BUT WITH A CEILING**. Everything goes through one limiter before the speaker: the crowd still swells and a homer still hits hard, but when the roar, the organ, the crack of the bat and the fireworks all land together the total is held down instead of stacking up. Then the whole mix is trimmed about 3 dB, because it was hot even with the phone's volume low.
+- `L3423 audioInit` (a second notch down, about 2 dB more: still loud, less hot)
+- `L3425 audioInit` (noiseBuf is still used for short percussive effects: the bat crack, the glove snap, the zap. There is no hiss crowd any more:
+- `L3434 tone` Home runs: one continuous roar from contact until the next batter steps in, instead of a cheer at contact and another when it lands.
+- `L3435 tone` Two staggered loops of the steady middle of the big cheer, so the seam is never heard; the level rises with runs scored and Overdrive.
+- `L3440 roar` the biggest moments: the whole place comes unglued. The recording's own build-up plays once, then its sustained peak loops.
+- `L3442 roar` now1: skip the recording's own build-up and go straight to the peak
+- `L3447 roarOff` a crowd comes down in a long tail, quick at first and then lingering: never a switch
+- `L3451 roarOff` and the bed stays lifted underneath, settling over the next several seconds, so the next pitch arrives into a buzz, not a void
+- `L3454 roarOff` a piece of a recording: random start point and speed, faded in and out, so the same cheer never sounds the same twice
+- `L3459 sfxSlice` the crowd reactions still sounding, so they can be brought down together
+- `L3462 crowdHush` a new hitter walking up: whatever the last play set off dies down under him
+- `L3463 crowdHush` the crowd never sits still: the bed swells and settles on its own, with the odd whoop, between everything else
+- `L3465 crowdHush` The crowd follows the action. Before the pitch it holds its breath; a ball in play gets a rising 'ohh' that lasts while it is in the air;
+- `L3466 crowdHush` an out lets the air out (a low groan and the bed drops away); hits and homers get their cheers on top.
+- `L3468 crowdRise` the bed is a continuous recording, so holding it up for the whole flight is what guarantees the park never goes quiet while the ball is in the air
+- `L3472 crowdRise` keep the bed up for d more seconds (a fielder still chasing the ball down, the throw coming in): the play is not over, so neither is the noise
+- `L3477 crowdDrop` A ball in play is caught or thrown out: the park reacts, it never just switches off. A hard-hit one gets a sharp, surprised 'OHH!'
+- `L3478 crowdDrop` (the big cheer, pitched up and cut short); a routine one gets a smaller ripple. The bed stays at or above its normal level throughout.
+- `L3482 crowdOut` several different reactions, and never the same one twice running
+- `L3489 crowdOut` burst, then the air goes out
+- `L3501 crowdTick` the hush as the pitcher comes set, released if nothing comes of the pitch
+- `L3502 crowdTick` no hush while the crowd is still coming down from something big
+- `L3505 crowdTick` only the bed moves between pitches: no cheers or pops unless something has happened
+- `L3506 crowdTick` The ballpark organ. One riff at a time, picked for the situation as a hitter settles in, never back to back, and it stops the moment
+- `L3509 crowdTick` orgN: how often each riff has played, so the ones heard least come up next
+- `L3547 vendorTick` Rhythmic clapping from the home crowd between pitches: when there is something to clap for (a man in scoring position, a full count,
+- `L3574 roarTick` at its very loudest the crowd shakes the camera itself
+- `L3579 roarTick` A celebration pumps the crowd up past where the play itself left it: whatever is already roaring steps up by about half again,
+- `L3585 crowdPump` Overdrive has a pulse: a low 'lub-dub' while it is switched on and the at-bat is live. It quickens when the pitcher is in his too.
+- `L3588 crowdPump` 'In the zone': while Overdrive is on and the at-bat is live, the crowd is heard as if through a wall (the highs are rolled off and a
+- `L3589 crowdPump` little level comes out) so the heartbeat and the pitch sit on top. The instant the ball is hit, or the at-bat ends, the park rushes back in.
+- `L3593 zoneTick` the tunnel vision (speed lines, dark edges) lifts the moment the ball is hit, along with the muffled sound
+- `L3607 heartTick` the home crowd lets the pitcher (and the umpire) hear it
+- `L3621 cheer` the ball leaving the hand: one short snap, identical for every pitch. It used to be a long whoosh, and on slow pitches the whoosh ended well before the ball arrived, which read as 'it's there' too early
+- `L3622 cheer` the umpire's call; waits up to a few seconds for the file, and stays silent sooner than play a jingle // the umpire's call; waits briefly for the file on the first game, falls back to the jingle
+- `L3624 cheer` the crowd dips for a fifth of a second under the pop, so it stands on its own /* a pitch into the catcher's glove also gets a bright snap on top: the recorded pop is mostly low thud, which phone speakers and the crowd swallow */
+- `L3625 cheer` recorded glove pop; pitches play it louder and brighter the faster they are
+- `L3626 cheer` the umpire counts them: ball two, ball three, ball four
+- `L3627 cheer` strike three: mostly the old emphatic call, now and then STRIKE THREE, YOU'RE OUT!
+- `L3629 cheer` now and then the long, drawn-out STEEERIIIKE...
+- `L3630 cheer` ...otherwise the old calls: STRIKE TWO
+- `L3637 cheer` ───────────────────────── game state
+- `L3642 cheer` seconds the pitcher waits before starting his windup
+- `L3647 cheer` a Kraken's walk-up while the player pitches: the same shot, card and routine as the player's own hitters get
+- `L3648 cheer` the name-and-ratings card follows the hitter the player is looking at, not the one who is merely due up
+- `L5302 cornerTap` PAUSE and SOUND always work, even mid-cutscene; a tap anywhere else skips
+- `L5802 setupPlateCrew` THE UMPIRE'S STRIKE CALL is a real animation. He stands in its first frame the rest of the time (a ball gets no signal at all), so there is no jump between a pose and a clip.
+- `L5964 makeSkins` umpire: the same armor in dark navy, face left alone
+- `L6088 loadPlayers` the umpire has his own model too. It is the least important download in the game, so nothing waits for it: the plate crew (only seen in
