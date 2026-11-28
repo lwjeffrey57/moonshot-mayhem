@@ -92,3 +92,25 @@ This was not worked on much in the prototype, so treat it as a requirement to ge
 - **The ball goes into the pocket**, not the back of the hand or the wrist: on a catch, reach the glove hand to the ball (the prototype lerps the ball to the glove over the last moments; Unity should reach the hand with IK).
 - **The throwing hand is bare and holds the ball** at the base of the fingers.
 - Check it the same way as the bat: close-up screenshots of each body from the front, side and behind in the ready pose, the catch, the dive and the throw. Send them to the owner.
+
+## 6. The trail cam and the tape measure (the distance counter)
+
+Added 28 Nov at the owner's request. This is one of the signature moments: riding behind a home run while the feet run up.
+
+**The camera**
+- From 0.25 s after contact the camera rides **7 m behind the ball and 1.7 m above it, looking where the ball is going** (it reads the recorded flight a few points ahead, so it never lags or wobbles).
+- **Which homers get it:** homers of 385 ft or more that are not given a bat-flip or show shot get it 82% of the time; **600 ft and up always**, the whole way out of the park and down onto the Moon; a ball bound for the lava cove is always followed in. About 45% of the under-600 ones are handed to one of the five aerial shots instead, and some 400–570 ft ones that stay in the building go to the blimp view. Never the same aerial kind twice running.
+- **It lets go just before the ball hits the batter's eye**, so the carom is watched from the field.
+- **The shot ends when the ball touches down and kicks up once** (0.75 s after it lands): no waiting for it to roll to a stop.
+- A homer the visitors hit off you is followed the same way when it is 385 ft or more.
+
+**The counter**
+- Big numbers with a small "FT", **riding just above the ball** on screen (about 11% of the screen height above it, kept inside the screen edges and below the top bar).
+- **It runs up live:** the number shown is the final distance × (how far the ball has traveled over the ground ÷ how far it will travel). So it climbs smoothly and arrives exactly at the final figure.
+- **The instant it touches down it shows the final distance, exactly the number in the call.** The counter and the HOME RUN call must never disagree.
+- **It heats up like a damage counter:** white to 350 ft, yellow by 410, orange by 470, red by 530, then darker through crimson to deep blood red by 1,134 ft. **From 530 ft it also grows and shakes with fire behind it**, more the further it goes.
+- It appears 0.3 s into the flight and is hidden when paused.
+
+**When the trail cam is not on:** a homer that lands in the seats or on the patio shows its distance for about 1.9 s **beside the spot where it came down** (fading over the last 0.4 s), only while the picture is still on the ball. Not on the Overdrive show shots, which have their own read-out. A small distance read-out also sits in the HUD during any tracked flight.
+
+Code: `dftDom` (the counter), the `trailCam` branch of `updateCamera`, `hrFtShow` / `hrFtTick` (distance at the landing spot), and where `flight.trailCam` is set in `tryContact`. Pictures: the home-run camera strips in `port/look/`.
