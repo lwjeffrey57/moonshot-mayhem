@@ -138,6 +138,19 @@ The owner is rested and about to play on his iPhone. Before he does, he asked fo
    - **Nothing bright behind the pitch:** from the STRIKE ZONE camera the eye must fill the background behind the pitcher's release and the strike zone. No ads, crowd, lights or moving things inside that window. The pitcher's Overdrive tag sits on it, just over his head.
    - Check from the hitter's camera on the phone: the pitcher, the release point and the top of the zone are all against the dark panel.
 
+33. **Homers into the stands, the patio and the Cove.** New section at the end of `port/BALL_FLIGHT.md`; the owner calls it important for the feel of hitting. A homer is seen arriving somewhere: it lands at head height above the seats with a spray and a thud, takes one short hop among the fans, and then somebody has it (within 0.85 s); the distance shows beside the spot; flashes sparkle through the stands. The patio is a floor it bounces on; over the rail it goes into the lava with a geyser. Five phone captures listed there.
+
+34. **Start building the other cameras now, as each becomes possible.** They are all in `PORT_SPEC_SHOW.md` sections 3 and 6 and `port/code/11-cameras.js`. Order: (1) the **chase camera with the feet counter** for long homers; (2) the **blimp view** (small ball, flame trail) for no-doubters that stay in the building; (3) the **five aerial shots** (straight down over the mound, the blimp circling, behind the rocket, the crane rising behind the plate, riding high above the ball), never the same one twice running, with the lasers and fireworks timed to them; (4) the admire and show shots on the hitter; (5) the trot and plate celebration; then the walk-up, strikeout and event cameras. Keep the rules: variety, the camera above every roof and ridge, and each choice made at contact from the flight that is already known.
+
+35. **Everything is skippable with one tap, and it is easy. Match how it works in the prototype** (`doSwing` in `index.html`; `PORT_SPEC_FLOW.md`). There is no skip button to find: **any tap on the swing buttons or the screen skips whatever scene is playing**, at once:
+   - a **walk-up** (yours or a Kraken's): any tap or key ends it; if his body is still loading, the tap skips the wait too;
+   - a **home run in flight**, on any camera (chase, aerial, orbit, saucer): a tap ends it there and then, from 0.45 s after contact (nothing on screen says so: "it is there for the player who has seen enough");
+   - the **trot**, the **celebration at the plate**, the celebration on a base, a **hit by pitch**, the run to first after it, the **brawl**, the pitcher-change scene and the explainers: one tap each;
+   - the only thing a tap cannot cut is the Locked In moment (under a second).
+   - **Guards so a skip is never an accident and never eaten:** a tap within 0.12 s of a scene starting is ignored; the tap that skips never also swings the bat at the next pitch; a skip never cancels the result (the run still scores, the achievement still drops, the distance is still recorded).
+   - The first walk-up says TAP TO SKIP on the card; after that nothing needs to say it.
+   - Test: a full game tapping constantly never gets stuck, never loses a result, and takes well under half the time of a game with no taps.
+
 This is animation work arriving earlier than planned. That is the owner's call: a still hitter and a ball from nowhere will not feel like his game. Keep it simple (play the clips, attach the bat, IK the top hand); polish later.
 
 ---

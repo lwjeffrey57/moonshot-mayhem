@@ -91,3 +91,31 @@ A home run is never cut short, capped, or swallowed by a wall of seats. If it wa
 - The special Overdrive shots (into orbit, the satellite, the saucer, the Apollo landing) are separate set pieces on top of this.
 
 **Checks:** three homers from the phone on the chase camera: about 450 ft into the seats, about 650 ft out of the stadium, and one past 900 ft. For each: the ball is in view the whole way, it is seen landing, the counter's last number equals the call, and nothing pops in or out.
+
+## A homer into the stands, the porch, the patio or the Cove: what is seen (owner, 28 Nov: important for the feel of hitting)
+
+A home run does not vanish at the wall. It is seen **arriving somewhere**. The flight rules are in `simulate()` and already in the Unity `BallFlight`; this is what the picture and sound do with them (`step` in `index.html`).
+
+**Where the seats are (so the ball lands on them, not in them):** behind the wall there is a ledge 1.5 m deep, then the lower deck rising at about 34° (two thirds of a meter up per meter back) to the back row 34 m behind the wall, where the facade stands 25 to 32 m high, then the upper deck to 54 m back and 48 m high. The ball comes down at **head height above the seats** (0.9 m above the deck surface), not at the concrete.
+
+**Into the seats:**
+1. **The moment it lands** (`seatB`): a spray of pale sparks off the seats (two bursts, warm white), a **thud** (the mitt sound) and a small vibration; the **distance appears beside the spot** (when the chase camera is not on).
+2. **One short hop:** it kicks up off the seats (up to 6.5 m/s, keeping only 16% of its speed along the ground), and for a beat the ball is seen bouncing among the fans.
+3. **Then somebody has it** (`seatT`, at most 0.85 s after it landed): the ball disappears with a last small puff. "Swallowed by the crowd: somebody up there has a souvenir."
+4. All through a homer, **camera flashes sparkle** at random through the stands (three a frame), and fireworks burst over the bowl.
+
+**The first row / the ledge:** a ball that only just clears lands on the ledge in front of row one and stops there: it does not drop down a gap between the wall and the seats. (This is also where a robbed homer is taken back.)
+
+**The Cove patio (right field):** it is a **floor, not a crowd.** The ball bounces on the deck up to four times (each keeps 30% of its height and 36% of its speed). A hop that clears the back rail carries on down into the lava: **a Cove shot**, with a geyser of red-orange coolant, a zap, a vibration, the MELTDOWN achievement and the splash counter going up by one. A hop that does not clear comes back off the rail and dies on the deck.
+
+**Off things:** the scoreboard, a foul pole (DOINK!), a light tower (clangs off the mast and drops), the batter's eye (caroms back onto the grass), the props beyond the wall (the flight ends where it hits). Each has its own sound and call, and it is still a home run with its distance.
+
+**Out of the stadium:** see the section above.
+
+**Rules:**
+- The ball is **always seen reaching its landing spot** on whatever camera is up. If the camera is elsewhere (on the hitter admiring it), it cuts back in time or the landing is shown on the board.
+- **The play ends at the landing**, not at the wall and not seconds later: into the seats it ends as the fan gets it; on the chase camera 0.75 s after it comes down.
+- The crowd near the landing reacts (in Unity: fans standing and reaching toward it is a cheap, big improvement).
+- Ball size and trail rules hold all the way into the seats.
+
+**Checks from the phone:** a homer into the lower deck, one off the facade or into the upper deck, one onto the patio that stays, one into the lava, one just over the wall onto the ledge.
