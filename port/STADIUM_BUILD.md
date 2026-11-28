@@ -135,3 +135,32 @@ The owner wants the skybox and the backdrop started now. **Use our assets as ref
 - Day-of-game variety later (the Earth's phase, a passing ship) without changing gameplay.
 
 **Constraints:** PS2-era budget; a skybox plus a handful of far cards and low-poly pieces; draw distance out to at least 450 m of real ground for long homers, then silhouettes; nothing that moves or flashes inside the batter's eye window; measure on the phone.
+
+## Outside the stadium: the props and the Cove (start now; be creative) (owner, 28 Nov)
+
+The owner wants the world beyond the walls filled in now, **so he can see where a ball went after it leaves the park**, and for the special homers and the trail camera. Start with our assets; this is another place to level up, and he is open to your ideas.
+
+**Where things stand in the prototype** (distance from home plate in meters, angle from dead center, negative = left field; models are the `*.txt` files in the repo root, base64 FBX):
+
+| Thing | Where | Notes |
+|---|---|---|
+| **The Cove** | right field, 10° to 45° right of center, behind the Arcade wall | Deck, patio and back rail (see above), then an **open lava vent**: glowing red-orange coolant a ball splashes into, with a geyser and a splash counter. Brick arches, "ZAPP COLA COVE". |
+| **Fuel collectors** (`fuel.txt`) | 238 m at +37°, standing **out in the Cove's lava** | size 36 |
+| **Giant soda can** (`soda.txt`) | 236 m at −10° (beyond left-center) | size 62; a landmark and a Derby target |
+| **Comets rocket on its pad** (`rocket.txt`) | 318 m at −26.5° (beyond left field) | The ship is one piece and the pad and gantry another: **it lifts off on some homers** and leaves the gantry standing |
+| **Apollo site and lander** (`lander.txt`) | 334 m at −7° | Flag, work-lights, a beacon; an Overdrive moonshot can land here (THE EAGLE HAS LANDED) |
+| **Habitat domes** (`dome.txt`) | 352 m at −57°, 300 m at +12° (two more on a computer: 372 m at −46°, 312 m at −84°) | "A little settlement out on the plain" |
+| **Radar dishes** (`dish.txt`) | 262 m at +9°, 290 m at −44° (a third at 252 m, −72°) | Turned toward the park |
+| **The second video board** (`vboard.txt`) | 36° left of center, 52 m behind the fence, 27 m up | Shows the man at the plate |
+| **Light towers** (`tower.txt`) | 24° and 58° either side, 66 m behind the fence | Solid; a lamp bank can be smashed |
+| **Mission control** (`mc.txt`) | behind home plate | It is the press box |
+| **Dugouts** (`dugout.txt`) | one behind each foul line | |
+| **Satellite** (`sat.txt`), **saucer** (`ufo.txt`), interceptors | in the sky | Set pieces for the Overdrive shots and the flyover; the satellite comes apart when hit, the saucer takes the ball up in a beam |
+
+**What it is for:**
+- **Reading a long homer:** on the trail camera the ball should fly **over and past recognisable things**, so the player can say "that cleared the soda can" or "it landed by the domes". Put landmarks at different distances and directions so every part of the outfield sky has something: nothing closer than the back of the stands, most between 230 and 380 m (750 to 1,250 ft).
+- **Distance markers in the world** are welcome: painted range lines or lit markers on the regolith at 500, 600, 700 ft and beyond.
+- **The special homers** each need their stage: the rocket pad, the Apollo site, the Cove, the light towers, the sky for the satellite and the saucer.
+- **Everything a ball can reach is solid** (the no-clipping rule): give each prop its simple bound when you place it.
+
+**Be creative (propose with phone pictures and the frame rate):** a monorail or rover track ringing the park; a mining rig; a crashed prototype rocket; a billboard field; a landing strip with blinking lights; crater lakes of lava feeding the Cove; a crowd of parked rovers; the settlement lit up at night with a road to the stadium. Keep the Moon's emptiness too: it should still feel like a ballpark alone on the Moon. PS2-era budget: low-poly, baked light, instanced repeats, far things as cards.
