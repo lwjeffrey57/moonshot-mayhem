@@ -20,6 +20,49 @@ From the owner, 28 Nov. The web build could never do this: an iPhone's browser h
 7. **A setting:** Vibration Full / Light / Off, default Full. Off must be truly off. Reduce in low power mode.
 8. **Measure on the phone.** Nothing here has been felt. Build a test screen that plays each one by name so the owner can tune them in one sitting.
 
+## The owner's list (28 Nov): these must vibrate
+
+1. **Squared-up hits.** The signature one.
+2. **Every input in an event (QTE):** each arrow, each mash tap, the needle stop, the buttons.
+3. **Catches made on defense.**
+4. **Getting hit by a pitch** while batting.
+5. **Every blow in a brawl.** The brawl clips are roughly synced today; fire the haptic from the same moment as the blow's sound and flash (`brawlTick`), not from the animation, so it lands with what is heard. Re-time when the brawl is rebuilt.
+6. **Pitching: MAX power**, and **a perfect release** on the timing circle.
+7. **Special moments when the crowd is going nuts and the picture is shaking:** a rumble that follows the crowd shake (below), for as long as it shakes.
+8. **Plays at a bag:** the tag going on a runner you throw out; and as the runner, the slide, kick or punch that gets you in safe.
+
+**Hard rule from the owner: if a scene is skipped by a tap, the vibration stops at that instant.** Any continuous rumble must be owned by the scene that started it and cancelled when that scene ends, is skipped, the game is paused, the app goes to the background, or a new game starts. Never a phone still buzzing after the picture has moved on. (The prototype had the same class of bug with the camera: skipping mid-homer left it shaking on the mound until `shake` and `rumble` were zeroed in `pdStart`.)
+
+## The crowd shake (the prototype's `rumble`), and how haptics ride on it
+
+The owner asked that this be understood: what it is, when, and why.
+
+- **What it is:** "the whole picture trembles, like a broadcast camera on a deck that 50,000 people are jumping on: the frame shakes, not the stands." It is a camera tremble, separate from the sharp `shake` kick at contact. One number, `rumble`, 0 to about 1.5.
+- **How it works:** each frame, after the camera is aimed (or aiming would undo it), the camera is rolled and tilted by small fast sine wobbles: roll `(sin 47t + sin 71.3t) × 0.007`, tilt `(sin 53.7t + sin 83.1t) × 0.0045`, turn `sin 61.3t × 0.0035`, all × `rumble` × the effects setting. Then `rumble` decays: `rumble *= e^(−3.5 × dt)` (it halves about every 0.2 s), so it dies away on its own unless something keeps setting it.
+- **When it is set:**
+  - **The crowd at its very loudest:** while the roar is at the top of its range, `rumble` is held at 1 every frame (`roarTick`). This is the "crowd going nuts" shake: big homers, grand slams, the walk-off.
+  - **The walk-off** (1, with fireworks), **a light tower smashed** (1), **the satellite hit** (1), **the saucer** (0.6).
+  - **Brawl blows:** `0.7 + 0.4 × blows landed`, so each hits harder; the knockout sets 1.
+  - **Collisions at a bag:** 1.3 when the kick or the tag lands; 1 when a fielder or runner is sent flying.
+- **Why:** it sells size. The sharp kick says "the bat hit the ball"; the tremble says "the building is shaking." It is what makes the biggest moments feel bigger than a normal homer.
+- **Settings:** scaled by the effects level; with "reduce" on it is much smaller. Zeroed when you go to the mound, on a new game and on quitting.
+- **In Unity:** use a Cinemachine noise profile driven by the same number, and **drive the continuous haptic from the same number**: while `rumble` > 0.05, play a continuous haptic with intensity `0.25 + 0.5 × min(1, rumble)` and low sharpness (0.15); update it a few times a second; stop it the moment `rumble` falls below the line or the scene ends. One source, so the hands and the picture can never disagree, and the stop-on-skip rule comes for free.
+
+## How long each one lasts (starting values to tune)
+
+A haptic should be as short as the thing it represents. The ear and hand read anything within about 20 ms of the picture as "together", so fire haptics on the same frame as the sound.
+
+| Kind | Length | Use for |
+|---|---|---|
+| Tick | about 10 ms, one transient | Button presses, each event input, pitch selection |
+| Hit | one transient, felt as 20–40 ms | Bat on ball, ball in mitt, a catch, a tag, a punch |
+| Double | two transients 50–70 ms apart | Squared-up contact, MAX power, perfect release |
+| Thud | 60–120 ms continuous, dull | Hit by pitch, a body hitting the ground, ball off the wall |
+| Swell | 0.3–0.6 s continuous, fading | No-doubter, strikeout thrown, winning an event |
+| Rumble | as long as the crowd shake, capped at 3 s per burst | Crowd going nuts, rocket, flyover |
+
+Match the contact freeze: the game freezes for a few hundredths of a second on good contact (longer for better contact). The contact haptic fires at the start of the freeze and its echo lands as time resumes, so the hands feel the "stick" and the release.
+
 ## The first set (starting values, all to be tuned by the owner on the phone)
 
 Intensity and sharpness are 0 to 1.
@@ -46,6 +89,9 @@ Intensity and sharpness are 0 to 1.
 | Strikeout thrown | Two crisp taps and a short swell. |
 | **Event (QTE) arrows** | A light tick per correct arrow, rising in sharpness; a dull double for a wrong one. Won: crisp triple. Lost: one dull thud. |
 | Needle stop / mash | Mash: a light tick per tap. Needle on gold: the success pattern, stronger. |
+| **Catch made on defense** | Crisp medium hit as the ball goes in the glove; a diving catch or a rob adds a dull thud for the body landing and a short swell. |
+| **Tag on the runner (you threw him out)** | Hit when the tag goes on, sharpness 0.7. |
+| **Safe as the runner: slide / kick / punch / truck the catcher** | Slide: a 0.25 s low rumble that ends in a hit at the bag. Kick, punch or truck: one heavy dull hit on contact, then a soft echo. |
 | GO / STAY offer appears | One light tick. |
 | Achievement plate | The system "success" tap. |
 | Menu buttons | The system selection tick. |
