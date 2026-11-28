@@ -1231,7 +1231,7 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
     </div>
     <div id="ldbar" data-t="LOADING" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 994</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 995</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -4791,7 +4791,7 @@ function judge0(tr,bt){const spd=bt&&bt.spd||1; // batter's speed: 0.85 (plodder
   if(!f.of){const tt=p.t+1.0+Math.hypot(p.x-19.4,p.z+19.4)/36; // field it, a second to set and release, then the throw to first
     // the throw has to beat the runner to first: quicker men (and lefties, a step closer) get there sooner
     if(tt<3.35-(spd-1)*1.8-(bt&&bt.lh?.08:0)){ /* a routine grounder is not always an out: about one in twelve, the throw sails or pulls the first baseman off the bag and the runner is safe on the error */
-      if(Math.random()<.085){if(Math.random()<.5&&f.dieAct&&!f.isP&&!tr.offF&&!tr.offP){tr.offF={t:p.t,f,px:p.x,pz:p.z};return judge0(tr,bt);} /* HALF OF THESE ERRORS ARE THE BALL EATING HIM UP: it takes a bad hop, catches him flush and he goes down, and the ball goes on through for whoever is behind him. (The owner did not want 'PULLED HIM OFF THE BAG': an error should be seen.) */return {type:'hit',bases:1,endT:p.t,f,p,infield:true,tag:'ERROR · BAD THROW'};}
+      if(Math.random()<.085&&f.dieAct&&!f.isP&&!tr.offF&&!tr.offP){tr.offF={t:p.t,f,px:p.x,pz:p.z};return judge0(tr,bt);} /* THE ONLY ERROR ON A ROUTINE GROUNDER IS ONE YOU CAN SEE: about one in twelve, the ball takes a bad hop, catches him flush and he goes down, and it goes on through for whoever is behind him. (No bad throws and no 'pulled him off the bag' until a wild throw is properly animated: the owner's call, 28 Nov.) */
       return {type:'out',label:'GROUND OUT',endT:p.t,f,p};}
     return {type:'hit',bases:1,endT:p.t,f,p,infield:tt<4.2};}
   // Extra bases are a race: the runner against the fielder picking the ball up, setting, and throwing to the bag.
