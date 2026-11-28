@@ -167,3 +167,40 @@ Rules that go with the table:
 - **The shadow** under a ball in flight grows a little with height (it is how a fly ball is read), and is small under a pitch.
 - **Trails and glow never make the ball look bigger** than the table; thin, tapering, behind it.
 - In Unity do this with one function that returns the ball's scale from the current view and the camera distance, used everywhere the ball is drawn, with these numbers as the starting point. Check each view on the phone and send the owner one picture per view.
+
+## The swing: no delay, a proper swing and miss, and late swings that never slow the game (added 28 Nov at the owner's request)
+
+Code: `doSwing`, the swing block in `step`, and the `swing` / `whiff` / `idle` modes of `updateClip` (`port/code/15-bat-swing-pitcher-sound.js`).
+
+### No implied input delay
+
+- **The swing starts on the frame the finger lands** (touch down / button down, never on release, never after a wind-up animation). On a phone it is read on `touchstart`.
+- **The bat reaches contact 0.07 s after the tap** (`SW_T`), always. The animation is not played from its start: **wherever the hitter's swing clip is at the tap, it is driven to the contact frame over those 0.07 s** (`C.t = lerp(where it was, tC, t / 0.07)`). Because he has already loaded during the wind-up (the clip sits at the load point `tL`, 0.22 s of clip before contact), this looks like a quick, real swing, not a pop.
+- **Contact is judged at that same moment** (`tryContact` at tap + 0.07 s), and the timing circle runs 0.07 s ahead so that tapping as it closes is exactly on time. Animation never decides timing; the tap does.
+- **Nothing between the tap and the swing:** no button animation that must finish, no blend that eats frames, no waiting for a previous clip. If the hitter is mid-practice-cut or mid-take, the new swing takes over at once.
+- In Unity: read the touch's own timestamp, and measure the whole chain on the phone at 120 Hz (finger down to bat at contact). If the device adds latency, shorten the chain, do not lengthen the judged time. Never copy the browser's offsets blindly.
+
+### A proper swing and miss
+
+- **A miss has its own captured clip** (`strike`, the swing-and-miss take). The first 0.07 s are the same whip to contact as any swing; then, if it was a miss, the picture **hands over to the miss clip at its own contact frame** (`tCs`), so the bat is seen going through where the ball was not.
+- **The miss stops at the follow-through.** The captured clip goes on into a stagger and extra steps; those are never shown. He finishes the swing (the clip runs on for 0.45 s at 1.1× and then eases to a stop over about 0.25 s more: `WHIFF_CUT`), **holds the finish for a beat** (the whole thing is over at 1.05 s, `WHIFF_HOLD`), and flows back to his stance.
+- **It gives way at once to the next pitch:** if a new pitch is on its way after 0.6 s, he is back in his stance for it.
+- The swing's whoosh plays on every swing; the miss gets the miss replay (frozen ring, ball marker, TOO EARLY! / TOO LATE!) from the feedback rules.
+- A swing that connects instead plays on through the follow-through to contact + 0.6 s at 1.1× and blends back (item 23).
+
+### Taking a pitch is also animated (so a take never looks like a dead hitter)
+
+- He stays loaded and watches it into the mitt. On a pitch just off the plate (within 24 cm of the zone but not a strike) **his hands start, he checks the swing and brings the bat back** (0.66 s). On a strike he lets go, or a ball far out of the zone, he freezes for half a second: it locked him up. Then he relaxes into his stance.
+
+### A swing is never ignored, however late, and it never slows the game
+
+- **Between pitches** a tap is a **free practice cut**: the bat comes through, no cost. The pitcher waits for a practice cut to finish before starting (no quick pitches), which is at most 0.55 s.
+- **After the ball is already in the mitt, for 1.3 s** (`LATE_T`), a tap **still swings the bat** and the read-out says **WAY LATE**. This includes strike three and ball four ("the ones where it stings most"). **The call that was made stands.** The window is long on purpose: against Overdrive heat a hitter can be absurdly late and must still see his swing.
+- **A late cut never holds the game up:** it is flagged as late, the pitcher does **not** wait for it, the next pitch's timer is not pushed back, and the miss replay rules do not apply to it. Pace of play wins.
+- A swing during the first 0.55 s of the pitcher's wind-up is also a practice cut, so an early nervous tap does not waste the real swing.
+
+### Tests
+
+- Tap to contact frame is 0.07 s from every starting pose (stance, loaded, mid-take, mid-practice-cut).
+- A miss shows the miss clip and is back in the stance by 1.05 s, or by the next pitch if sooner.
+- A tap at 0.2, 0.8 and 1.25 s after the mitt on a take, a strike three and a ball four: the bat swings, WAY LATE shows, the call and the next pitch's start time are unchanged. A tap at 1.4 s is a practice cut.

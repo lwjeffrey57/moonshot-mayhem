@@ -129,6 +129,8 @@ The owner is rested and about to play on his iPhone. Before he does, he asked fo
    - After each pitch the name and speed show by the marker (and JUICE PITCH! · NAME for those).
    - Tests: over 2,000 pitches from each arm with luck unpinned, the share of each pitch type matches the weights; no Juice pitch to the first three hitters; the ring reaches the target 0.07 s before arrival for every pitch type.
 
+31. **The swing: no delay, a proper swing and miss, late swings that never slow the game.** New section at the end of `PORT_SPEC_CONTACT_FEEL.md`, from the owner's rules. The swing starts on finger-down and the bat is at contact 0.07 s later from whatever pose he is in; a miss hands over to the captured swing-and-miss clip at its own contact frame, stops at the follow-through, holds a beat and resets by 1.05 s (sooner if a pitch is coming); a take is animated (check swing on a close pitch); and a tap up to 1.3 s after the mitt still swings and says WAY LATE without changing the call or delaying the next pitch. Measure finger-to-contact on the phone.
+
 This is animation work arriving earlier than planned. That is the owner's call: a still hitter and a ball from nowhere will not feel like his game. Keep it simple (play the clips, attach the bat, IK the top hand); polish later.
 
 ---
