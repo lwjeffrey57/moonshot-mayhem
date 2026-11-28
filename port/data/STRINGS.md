@@ -868,7 +868,7 @@ All capitalized text in the prototype (callouts, labels, button text, plates, hi
 - WON THE BRAWL!
 - NEXT BATTER RATTLED
 - \u00B7 OVERDRIVE READY
-- YOU GOT WHOOPED!
+- LOST THE BRAWL!
 - NOBODY IS RATTLED NOW
 
 ## `brawlStart`
@@ -879,7 +879,7 @@ All capitalized text in the prototype (callouts, labels, button text, plates, hi
 
 - BLOCKED!
 - MURKED HIM!
-- YOU GOT WHOOPED!
+- LOST THE BRAWL!
 - POW!
 - WHAM!
 - BAM!

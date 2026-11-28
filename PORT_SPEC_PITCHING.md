@@ -97,7 +97,7 @@ Every pitch of every pitcher has three ratings (see `STAFF`): **velocity, contro
 ## Drilling a hitter
 
 - **DRILL HIM** once per hitter: the pitch hits him, he takes his base, the next batter is rattled, and you earn a bar.
-- The first drill of a game always brings him charging the mound; after that three times in ten. It is the same brawl as when you are the one hit. Win: the next batter is rattled and your meter fills to Overdrive. Lose: **YOU GOT WHOOPED!**, nobody is rattled.
+- The first drill of a game always brings him charging the mound; after that three times in ten. It is the same brawl as when you are the one hit. Win: the next batter is rattled and your meter fills to Overdrive. Lose: **LOST THE BRAWL!**, nobody is rattled.
 
 ## What happens to the pitch
 

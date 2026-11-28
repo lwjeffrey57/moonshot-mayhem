@@ -206,7 +206,7 @@ function brawlTick(el){
     /* every blow hits harder than the one before */
     burst(fxS,_p.set(0,1.35,BR_Z-.6),last?26:12,4,.45,[1,.9,.5],2,1);
     {
-      const e=$('shout'),ws=last?((B.pd?!B.win:B.win)?['MURKED HIM!']:['YOU GOT WHOOPED!']):['POW!','WHAM!','BAM!','OOF!','CRACK!'];
+      const e=$('shout'),ws=last?((B.pd?!B.win:B.win)?['MURKED HIM!']:['LOST THE BRAWL!']):['POW!','WHAM!','BAM!','OOF!','CRACK!'];
       e.textContent=ws[(Math.random()*ws.length)|0];
       brawlShoutPos(e);
       e.classList.toggle('b',q.att==='p');
@@ -239,7 +239,7 @@ function brawlTick(el){
       return;
     }
     const k=B.win?1:Math.random()<.6?-1:0;
-    hbpEnd(k,B.win?'WON THE BRAWL!':'YOU GOT WHOOPED!');
+    hbpEnd(k,B.win?'WON THE BRAWL!':'LOST THE BRAWL!');
   }
 }
 

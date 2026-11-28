@@ -3632,7 +3632,7 @@ function pdBrawlEnd(){
     buzz([30,40,80]);
   }
   else{
-    pop('YOU GOT WHOOPED!','NOBODY IS RATTLED NOW','hot',true);
+    pop('LOST THE BRAWL!','NOBODY IS RATTLED NOW','hot',true);
     boo(.7);
     buzz([60,40,60]);
   }

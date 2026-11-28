@@ -20,6 +20,8 @@ The owner is rested and about to play on his iPhone. Before he does, he asked fo
 
 7. **`port/SECURITY_AND_LAUNCH.md` (new). Hard requirement from the owner.** Read it, copy its rules into your `CLAUDE.md`, set up a secret scan now and scan the history once, list every third-party package and every network call the project makes today, and add a "Security" line to your reports whenever work touches accounts, network, purchases, saves or a new package.
 
+8. **`PORT_SPEC_SHOW.md` (new).** Asked for by name: every crowd reaction after every kind of play; everything that happens on a home run in order (horn the instant it clears and never for the visitors, flyover, rocket, lasers, fireworks, scoreboard); every camera; every celebration and taunt with the rules for which plays when; and gloves that fit, on the correct hand. Reply per section: have / will do with the sound pass / question.
+
 This is animation work arriving earlier than planned. That is the owner's call: a still hitter and a ball from nowhere will not feel like his game. Keep it simple (play the clips, attach the bat, IK the top hand); polish later.
 
 ---
