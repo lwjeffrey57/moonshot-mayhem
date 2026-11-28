@@ -12,6 +12,8 @@ The owner is rested and about to play on his iPhone. Before he does, he asked fo
 2. **Sound: add all of it now.** All 42 recorded files from the prototype's `sfx/` folder, and the synthesized ones from the `SND` table. He will do the rights audit with you before launch; for now he wants to hear the game. About 3 MB of audio: you have his OK to push it.
 3. **The pitcher goes through his delivery before the ball is thrown,** with the ball leaving from his hand. And **use the prototype's bat model, held correctly in both hands with no clipping through hands or wrists.** Both are spelled out in the feel spec. New readable code for these is in `port/code/15-bat-swing-pitcher-sound.js` (`clipBat`, `gripIK`, `setupClip`, `updateClip`, `updateBatter`, `updatePitcher`, `SND`).
 
+4. **`PORT_SPEC_DIFFICULTY_AND_CONTACT_ZONES.md` (new).** The owner wants this understood exactly: the seven tiers with PRO as the default; each swing uses only its own zone (green ring for CONTACT, red core for POWER); firm contact anywhere inside the zone when timed up; the best contact is middle-middle, the middle of the crosshair on the ball in the middle of the red core, on time. Your core already matches the formulas. Still to port: the big-inning ramp, the easy first at-bat, the Gauntlet ramp. On the device, confirm the drawn zones are exactly the judged zones.
+
 This is animation work arriving earlier than planned. That is the owner's call: a still hitter and a ball from nowhere will not feel like his game. Keep it simple (play the clips, attach the bat, IK the top hand); polish later.
 
 ---

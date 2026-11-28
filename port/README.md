@@ -28,7 +28,7 @@ Use: before porting a system, read its file end to end and treat every bold line
 - [`data/STRINGS.md`](data/STRINGS.md): every word the game says, grouped by where it is shown (about 1,400 lines of text).
 - [`data/ASSETS.md`](data/ASSETS.md): every model, texture, sound and animation clip, with clip lengths. Models are base64 FBX and convert straight to files Unity imports.
 - [`ui/style.css`](ui/style.css) and [`ui/markup.html`](ui/markup.html): the complete stylesheet and page markup, verbatim: exact sizes, positions, colors and animations of every HUD element and menu.
-- In the repo root: `PORT_SPEC_HITTING.md` (requirements for hitting), `PORT_SPEC_PITCHING.md` (requirements for pitching), `PORT_SPEC_FIELDING.md` (requirements for fielding judgment), `PORT_SPEC_CONTACT_FEEL.md` (everything that makes hitting feel right: effects, read-outs, callouts, crowd, swing, bat, delivery, sound), `UNITY_REVIEW.md` (what to fix), `BACKLOG.md` (ideas and open items), `CREDITS.md` (where assets came from and their terms).
+- In the repo root: `PORT_SPEC_HITTING.md` (requirements for hitting), `PORT_SPEC_PITCHING.md` (requirements for pitching), `PORT_SPEC_FIELDING.md` (requirements for fielding judgment), `PORT_SPEC_DIFFICULTY_AND_CONTACT_ZONES.md` (the seven tiers and exactly how the green ring, red core and middle-middle work), `PORT_SPEC_CONTACT_FEEL.md` (everything that makes hitting feel right: effects, read-outs, callouts, crowd, swing, bat, delivery, sound), `UNITY_REVIEW.md` (what to fix), `BACKLOG.md` (ideas and open items), `CREDITS.md` (where assets came from and their terms).
 
 ## Order to read in
 
