@@ -129,3 +129,18 @@ The owner wants sound for his playtest. Bring over **everything**; clearing righ
 6. Then the home-run cameras.
 
 Report per numbered item: done, not done, or different, and what you could not check without a phone.
+
+## Where the hitter stands in the box (added 28 Nov at the owner's request)
+
+Not too far up, back, in or out. The prototype does not place a hitter by hand; it **measures each body and stands him where his swing puts the barrel over the plate**, then keeps his feet in the box. Do the same, per body and per swing clip. Prototype coordinates below (plate at the origin, pitcher toward −z, a right-handed hitter stands at −x; mirror x for a lefty). Code: `setupClip` in `port/code/15-bat-swing-pitcher-sound.js`.
+
+1. **Find the contact frame of his swing:** the frame where the bat points straight out over the plate at hitting height (barrel below 1.25 m, pointing most directly across).
+2. **Slide him so the sweet spot of the bat (0.62 m up the bat from the knob) is over the middle of the plate at that frame.** That fixes both directions at once:
+   - **In and out** (x): limited to between 0.5 m and 1.5 m off the center of the plate.
+   - **Up and back** (z): limited to between 0.10 m toward the catcher and 0.12 m toward the pitcher of the plate's center. **He always stands level with the plate, never up at the front of the box and never back by the catcher.**
+3. **Keep his feet in the box:** measure his feet and toes in the stance and at contact; if the foot nearest the plate is closer than **0.52 m** from the plate's center line (`BOX_EDGE`), move him away from the plate by the difference. Feet never touch the plate or the inside chalk.
+4. **Left-handed hitters** are the same thing mirrored across the plate.
+5. **The box itself** (painted on the dirt, regulation): two boxes 4 ft by 6 ft (1.22 m × 1.83 m), their inside lines 6 in off the plate (0.368 m from its center line), centered on the plate front to back (0.914 m each way), 4 in chalk.
+6. **He stays put.** The stance, the load, the swing and the follow-through are all played from that one spot; only walk-ups, celebrations, brawls and plays on the bases move him, and afterwards he is put back exactly.
+
+**Checks:** for every body, a top-down screenshot in the stance and at contact, both hands: both feet inside the chalk, the barrel over the plate at contact, the hitter level with the plate. Send them to the owner with the bat-grip pictures.

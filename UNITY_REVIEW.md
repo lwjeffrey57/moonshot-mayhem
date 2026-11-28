@@ -32,6 +32,8 @@ The owner is rested and about to play on his iPhone. Before he does, he asked fo
 
 13. **`port/HAPTICS.md` (new): vibration on iPhone.** The owner wants the iPhone's real haptics (Core Haptics: intensity and sharpness, taps and short rumbles), not a plain buzz. Nothing has ever been felt on his phone, because an iPhone browser cannot vibrate, so the prototype's `buzz()` calls only tell you which moments matter. Build the native bridge, one `Feel(event, q)` entry point, the Full / Light / Off setting and a test screen that plays each haptic by name, then wire contact, the mitt, the homer and the release, and hand it to him to tune before doing the rest. The file now carries the owner's must-have list, how long each kind lasts, how the crowd shake (`rumble`) works and why, and his hard rule that a rumble stops the instant a scene is skipped. This replaces the vibration lines in the contact-feel spec. No paid packages; ask before adding any third-party one.
 
+14. **Where the hitter stands in the box.** New section at the end of `PORT_SPEC_CONTACT_FEEL.md`: stand each body where his own swing puts the sweet spot of the bat over the middle of the plate (level with the plate, 0.5 to 1.5 m off it), then back him off until his feet are at least 0.52 m from the plate's center line; mirror for a lefty. Per body, per swing clip, measured, not placed by eye. Top-down pictures of every body in the stance and at contact, please.
+
 This is animation work arriving earlier than planned. That is the owner's call: a still hitter and a ball from nowhere will not feel like his game. Keep it simple (play the clips, attach the bat, IK the top hand); polish later.
 
 ---
