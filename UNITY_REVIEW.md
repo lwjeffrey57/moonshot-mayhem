@@ -22,6 +22,8 @@ The owner is rested and about to play on his iPhone. Before he does, he asked fo
 
 8. **`PORT_SPEC_SHOW.md` (new).** Asked for by name: every crowd reaction after every kind of play; everything that happens on a home run in order (horn the instant it clears and never for the visitors, flyover, rocket, lasers, fireworks, scoreboard); every camera; every celebration and taunt with the rules for which plays when; and gloves that fit, on the correct hand. Reply per section: have / will do with the sound pass / question.
 
+9. **Two prototype changes to copy (BUILD 990–991).** (a) A throw event on defense is settled once, when the ball reaches the bag, never on a clock started when the inputs came up; the arrows drawn are always the arrows wanted. Build the events that way from the start. (b) A homer off the batter's eye now shows its TRUE distance (how far it went before it hit), not the projected one, and is no longer labelled PROJECTED. `simulate()` returns a new field `eyeD`; `dist` is unchanged, so `flight_cases.json` still matches. `judge0` returns `eyeD` as the homer's distance when the eye was hit. Scoreboard and foul-pole hits still say PROJECTED.
+
 This is animation work arriving earlier than planned. That is the owner's call: a still hitter and a ball from nowhere will not feel like his game. Keep it simple (play the clips, attach the bat, IK the top hand); polish later.
 
 ---

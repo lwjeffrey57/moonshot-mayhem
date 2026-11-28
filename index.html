@@ -1231,7 +1231,7 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
     </div>
     <div id="ldbar" data-t="LOADING" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 990</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 991</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -4644,7 +4644,7 @@ const LINE_TOL=.3;
 function wallV(phiDeg,la,h){try{const a=phiDeg*DEG,e=la*DEG,at=sp=>{const tr=simulate(new V3(0,1,0),new V3(Math.sin(a)*Math.cos(e)*sp,Math.sin(e)*sp,-Math.cos(a)*Math.cos(e)*sp));if(tr.hr)return 99;if(!tr.wall)return -1;for(const q of tr.pts)if(q.t>=tr.wallT)return q.y;return -1;};let lo=36,hi=58;if(at(hi)<h)return 0;for(let i=0;i<8;i++){const mid=(lo+hi)/2;if(at(mid)<h)lo=mid;else hi=mid;}const y=at(hi);return y<90&&Math.abs(y-h)<2.2?hi:0;}catch(x){return 0;}}
 const TWP=[];
 function simulate(p0,v0,spin,opt){spin=spin||{side:0,lift:0};opt=opt||{};const GG=G*(opt.g||1);let tag='',hrY=0,poleT=0,nb=0,hopT=0; // opt.chop: first bounce is a big one; opt.g: a low-gravity pocket; tag: anything unusual that happened to it
-  const p=p0.clone(),v=v0.clone(),pts=[];let t=0,land=null,hr=false,hrT=0,wall=false,wallT=0,foul=false,dist=0,grd=false,eyeT=0,twT=0,twD=null,twP=null,seatT=0,seatB=0,patN=0,patOut=false,outT=0,outD=0,foulT,bagPast=false,foulOver=false;const dt=1/120;
+  const p=p0.clone(),v=v0.clone(),pts=[];let t=0,land=null,hr=false,hrT=0,wall=false,wallT=0,foul=false,dist=0,grd=false,eyeT=0,eyeD=0,twT=0,twD=null,twP=null,seatT=0,seatB=0,patN=0,patOut=false,outT=0,outD=0,foulT,bagPast=false,foulOver=false;const dt=1/120;
   while(t<(outT?outT+7:hr?14:9)){
     const sp=v.length();v.multiplyScalar(1-DRAG*sp*dt);
     if(p.y>0||v.y>0)v.y-=GG*dt;
@@ -4673,7 +4673,7 @@ function simulate(p0,v0,spin,opt){spin=spin||{side:0,lift:0};opt=opt||{};const G
     if(hr&&Math.abs(phi)<8*DEG){ // the batter's eye is a solid slanted wall behind the center-field fence: the ball caroms off it
       const d=r-fr,hy=WALL_H+(d-1.3)*2.026;
       if(d>1.3&&d<9&&p.y<hy){const nx=p.x/r,nz=p.z/r,n3x=-.897*nx,n3y=.443,n3z=-.897*nz,vn=v.x*n3x+v.y*n3y+v.z*n3z;
-        if(vn<0){if(!eyeT){eyeT=t;const q=p.clone(),w=v.clone();let n=0;while(q.y>0&&n++<2000){const sp2=w.length();w.multiplyScalar(1-DRAG*sp2*dt);w.y-=G*dt;q.addScaledVector(w,dt);}dist=Math.hypot(q.x,q.z);} // distance is where it would have come down
+        if(vn<0){if(!eyeT){eyeT=t;eyeD=Math.hypot(p.x,p.z);const q=p.clone(),w=v.clone();let n=0;while(q.y>0&&n++<2000){const sp2=w.length();w.multiplyScalar(1-DRAG*sp2*dt);w.y-=G*dt;q.addScaledVector(w,dt);}dist=Math.hypot(q.x,q.z);} // distance is where it would have come down
           v.x-=1.62*vn*n3x;v.y-=1.62*vn*n3y;v.z-=1.62*vn*n3z;v.multiplyScalar(.8);p.y=hy+.03;}}} // comes off the panel up and back toward the field
     /* THE LIGHT TOWERS ARE SOLID: a homer that carries all the way to one no longer passes through it. It clangs off the mast (or the bank of lamps on top), and drops. */
     if(hr&&!twT&&r-fr>48&&r-fr<84&&p.y<95){if(!TWP.length)[-58,-24,24,58].forEach(d=>{const q=pol(fenceR(d*DEG)+66,d*DEG,0);TWP.push([q.x,q.z]);});
@@ -4711,7 +4711,7 @@ function simulate(p0,v0,spin,opt){spin=spin||{side:0,lift:0};opt=opt||{};const G
   }
   if(outD)dist=outD;else if(hr&&!eyeT){const q=p.clone(),w=v.clone();let n=0;while(q.y>0&&n++<2000){const sp=w.length();w.multiplyScalar(1-DRAG*sp*dt);w.y-=G*dt;q.addScaledVector(w,dt);}dist=Math.hypot(q.x,q.z);}
   let cove=false;if(hr&&seatT){const L=pts[pts.length-1],pL=Math.atan2(L.x,-L.z),dL=Math.hypot(L.x,L.z)-fenceR(pL);cove=pL>COVE_A0&&pL<COVE_A1&&dL>ARC_W&&L.y<1.6;}
-  return {pts,land,hr,hrT,hrY,poleT,tag,hopT,wall,wallT,foul,foulT,dist,grd,eyeT,twT,twD,twP,seatT,seatB,outT,outD,cove,endT:t};
+  return {pts,land,hr,hrT,hrY,poleT,tag,hopT,wall,wallT,foul,foulT,dist,grd,eyeT,eyeD,twT,twD,twP,seatT,seatB,outT,outD,cove,endT:t};
 }
 const hangK=t=>1+.55*clamp((t-3.2)/1.4,0,1); // how much more ground an outfielder covers on a ball that hangs: nothing extra on liners (under 3.2 s in the air), up to 55% more on a towering fly
 const HANG_CATCH=4.2; // seconds in the air before an outfielder is allowed to make a play at the wall
@@ -4739,7 +4739,7 @@ function judge0(tr,bt){const spd=bt&&bt.spd||1; // batter's speed: 0.85 (plodder
       for(const o of fielders){if(!o.of)continue;const d=Math.hypot(o.home.x-w.x,o.home.z-w.z);if(d<bd){bd=d;c=o;}}
       if(c&&!DBG.norob&&tr.hrT>=HANG_CATCH&&bd<=10+c.speed*1.6*tr.hrT&&(DBG.rob||Math.random()<.3)){const wr=Math.hypot(w.x,w.z),k=(wr-1.6)/wr; // he makes the catch standing in front of the wall, not in it
         return {type:'out',label:'ROBBED AT THE WALL',endT:tr.hrT,f:c,p:{x:w.x*k,y:w.y,z:w.z*k,t:tr.hrT},air:true,rob:true,dist:tr.dist};}}
-    return {type:'hr',endT:tr.endT,dist:tr.dist,tag:tr.tag||''};}
+    return {type:'hr',endT:tr.endT,dist:tr.eyeT&&tr.eyeD?tr.eyeD:tr.dist,tag:tr.tag||''}; /* OFF THE BATTER'S EYE THE DISTANCE IS THE TRUE ONE: how far it actually went before it hit, not where it would have come down. (A liner halfway up the eye was being called 503 FT with the center-field wall marked 400.) */}
   if(tr.grd&&!tr.foul){ // ground-rule double: the nearest outfielder still goes after it until it hops the wall
     const L=tr.land||tr.pts[tr.pts.length-1],endT=tr.endT;let f=null,bd=1e9;for(const c of fielders){if(c.isP||!c.of)continue;const d=Math.hypot(c.home.x-L.x,c.home.z-L.z);if(d<bd){bd=d;f=c;}}
     if(!f)return {type:'hit',bases:2,endT,grd:true};
@@ -5056,7 +5056,7 @@ function finishPlay(){revOff();if(PD.on&&flight&&flight.pd){pdFinish(flight,flig
     // THE NUMBER IS HONEST: it is how far the ball would have gone had nothing been in its way. When something was (the scoreboard, the
     // batter's eye, the seats), the call says so, the way a broadcast does: PROJECTED 523 FT.
     hrShowLast=f.sbHit?'board':f.tr.eyeT?'eye':f.tr.poleT?'pole':'';
-    const proj=!f.orbit&&!!(f.tr.eyeT||f.sbHit||f.tr.poleT),ftT=(proj?'PROJECTED ':'')+ft+' FT';
+    const proj=!f.orbit&&!!(f.sbHit||f.tr.poleT),ftT=(proj?'PROJECTED ':'')+ft+' FT';
     buzz([40,50,90]);pop(feat||'GONE!',`${ftT} · +${r} RUN${r>1?'S':''}`+(pl.tag?' · '+pl.tag:''),'hot',true);scoreboard('HOME RUN',(proj?'PROJ. ':'')+ft+' FT');
     if(!LAS.on&&!LAMP.on&&(DBG.laser||lasWant||Math.random()<(S.over?.4:.12)))laserStart();lasWant=false;
     S.state='celebrate';S.t=now;readyDur=S.mode?1.3:3.1; /* in practice, the Derby and the Gauntlet there is no celebration: the ball lands and the next pitch is coming */
