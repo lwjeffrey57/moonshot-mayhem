@@ -68,3 +68,26 @@ Sources, in order of authority:
 **Luck is pinned in the cases.** The flight has three random moments: a 50/50 flip for a ball arriving within 0.4 m below the top of the wall, a 1.1% Moon hop on a bounce, and the direction and height of a kick off a bag. The cases were generated with every random draw returning 0.75 (so: the wall flip takes the not-under-0.5 branch, no Moon hop ever, a bag kick turns the positive way by 0.675 rad and pops up at 5.0). Feed the Unity flight a random source that always returns 0.75 for these tests. Test the three random behaviors separately, each forced on.
 
 Run every row of `flight_cases.json` through the Unity flight and compare: home run or not, wall or not, foul or not (exact); distance and first landing point within about half a meter; times within about 0.05 s. Rows that differ point at a specific missing rule (pole, eye, tower, patio, alley), which the row's `tag` and flags will name.
+
+## A ball that leaves the stadium flies as far as it really goes (owner, 28 Nov: important for feel)
+
+A home run is never cut short, capped, or swallowed by a wall of seats. If it was hit 700 feet, the player watches it go 700 feet. This is a big part of why a moonshot feels like one.
+
+**What the flight does** (`simulate()`; the Unity `BallFlight` already ports it):
+- Inside the stands (up to 34 m behind the wall) a ball comes down among the fans: it lands, takes one short hop off the seats, and is somebody's souvenir.
+- **Beyond the back row (more than 34 m behind the wall) there is nothing to stop it.** It has left the ballpark. It keeps flying on the same physics (one-sixth gravity is the Moon's; the drag is the same) until it **comes down on the Moon's surface**, then takes long, lazy, low-gravity bounces (each keeps 46% of its height and 70% of its speed) and rolls to a stop. `outT` is the moment it first touches down outside, `outD` how far from the plate.
+- **The distance shown is where it first came down** (`outD`), not where it stopped rolling and not a projection. The live counter climbs to exactly that number.
+- The only cap is 300 m behind the wall (about 1,300 ft from the plate), where the flight simply ends.
+- On the patio in the Cove it bounces on the deck (up to four times); a hop that clears the back rail goes on into the lava.
+
+**What the picture must do so it is seen**
+- **600 ft and up is always followed the whole way** on the chase camera, out of the park and down onto the Moon, with the distance running up (see `PORT_SPEC_SHOW.md`, section 6). 385 ft and up usually is.
+- **The shot lasts until the ball touches down and kicks up once** (0.75 s after it lands), then ends. Never cut while the ball is still in the air; never make the player wait for it to roll to a stop.
+- **The world has to exist out there.** Beyond the stands the prototype has the Moon's surface, ridges, the lander and Apollo site, the dome, fuel tanks, the rocket pad, a satellite dish, and the Earth and stars: the ball flies over and lands among real things. In Unity the terrain must extend at least 450 m from the plate in every fair direction, with the ball's shadow and a dust kick where it lands.
+- **Nothing may clip it out:** the prototype's camera sees 1,600 m with only a faint distance fade (it starts at 320 m). Set Unity's far clip, fog, level-of-detail and occlusion so a ball 400 m away, and the ground under it, are still drawn. The stadium must not pop out of view from behind the ball either.
+- **The ball stays visible but small** the whole way (`max(1, distance × 0.05)`, the ball-size rule) with its trail, and its shadow on the ground tells you how high it is.
+- **The camera stays above every roof, tower and ridge** and never passes through the stands on the way out.
+- **Light towers and props are solid:** a ball that reaches one clangs off it and drops; the flight ends where it hits (still a home run, with its full distance).
+- The special Overdrive shots (into orbit, the satellite, the saucer, the Apollo landing) are separate set pieces on top of this.
+
+**Checks:** three homers from the phone on the chase camera: about 450 ft into the seats, about 650 ft out of the stadium, and one past 900 ft. For each: the ball is in view the whole way, it is seen landing, the counter's last number equals the call, and nothing pops in or out.
