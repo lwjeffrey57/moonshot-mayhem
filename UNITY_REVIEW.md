@@ -61,6 +61,34 @@ The owner is rested and about to play on his iPhone. Before he does, he asked fo
    - **Framing:** the hitter is cut off at the left edge and the pitcher is tiny compared with `port/look/phone_03`. Match the prototype's phone framing (camera position and the field-of-view rule in `PORT_SPEC_HITTING.md`), then compare side by side with that picture.
    - **Before each device build from now on:** run it once in the editor with the iPhone Pro Max Game view, read the Xcode device log after install, and send the owner a screenshot from the phone itself, not only from the editor. The editor hides exactly these three problems (stripped shaders, stripped classes, safe areas).
 
+23. **Side by side: the prototype on the owner's iPhone against your first iPhone build.** The reference is `port/look/phone_reference_batting_build999_on_owner_iphone.png` (BUILD 999, his iPhone 17 Pro Max, first pitch of a game). The game area in it starts below the Claude app's own bar; in a native build the same layout must start below the Dynamic Island (item 22). Measurements are fractions of the game area. Everything below is "the Unity build does not match yet":
+
+   **The world (nothing of it is there yet)**
+   - Moon surface with craters and the lit dust; the plate, both batter's boxes and the foul lines in normal 10 cm chalk. Your build has a flat pink ground and two foul lines drawn about a meter wide across the bottom of the screen.
+   - The outfield wall with its ads and distance markers, the crowd in the stands, the big scoreboard (showing PLAY BALL), the ribbon boards, the Cove on the right, the ridge and the Earth in the sky. Yours is a black sky and a yellow line.
+   - Fielders standing at their positions in their own bodies.
+
+   **Camera and framing**
+   - The hitter is big in the left foreground: head near 0.52 of the height, body down past the knees, about a third of the screen wide, bat up and visible. Yours shows only an arm at the edge.
+   - The foot of the outfield wall sits at about 0.55 of the height (yours: about 0.48, so the camera is tilted or placed differently). The strike zone's center is at 0.65 of the height and 0.50 of the width; the zone is 0.28 of the width. The pitcher stands directly above the zone with his feet at the zone's top edge. Home plate shows at the bottom center, between the AIM pad and CONTACT.
+   - Use the STRIKE ZONE camera and the field-of-view rule from `PORT_SPEC_HITTING.md` exactly, then overlay your screenshot on the reference and nudge until the wall line, zone and pitcher coincide.
+
+   **HUD: same places, not yet the same look** (`port/ui/style.css` has every color, border and shadow)
+   - **Scorebug:** an inning row with a small green arrow and "1ST" (no "BOT"), then KRA and COM rows on dark navy with the score right-aligned, then a black row with the count in white ("0-0") and outs in yellow as "O: 0". A light border and drop shadow round the whole thing. Remove the "PRO · EASY" label from the play screen (keep it as a debug toggle).
+   - **Juice meters:** a pill with a thick outline (yellow glow on the batter's), three divider ticks making four bars, a **flame fill** (blue for the batter, orange-red for the pitcher) that is always moving, "JUICE" in the italic display face with a dark outline, and BATTER / PITCHER captions in yellow italics. Yours are flat color pills.
+   - **Diamond:** a fan-shaped field (green wedge with a white outline and a dirt infield), bases as round dots that light up, home as a red dot. Yours is a plain square.
+   - **PAUSE / SOUND ON:** yellow pill and dark pill with heavy dark outlines and a hard drop shadow; the pause mark is two bars.
+   - **Buttons:** glossy, with a thick dark ring, a highlight on top and a hard shadow underneath; label in white with a black outline. POWER is the biggest (bottom right), CONTACT smaller at bottom center-right, JUICE above POWER **with clear space between them** (yours overlap), burning with flames, and a red "×3" badge on its top-right corner for the bars in hand.
+   - **AIM pad:** a dark translucent disc with a **yellow ring**, a silver knob with concentric rings, "AIM" above it. Yours is a purple disc with a gray knob.
+   - **Strike zone:** a white frame with nothing else in it while batting (no grid lines: the nine squares belong to pitching only), green ring with a soft green fill, red core with a red fill, small white crosshair. Colors as in the reference.
+   - **The hitter's card** at the start of an at-bat: number, position and hand ("#27 · CF · BATS R"), name, rating badge with tier gem, and PWR / CON / SPD letter grades. It is missing.
+   - **Callouts** (STRIKE TWO!) go in the clear band between the top bar and the pitcher's head, never under a button.
+   - A small build tag bottom-right ("B999" there): add one, so the owner can always tell which build he is holding.
+
+   **The swing's follow-through looks wrong to the owner** ("kinda funky"). Compare with `setupClip` / `updateClip`: the swing is the `hit` clip played from the load point `tL` (0.22 s before contact) so that the contact frame `tC` lands exactly when the ball arrives, **then on to `tE` = contact + 0.6 s and no further**, then blended back to the stance (or into running on a ball in play). The clip is 2.97 s long: if you play past `tE`, or hold the last frame, or keep the top hand pinned to the handle after contact, the finish will look odd. Send him three stills (contact, contact + 0.3 s, contact + 0.6 s) next to the same three from the prototype.
+
+   **Order:** item 22 first (shaders, errors, sound, safe area), then the camera, then the HUD look, then the world. Send a phone screenshot after each step so progress is judged on the device.
+
 This is animation work arriving earlier than planned. That is the owner's call: a still hitter and a ball from nowhere will not feel like his game. Keep it simple (play the clips, attach the bat, IK the top hand); polish later.
 
 ---
