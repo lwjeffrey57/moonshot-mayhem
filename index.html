@@ -53,20 +53,26 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 #juice.over #jtxt{color:#fff;text-shadow:0 0 8px var(--ice),0 1px 0 #000}
 /* the Juice meter is a blue flame that builds: the fill is fire, with tongues flickering along its top and a hot tip at the leading edge */
 #juice #jbar::after{display:none}
-#juice #jfill{background:
+/* THE FLAMES ON THE METERS NEVER FREEZE: the tongues are a strip of their own that is slid from side to side (a transform, which the phone animates on its graphics chip and never skips), clipped to the fill. They used to be made by shifting the fill's background, which iPhone Safari stops repainting when it is busy: the bar sat there as a still picture. This way is also cheaper. */
+.mfill .fl{position:absolute;inset:0;overflow:hidden;border-radius:inherit;pointer-events:none}
+.mfill .fl::before{content:'';position:absolute;top:0;bottom:0;left:-30px;right:-30px;animation:jfl2 .5s steps(1) infinite;will-change:transform}
+@keyframes jfl2{0%{transform:translateX(0)}25%{transform:translateX(-5px)}50%{transform:translateX(9px)}75%{transform:translateX(-12px)}}
+#jfill .fl::before{background:
   radial-gradient(ellipse 9px 15px at 7px 100%,#eafcff 0,#7fdcff 38%,rgba(46,140,255,0) 72%) 0 100%/14px 100% repeat-x,
-  radial-gradient(ellipse 8px 20px at 9px 100%,#bff0ff 0,#3aa8ff 42%,rgba(30,110,255,0) 74%) 5px 100%/19px 100% repeat-x,
-  linear-gradient(0deg,#9fe8ff 0,#2e8cff 34%,#1647c4 62%,#0a1f6e 100%);
-  animation:jflame .5s steps(4) infinite;filter:saturate(1.2)}
+  radial-gradient(ellipse 8px 20px at 9px 100%,#bff0ff 0,#3aa8ff 42%,rgba(30,110,255,0) 74%) 5px 100%/19px 100% repeat-x}
+#juice.over #jfill .fl::before{animation-duration:.3s;background:
+  radial-gradient(ellipse 10px 18px at 7px 100%,#fff 0,#bff4ff 40%,rgba(120,220,255,0) 74%) 0 100%/14px 100% repeat-x,
+  radial-gradient(ellipse 9px 22px at 9px 100%,#eafcff 0,#7fdcff 44%,rgba(58,170,255,0) 76%) 5px 100%/19px 100% repeat-x}
+#hfill .fl::before{background:
+  radial-gradient(ellipse 9px 15px at 7px 100%,#fff6c8 0,#ffc23a 38%,rgba(255,90,30,0) 72%) 0 100%/14px 100% repeat-x,
+  radial-gradient(ellipse 8px 20px at 9px 100%,#ffe08a 0,#ff7a1e 42%,rgba(255,60,20,0) 74%) 5px 100%/19px 100% repeat-x}
+#juice #jfill{background:linear-gradient(0deg,#9fe8ff 0,#2e8cff 34%,#1647c4 62%,#0a1f6e 100%);filter:saturate(1.2)}
 #juice #jfill::after{content:'';position:absolute;right:-3px;top:-4px;bottom:-4px;width:16px;border-radius:50%;background:radial-gradient(ellipse at 40% 60%,#fff 0,#9fe8ff 40%,rgba(58,170,255,0) 72%);animation:jtip .28s ease-in-out infinite alternate}
 @keyframes jflame{0%{background-position:0 100%,5px 100%,0 0}25%{background-position:4px 100%,1px 100%,0 0}50%{background-position:9px 100%,11px 100%,0 0}75%{background-position:2px 100%,15px 100%,0 0}100%{background-position:14px 100%,24px 100%,0 0}}
 @keyframes jtip{from{transform:scale(.8,.9);opacity:.75}to{transform:scale(1.15,1.1);opacity:1}}
-#juice.over #jfill{background:
-  radial-gradient(ellipse 10px 18px at 7px 100%,#fff 0,#bff4ff 40%,rgba(120,220,255,0) 74%) 0 100%/14px 100% repeat-x,
-  radial-gradient(ellipse 9px 22px at 9px 100%,#eafcff 0,#7fdcff 44%,rgba(58,170,255,0) 76%) 5px 100%/19px 100% repeat-x,
-  linear-gradient(0deg,#eafcff 0,#58d6ff 36%,#1e7bff 70%,#0a2a9a 100%);animation-duration:.3s}
+#juice.over #jfill{background:linear-gradient(0deg,#eafcff 0,#58d6ff 36%,#1e7bff 70%,#0a2a9a 100%)}
 #juice.over #jbar{box-shadow:0 0 0 2px var(--navy),0 0 14px 3px rgba(88,214,255,.9)}
-@media (prefers-reduced-motion:reduce){#juice #jfill,#juice #jfill::after{animation:none}}
+@media (prefers-reduced-motion:reduce){#juice #jfill,#juice #jfill::after,.mfill .fl::before{animation:none}}
 #card{margin-top:6px;display:flex;gap:8px;align-items:center;justify-content:center;font-family:var(--display);font-style:italic;text-shadow:0 2px 0 #000;white-space:nowrap}
 #cnum{font-size:18px;color:var(--volt)}#cname{font-size:16px;color:var(--volt)}
 .stats{display:flex;gap:7px;font-family:var(--hud);font-style:normal}
@@ -111,10 +117,7 @@ body{background:var(--ink);color:var(--chrome);font-family:var(--hud);overflow:h
 .mfill{position:absolute;inset:0;width:0%;transition:width .25s}
 #heat .mbar::after{display:none}
 #heat .mbar::before{background:repeating-linear-gradient(90deg,transparent 0 32.6%,rgba(5,6,15,.85) 32.6% 33.33%)}
-#hfill{left:0;right:auto;background:
-  radial-gradient(ellipse 9px 15px at 7px 100%,#fff6c8 0,#ffc23a 38%,rgba(255,90,30,0) 72%) 0 100%/14px 100% repeat-x,
-  radial-gradient(ellipse 8px 20px at 9px 100%,#ffe08a 0,#ff7a1e 42%,rgba(255,60,20,0) 74%) 5px 100%/19px 100% repeat-x,
-  linear-gradient(0deg,#ffb23a 0,#ff4d1e 34%,#c41808 62%,#5e0a04 100%);animation:jflame .5s steps(4) infinite}
+#hfill{left:0;right:auto;background:linear-gradient(0deg,#ffb23a 0,#ff4d1e 34%,#c41808 62%,#5e0a04 100%)}
 #hfill::after{content:'';position:absolute;right:-3px;top:-4px;bottom:-4px;width:16px;border-radius:50%;background:radial-gradient(ellipse at 40% 60%,#fff 0,#ffd98a 40%,rgba(255,120,40,0) 72%);animation:jtip .28s ease-in-out infinite alternate}
 @media (prefers-reduced-motion:reduce){#hfill,#hfill::after{animation:none}}
 .mtxt{position:absolute;inset:0;z-index:3;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-style:italic;font-size:14px;letter-spacing:.08em;color:#fff;text-shadow:0 1px 0 #000,0 0 4px #000}
@@ -1085,10 +1088,10 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
     </div>
     <div id="pmk" hidden></div><div id="hrft" hidden></div><div id="shotg" hidden></div><div id="pitchinfo"><b id="mph">--</b><span>MPH</span></div>
     <div id="meters">
-      <div id="juice" class="meter"><div id="jbar" class="mbar"><div id="jfill" class="mfill"></div><span id="jtxt" class="mtxt">JUICE</span></div>
+      <div id="juice" class="meter"><div id="jbar" class="mbar"><div id="jfill" class="mfill"><i class="fl"></i></div><span id="jtxt" class="mtxt">JUICE</span></div>
         <div class="mcap">BATTER</div></div>
       <div id="zmini" title="Last pitch location"><i id="zdot" hidden></i></div>
-      <div id="heat" class="meter"><div class="mbar"><div id="hfill" class="mfill"></div><span class="mtxt">JUICE</span></div>
+      <div id="heat" class="meter"><div class="mbar"><div id="hfill" class="mfill"><i class="fl"></i></div><span class="mtxt">JUICE</span></div>
         <div class="mcap" id="pcap">PITCHER</div></div>
     </div>
     <div id="podx" hidden><b id="podxt"></b><div id="podxb"></div><button id="podxok" type="button">GOT IT</button></div>
@@ -1231,7 +1234,7 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
     </div>
     <div id="ldbar" data-t="LOADING" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 998</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 999</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
