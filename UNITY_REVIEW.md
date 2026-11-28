@@ -14,6 +14,8 @@ The owner is rested and about to play on his iPhone. Before he does, he asked fo
 
 4. **`PORT_SPEC_DIFFICULTY_AND_CONTACT_ZONES.md` (new).** The owner wants this understood exactly: the seven tiers with PRO as the default; each swing uses only its own zone (green ring for CONTACT, red core for POWER); firm contact anywhere inside the zone when timed up; the best contact is middle-middle, the middle of the crosshair on the ball in the middle of the red core, on time. Your core already matches the formulas. Still to port: the big-inning ramp, the easy first at-bat, the Gauntlet ramp. On the device, confirm the drawn zones are exactly the judged zones.
 
+5. **The shock ring (the white circle that bursts outward on a great result).** The owner asked about it by name. Batting: you have it at the contact point (item 6 of the contact-feel spec); confirm on the phone that it is clearly seen and grows with contact quality. Pitching: not built yet by your own notes. Build it now with the mound work: on a perfect release the timing ring bursts gold, and the same freeze, flash, shock ring and sparks fire at his fingertips, smaller than at the plate; a good release gets a hint, a mistimed one nothing; the full camera kick is for perfect-perfect only (`PORT_SPEC_PITCHING.md` "Reading the release", `port/TRAILS_AND_EFFECTS.md` line 93, `releasePunch` in the code).
+
 This is animation work arriving earlier than planned. That is the owner's call: a still hitter and a ball from nowhere will not feel like his game. Keep it simple (play the clips, attach the bat, IK the top hand); polish later.
 
 ---
