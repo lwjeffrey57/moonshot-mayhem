@@ -34,6 +34,8 @@ The owner is rested and about to play on his iPhone. Before he does, he asked fo
 
 14. **Where the hitter stands in the box.** New section at the end of `PORT_SPEC_CONTACT_FEEL.md`: stand each body where his own swing puts the sweet spot of the bat over the middle of the plate (level with the plate, 0.5 to 1.5 m off it), then back him off until his feet are at least 0.52 m from the plate's center line; mirror for a lefty. Per body, per swing clip, measured, not placed by eye. Top-down pictures of every body in the stance and at contact, please.
 
+15. **Field markings and bases.** Two new sections at the end of `port/VISUALS_AND_FILES.md`: the exact layout of everything the owner says is right today (plate, regulation batter's and catcher's boxes with 4 in chalk, foul lines that do not run through the boxes, infield skin, grass diamond, mound, warning track, the white edge lines), and the bases as an area to improve (real rounded bags instead of white boxes, and no feet or bodies clipping through them in any clip at a bag).
+
 This is animation work arriving earlier than planned. That is the owner's call: a still hitter and a ball from nowhere will not feel like his game. Keep it simple (play the clips, attach the bat, IK the top hand); polish later.
 
 ---
