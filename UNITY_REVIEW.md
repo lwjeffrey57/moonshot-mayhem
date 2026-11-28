@@ -91,6 +91,15 @@ The owner is rested and about to play on his iPhone. Before he does, he asked fo
 
 24. **The ball's size on screen.** New section at the end of `PORT_SPEC_CONTACT_FEEL.md`. The owner's rule: the ball never looks too big and is recognisably the same ball in every view. The prototype draws it true size up close and enlarges it only enough to stay visible at distance (batted ball `max(1, distance × 0.05)`, throws smaller, the overhead homer view a small ball with a flame trail). One function for the scale, used everywhere; one picture per view from the phone.
 
+25. **The baseball in the strike zone (the pitch-location target) does not look like ours.** Reference: `port/look/phone_reference_timing_circle_build999_on_owner_iphone.png` (the owner's phone, pitch on its way). Compare with your build:
+   - **Ours is a small, real-looking baseball:** soft off-white leather with a little shading, thin red stitching, and drawn slightly see-through so it never blots out the zone behind it. **Yours is a flat white disc with a thick black outline and heavy red seams.** It reads as a sticker, and the black edge makes it look bigger and heavier than it is.
+   - **Ours sits inside a thin white ring.** That ring is the target itself (radius 0.068 m, `PT_R`, drawn as a ring from 84% to 100% of that radius, white at 95%): it is what the yellow timing ring closes onto. The baseball is inside it and a little smaller than it. No black outline anywhere, no halo, no glow.
+   - **The yellow timing ring** is a clean ring in #ffe53b, about 14% of its radius thick, closing steadily onto the white ring; it flashes green at the on-time moment and keeps shrinking after (smaller than the target means late).
+   - **Size:** the white target ring is 13.6 cm across against a zone 43 cm wide, so just under a third of the zone's width at Pro. On harder tiers it is drawn smaller, in step with the smaller middle-middle.
+   - **The strike zone while batting has no grid** (still showing in your build); the nine squares are for pitching.
+   - Same ball rule as item 24: it must look like the same baseball as the one in flight, not a different icon.
+   - Also seen in this build's screenshot: a HAPTICS test button sitting on the pitcher's Juice bar and a GO PITCH button where SOUND ON belongs. Keep debug buttons off the play screen (a hidden gesture or a debug menu), and keep SOUND ON where it is in the prototype. The hitter's card is in, which is good; it still needs his position and the rating badge with its tier gem.
+
 This is animation work arriving earlier than planned. That is the owner's call: a still hitter and a ball from nowhere will not feel like his game. Keep it simple (play the clips, attach the bat, IK the top hand); polish later.
 
 ---
