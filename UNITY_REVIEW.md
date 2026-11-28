@@ -46,6 +46,8 @@ The owner is rested and about to play on his iPhone. Before he does, he asked fo
 
 18. **Prototype changes in BUILD 997–999 to copy.** (a) Portraits are photographed large with their own studio lights (see the portraits note in `port/VISUALS_AND_FILES.md`). (b) During any event at a bag the crowd is held up from the moment the runner breaks until the call; it must never go quiet. (c) After an event every runner is standing on his bag: nobody strolls back from his lead when the picture returns. (d) Breaking up a double play is called BROKE IT UP! · NO DOUBLE PLAY · SAFE AT FIRST (won) or DOUBLE PLAY! · TWO FOR ONE (lost), not a bare SAFE! / OUT!. (e) The flames on the Juice meters are a moving strip clipped to the fill, so they never freeze; in Unity make them a cheap shader or sprite animation that always runs while the bar has anything in it.
 
+19. **`flight_cases.json` is regenerated (BUILD 999), as you asked.** Still 1,428 rows, luck pinned at 0.75. Only batter's-eye rows changed: 22 rows have `offEye` true, 19 of them differ from the old file (after the carom), and every other row is identical. New field `eyeDistanceM` is the distance shown for a homer off the eye. Row 692 keeps its `unstable` flag. Re-copy the file and put the 22 back in the test. Thank you for setting them aside rather than loosening the test.
+
 This is animation work arriving earlier than planned. That is the owner's call: a still hitter and a ball from nowhere will not feel like his game. Keep it simple (play the clips, attach the bat, IK the top hand); polish later.
 
 ---
