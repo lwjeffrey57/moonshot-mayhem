@@ -4,6 +4,20 @@ Written by the web-build session after reading the Unity repo's code. The owner 
 
 ---
 
+## Review 4: fielding judgment and the three-inning game (28 Nov)
+
+**Your mix matches the prototype exactly.** I ran the same 1,428 flights through the prototype's own `judge` with luck pinned at 0.75 and an average runner: 682 outs, 275 singles, 144 doubles, 317 homers, 10 fouls, 0 triples. Identical to yours.
+
+For a finer check, the prototype's outs by label on that set: GROUND OUT 298, FLY OUT 161, LINE OUT 101, POP OUT 99, SNAGGED BY THE PITCHER 23. With a burner (speed 1.15): 633 outs, 316 singles, 151 doubles, 1 triple, 317 homers, 10 fouls. Compare both if you have not.
+
+- **No triples is correct for this set.** Triples are rare by design: an average runner needs 11.6 s to third against the relay. They come from fast hitters and balls that rattle around the triples alley. Do not loosen anything.
+- **The Krakens batting only twice** is how the prototype works; matching it is right. It is flagged for the owner as a design question (should the visitors bat three times?). Do not change it.
+- **The 20-second Overdrive wait** is as coded: it is only that long for a player who has never pressed it.
+
+**Next: pitching, on the owner's go.** Build the core rules with tests first (the three inputs and their grading, the meatball, ratings, what the hitter does with the pitch, stamina, the pitcher's own Juice, Scouting Report, Drill Him to the plunk), then the thinnest rig around it, laid out from the pitching pictures. Read `port/code/04-you-pitch.js` and look at `*_10` to `*_13` and the pitch-delivery strip first. Where a ball is put in play, use the fielding judgment you just built. Leave events, walk-ups, celebrations, the brawl, the guide and sound for later. Report what could not be checked without hands on a phone.
+
+---
+
 ## Review 3: commits `43b5990`..`e851460` (28 Nov)
 
 Checked against the prototype: a taken ball does earn a bar (`GOOD EYE! · +JUICE`), and the only pitch speed factor in `choosePitch` is the inning one, as you found. 55 tests noted. Not re-read line by line this pass.
