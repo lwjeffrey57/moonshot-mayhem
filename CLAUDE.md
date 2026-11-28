@@ -13,7 +13,8 @@ Former ballplayer, no game-dev background. Plain words, ballplayer lingo, Americ
 3. Syntax-check the main script (`node --check`) and run the regression checks before shipping.
 4. Commit and push to `main`.
 5. Publish to the same artifact: https://claude.ai/artifact/W9JdkjsPVHRpAd5bLwbHHJ
-6. Report briefly. For each request, also say whether it belongs here (rules, numbers, feedback) or should wait for Unity (animation polish, screens, saves, networking).
+6. **Always pass it on to the Unity chat without being asked** (owner's standing instruction, 28 Nov): every fix or rule change made here gets a numbered item at the top of `UNITY_REVIEW.md` (what changed, why, where in the code), pushed with the build. He should never have to say "make sure the other Claude knows".
+7. Report briefly. For each request, also say whether it belongs here (rules, numbers, feedback) or should wait for Unity (animation polish, screens, saves, networking).
 
 ## Design rules
 

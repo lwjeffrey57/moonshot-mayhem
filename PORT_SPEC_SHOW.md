@@ -114,3 +114,30 @@ Added 28 Nov at the owner's request. This is one of the signature moments: ridin
 **When the trail cam is not on:** a homer that lands in the seats or on the patio shows its distance for about 1.9 s **beside the spot where it came down** (fading over the last 0.4 s), only while the picture is still on the ball. Not on the Overdrive show shots, which have their own read-out. A small distance read-out also sits in the HUD during any tracked flight.
 
 Code: `dftDom` (the counter), the `trailCam` branch of `updateCamera`, `hrFtShow` / `hrFtTick` (distance at the landing spot), and where `flight.trailCam` is set in `tryContact`. Pictures: the home-run camera strips in `port/look/`.
+
+## 7. The hitter after a no-doubter: the finish, the bat flip, the show (added 28 Nov at the owner's request)
+
+On the biggest homers the picture does not chase the ball straight away. **It stays on the hitter in the box** while he enjoys it. Code: where `flight.admire` is set in `tryContact`, the admire part of `updateClip` / `clipBat`, the admire branch of `updateCamera`.
+
+**Two kinds, chosen at contact (the flight is already known):**
+- **ADMIRE:** he **holds his follow-through**, **watches it go** (his head turns to follow the ball), and **drops or flips the bat**.
+- **SHOW:** the same, and then **his own walk-up routine as a celebration**, right there at the plate (a salute, the flair, shadow boxing, whatever is his), or one from the celebration pool on the "flavor first" homers.
+
+**When:**
+- **The first homer of every game always gets the SHOW** (the first two in a player's first three games): "nobody plays a whole game without seeing what this game is."
+- A **big one** (a Juice swing, or 500 ft and up): SHOW about a third of the time, ADMIRE about one in six, otherwise straight to a camera on the ball.
+- **440 ft and up:** ADMIRE about three times in ten.
+- **Never** on a ball bound for the Cove's lava, on 600 ft and up (those are always followed all the way), or in the modes with no celebrations.
+
+**How it plays:**
+- **How long the picture stays on him:** until 1.3 s before the ball comes down, but at least 1.2 s and at most 2.5 s (up to 3.9 s for a SHOW when there is no trot to follow). Then it cuts to the ball, one of the aerial shots, or the board, so the landing is still seen.
+- **The swing does not snap back to the stance:** the follow-through is held and he flows from it into the flip or the routine.
+- **The bat flip is seen before it is named:** the call PIMPED IT! waits one second, "you see the bat flip first, then the word". Other calls (NO DOUBTER!, SEE YA!, ABSOLUTE TANK!, LIFT OFF!, ADIOS PELOTA!, PLAKATA! and more, never the same one twice running) go up at once; three times in four the swing's own big word (TOMAHAWKED!, TURNED ON!, PERFECT!) is used instead when there is one.
+- **Sound:** a no-doubter has its own crack laid over the bat sound, then the horn when it clears.
+- **The SHOWBOAT achievement** drops 1.1 s in, after the flip has been seen.
+- **The lasers** come on for about 45% of these, but never before the ball has cleared the wall.
+- **The other side sags:** the outfielders slump as it goes over, and during the trot everyone on the field does.
+- Then **the trot**, with the celebration at the plate (section 4); after the "loser" taunt the camera cuts to the pitcher wearing it.
+- **A tap skips any of it**, and the homer still counts.
+
+**In Unity:** these are the moments to polish: a real bat flip with the bat tumbling and landing, two or three different flips and finishes per hitter type (the one-handed finish, the bat drop, the slow walk out of the box), the head and eyes tracking the ball, and a clean blend from follow-through to celebration. Keep the rules about which plays when and never the same twice running.
