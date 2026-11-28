@@ -151,6 +151,8 @@ The owner is rested and about to play on his iPhone. Before he does, he asked fo
    - The first walk-up says TAP TO SKIP on the card; after that nothing needs to say it.
    - Test: a full game tapping constantly never gets stuck, never loses a result, and takes well under half the time of a game with no taps.
 
+36. **`port/STADIUM_BUILD.md` (new): start building the rest of the stadium.** The owner wants the other walls, the stands and everything round them started now. The file has: the look to aim for (**bare-minimum PS2-era graphics and lighting, performance first**); what is fixed (fence line, wall heights, landing surfaces) and what is free (the look: keep your right-field wall); a build order with the measurements for each piece (wall and its three heights, batter's eye and scoreboard, the low outfield bowl, the Cove, the grandstand, light towers, ribbon boards, the Moon beyond); **how the halo board works** (the LED band round the back of the bowl that always says what is happening, with its priorities, sticky times and pulse); and **the fans as an area to upgrade**, in four levels from painted to instanced cut-outs to low-poly rows to reactions, each to be measured on the phone so the owner can pick. A phone screenshot from the hitter's camera after each piece.
+
 This is animation work arriving earlier than planned. That is the owner's call: a still hitter and a ball from nowhere will not feel like his game. Keep it simple (play the clips, attach the bat, IK the top hand); polish later.
 
 ---
