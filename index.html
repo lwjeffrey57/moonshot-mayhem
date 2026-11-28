@@ -1231,7 +1231,7 @@ body.hudlite #hud *{filter:none!important;-webkit-backdrop-filter:none!important
     </div>
     <div id="ldbar" data-t="LOADING" role="progressbar" aria-label="Loading players"><i></i></div><div id="ldtxt"></div>
     <div id="tip" aria-live="polite"><b id="tiph"></b><span id="tipb"></span></div>
-    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 996</div>
+    <div id="bld" style="font-size:10px;letter-spacing:.14em;color:rgba(242,245,255,.45)">BUILD 997</div>
     <div id="opts">
     <button class="tag wkopt" id="wk" type="button"></button>
     <div id="godiag" style="font:700 11px/1.3 var(--hud);letter-spacing:.04em;color:#9aa3c7;margin-top:8px;text-align:center"></div>
@@ -3979,11 +3979,11 @@ const trivLast={},TRIVIA={ /* ten each, and every one has to be funny cold: noth
 // FACES: the first time a hitter is at the plate a small head shot is taken of his model (one tiny off-screen render, once per player), and it
 // goes on his walk-up card and on the big board from then on.
 /* PLAYER PHOTOS ARE KEPT. The head shot taken the first time a player comes to the plate is saved on the device, so his cards (My Squad, the big baseball card) carry his picture from then on, in every later session. */
-const MUGSAVE={};try{for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&k.indexOf('mm_mug2_')===0)MUGSAVE[k.slice(8)]=localStorage.getItem(k);}}catch(e){}
+const MUGSAVE={};try{for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&k.indexOf('mm_mug3_')===0)MUGSAVE[k.slice(8)]=localStorage.getItem(k);}}catch(e){}
 const MUGS={};let faceRT=null,faceCam=null,faceTry=0;
 function faceGrab(){const C=MX.clip,kr=wkPD();if(!C||!C.head||(!kr&&C.bi!==S.bi)||!MX.on)return;const b=kr?KBAT[PD.k]:curBatter(); /* (the Kraken at the plate gets his head shot taken too, for his card) */if(MUGS[b.name]||now-faceTry<.5)return;faceTry=now;faceShot(C,b,true);}
 function faceShot(C,b,live){
-  try{if(!faceRT){faceRT=new T.WebGLRenderTarget(160,160);faceCam=new T.PerspectiveCamera(22,1,.05,600);}
+  try{if(!faceRT){faceRT=new T.WebGLRenderTarget(768,768);faceCam=new T.PerspectiveCamera(22,1,.05,600);} /* PORTRAITS ARE SHARP: photographed at 768 pixels and kept at 384 (they were taken at 160 and blown up to three or four times that on a phone, which is why they looked blocky), and lit by a photographer's own lamps instead of being brightened afterwards (which is what tore up the dark faces). */
     C.head.updateWorldMatrix(true,false);C.head.getWorldPosition(_a);const q=new T.Quaternion();C.head.getWorldQuaternion(q);const d=new V3(0,0,1).applyQuaternion(q);d.y=0;if(d.lengthSq()<.05)return;d.normalize();_a.y+=.08;
     /* EVERY PORTRAIT LOOKS AT THE CAMERA: for the photograph his head is lifted level and turned square to the lens, whatever pose he was caught in (several were looking at their feet). It is put back the moment the picture is taken. */
     let hSave=null;try{const hp=C.head.parent,pq=new T.Quaternion(),ws=new V3();C.head.getWorldScale(ws);if(hp&&ws.x>0&&ws.y>0&&ws.z>0){hp.getWorldQuaternion(pq);hSave=C.head.quaternion.clone();C.head.quaternion.copy(pq.invert().multiply(new T.Quaternion().setFromAxisAngle(new V3(0,1,0),Math.atan2(d.x,d.z))));C.head.updateWorldMatrix(false,true);}}catch(e){hSave=null;}
@@ -3991,17 +3991,18 @@ function faceShot(C,b,live){
     // ONLY THE PLAYER IS PHOTOGRAPHED: he (and the lights) are put on a layer of their own, so the stadium is not in the shot, and the head
     // shot is laid over a studio backdrop of deep space in the club's colors.
     let root=C.head;while(root.parent&&root.parent!==scene)root=root.parent;root.traverse(o=>o.layers.enable(1));if(!faceRT.lit){faceRT.lit=1;scene.traverse(o=>{if(o.isLight)o.layers.enable(1);});}faceCam.layers.set(1);
-    const N=160,buf=new Uint8Array(N*N*4),bg0=scene.background,ca=renderer.getClearAlpha(),cc=renderer.getClearColor(new T.Color()).clone();scene.background=null;renderer.setClearColor(0x000000,0);
-    renderer.setRenderTarget(faceRT);renderer.clear();renderer.render(scene,faceCam);renderer.readRenderTargetPixels(faceRT,0,0,N,N,buf);renderer.setRenderTarget(null);if(hSave){C.head.quaternion.copy(hSave);C.head.updateWorldMatrix(false,true);}scene.background=bg0;renderer.setClearColor(cc,ca);
+    const N=768,M=384,buf=new Uint8Array(N*N*4),bg0=scene.background,ca=renderer.getClearAlpha(),cc=renderer.getClearColor(new T.Color()).clone();scene.background=null;renderer.setClearColor(0x000000,0);
+    const _fl=[new T.HemisphereLight(0xffffff,0x8a90b0,.22),new T.DirectionalLight(0xfff4e6,.34),new T.DirectionalLight(0xbcd4ff,.12)];_fl[1].position.copy(faceCam.position).add(new V3(-d.z*.7,.9,d.x*.7));_fl[1].target.position.copy(_a);_fl[2].position.copy(faceCam.position).add(new V3(d.z*1.2,.2,-d.x*1.2));_fl[2].target.position.copy(_a);_fl.forEach(L=>{L.layers.enable(1);scene.add(L);if(L.target)scene.add(L.target);});
+    renderer.setRenderTarget(faceRT);renderer.clear();renderer.render(scene,faceCam);_fl.forEach(L=>{scene.remove(L);if(L.target)scene.remove(L.target);});renderer.readRenderTargetPixels(faceRT,0,0,N,N,buf);renderer.setRenderTarget(null);if(hSave){C.head.quaternion.copy(hSave);C.head.updateWorldMatrix(false,true);}scene.background=bg0;renderer.setClearColor(cc,ca);
     const t=document.createElement('canvas');t.width=t.height=N;const tg=t.getContext('2d'),im=tg.createImageData(N,N);for(let y=0;y<N;y++)im.data.set(buf.subarray((N-1-y)*N*4,(N-y)*N*4),y*N*4);
-    {const d=im.data;let sum=0,n=0;for(let i=0;i<d.length;i+=4)if(d[i+3]>40){sum+=.3*d[i]+.59*d[i+1]+.11*d[i+2];n++;}const g=n?clamp(128/(sum/n),1,3.4):1; /* EVERY PORTRAIT EQUALLY WELL LIT: each head shot is brightened to the same average level, however dark his suit or wherever he was standing */
-      if(g>1.02)for(let i=0;i<d.length;i+=4)if(d[i+3]>0){d[i]=Math.min(255,d[i]*g+6);d[i+1]=Math.min(255,d[i+1]*g+6);d[i+2]=Math.min(255,d[i+2]*g+6);}}
+    {const d=im.data;let sum=0,n=0;for(let i=0;i<d.length;i+=4)if(d[i+3]>40){sum+=.3*d[i]+.59*d[i+1]+.11*d[i+2];n++;}const g=n?clamp(122/(sum/n),.62,1.6):1; /* EVERY PORTRAIT EQUALLY WELL LIT: each head shot is brightened to the same average level, however dark his suit or wherever he was standing */
+      if(Math.abs(g-1)>.02)for(let i=0;i<d.length;i+=4)if(d[i+3]>0){d[i]=Math.min(255,d[i]*g);d[i+1]=Math.min(255,d[i+1]*g);d[i+2]=Math.min(255,d[i+2]*g);}}
     tg.putImageData(im,0,0);
-    const c=document.createElement('canvas');c.width=c.height=N;const g=c.getContext('2d'),bg=g.createRadialGradient(N*.5,N*.42,6,N*.5,N*.5,N*.8);bg.addColorStop(0,'#3a2a7a');bg.addColorStop(.55,'#141a52');bg.addColorStop(1,'#05060f');g.fillStyle=bg;g.fillRect(0,0,N,N);
-    {const ng=g.createRadialGradient(N*.2,N*.85,0,N*.2,N*.85,N*.7);ng.addColorStop(0,'rgba(255,138,58,.45)');ng.addColorStop(1,'rgba(255,138,58,0)');g.fillStyle=ng;g.fillRect(0,0,N,N);const n2=g.createRadialGradient(N*.85,N*.15,0,N*.85,N*.15,N*.6);n2.addColorStop(0,'rgba(58,214,255,.3)');n2.addColorStop(1,'rgba(58,214,255,0)');g.fillStyle=n2;g.fillRect(0,0,N,N);
-      for(let k=0;k<46;k++){g.fillStyle=`rgba(255,255,255,${rand(.3,.95)})`;const r=Math.random()<.12?1.6:.8;g.fillRect(rand(0,N),rand(0,N),r,r);}}
-    g.drawImage(t,0,0);
-    MUGS[b.name]={c,url:c.toDataURL('image/jpeg',.85)};try{MUGSAVE[b.name]=MUGS[b.name].url;localStorage.setItem('mm_mug2_'+b.name,MUGS[b.name].url);}catch(e){}if(live)faceShow(b);try{sbDraw();}catch(e){}}catch(e){renderer.setRenderTarget(null);MUGS[b.name]={c:null,url:''};}}
+    const c=document.createElement('canvas');c.width=c.height=M;const g=c.getContext('2d'),bg=g.createRadialGradient(M*.5,M*.42,6,M*.5,M*.5,M*.8);bg.addColorStop(0,'#3a2a7a');bg.addColorStop(.55,'#141a52');bg.addColorStop(1,'#05060f');g.fillStyle=bg;g.fillRect(0,0,M,M);
+    {const ng=g.createRadialGradient(M*.2,M*.85,0,M*.2,M*.85,M*.7);ng.addColorStop(0,'rgba(255,138,58,.45)');ng.addColorStop(1,'rgba(255,138,58,0)');g.fillStyle=ng;g.fillRect(0,0,M,M);const n2=g.createRadialGradient(M*.85,M*.15,0,M*.85,M*.15,M*.6);n2.addColorStop(0,'rgba(58,214,255,.3)');n2.addColorStop(1,'rgba(58,214,255,0)');g.fillStyle=n2;g.fillRect(0,0,M,M);
+      for(let k=0;k<46;k++){g.fillStyle=`rgba(255,255,255,${rand(.3,.95)})`;const r=Math.random()<.12?3.2:1.6;g.fillRect(rand(0,M),rand(0,M),r,r);}}
+    g.imageSmoothingEnabled=true;try{g.imageSmoothingQuality='high';}catch(e){}g.drawImage(t,0,0,M,M);
+    MUGS[b.name]={c,url:c.toDataURL('image/jpeg',.9)};try{MUGSAVE[b.name]=MUGS[b.name].url;localStorage.setItem('mm_mug3_'+b.name,MUGS[b.name].url);}catch(e){}if(live)faceShow(b);try{sbDraw();}catch(e){}}catch(e){renderer.setRenderTarget(null);MUGS[b.name]={c:null,url:''};}}
 /* EVERY PLAYER'S PHOTO IS TAKEN UP FRONT. While the menu is showing, each hitter in the lineup who has no picture yet is stood in front of the camera in turn (his body is built first if it has not been), photographed, and put away again. One player every second or so, only on the menu, so nothing is felt in a game. The cards have real faces without anyone having to bat first. */
 let mugBusy=false;
 function mugTick(){try{if(mugBusy||!MX.ready||MX.loading||!MX.clip||!MX.obj)return;const st=S.state;if(st!=='title'&&st!=='over')return;if(!$('bcard').hidden)return;
