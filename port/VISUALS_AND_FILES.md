@@ -34,3 +34,12 @@ Everything is in the prototype repo (`lwjeffrey57/moonshot-mayhem`, branch `main
 About 117 MB in all. Per the owner's rule, tell him the size before pushing more models or textures into the Unity repo.
 
 If something you need is not in this table, say so in `REVIEW_REPLIES.md` and the web session will find it or capture it.
+
+## Player portraits and card art (owner, 28 Nov)
+
+- **Portraits now (rule):** every portrait shows the player **facing the camera, head level, evenly lit.** The prototype takes each head shot in the game: the head is lifted square to the lens for the photograph, the player alone is rendered on a studio backdrop, and each shot is brightened to the same average level (`faceShot` in `index.html`). In Unity, render portraits offline from a fixed portrait pose and light rig and ship them as images; do not photograph mid-animation.
+- **Card art later (not started, the owner's idea):** head shots are fine for now, but the cards should become proper baseball-card pictures: a player mid-swing, mid-pitch or mid-throw, with the **background matching the card's jewel tier** (Bronze, Silver, Gold, Diamond, Ruby) for rarer cards. Proposed workflow, for the owner to approve before anyone builds it:
+  1. Pose each model in Unity from a real clip frame (swing contact, release point, throw) under a fixed three-point light rig, and render it large on a transparent background. This keeps every player on-model.
+  2. Make the backgrounds and frames per tier as separate layers (these can be drawn or made with an image generator, since they contain no player).
+  3. Composite pose + tier background + frame + name plate in a small script, so a new player or a new tier is one command.
+  4. Only use an image generator on the player himself if the owner wants a painted look, and then check every result against the model: generators drift off-model and can produce art that resembles real players or brands, which must be avoided for release.
