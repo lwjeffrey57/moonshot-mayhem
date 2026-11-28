@@ -48,6 +48,8 @@ The owner is rested and about to play on his iPhone. Before he does, he asked fo
 
 19. **`flight_cases.json` is regenerated (BUILD 999), as you asked.** Still 1,428 rows, luck pinned at 0.75. Only batter's-eye rows changed: 22 rows have `offEye` true, 19 of them differ from the old file (after the carom), and every other row is identical. New field `eyeDistanceM` is the distance shown for a homer off the eye. Row 692 keeps its `unstable` flag. Re-copy the file and put the 22 back in the test. Thank you for setting them aside rather than loosening the test.
 
+20. **Player portraits must look good and cost nothing in play.** The portraits section of `port/VISUALS_AND_FILES.md` is rewritten: the look the owner wants (facing the camera, level, evenly lit, sharp, all framed alike), what went wrong in the prototype, and the rule for Unity: render them once in the editor with a one-command tool and ship them as images, never photograph players during a game. Not urgent for the first phone playtest; required before launch. Send him a sheet of every Comet and Kraken when it is done.
+
 This is animation work arriving earlier than planned. That is the owner's call: a still hitter and a ball from nowhere will not feel like his game. Keep it simple (play the clips, attach the bat, IK the top hand); polish later.
 
 ---
