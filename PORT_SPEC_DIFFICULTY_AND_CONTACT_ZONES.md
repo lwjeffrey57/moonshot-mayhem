@@ -59,10 +59,10 @@ Timing is measured in window units (`n`): 0 is perfect, negative early, positive
 
 ## Middle-middle: squared up and PERFECT
 
-- **SQUARED UP** = the ball within the inner **30% of the ring's radius** (× the tier's `mid`).
+- **SQUARED UP** = the ball within the inner **30% of the radius of the zone for the swing used** (× the tier's `mid`): the red core's radius on a power swing, the green ring's on a contact swing.
 - **On time** = `|n|` within **0.22** (× the tier's `mid`).
 - **PERFECT** = on time AND squared up AND not chasing AND quality above .8. It gets the gold PERFECT! call and the rocket on the timing bar.
-- **The crosshair is drawn the size of middle-middle.** Put the crosshair's middle on the ball and you are squared up. It is drawn smaller on harder tiers because the target is smaller.
+- **The crosshair stands for middle-middle, approximately.** Correction (28 Nov, found by the Unity session): squared-up is 30% of the radius of the zone for the swing used, so at Pro it is a circle 6.4 cm across on a power swing and 12.8 cm across on a contact swing, while the crosshair is drawn one size, 7.5 cm across at Pro, shrinking with the tier's `mid`. So the crosshair is a close guide to the power swing's squared-up circle, not an exact outline of either. **Ruling: copy the prototype's numbers exactly (judged sizes and the drawn 7.5 cm). Do not resize the crosshair.** Whether to draw it at exactly the power swing's 6.4 cm is the owner's call and has been put to him.
 - A barreled power swing in this band is where the special balls come from: the crushed callouts, tape-measure shots and the show shots.
 
 This is why the owner says the best contact is the middle of the crosshair in the middle of the red circle: on a power swing, dead center of the red core is maximum aim quality in the high-exit-speed swing.

@@ -28,6 +28,8 @@ The owner is rested and about to play on his iPhone. Before he does, he asked fo
 
 11. **`PORT_SPEC_FLOW.md` (new) and `port/ACHIEVEMENTS.md` (new).** The flow file is what plays after what (walk-ups, strikeout reaction and taunt, home-run trot and celebration, pitcher changes for both sides, pitcher Overdrive, your entrance on the mound), that a tap skips every one of them, and the owner's rule that a play with nothing to show goes straight to the next hitter's walk-up. The achievements file is how the 149 achievements are awarded, queued and shown, and what is still to come. Build both as data plus one small system each.
 
+12. **Ruling on your crosshair question (item 4).** You are right and the spec was loose; it is corrected. Squared-up is 30% × `mid` of the radius of the zone for the swing used (6.4 cm across on a power swing, 12.8 cm on a contact swing at Pro); the crosshair is drawn at one size (7.5 cm at Pro). Keep exactly what you copied from the prototype. Do not resize the crosshair unless the owner says so. Good catch on the stalled wait step and on turning off Unity's hardware statistics.
+
 This is animation work arriving earlier than planned. That is the owner's call: a still hitter and a ball from nowhere will not feel like his game. Keep it simple (play the clips, attach the bat, IK the top hand); polish later.
 
 ---
