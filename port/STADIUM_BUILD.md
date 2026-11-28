@@ -86,3 +86,51 @@ The owner wants the field's surface textured properly in Unity, **ideally better
 - **Variety over the field** so it does not tile visibly: large-scale tone variation, a few unique landmarks.
 
 **Constraints:** PS2-era budget, one or two materials for the whole field, small textures, no cost that shows on the phone. The collision surface is flat (plus the mound): relief is visual only, so bounces and rolls match the flight rules exactly.
+
+## The scoreboard: how it works (and a place to improve) (owner, 28 Nov)
+
+Code: `sbDraw`, `scoreboard`, `sbTick`, the board's mesh, and `vbDraw` (the second board) in `index.html`.
+
+**The big board.** A video board 48 m wide and 18 m tall, standing on four legs **above the batter's eye, set 22 m to the right of dead center** (so on a phone it is not hidden behind the hitter's card), 39 m up, 13 m behind the fence, tilted to face the plate. A **wing on each side in club colors** (KRAKENS / KEPLER on the left in teal, COMETS / TRANQUILITY on the right in orange) makes it read as one long board across right-center. A dark bezel with a glowing edge and a soft blue halo behind it.
+
+**What it normally shows (the line score), redrawn only when something changes:**
+- Two team rows: **KRAKENS** (teal) and **COMETS** (orange) with the runs in a dark box at the right. **The side that is batting has a white outline and a white arrow**, and its score is lit yellow.
+- **The inning** as a big number in a glowing cyan ring.
+- **Balls, strikes and outs as lamps:** three green for balls, two yellow for strikes, two red for outs.
+- **The man at the plate** along the bottom: his portrait with his number tucked in the corner, his name, and his line.
+- A deep-space face with a faint star-burst and scan lines behind it all.
+
+**Big moments take it over.** `scoreboard(big, small)` replaces the whole face for **4.5 seconds** with one huge gold word and a second line in a cyan-edged box, then the line score comes back by itself. For example: PLAY BALL at the start; **HOME RUN** with the distance ("455 FT", or "PROJ. 523 FT" off the board or a pole); INNING 2 with the score; KRAKENS +2; the game's name on the title screen.
+
+**It reacts physically:** a ball can hit it (SCOREBOARD!, a home run, it shorts out and the park takes a surge); it flickers in a power surge; near the end of the aerial home-run shots it takes a surge as part of the show.
+
+**The second board, in left** (50 m square-ish, 36° left of center, 52 m behind the fence, 27 m up): **the man at the plate.** NOW BATTING, his big portrait in a colored frame, his name, and his day so far. When you pitch it shows the Kraken at the plate under KEPLER KRAKENS, in teal.
+
+**Rules:** the board always agrees with the HUD (same score, count, outs, same hitter, same distance as the call). Nothing on it flashes hard. It never sits behind the HUD's card on a phone.
+
+**Where Unity can do better (propose):** real video-board behaviour: animated transitions between the line score and a big moment, a replay-style freeze of the swing, the hitter's portrait animating in, pitch speed and type after each pitch, a strike-zone plot of the at-bat, the distance counting up in step with the HUD's counter, crowd prompts (MAKE SOME NOISE) tied to the crowd's excitement, sponsor bumpers between innings; LED pixel shading up close; light from the board spilling onto the stands and the top of the batter's eye. Cheap to do as a render texture or a few swapped textures on an emissive surface.
+
+## The sky and what stands behind the stadium (start filling it in; a place for Unity to shine)
+
+The owner wants the skybox and the backdrop started now. **Use our assets as reference; aim higher.** Reference files in the prototype repo root: `stars.jpg`, `sky.jpg` / `sky_m.jpg`, `earth.png`, `moon_d.jpg`, `moon_n.jpg`; the props `lander.txt`, `dome.txt`, `ufo.txt`, `soda.txt`, `fuel.txt`, `mc.txt` (mission control), `sat.txt`, `dish.txt`, `rocket.txt`, `tower.txt`, `vboard.txt` (base64 FBX: `base64 -d -i x.txt -o x.fbx`). Pictures: `port/look/stadium_*` and both phone reference screenshots.
+
+**What ours is:**
+- **A black sky full of stars. No atmosphere:** nothing hazes with distance; only a faint fade on far-off stands. The stars and the Earth are "infinitely far away": they travel with the camera and never slide against the stadium.
+- **The Earth**, large, hanging in the sky above center field: the signature of the place. It is what a ball "left orbit" toward.
+- **The lunar surface beyond the park** in every direction: the same gray regolith running out past the walls, cratered.
+- **Crater-rim ridges on the horizon:** pale, rounded lunar hills, bright moon-white at the crest fading to gray at the foot (the look the owner prefers), with soft swells of light and shade, a brighter crest line and a faint warm wash at their feet from the park's lights.
+- **A small Moon base round the park:** the lander and the Apollo site, the dome, mission control, fuel tanks, a satellite dish, a giant soda can, the Comets **rocket on its pad beyond left field** (it lifts off on some homers), interceptors that fly over, a saucer.
+- **The light towers** standing over it all, and the glow of the stadium against the black.
+- The outfield has no upper deck precisely so that all of this stands clear above the bowl "and the place reads as the Moon at a glance".
+
+**What to keep:** black starry sky, no atmosphere; the big Earth over center; pale rounded ridges; the base and the rocket; the park glowing in the dark. Nothing bright or busy **behind the pitcher from the hitter's camera** (the batter's eye covers that window). Every object a ball can reach is solid (the no-clipping rule).
+
+**Where to do better (propose, with phone screenshots and frame rate):**
+- A proper star field with depth (a few bright stars, the band of the Milky Way), sharp at 3× on the phone.
+- An Earth with real detail: slow rotation, a lit limb and a dark side, city lights, a thin glow at the edge. It is far away: one textured sphere or a card.
+- Ridges and crater walls as low-poly silhouettes in two or three layers for depth, lit hard from one side with long shadows (the Sun is low), plus a few landmark peaks.
+- The Moon base as a small living place: blinking beacons, a rover crawling, lights in windows, an antenna turning, the rocket venting before it lifts off.
+- The stadium's own glow: light spilling up from the bowl, beams from the towers visible in the dust kicked up by the crowd.
+- Day-of-game variety later (the Earth's phase, a passing ship) without changing gameplay.
+
+**Constraints:** PS2-era budget; a skybox plus a handful of far cards and low-poly pieces; draw distance out to at least 450 m of real ground for long homers, then silhouettes; nothing that moves or flashes inside the batter's eye window; measure on the phone.
