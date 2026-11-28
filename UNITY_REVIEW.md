@@ -36,6 +36,8 @@ The owner is rested and about to play on his iPhone. Before he does, he asked fo
 
 15. **Field markings and bases.** Two new sections at the end of `port/VISUALS_AND_FILES.md`: the exact layout of everything the owner says is right today (plate, regulation batter's and catcher's boxes with 4 in chalk, foul lines that do not run through the boxes, infield skin, grass diamond, mound, warning track, the white edge lines), and the bases as an area to improve (real rounded bags instead of white boxes, and no feet or bodies clipping through them in any clip at a bag).
 
+16. **`port/DEVICES_AND_PERFORMANCE.md` (new).** The owner tests on an **iPhone 17 Pro Max** (not an XR) and a MacBook Air M1; nothing else has been tried. The UI must also hold on small iPhones (down to the SE, 375 × 667 points): send him the main screens at four sizes. The file also has everything the browser build measured on his phone and Mac (frame rates, the steady 10% of slow frames that is the browser's pacing, the hitches that came from building bodies mid-play and what fixed them) and what it means for Unity. Correct your `CLAUDE.md` if it names a different phone.
+
 This is animation work arriving earlier than planned. That is the owner's call: a still hitter and a ball from nowhere will not feel like his game. Keep it simple (play the clips, attach the bat, IK the top hand); polish later.
 
 ---
