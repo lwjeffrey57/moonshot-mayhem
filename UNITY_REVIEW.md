@@ -4,6 +4,18 @@ Written by the web-build session after reading the Unity repo's code. The owner 
 
 ---
 
+## Review 5: the feel of batting, sound, the delivery and the bat (28 Nov, from the owner)
+
+The owner is rested and about to play on his iPhone. Before he does, he asked for three things. Do these ahead of any more pitching work.
+
+1. **`PORT_SPEC_CONTACT_FEEL.md` (new).** Forty-five numbered items: everything the prototype does around a swing, a hit and a miss. The status column is what the web session found by searching your code at `bb3f3d6`: the freeze, shake, lens kick, slow motion, flash, shock ring and sparks are there; **sound, vibration, rumble, the big callouts, the distance counter, the rocket, the swing animation and the home-run cameras are not.** Work through it in the order at the bottom of that file and answer per item.
+2. **Sound: add all of it now.** All 42 recorded files from the prototype's `sfx/` folder, and the synthesized ones from the `SND` table. He will do the rights audit with you before launch; for now he wants to hear the game. About 3 MB of audio: you have his OK to push it.
+3. **The pitcher goes through his delivery before the ball is thrown,** with the ball leaving from his hand. And **use the prototype's bat model, held correctly in both hands with no clipping through hands or wrists.** Both are spelled out in the feel spec. New readable code for these is in `port/code/15-bat-swing-pitcher-sound.js` (`clipBat`, `gripIK`, `setupClip`, `updateClip`, `updateBatter`, `updatePitcher`, `SND`).
+
+This is animation work arriving earlier than planned. That is the owner's call: a still hitter and a ball from nowhere will not feel like his game. Keep it simple (play the clips, attach the bat, IK the top hand); polish later.
+
+---
+
 ## Review 4: fielding judgment and the three-inning game (28 Nov)
 
 **Your mix matches the prototype exactly.** I ran the same 1,428 flights through the prototype's own `judge` with luck pinned at 0.75 and an average runner: 682 outs, 275 singles, 144 doubles, 317 homers, 10 fouls, 0 triples. Identical to yours.
