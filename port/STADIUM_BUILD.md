@@ -61,3 +61,28 @@ A **band of LED screen 7 m tall running the whole way round the back of the outf
 For each level report: what it looks like (a phone screenshot from the hitter's camera and from the mound), triangles and draw calls added, and the frame rate on the phone. Let the owner pick.
 
 Rules that do not bend: nothing bright or moving inside the batter's eye window; the crowd never competes with the ball for attention during a pitch (calm while the pitch is in the air, loud after contact); no real people, teams or logos.
+
+## The playing surface: a place for Unity to shine (owner, 28 Nov)
+
+The owner wants the field's surface textured properly in Unity, **ideally better than the prototype's.** If you need a starting point, use what we have; the goal is to beat it.
+
+**What the prototype's surface is** (one shader, `groundMat` in `index.html`; `paintField` for the layout):
+- **It is the Moon, not grass and clay.** The whole playing surface is regolith: pale gray dust. "Moon dust, not clay." There is no green anywhere near the plate, on purpose: the green CONTACT ring must never sit on a green background.
+- **Two field-wide maps:** a color map (the layout: lighter dust for the infield skin, base paths, mound and warning track; a darker rolled "mare basalt" for the outfield; mowing-style stripes at 45° in two directions; worn patches where fielders stand and round the bases; shade at the foot of the walls; a long evening shadow from the third-base stands) and a mask of where the "dirt" cut-outs are.
+- **Close-up detail tiled on top:** fine grain, pebbles and small raised-rim craters.
+- **A real lunar surface on top of that:** a photographed-style color map and normal map (`moon_d.jpg`, `moon_n.jpg` in the repo root, about 300 KB each), tiled every 64 m and mirrored tile to tile so there is no seam, **lit from the side like the players are**, with a soft sheen where the floodlights glance off the dust toward the camera.
+- **Craters and boot prints:** pocked all over: about 110 small ones round the infield skin, 90 inside the diamond, 50 in foul ground, 45 in the shallow outfield, a couple of dozen big ones placed by hand where the batter's camera sees them, more out by the track.
+- **Chalk:** white lines about 40 cm wide wherever the surface type changes, plus the regulation plate area (see the field-markings section of `port/VISUALS_AND_FILES.md`).
+- **Kept clear:** no crater, pattern or line may cross **the lane from the plate out past the mound**, the bags or the plate area. The surface is kept faint and plain there, because that lane sits behind the strike zone and the bat ring.
+
+**What to keep:**
+- Gray lunar regolith with craters; the dirt cut-out layout and the chalk; the clear lane behind the strike zone; nothing green under the bat ring; the surface stays calm enough that a white ball and its shadow read on it everywhere.
+
+**Where to do better (propose, with phone screenshots and the frame rate):**
+- **Real relief from the hitter's low camera:** normal-mapped craters and ripples that catch the floodlights, a few modelled crater rims and rocks outside the playing lines, parallax or simple height blending if it is cheap.
+- **Dust that behaves like dust:** scuffed and darker where players stand and run, cleat marks at the plate and on the base paths, drag-mat patterns on the skin, a puff where a ball lands or a runner slides, footprints that linger (it is the Moon: nothing blows them away).
+- **Lit like a night game:** baked pools of light from the four towers, soft player and ball shadows, the Earth's cool light from above, the warm glow of the Cove lava on right field, the halo board's color spilling onto the track.
+- **A cleaner blend** between skin, base paths, mound and outfield (a splat map or decals instead of one painted picture), sharp chalk at any distance, and detail that holds from the plate camera, the mound camera and the aerial shots alike (two or three detail scales, not one).
+- **Variety over the field** so it does not tile visibly: large-scale tone variation, a few unique landmarks.
+
+**Constraints:** PS2-era budget, one or two materials for the whole field, small textures, no cost that shows on the phone. The collision surface is flat (plus the mound): relief is visual only, so bounces and rolls match the flight rules exactly.
