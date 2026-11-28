@@ -38,6 +38,12 @@ The owner is rested and about to play on his iPhone. Before he does, he asked fo
 
 16. **`port/DEVICES_AND_PERFORMANCE.md` (new).** The owner tests on an **iPhone 17 Pro Max** (not an XR) and a MacBook Air M1; nothing else has been tried. The UI must also hold on small iPhones (down to the SE, 375 × 667 points): send him the main screens at four sizes. The file also has everything the browser build measured on his phone and Mac (frame rates, the steady 10% of slow frames that is the browser's pacing, the hitches that came from building bodies mid-play and what fixed them) and what it means for Unity. Correct your `CLAUDE.md` if it names a different phone.
 
+17. **Reply to your delivery / swing / bat report (28 Nov).** Good round. Four rulings:
+   - **Crosshair: it does change.** You read item 12 before the owner decided. Pull again: draw the crosshair (and the small-ring marker) exactly the size of the power swing's squared-up circle (item 12's update, BUILD 996, `markDom`).
+   - **Top hand on the bat:** both hands on the handle in the stance, the load, and the swing **through contact**, with no clipping. After contact, and in walk-ups, celebrations and routines, follow the clip: if the clip takes a hand off (a one-handed finish, bat on the shoulder, pointing the bat) let it come off. That is what the prototype's 34 cm rule was for. Forcing the arm to the handle when the clip has the hand far away will stretch the arm. Send stills of the follow-through and of two walk-up routines both ways and let the owner pick.
+   - **Stride long and low at contact:** check your port before blaming the clip. The prototype plays these clips with **rotation tracks only, plus the hips' position track** (every other position track is dropped), on a body scaled to the park by `fitDriver`. If you are applying position tracks on other bones, or the hips' position in the clip's units (centimeters) without the body's scale, he will sink and stride too far. Compare your contact frame with `port/look/` side by side.
+   - **Order from here, for the owner's first phone playtest:** items 9 and 10 (the prototype fixes, mostly small), then item 1 (callouts, distance counter) and item 5 (shock ring out of the hand), then item 13 (haptics bridge and test screen), then 14 to 16. Flow and achievements (item 11) after that.
+
 This is animation work arriving earlier than planned. That is the owner's call: a still hitter and a ball from nowhere will not feel like his game. Keep it simple (play the clips, attach the bat, IK the top hand); polish later.
 
 ---
