@@ -117,6 +117,7 @@ The owner wants the skybox and the backdrop started now. **Use our assets as ref
 **What ours is:**
 - **A black sky full of stars. No atmosphere:** nothing hazes with distance; only a faint fade on far-off stands. The stars and the Earth are "infinitely far away": they travel with the camera and never slide against the stadium.
 - **The Earth**, large, hanging in the sky above center field: the signature of the place. It is what a ball "left orbit" toward.
+- **A red cracked planet** low in the sky to the right (see `port/look/stadium_10`).
 - **The lunar surface beyond the park** in every direction: the same gray regolith running out past the walls, cratered.
 - **Crater-rim ridges on the horizon:** pale, rounded lunar hills, bright moon-white at the crest fading to gray at the foot (the look the owner prefers), with soft swells of light and shade, a brighter crest line and a faint warm wash at their feet from the park's lights.
 - **A small Moon base round the park:** the lander and the Apollo site, the dome, mission control, fuel tanks, a satellite dish, a giant soda can, the Comets **rocket on its pad beyond left field** (it lifts off on some homers), interceptors that fly over, a saucer.
