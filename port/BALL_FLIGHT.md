@@ -119,3 +119,39 @@ A home run does not vanish at the wall. It is seen **arriving somewhere**. The f
 - Ball size and trail rules hold all the way into the seats.
 
 **Checks from the phone:** a homer into the lower deck, one off the facade or into the upper deck, one onto the patio that stays, one into the lava, one just over the wall onto the ledge.
+
+## Nothing the ball can hit is hollow: no clipping through objects, it bounces off them (owner's rule, restated 28 Nov)
+
+**"NOTHING A HOMER CAN HIT IS HOLLOW."** A ball in flight never passes through a solid thing. If it reaches one, **it hits it, comes off it and drops.** This holds for everything the ball can reach, inside the park and beyond it. If an object outside the field of play has no hit box, give it one, cheaply.
+
+**What is solid, and what the ball does there** (the first group is in `simulate()` and already in the Unity `BallFlight`; the second is the prototype's prop system, `propBoxes` / `propBounce` / `propReflect` in `index.html`):
+
+| Thing | What happens |
+|---|---|
+| Outfield wall (three heights) | Caroms back into play; a liner off the tall walls is a wall ball, seen hitting and coming down |
+| Batter's eye | Caroms back onto the grass, lands and hops; power surge |
+| Foul poles | DOINK!, home run |
+| Scoreboard | Off the board, home run, the board reacts |
+| Seats, ledge, facade, upper deck | Lands at head height, one hop, a souvenir |
+| Cove patio, back rail | Bounces on the deck; off the rail or over it into the lava |
+| Light towers (mast and lamp bank) | Clangs off, drops; the lamp bank can be smashed |
+| **Every prop beyond the fence:** the big board on its gantry, mission control, the soda can, the domes, the dishes, fuel tanks, the lander, the rocket on its pad | **Comes off the ironwork and drops** |
+| The ground anywhere, inside or outside the park | Lands, bounces, rolls |
+| Players | The ball goes to the glove, or off the man who wore it; never through a body |
+
+**How the prototype does the props, cheaply (copy the idea):**
+- **One simple box per prop, built once.** Each prop model gets an axis-aligned box from its own bounds, **drawn in to 84% of its width and depth** so nothing bounces off thin air at a corner. Nothing closer than 60 m to the plate counts (no stray boxes in the infield).
+- **Tall thin things get two boxes:** a prop more than twice as tall as it is wide (a light tower) gets a **narrow box for the mast** (28% of the width, the lower two thirds) and a **full box for the head**, so a ball passing below the lamps is not turned back by empty air.
+- **Checked only for a home run in flight, once per frame, for the ball only:** is the ball's position inside any box? A dozen boxes and one moving point. No physics engine, no rigid bodies, no mesh colliders, no per-triangle tests.
+- **The bounce:** find the face the ball came in through (the least penetration), reflect the velocity off it and keep 34% of the speed (50% on later bounces), push the ball 0.35 m clear so it cannot stick, then let it fall under gravity, bouncing on the ground at 32%. At most six bounces.
+- **Feedback at the hit:** a thud and a metallic tone, sparks, a small camera kick and a vibration, and the call **OFF THE IRONWORK!** (in the Derby it scores as a target).
+- **The flight ends where it hits:** the ball comes off, drops for a beat, and the play is over 0.65 s later. The camera does not follow it down. **It is still a home run, with its full distance.**
+
+**In Unity:**
+- Keep it the same shape: a short list of simple primitive bounds (boxes, a capsule for a mast, a sphere for a dome) authored on each prop, tested against the ball's path in the flight code. **Do not turn on mesh colliders or the physics engine for this.** Sweep the ball from its last position to its current one so a fast ball cannot tunnel through a thin object in one frame.
+- **The drawn object and its hit box must agree.** If a ball visibly passes through something or bounces off empty air, that is a bug. Add a debug view that draws the boxes.
+- **Anything new you add to the world that a ball could reach gets a bound at the same time**, including the rest of the stadium as it is built (item 36): walls, facades, roofs, towers, boards, the grandstand.
+- Cameras obey the same spirit: they never pass through stands, roofs or ridges.
+- Cost: this is a handful of bounds checked against one point. If it shows up in the frame time at all, something is wrong.
+
+**Tests:** fire homers at each prop, each face of the scoreboard, each light tower's mast and head, the batter's eye, both poles and the back rail; in every case the ball is deflected and never appears on the far side. A ball passing just below a tower's lamps and just beside a prop's corner is not deflected.
