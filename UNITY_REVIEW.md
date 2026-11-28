@@ -16,6 +16,10 @@ The owner is rested and about to play on his iPhone. Before he does, he asked fo
 
 5. **The shock ring (the white circle that bursts outward on a great result).** The owner asked about it by name. Batting: you have it at the contact point (item 6 of the contact-feel spec); confirm on the phone that it is clearly seen and grows with contact quality. Pitching: not built yet by your own notes. Build it now with the mound work: on a perfect release the timing ring bursts gold, and the same freeze, flash, shock ring and sparks fire at his fingertips, smaller than at the plate; a good release gets a hint, a mistimed one nothing; the full camera kick is for perfect-perfect only (`PORT_SPEC_PITCHING.md` "Reading the release", `port/TRAILS_AND_EFFECTS.md` line 93, and where `pdTick` sets off the freeze, `flash` and `shock` at `pt.rel` in `index.html`).
 
+6. **`port/VISUALS_AND_FILES.md` (new).** The owner likes the stadium, its features and the level design, and is open to visual improvements now that this is Unity. The file says what is fixed (layout, dimensions, features), what is open (lighting, materials, crowd, sky, effects, model quality), how to propose a change, and where every model, texture, clip and reference picture is. Reply with anything you need that is not there.
+
+7. **`port/SECURITY_AND_LAUNCH.md` (new). Hard requirement from the owner.** Read it, copy its rules into your `CLAUDE.md`, set up a secret scan now and scan the history once, list every third-party package and every network call the project makes today, and add a "Security" line to your reports whenever work touches accounts, network, purchases, saves or a new package.
+
 This is animation work arriving earlier than planned. That is the owner's call: a still hitter and a ball from nowhere will not feel like his game. Keep it simple (play the clips, attach the bat, IK the top hand); polish later.
 
 ---
