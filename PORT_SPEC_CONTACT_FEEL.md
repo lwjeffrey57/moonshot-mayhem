@@ -144,3 +144,26 @@ Not too far up, back, in or out. The prototype does not place a hitter by hand; 
 6. **He stays put.** The stance, the load, the swing and the follow-through are all played from that one spot; only walk-ups, celebrations, brawls and plays on the bases move him, and afterwards he is put back exactly.
 
 **Checks:** for every body, a top-down screenshot in the stance and at contact, both hands: both feet inside the chalk, the barrel over the plate at contact, the hitter level with the plate. Send them to the owner with the bat-grip pictures.
+
+## The ball's size on screen (added 28 Nov at the owner's request)
+
+**Rule: the ball never looks too big, and it looks like the same ball in every view.** The owner has rejected oversized balls more than once ("looks like a popup" on the overhead homer camera). A real baseball is 3.7 cm in radius (`BALL_R`); far from the camera that is less than a pixel, so the prototype enlarges the ball **only as much as it takes to stay visible**, and no more. Scale 1 is true size.
+
+| Where | Ball scale | Why |
+|---|---|---|
+| **The pitch coming in while batting** | **1 (true size)**, with a thin trail that never hides it | It is close; this is the size the strike call is judged on |
+| **A batted ball in flight** | `max(1, distance from camera × 0.05)` | Stays about the same small size on screen however far it goes, never smaller than true size |
+| **The overhead "blimp" view of a homer** (camera more than 90 m away) | `max(1, distance × 0.062)`, plus a flame trail | The owner wanted a **small ball with a trail**, not a big ball |
+| **Shows where the ball is very far off** (orbit, light tower) | `max(1, distance × 0.075)` | Only for those shots |
+| **A fielder's throw** | `max(1, distance × 0.036)`: smaller than a batted ball | "A seed, not a lob" |
+| **Your own pitch leaving the hand (pitching view)** | 0.62; 0.56 while it sits in his hand | "A smaller ball out of your pitcher's hand: it reads as quicker" |
+| **A ball your hitter put in play, seen from the mound** | `max(1, distance × 0.04)` | |
+| **Events at a bag (throws, the catch)** | 1.05 | The same ball as everywhere else, in a close-up |
+| **Where a pitch crossed (the marker after a take or a miss)** | drawn at the ball's **true size** against the zone | So one that nicks the edge is seen nicking it |
+
+Rules that go with the table:
+- **Reset the scale** when the view changes. The prototype once left a pitch drawn at the blown-up size of the last ball in flight.
+- **Size steps must not pop:** when the camera cuts, the ball's on-screen size should be about what it was.
+- **The shadow** under a ball in flight grows a little with height (it is how a fly ball is read), and is small under a pitch.
+- **Trails and glow never make the ball look bigger** than the table; thin, tapering, behind it.
+- In Unity do this with one function that returns the ball's scale from the current view and the camera distance, used everywhere the ball is drawn, with these numbers as the starting point. Check each view on the phone and send the owner one picture per view.

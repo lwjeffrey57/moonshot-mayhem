@@ -89,6 +89,8 @@ The owner is rested and about to play on his iPhone. Before he does, he asked fo
 
    **Order:** item 22 first (shaders, errors, sound, safe area), then the camera, then the HUD look, then the world. Send a phone screenshot after each step so progress is judged on the device.
 
+24. **The ball's size on screen.** New section at the end of `PORT_SPEC_CONTACT_FEEL.md`. The owner's rule: the ball never looks too big and is recognisably the same ball in every view. The prototype draws it true size up close and enlarges it only enough to stay visible at distance (batted ball `max(1, distance × 0.05)`, throws smaller, the overhead homer view a small ball with a flame trail). One function for the scale, used everywhere; one picture per view from the phone.
+
 This is animation work arriving earlier than planned. That is the owner's call: a still hitter and a ball from nowhere will not feel like his game. Keep it simple (play the clips, attach the bat, IK the top hand); polish later.
 
 ---
