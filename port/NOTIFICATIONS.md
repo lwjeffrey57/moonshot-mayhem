@@ -50,6 +50,38 @@ From the owner, 28 Nov: not needed now, required before launch. This is the list
 
 **Never send:** anything that shames the player, fake urgency, "your team is losing without you" pressure aimed at kids, or anything about spending money presented as a game event.
 
+## Model the streak on Duolingo (owner, 28 Nov)
+
+The owner wants the streak and its reminders modelled on how Duolingo keeps people on theirs, wherever it fits a baseball game. What follows is the web session's reading of that system and how each piece maps to us. It is from general knowledge of the app, not a study of it: **look at the real app again when this is designed**, and treat the mapping as proposals for the owner.
+
+**What we already have (keep):** a daily challenge; a streak that counts for **showing up**, win or lose; a **streak freeze** earned every 7 days, three held at most, spent by itself on a missed day; streak achievements at 3, 7, 30 and 100 days.
+
+| What Duolingo does | Why it works | For Moonshot Mayhem |
+|---|---|---|
+| **The bar to keep a streak is tiny** (one short lesson) | Nobody breaks a streak because they were busy | One daily challenge attempt, about a minute. Consider letting any finished game or one at-bat in batting practice count too. |
+| **The streak is on screen everywhere** (a flame and a number) | It becomes the thing you protect | Flame and day count on the title screen, the result screen and the daily screen. We already use fire for Juice, so the look is ours. |
+| **A reminder at the time you usually play**, learned from your habits | It arrives when you are free | Schedule the daily reminder for the hour he most often plays (kept on the phone, no server). Fall back to early evening. |
+| **A second, later "last chance" reminder** only if today is still not done | Loss aversion at the right moment | One more in the evening when a streak of 2+ is at risk: "Bottom of the ninth for your 12-day streak." Never after 9 pm. |
+| **Streak freeze**, bought or earned, shown as equipped | Forgiveness keeps long streaks alive | We earn ours. Show how many are held, and say so the morning after one is used. |
+| **Earn the streak back** after losing it (extra play within a few days) | A lost streak is where people quit for good | "Rain delay": miss a day with no freeze, and beating the next two dailies within 48 hours restores it. Earned by playing, never bought. |
+| **A character with a voice** (the owl: funny, a little needy, never the same line twice) | Reminders read as a personality, not a system | Give ours to someone in the game: the Comets' skipper, or a player. Short ballplayer lines, a pool of many, never the same one twice running. Funny, not guilt. |
+| **It backs off** when reminders are ignored for about a week, and says so | Respect; stops people turning notifications off entirely | After 5 to 7 ignored days send one last line ("We'll stop bugging you. The gate's open when you're ready.") and go quiet until he plays again. |
+| **Milestones are celebrated** with a full-screen moment and a shareable card (7, 30, 100, 365) | Pride, and free word of mouth | A streak card with his signature Comet and the day count, made to be shared. Ties in with the achievements we have. |
+| **A streak goal you commit to** (pick 7, 14, 30 days) | A stated goal raises follow-through | After day 2 or 3: "How long can you keep it going?" Pick a target; small reward when hit, then pick the next. |
+| **A calendar of the days you played**, and "perfect weeks" | The chain is visible | A month view on the daily screen with a ball on each day played and a marker on freeze days. |
+| **A home-screen widget** showing the streak, changing mood as the day runs out | A reminder with no notification at all | An iPhone widget: the flame and count, lit when today is done, flickering late in the day. Very strong, and needs no permission prompt. |
+| **Friend streaks and friend nudges** | Social accountability | Later, with accounts: a shared streak with a friend, and "Sam kept his streak. Your turn." |
+| **Weekly leagues** | A reason to play more than the minimum | Later: a weekly ladder on daily-challenge stars. Needs a server and anti-cheat. |
+| **Rewards for streak length** | The streak pays | A celebration, a walk-up, a card frame or a bat skin at streak milestones. Cosmetic only. |
+
+**Where we should not copy it**
+- **No guilt or pressure aimed at children.** Duolingo's tone leans on feeling bad for the owl. Keep ours warm and funny. This also matters for the age rating.
+- **Nothing about the streak can be bought.** No paid freezes, no paid repairs: the owner's rule is no loot boxes and no currency for money.
+- **A streak must never be lost to a bug or a time zone.** Day boundaries are the player's local midnight; a trip across time zones or a clock change never breaks one; when in doubt, the player keeps it.
+- **Streaks kept on the phone can be faked** by changing the clock. That is fine while they are personal. Anything that feeds a leaderboard or a reward others can see must be checked on a server.
+
+**Order to build, when the time comes:** the streak shown everywhere, the two local reminders with the character's voice and the back-off; then the calendar, the milestone card and the widget; then the earn-back and the streak goal; friend streaks and leagues only after accounts.
+
 ## Rules
 
 1. **Ask at the right moment.** Never on first launch. Ask after the player has finished a daily challenge or a first win, with a one-line screen first explaining what he will get ("Want a heads-up when tomorrow's challenge is up?"). iOS only lets the system prompt appear once; if he says no there, it can only be changed in Settings.
