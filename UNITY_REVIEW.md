@@ -226,6 +226,8 @@ The owner is rested and about to play on his iPhone. Before he does, he asked fo
    - **The strike zone is filled with a dark panel** while batting. In the prototype's batting view the zone is a white frame only; the dark pane and the nine squares are for pitching.
    - Still to come and expected: the HUD's finished look, the stadium, sky and field texture.
 
+51. **`port/TIERS_AND_OVERALLS.md` (new): the medal / gem system. Add it to every card and placard.** Every player has an OVERALL and a TIER: Ruby 90+, Diamond 85+, Gold 80+, Silver 75+, Bronze below, each with its own badge shape (two gems, three shields) and colors, the number inside, and the card's border in the tier color. The file has the formulas (hitters: power and contact count double speed; Krakens with eye; pitchers from each pitch's best weapon and its control; the team average), every place it is shown (walk-up card, the hitter's placard, the pitching bar and THE DUEL line, My Squad, the big card, the bullpen), and the rules. Your hitter's card on the phone has no badge yet. One module and one badge prefab, used everywhere.
+
 This is animation work arriving earlier than planned. That is the owner's call: a still hitter and a ball from nowhere will not feel like his game. Keep it simple (play the clips, attach the bat, IK the top hand); polish later.
 
 ---
