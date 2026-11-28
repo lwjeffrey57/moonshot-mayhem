@@ -159,6 +159,8 @@ The owner is rested and about to play on his iPhone. Before he does, he asked fo
 
 39. **The timing gauge after every swing must be accurate to the pitch that was thrown.** New section at the end of `PORT_SPEC_CONTACT_FEEL.md`. The marker is the player's real timing, measured against **that pitch's own arrival** (the moment its circle closed), in units of that swing's window; the green and red bands are the contact and power windows drawn to scale (so they shrink against a Juice pitch and widen with Juice and Overdrive); green marker inside the window, red outside; a PERFECT sits exactly on the target and anything else is drawn clear of it on the correct side; the word always agrees with the bar. Now that the pitcher will mix pitches (item 30), test it for every pitch type.
 
+40. **Haptics: a clear scale by how the ball is struck, much stronger at the top.** The owner felt the first build and says no-doubt homers and crushed balls can be far more pronounced. `port/HAPTICS.md` has a new section with an eight-step ladder (tipped, weak, okay, solid, barreled, crushed, no-doubter, tape measure / Overdrive bomb) and starting values: the bottom barely there, the top a full-strength double crack with a long swell running through the contact freeze and slow motion, then the crowd rumble. A better-struck ball must never feel weaker than a worse one. Put the eight on the test screen as one row, weakest to strongest.
+
 This is animation work arriving earlier than planned. That is the owner's call: a still hitter and a ball from nowhere will not feel like his game. Keep it simple (play the clips, attach the bat, IK the top hand); polish later.
 
 ---

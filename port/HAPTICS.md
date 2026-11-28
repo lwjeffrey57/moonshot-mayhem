@@ -63,6 +63,31 @@ A haptic should be as short as the thing it represents. The ear and hand read an
 
 Match the contact freeze: the game freezes for a few hundredths of a second on good contact (longer for better contact). The contact haptic fires at the start of the freeze and its echo lands as time resumes, so the hands feel the "stick" and the release.
 
+## The contact scale: how hard it is hit is how hard it is felt (owner, 28 Nov, after his first phone session)
+
+His note after feeling the first build: **no-doubt homers and crushed balls can be much stronger and more pronounced, and there must be a clear scale from weak contact up to those.** A player should be able to tell what he did with his eyes shut. Use the full range of the phone: the bottom of the scale barely there, the top unmistakable. If two neighbouring steps feel alike, widen the gap.
+
+The step comes from what the game already knows at contact: the quality `q`, the swing type, whether the big callout fired, and whether the flight is a home run. Starting values (intensity and sharpness 0 to 1); "echo" is a second softer tap; "swell" is a continuous rumble that fades.
+
+| Step | When | Haptic |
+|---|---|---|
+| 0. Tipped / foul tip | ball outside the zone, grazed | one faint tick: 0.15, sharp 0.9 |
+| 1. Weak | q under 0.35 | one tap 0.3, sharp 0.4 (dull, a little sting) |
+| 2. Okay | q 0.35 to 0.6 | one tap 0.45, sharp 0.55 |
+| 3. Solid | q 0.6 to 0.85 | one tap 0.65, sharp 0.7 |
+| 4. Barreled | q 0.85 and up | tap 0.85, sharp 0.85, plus an echo 0.4 at 60 ms |
+| 5. **Crushed** | a barreled POWER swing (the CRUSHED! / SMOKED! / TOMAHAWKED! / TURNED ON! callouts), or any Juice swing barreled | tap **1.0**, sharp 1.0; echo 0.6 at 50 ms; then a swell 0.5 for 0.25 s |
+| 6. **No-doubter** | a homer the game treats as a no-doubter (the bat flip / admire shots, or 440 ft and up) | everything in step 5, with the swell 0.7 for 0.5 s, and **the hit lands at the start of the contact freeze and the swell runs through the slow motion** |
+| 7. **Tape measure / Overdrive bomb** | 500 ft and up, or any Overdrive homer | step 6 with two hits 40 ms apart at 1.0 (a "double crack"), the swell 0.9 for 0.8 s, then the crowd rumble takes over as the roar builds |
+
+Rules for the scale:
+- **Monotonic:** a better-struck ball never feels weaker than a worse one. Power swings sit a little above contact swings at the same quality (+0.1 intensity) because they are the heavier swing.
+- **Jammed and off the end** keep their own feel on top of the step: dull and stinging (sharpness down to 0.2) however hard they were hit.
+- **The top steps are rare on purpose,** so they stay special: nothing else in the game reaches intensity 1.0 with a long swell.
+- **Then the homer itself:** the wall-clearing pattern and the crowd rumble (below) follow, so a no-doubter is felt three times: at the bat, as it clears, and as the park shakes.
+- Light setting: scale every intensity by about 0.6 but keep the steps distinct. Off is off.
+- **Test screen:** add these eight as a row the owner can tap in order, weakest to strongest, so the ladder can be felt in ten seconds and tuned.
+
 ## The first set (starting values, all to be tuned by the owner on the phone)
 
 Intensity and sharpness are 0 to 1.
