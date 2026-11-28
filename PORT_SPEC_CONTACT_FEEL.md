@@ -204,3 +204,33 @@ Code: `doSwing`, the swing block in `step`, and the `swing` / `whiff` / `idle` m
 - Tap to contact frame is 0.07 s from every starting pose (stance, loaded, mid-take, mid-practice-cut).
 - A miss shows the miss clip and is back in the stance by 1.05 s, or by the next pitch if sooner.
 - A tap at 0.2, 0.8 and 1.25 s after the mitt on a take, a strike three and a ball four: the bat swings, WAY LATE shows, the call and the next pitch's start time are unchanged. A tap at 1.4 s is a practice cut.
+
+## The timing gauge shown after every swing (added 28 Nov at the owner's request)
+
+It must **accurately show the timing of the swing the player actually made on the pitch he actually saw.** It is not decoration: it is how a hitter learns he is early on change-ups and late on heat. Code: `timeBar` and the first lines of `tryContact` in `index.html`.
+
+**What is measured.** For every swing: `dt` = (the moment of the tap + 0.07 s) − (the moment this pitch reaches the plate). Negative is early, positive is late. It is measured against **this pitch's own arrival time** (its real flight time: pitch type, inning, tier, luck), the same moment its timing circle closed onto the target. So a tap exactly as the circle closes reads dead center on a fastball and on an eephus alike.
+
+**The window.** `win = 0.118 s × (0.85 power | 1.2 contact) × (1.35 Juice | 1.85 Overdrive | 1) × tier ring × (1.3 on the easy first at-bat) × (0.52 against a Juice pitch, 0.8 if you are in Overdrive | 1)`. Timing in window units: `n = dt / win`. Contact is possible out to |n| = 1.4.
+
+**The bar.** A dark horizontal bar; the center is perfect; left is early, right is late. Its full width is ±2.05 contact-windows of a normal (non-Juice) pitch, so the scale is the same from swing to swing and a narrow window **looks** narrow.
+- **A green band** in the middle: the window in which a CONTACT swing can touch the ball. Half-width `1.4 / 2.05 × 50%` of the bar, **× the Juice-pitch factor**, so against a Juice pitch both bands visibly shrink.
+- **A narrower red band** inside it: the POWER swing's window (0.85 / 1.2 of the green).
+- The band for the swing you used is bright; the other is dimmed. Both are brightest in the middle and fade toward the edges.
+- **A Juice or Overdrive swing adds gold** to both ends of the band you used, widening it by × 1.35 or × 1.85. In Overdrive, when you make contact, the window burns blue.
+- **A white target mark** at the center.
+- **Your swing: a marker** at `x = n × (0.85 / 1.2 if power) × Juice factor × Juice-pitch factor`, in contact-window units, placed at `x / 2.05` of the half-bar and clamped to the ends. **Green if it was inside the window you used, red if it was outside** (too early or too late to touch the ball at all).
+- **The picture never contradicts the verdict:** a PERFECT sits exactly on the target; anything that is not perfect is drawn at least 17 px clear of it, on the correct side. The **rocket** on the marker is for perfect-perfect only: on time, squared up, and smoked.
+- Under the bar: the pitch's name and speed ("JUICE PITCH · CORKSCREW · 88 MPH"). Beside it, the small picture of where the barrel met the ball.
+
+**The words agree with the bar.** The timing word (PERFECT!, a little early / late, EARLY / LATE, WAY EARLY / WAY LATE, TOO EARLY! / TOO LATE!) comes from the same `n`. "On time" is |n| under `0.22 × mid` for the tier. Jammed always means late, off the end always means early.
+
+**It shows on every swing:** contact, foul, and a miss on timing. A late cut after the ball is in the mitt reads WAY LATE without a bar. In the Gauntlet the marker's direction uses when contact was made, and the quality uses distance from that pitch's own called-shot moment (`shotTOff`); everywhere else they are the same number.
+
+**Where it sits:** in the feedback panel, never over the hitter or the buttons (phone: placed by `timPlace`; see `port/look/*_07_*`).
+
+**Tests:**
+- For every pitch type at its real flight time, a tap exactly at "circle closes" gives a marker on the target (within a frame), and taps 30, 60 and 120 ms early and late land at the computed positions on the correct side.
+- The bands for a contact swing, a power swing, a Juice swing, Overdrive, and against a Juice pitch have the widths above.
+- The marker is red exactly when |n| is beyond the window used.
+- The word shown always matches the side and distance of the marker.
